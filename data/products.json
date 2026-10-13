@@ -1,0 +1,220 @@
+[
+  {
+    "id": "p1",
+    "name": "Combat Training Tee",
+    "category": "apparel",
+    "price": 850000,
+    "originalPrice": 1200000,
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "colors": ["BLACK", "WHITE", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Lightweight performance tee engineered for maximum movement during training sessions. Moisture-wicking fabric keeps you dry through the hardest rounds.",
+    "stock": 50,
+    "featured": true,
+    "badge": "BEST SELLER",
+    "visible": true
+  },
+  {
+    "id": "p2",
+    "name": "Pro Boxing Shorts",
+    "category": "apparel",
+    "price": 1200000,
+    "originalPrice": null,
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["BLACK", "NAVY"],
+    "images": [
+      "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Satin finish shorts with elastic waistband, side slits for full range of motion. Embroidered Dapper Combat logo. Worn by champions, made for every fighter.",
+    "stock": 30,
+    "featured": true,
+    "badge": "NEW",
+    "visible": true
+  },
+  {
+    "id": "p3",
+    "name": "Fighter Hoodie",
+    "category": "apparel",
+    "price": 1900000,
+    "originalPrice": 2500000,
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "colors": ["BLACK", "CHARCOAL"],
+    "images": [
+      "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Oversized heavy-weight hoodie with embroidered logo. 400gsm cotton fleece. Perfect for warmups, cooldowns, and everyday fight lifestyle.",
+    "stock": 25,
+    "featured": true,
+    "badge": "SALE",
+    "visible": true
+  },
+  {
+    "id": "p4",
+    "name": "Pro Boxing Gloves 12oz",
+    "category": "equipment",
+    "price": 2800000,
+    "originalPrice": null,
+    "sizes": ["10oz", "12oz", "14oz", "16oz"],
+    "colors": ["BLACK", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Triple-density foam padding with pre-curved design for a natural fist position. Full-grain leather shell. Velcro wrist closure for secure fit during heavy bag sessions and sparring.",
+    "stock": 20,
+    "featured": true,
+    "badge": "NEW",
+    "visible": true
+  },
+  {
+    "id": "p5",
+    "name": "Hand Wraps (2 Pack)",
+    "category": "equipment",
+    "price": 380000,
+    "originalPrice": null,
+    "sizes": ["4.5m", "5m"],
+    "colors": ["BLACK", "WHITE", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1517438476312-10d79c077509?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "4.5m semi-elastic wraps with thumb loop and velcro closure. Protects wrists and knuckles during every session. Machine washable.",
+    "stock": 100,
+    "featured": false,
+    "badge": "",
+    "visible": true
+  },
+  {
+    "id": "p6",
+    "name": "Track Jacket",
+    "category": "apparel",
+    "price": 2200000,
+    "originalPrice": null,
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["BLACK", "WHITE"],
+    "images": [
+      "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Retro-inspired track jacket with contrast piping and zip pockets. Lightweight, breathable. From gym to street — the Dapper Combat fight lifestyle.",
+    "stock": 15,
+    "featured": false,
+    "badge": "",
+    "visible": true
+  },
+  {
+    "id": "p7",
+    "name": "Pro MMA Gloves",
+    "category": "gloves",
+    "price": 1600000,
+    "originalPrice": 2000000,
+    "sizes": ["S/M", "L/XL"],
+    "colors": ["BLACK", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Open-palm MMA gloves with 7oz foam padding. Ideal for sparring and bag work. Neoprene wrist support. Finger grip bar for secure fit.",
+    "stock": 40,
+    "featured": true,
+    "badge": "NEW",
+    "visible": true
+  },
+  {
+    "id": "p8",
+    "name": "Boxing Gloves 10oz",
+    "category": "gloves",
+    "price": 2200000,
+    "originalPrice": null,
+    "sizes": ["10oz", "12oz", "14oz", "16oz"],
+    "colors": ["BLACK", "RED", "WHITE"],
+    "images": [
+      "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1517438476312-10d79c077509?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Genuine leather boxing gloves with multi-layer foam. Professional grade construction for serious bag work and sparring. Available in 4 weights.",
+    "stock": 35,
+    "featured": true,
+    "badge": "BEST SELLER",
+    "visible": true
+  },
+  {
+    "id": "p9",
+    "name": "Training Mitts",
+    "category": "gloves",
+    "price": 1100000,
+    "originalPrice": null,
+    "sizes": ["One Size"],
+    "colors": ["BLACK", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Hook-and-loop focus mitts for precision target training with coaches. Curved design absorbs impact. Lightweight for fast pad work sessions.",
+    "stock": 28,
+    "featured": false,
+    "badge": "",
+    "visible": true
+  },
+  {
+    "id": "p10",
+    "name": "Shin Guards Pro",
+    "category": "accessories",
+    "price": 1450000,
+    "originalPrice": 1800000,
+    "sizes": ["S", "M", "L"],
+    "colors": ["BLACK", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1517438476312-10d79c077509?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Full-length Muay Thai / kickboxing shin guards. High-density foam core with outer shell. Instep padding included for maximum protection during sparring.",
+    "stock": 22,
+    "featured": false,
+    "badge": "SALE",
+    "visible": true
+  },
+  {
+    "id": "p11",
+    "name": "Mouthguard Pro",
+    "category": "accessories",
+    "price": 280000,
+    "originalPrice": null,
+    "sizes": ["Adult", "Junior"],
+    "colors": ["BLACK", "CLEAR", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Boil-and-bite custom fit mouthguard. Medical-grade silicone. Provides superior shock absorption and comfort during contact training.",
+    "stock": 60,
+    "featured": false,
+    "badge": "",
+    "visible": true
+  },
+  {
+    "id": "p12",
+    "name": "Jump Rope Speed",
+    "category": "accessories",
+    "price": 490000,
+    "originalPrice": null,
+    "sizes": ["2.8m", "3.0m"],
+    "colors": ["BLACK", "RED"],
+    "images": [
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=800&fit=crop&q=85",
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=800&fit=crop&q=85"
+    ],
+    "description": "Speed jump rope with ball bearing handles for smooth rotation. PVC cable. Essential for fight conditioning — build footwork, coordination and cardio simultaneously.",
+    "stock": 45,
+    "featured": false,
+    "badge": "NEW",
+    "visible": true
+  }
+]

@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAPPER COMBAT</title>
+  <link rel="icon" type="image/svg+xml" href="/img/dc-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@700;800;900&family=Bebas+Neue&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ─── Promo Popup ──────────────────────────────────────────────────────── -->
+<div id="promo-popup-overlay" class="promo-overlay" aria-modal="true" role="dialog">
+  <div class="promo-popup">
+    <button class="promo-close" id="promo-close" aria-label="Đóng">✕</button>
+
+    <!-- Left: Image + Offer -->
+    <div class="promo-left" id="promo-left">
+      <div class="promo-img-wrap" id="promo-img-wrap">
+        <div class="promo-img-placeholder" id="promo-img-placeholder">DC</div>
+        <img id="promo-img" src="" alt="" style="display:none">
+      </div>
+      <div class="promo-offer">
+        <div class="promo-tag" id="promo-tag">DÀNH RIÊNG CHO BẠN</div>
+        <div class="promo-discount" id="promo-discount">GIẢM<br>15%</div>
+        <div class="promo-code-box">
+          <span class="promo-code-label">Mã khuyến mãi</span>
+          <div class="promo-code-value" id="promo-code-value">DC2026</div>
+        </div>
+        <button class="promo-copy-btn" id="promo-copy-btn" onclick="App.copyPromoCode()">SAO CHÉP MÃ</button>
+      </div>
+    </div>
+
+    <!-- Right: Contact Form -->
+    <div class="promo-right">
+      <div class="promo-form-header">
+        <h3 class="promo-form-title" id="promo-form-title">NHẬN TƯ VẤN MIỄN PHÍ</h3>
+        <p class="promo-form-sub" id="promo-form-sub">Để lại thông tin — HLV sẽ liên hệ trong 24h</p>
+      </div>
+      <form class="promo-form" id="promo-form" onsubmit="App.submitPromoForm(event)">
+        <div class="promo-field">
+          <input type="text" id="promo-field-name" class="promo-input" placeholder="Họ và tên *" required>
+        </div>
+        <div class="promo-field">
+          <input type="tel" id="promo-field-phone" class="promo-input" placeholder="Số điện thoại *" required>
+        </div>
+        <div class="promo-field">
+          <input type="email" id="promo-field-email" class="promo-input" placeholder="Email (tùy chọn)">
+        </div>
+        <div class="promo-field">
+          <select id="promo-field-interest" class="promo-input">
+            <option value="">Quan tâm đến...</option>
+            <option value="shop">Sản phẩm tập luyện</option>
+            <option value="courses">Khoá học</option>
+            <option value="coaching">1-on-1 Coaching</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+        <button type="submit" class="promo-submit" id="promo-submit-btn">ĐĂNG KÝ NHẬN MÃ</button>
+        <p class="promo-privacy">Thông tin của bạn được bảo mật tuyệt đối.</p>
+      </form>
+      <div class="promo-success" id="promo-success" style="display:none">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9,12 11,14 15,10"/></svg>
+        <p>Cảm ơn bạn!<br>Chúng tôi sẽ liên hệ sớm nhất.</p>
+        <div class="promo-code-box" style="margin-top:1rem">
+          <span class="promo-code-label">Mã của bạn</span>
+          <div class="promo-code-value" id="promo-success-code">DC2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Announcement Bar ─────────────────────────────────────────────────── -->
+<div id="announcement-bar" class="announcement-bar hidden">
+  <div class="ann-rows">
+    <div class="ann-ticker">
+      <div class="ann-ticker-track" id="ann-ticker-track"></div>
+    </div>
+    <div class="ann-ticker ann-ticker-2">
+      <div class="ann-ticker-track ann-ticker-track-2" id="ann-ticker-track-2"></div>
+    </div>
+  </div>
+  <button class="ann-close" id="ann-close" aria-label="Đóng">✕</button>
+</div>
+
+<!-- ─── Navbar ──────────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#" onclick="App.navigate('home');return false;">
+      <img src="/img/dc-mark.svg" alt="DC" class="nav-logo-img">
+      <span class="nav-logo-text">DAPPER COMBAT</span>
+    </a>
+    <ul class="nav-links" id="nav-links"></ul>
+    <div class="nav-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="vi" onclick="I18N.setLang('vi')">VI</button>
+        <span class="lang-sep">|</span>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+      </div>
+      <button class="nav-icon-btn" id="btn-cart" data-i18n-title="nav.cart.title" title="Giỏ hàng">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+      <button class="hamburger nav-icon-btn" id="hamburger" data-i18n-aria="nav.menu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Mobile Nav ───────────────────────────────────────────────────────── -->
+<div id="mobile-nav"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active" style="padding-top:0">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-media" id="hero-media"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-watermark" aria-hidden="true">
+      <img src="/img/dc-mark.svg" alt="">
+    </div>
+    <div class="hero-content container">
+      <div class="hero-eyebrow" data-i18n="hero.eyebrow">DAPPER COMBAT — PHONG CÁCH CHIẾN ĐẤU</div>
+      <div class="hero-headline" id="hero-headline">FIGHT YOUR<br><span style="color:var(--accent)">BEST</span> FIGHT</div>
+      <div class="hero-subtext" id="hero-subtext">Premium training gear &amp; knowledge for serious fighters</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" data-i18n="hero.cta.shop" onclick="App.navigate('shop')">MUA NGAY</button>
+        <button class="btn btn-secondary btn-lg" data-i18n="hero.cta.courses" onclick="App.navigate('courses')">XEM KHÓA HỌC</button>
+      </div>
+      <!-- Hero Promo Card -->
+      <div class="hero-promo-card" id="hero-promo-card" style="display:none">
+        <div class="hpc-body">
+          <div class="hpc-left">
+            <span class="hpc-tag" id="hpc-tag"></span>
+            <div class="hpc-headline" id="hpc-headline"></div>
+            <div class="hpc-pricing" id="hpc-pricing"></div>
+            <div class="hpc-perks" id="hpc-perks"></div>
+          </div>
+          <div class="hpc-right">
+            <a class="hpc-cta" id="hpc-cta" href="#">XEM ƯU ĐÃI →</a>
+          </div>
+        </div>
+        <div class="hpc-footer">
+          <span class="hpc-badge" id="hpc-badge"></span>
+          <span class="hpc-sep-dot">·</span>
+          <span class="hpc-deadline" id="hpc-deadline"></span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll" data-i18n="hero.scroll">CUỘN XUỐNG</div>
+  </section>
+
+  <!-- Philosophy Section -->
+  <section id="section-philosophy">
+    <div class="container philosophy-inner">
+      <div class="philosophy-left">
+        <span class="philosophy-eyebrow" id="philosophy-eyebrow">TRIẾT LÝ CỦA CHÚNG TÔI</span>
+        <div class="philosophy-line"></div>
+      </div>
+      <div class="philosophy-right">
+        <h2 class="philosophy-headline" id="philosophy-headline"></h2>
+        <p class="philosophy-body" id="philosophy-body"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instructor Stats Section -->
+  <section id="section-instructor-stats">
+    <div class="instructor-layout">
+      <div class="instructor-photo-col">
+        <div class="instructor-photo-wrap">
+          <img id="instructor-photo" src="" alt="Head Coach" loading="lazy">
+          <div class="instructor-photo-badge" id="instructor-eyebrow">HUẤN LUYỆN VIÊN TRƯỞNG</div>
+        </div>
+      </div>
+      <div class="instructor-info-col">
+        <div class="instructor-title-row">
+          <span class="instructor-subtitle" id="instructor-title">Founder & Head Coach</span>
+        </div>
+        <h2 class="instructor-name" id="instructor-name"></h2>
+        <p class="instructor-bio" id="instructor-bio"></p>
+        <div class="instructor-credentials" id="instructor-credentials"></div>
+        <div class="instructor-stats" id="instructor-stats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery 4-image strip -->
+  <section id="section-gallery4" style="display:none">
+    <div class="gallery4-grid" id="gallery4-grid">
+      <div class="gallery4-item" data-i="0"><img src="" alt="" loading="lazy"></div>
+      <div class="gallery4-item" data-i="1"><img src="" alt="" loading="lazy"></div>
+      <div class="gallery4-item" data-i="2"><img src="" alt="" loading="lazy"></div>
+      <div class="gallery4-item" data-i="3"><img src="" alt="" loading="lazy"></div>
+    </div>
+  </section>
+
+  <!-- Featured Products Strip -->
+  <section id="section-featured">
+    <div class="featured-strip-header">
+      <div class="container featured-header-inner">
+        <div class="featured-header-left">
+          <span class="featured-eyebrow">◆ <span data-i18n="home.new_arrivals_label">MỚI NHẤT</span></span>
+          <h2 data-i18n="home.new_arrivals">HÀNG MỚI VỀ</h2>
+        </div>
+        <a class="featured-view-all" href="#" data-i18n="home.view_all" onclick="App.navigate('shop');return false;">
+          XEM TẤT CẢ
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="3" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="10,4 15,9 10,14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="featured-strip" id="featured-grid"></div>
+  </section>
+
+  <!-- Video Banner 2 (below product strip) -->
+  <section id="section-video-banner-2">
+    <div class="vbanner-media" id="vbanner2-media"></div>
+  </section>
+
+  <!-- Categories -->
+  <section id="section-categories" class="category-fullwidth">
+    <div class="category-panel" data-cat="apparel" onclick="App.navigate('shop');App.renderShop('apparel')">
+      <div class="cat-panel-img"></div>
+      <div class="cat-panel-overlay"></div>
+      <div class="cat-panel-label">
+        <span class="cat-panel-tag" data-i18n="cat.apparel">TRANG PHỤC</span>
+        <a class="cat-panel-cta" href="#" data-i18n="cat.shop_now">MUA NGAY →</a>
+      </div>
+    </div>
+    <div class="category-panel" data-cat="equipment" onclick="App.navigate('shop');App.renderShop('equipment')">
+      <div class="cat-panel-img"></div>
+      <div class="cat-panel-overlay"></div>
+      <div class="cat-panel-label">
+        <span class="cat-panel-tag" data-i18n="cat.equipment">THIẾT BỊ CHIẾN ĐẤU</span>
+        <a class="cat-panel-cta" href="#" data-i18n="cat.shop_now">MUA NGAY →</a>
+      </div>
+    </div>
+    <div class="category-panel" data-cat="gloves" onclick="App.navigate('shop');App.renderShop('gloves')">
+      <div class="cat-panel-img"></div>
+      <div class="cat-panel-overlay"></div>
+      <div class="cat-panel-label">
+        <span class="cat-panel-tag" data-i18n="cat.gloves">GĂNG TAY</span>
+        <a class="cat-panel-cta" href="#" data-i18n="cat.shop_now">MUA NGAY →</a>
+      </div>
+    </div>
+    <div class="category-panel" data-cat="accessories" onclick="App.navigate('shop');App.renderShop('accessories')">
+      <div class="cat-panel-img"></div>
+      <div class="cat-panel-overlay"></div>
+      <div class="cat-panel-label">
+        <span class="cat-panel-tag" data-i18n="cat.accessories">PHỤ KIỆN</span>
+        <a class="cat-panel-cta" href="#" data-i18n="cat.shop_now">MUA NGAY →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Banner 1 (between categories and course promo) -->
+  <section id="section-video-banner">
+    <div class="vbanner-media" id="vbanner-media"></div>
+  </section>
+
+  <!-- Duo Image Section -->
+  <section id="section-duo-images">
+    <div class="duo-image-panel" id="duo-panel-left">
+      <div class="duo-image-bg" id="duo-bg-left"></div>
+    </div>
+    <div class="duo-image-panel" id="duo-panel-right">
+      <div class="duo-image-bg" id="duo-bg-right"></div>
+    </div>
+  </section>
+
+  <!-- Course Promo -->
+  <section id="section-course-promo" class="promo-split">
+    <!-- Left: Image -->
+    <div class="promo-split-img" id="promo-split-img">
+      <div class="promo-split-img-bg"></div>
+    </div>
+    <!-- Right: Content -->
+    <div class="promo-split-content">
+      <div class="promo-tag" data-i18n="promo.tag">KHÓA HỌC NỔI BẬT</div>
+      <h2 id="promo-course-title" class="promo-split-title">BOXING FUNDAMENTALS</h2>
+      <p id="promo-course-desc" class="promo-split-desc">Master the basics of boxing with expert guidance from world-class coaches.</p>
+      <button class="btn btn-primary btn-lg" data-i18n="promo.btn" onclick="App.navigate('courses')">KHÁM PHÁ KHÓA HỌC</button>
+    </div>
+  </section>
+
+  <!-- Course CTA Banner -->
+  <section class="course-cta-fullbanner" id="section-course-cta-banner">
+    <div class="course-cta-fullbanner-bg"></div>
+    <div class="course-cta-fullbanner-overlay"></div>
+    <div class="course-cta-fullbanner-inner">
+      <div class="course-cta-fullbanner-eyebrow" data-i18n="promo.tag">KHÓA HỌC NỔI BẬT</div>
+      <h2 class="course-cta-fullbanner-headline" data-i18n-html="promo.cta_headline">NÂNG CAO KỸ NĂNG<br>CHIẾN ĐẤU CỦA BẠN</h2>
+      <p class="course-cta-fullbanner-sub" data-i18n="promo.cta_sub">Học từ các huấn luyện viên vô địch quốc gia. Lộ trình bài bản, từ cơ bản đến chuyên nghiệp.</p>
+      <button class="btn btn-primary btn-lg course-cta-fullbanner-btn" data-i18n="promo.cta_btn" onclick="App.navigate('courses')">ĐĂNG KÝ KHÓA HỌC NGAY</button>
+    </div>
+  </section>
+
+  <!-- Community Section -->
+  <section class="community-section" id="section-community">
+    <div class="community-inner">
+      <div class="community-content">
+        <div class="community-eyebrow" id="community-eyebrow">THAM GIA CỘNG ĐỒNG</div>
+        <h2 class="community-headline" id="community-headline">CÙNG NHAU<br>CHIẾN ĐẤU</h2>
+        <div class="community-story" id="community-story">
+          <p>Dapper Combat không chỉ là nơi học kỹ thuật — đây là cộng đồng của những người tin vào sự rèn luyện bền bỉ.</p>
+          <p>Hàng trăm học viên đang chia sẻ hành trình, hỗ trợ nhau mỗi ngày. Tham gia ngay để không đi một mình.</p>
+        </div>
+        <div class="community-stats" id="community-stats">
+          <div class="community-stat">
+            <span class="community-stat-num" id="community-stat-1-num">500+</span>
+            <span class="community-stat-label" id="community-stat-1-label">Thành viên</span>
+          </div>
+          <div class="community-stat">
+            <span class="community-stat-num" id="community-stat-2-num">3+</span>
+            <span class="community-stat-label" id="community-stat-2-label">Năm hoạt động</span>
+          </div>
+          <div class="community-stat">
+            <span class="community-stat-num" id="community-stat-3-num">100%</span>
+            <span class="community-stat-label" id="community-stat-3-label">Miễn phí tham gia</span>
+          </div>
+        </div>
+        <div class="community-actions">
+          <a class="community-btn community-btn-fb" id="community-btn-fb" href="#" target="_blank" rel="noopener">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            <span id="community-btn-fb-text">FACEBOOK GROUP</span>
+          </a>
+          <a class="community-btn community-btn-zalo" id="community-btn-zalo" href="#" target="_blank" rel="noopener">
+            <svg width="22" height="22" viewBox="0 0 48 48" fill="currentColor"><text x="4" y="36" font-family="Arial Black,sans-serif" font-weight="900" font-size="26">Z</text></svg>
+            <span id="community-btn-zalo-text">ZALO GROUP</span>
+          </a>
+        </div>
+      </div>
+      <div class="community-visual" id="community-visual-wrap">
+        <div class="community-visual-placeholder" id="community-visual-placeholder">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;display:block">Thêm ảnh cộng đồng</span>
+        </div>
+        <img id="community-img" src="" alt="Cộng đồng" style="display:none;width:100%;height:100%;object-fit:cover">
+      </div>
+    </div>
+  </section>
+
+  <!-- Home Testimonials -->
+  <section class="courses-testimonials home-testimonials">
+    <div class="section-label-row">
+      <span class="section-tag" id="testimonials-eyebrow-home">KẾT QUẢ THỰC TẾ</span>
+      <h2 class="section-headline" id="testimonials-title-home">KẾT QUẢ THỰC TẾ</h2>
+    </div>
+    <div class="testimonials-carousel-wrap">
+      <button class="testimonials-nav prev" id="testimonials-prev-home" aria-label="Previous">&#8592;</button>
+      <div class="testimonials-track-outer">
+        <div class="testimonials-track" id="testimonials-track-home"></div>
+      </div>
+      <button class="testimonials-nav next" id="testimonials-next-home" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <!-- Main footer columns -->
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-grid">
+
+          <!-- Brand column -->
+          <div class="footer-brand">
+            <img src="/img/dc-logo.svg" alt="DAPPER COMBAT" class="footer-logo">
+            <p class="footer-tagline" data-i18n="footer.desc">Thiết bị tập luyện cao cấp và kiến thức chuyên sâu cho các võ sĩ ở mọi trình độ.</p>
+            <div class="footer-brand-line"></div>
+            <p class="footer-address" id="footer-address" style="display:none"></p>
+            <div class="footer-hotline" id="footer-hotline" style="display:none">
+              <span class="footer-hotline-label">Hotline:</span>
+              <a class="footer-hotline-num" id="footer-hotline-link" href="#">—</a>
+            </div>
+          </div>
+
+          <!-- Quick links column -->
+          <div class="footer-col">
+            <h4 data-i18n="footer.quick_links">LIÊN KẾT NHANH</h4>
+            <a href="#" onclick="App.navigate('home');return false">TRANG CHỦ</a>
+            <a href="#" onclick="App.navigate('shop');return false">CỬA HÀNG</a>
+            <a href="#" onclick="App.navigate('courses');return false">KHÓA HỌC</a>
+            <a href="#" onclick="App.openAuth('register');return false">ĐĂNG KÝ</a>
+            <a href="#" onclick="App.openAuth('login');return false">ĐĂNG NHẬP</a>
+            <a href="admin.html">QUẢN TRỊ</a>
+          </div>
+
+          <!-- Connect column -->
+          <div class="footer-connect">
+            <h4>CONNECT</h4>
+            <a class="footer-cta-btn" href="#" onclick="App.navigate('courses');return false">ĐĂNG KÝ NHẬN ƯU ĐÃI</a>
+            <div class="footer-social" id="footer-social">
+              <a href="#" class="footer-social-link" id="social-instagram" aria-label="Instagram" style="display:none" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              </a>
+              <a href="#" class="footer-social-link" id="social-facebook" aria-label="Facebook" style="display:none" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="#" class="footer-social-link" id="social-youtube" aria-label="YouTube" style="display:none" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0a0a0a"/></svg>
+              </a>
+              <a href="#" class="footer-social-link footer-social-zalo" id="social-zalo" aria-label="Zalo" style="display:none" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 48 48" fill="currentColor"><rect width="48" height="48" rx="10" fill="none"/><text x="5" y="34" font-family="Arial Black, sans-serif" font-weight="900" font-size="22" fill="currentColor">Z</text></svg>
+              </a>
+              <a href="#" class="footer-social-link" id="social-messenger" aria-label="Messenger" style="display:none" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.942 1.46 5.56 3.746 7.28V22l3.416-1.876c.912.254 1.877.39 2.838.39 5.523 0 10-4.145 10-9.271C22 6.145 17.523 2 12 2zm1.087 12.49l-2.548-2.717-4.97 2.717 5.467-5.8 2.61 2.717 4.908-2.717-5.467 5.8z"/></svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Map section -->
+    <div class="footer-map-section" id="footer-map-section" style="display:none">
+      <div class="container">
+        <span class="footer-map-label">VỊ TRÍ</span>
+      </div>
+      <div class="footer-map-wrap" id="footer-map-wrap"></div>
+    </div>
+
+    <!-- Copyright bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span id="footer-copyright">© 2026 DAPPER COMBAT. BẢO LƯU MỌI QUYỀN.</span>
+        <span class="footer-bottom-right" data-i18n="footer.tagline">DAPPER COMBAT. FIGHT LIFESTYLE. PREMIUM GEAR.</span>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /page-home -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SHOP PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-shop" class="page">
+  <div class="container" style="padding-top:3rem;padding-bottom:5rem">
+    <div class="section-header">
+      <h2>SHOP</h2>
+    </div>
+    <div class="shop-toolbar">
+      <div class="filters-bar" id="shop-filters">
+        <button class="filter-btn active" data-filter="all">ALL</button>
+        <button class="filter-btn" data-filter="apparel">APPAREL</button>
+        <button class="filter-btn" data-filter="equipment">EQUIPMENT</button>
+        <button class="filter-btn" data-filter="gloves">GLOVES</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+        <div class="search-bar">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="shop-search" placeholder="SEARCH PRODUCTS...">
+        </div>
+        <select id="shop-sort" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:0.5rem 1rem;font-family:var(--font-heading);font-size:0.75rem;letter-spacing:0.1em;cursor:pointer">
+          <option value="default">SORT: DEFAULT</option>
+          <option value="price-asc">PRICE: LOW → HIGH</option>
+          <option value="price-desc">PRICE: HIGH → LOW</option>
+          <option value="name-asc">NAME: A → Z</option>
+          <option value="new">NEWEST FIRST</option>
+        </select>
+      </div>
+    </div>
+    <div id="shop-count" style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:1rem"></div>
+    <div class="product-grid" id="shop-grid"></div>
+  </div>
+
+  <!-- Shop Testimonials -->
+  <section class="courses-testimonials shop-testimonials">
+    <div class="section-label-row">
+      <span class="section-tag" id="testimonials-eyebrow">HỌC VIÊN NÓI GÌ</span>
+      <h2 class="section-headline" id="testimonials-title">CẢM NHẬN SẢN PHẨM THỰC TẾ</h2>
+    </div>
+    <div class="testimonials-carousel-wrap">
+      <button class="testimonials-nav prev" id="testimonials-prev" aria-label="Previous">&#8592;</button>
+      <div class="testimonials-track-outer">
+        <div class="testimonials-track" id="testimonials-track"></div>
+      </div>
+      <button class="testimonials-nav next" id="testimonials-next" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PRODUCT DETAIL PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-product" class="page">
+  <div class="product-detail-layout">
+    <!-- LEFT: Media Gallery (sticky on desktop) -->
+    <div class="product-gallery-col" id="product-gallery-col">
+      <div class="product-gallery-grid" id="product-gallery-main">
+        <!-- 8 slots rendered by JS: images[0-5] then videos[0-1] -->
+      </div>
+    </div>
+    <!-- RIGHT: Product Info (scrollable) -->
+    <div class="product-info-col" id="product-info-col">
+      <!-- Breadcrumb -->
+      <div class="product-breadcrumb">
+        <button class="breadcrumb-link" onclick="App.navigate('shop')">SHOP</button>
+        <span class="breadcrumb-sep">/</span>
+        <span id="pd-category"></span>
+        <span class="breadcrumb-sep">/</span>
+        <span id="pd-name-crumb" style="color:var(--text-muted)"></span>
+      </div>
+      <!-- Title & Price -->
+      <h1 class="product-detail-title" id="pd-title"></h1>
+      <div class="product-detail-price" id="pd-price-block"></div>
+      <!-- Wishlist -->
+      <button class="product-wishlist-btn" id="pd-wishlist-btn" onclick="App.toggleProductWishlist()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <span id="pd-wishlist-label">ADD TO WISHLIST</span>
+      </button>
+      <!-- Color -->
+      <div class="product-option-group" id="pd-colors-group">
+        <div class="product-option-label">COLOR : <span id="pd-selected-color"></span></div>
+        <div class="product-color-swatches" id="pd-color-swatches"></div>
+      </div>
+      <!-- Size -->
+      <div class="product-option-group" id="pd-sizes-group">
+        <div class="product-option-label" style="display:flex;justify-content:space-between">
+          <span>SIZE</span>
+          <button class="size-chart-btn" onclick="App.openSizeChart()">SIZE CHART +</button>
+        </div>
+        <div class="product-size-btns" id="pd-size-btns"></div>
+      </div>
+      <!-- Qty -->
+      <div class="product-option-group">
+        <div class="product-option-label">QUANTITY</div>
+        <div class="product-qty-row">
+          <button class="qty-btn" onclick="App.pdQty(-1)">−</button>
+          <span id="pd-qty-display">1</span>
+          <button class="qty-btn" onclick="App.pdQty(1)">+</button>
+        </div>
+      </div>
+      <!-- CTAs -->
+      <div class="product-cta-group">
+        <button class="btn btn-primary btn-full btn-lg product-cta-btn" id="pd-add-cart-btn" onclick="App.addCurrentToCart()">ADD TO CART</button>
+        <button class="btn btn-secondary btn-full btn-lg product-cta-btn" style="margin-top:0.75rem" id="pd-buy-now-btn" onclick="App.buyNowProduct()">BUY NOW</button>
+      </div>
+      <div id="pd-cart-msg" style="font-size:0.8rem;color:var(--accent);margin-top:0.5rem;display:none;text-align:center"></div>
+      <!-- Description -->
+      <div class="product-accordion">
+        <button class="product-accordion-btn active" onclick="App.toggleAccordion(this)">
+          <span>DESCRIPTION</span><span class="accordion-icon">−</span>
+        </button>
+        <div class="product-accordion-body" id="pd-desc-body">
+          <p id="pd-description"></p>
+          <ul id="pd-features" style="margin-top:1rem;padding-left:1.25rem"></ul>
+        </div>
+        <button class="product-accordion-btn" onclick="App.toggleAccordion(this)">
+          <span>DELIVERY &amp; RETURNS</span><span class="accordion-icon">+</span>
+        </button>
+        <div class="product-accordion-body" id="pd-delivery-body" style="display:none">
+          <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7" id="pd-delivery-text">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSES PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-courses" class="page">
+
+  <!-- Courses Hero -->
+  <section class="courses-hero">
+    <div class="courses-hero-content container">
+      <div class="hero-eyebrow">DAPPER COMBAT ACADEMY</div>
+      <h1>TRAIN LIKE A<br><span style="color:var(--accent)">CHAMPION</span></h1>
+      <p>Expert coaching for all levels — Boxing, MMA, and strength conditioning programs designed to push your limits.</p>
+    </div>
+  </section>
+
+  <!-- Programs / Alternating blocks -->
+  <section style="border-bottom:1px solid var(--border)">
+    <!-- Boxing Fundamentals -->
+    <div class="program-block" id="program-block-1">
+      <div class="program-media" id="program-media-1">
+        <div class="program-media-placeholder"></div>
+      </div>
+      <div class="program-info" id="program-info-1">
+        <div class="program-tag" id="program-tag-1">BEGINNER</div>
+        <h2 id="program-title-1">BOXING<br>FUNDAMENTALS</h2>
+        <p id="program-desc-1">Master the core skills every fighter needs: stance, guard, footwork, and the 6 fundamental punches. Taught by world-class coaches in a structured 6-week program.</p>
+        <ul class="program-features" id="program-features-1">
+          <li>6 weeks · 6 lessons</li>
+          <li>Coach Marcus — National Champion</li>
+          <li>Lifetime access to recordings</li>
+          <li>Certificate on completion</li>
+        </ul>
+        <button class="btn btn-primary" id="program-btn-1" onclick="App.navigate('courses')">ENROLL NOW — 1.500.000 ₫</button>
+      </div>
+    </div>
+
+    <!-- Advanced Combinations -->
+    <div class="program-block reverse" id="program-block-2">
+      <div class="program-media" id="program-media-2">
+        <div class="program-media-placeholder"></div>
+      </div>
+      <div class="program-info" id="program-info-2">
+        <div class="program-tag" id="program-tag-2">INTERMEDIATE</div>
+        <h2 id="program-title-2">ADVANCED<br>COMBINATIONS</h2>
+        <p id="program-desc-2">Take your boxing to the next level with elite combination drills, counter-punching mechanics, and tactical sparring preparation. 8-week deep-dive.</p>
+        <ul class="program-features" id="program-features-2">
+          <li>8 weeks · 6 lessons</li>
+          <li>Coach Sarah — Pro Boxer</li>
+          <li>Live Q&amp;A sessions included</li>
+          <li>Drill library access</li>
+        </ul>
+        <button class="btn btn-primary" id="program-btn-2" onclick="App.navigate('courses')">ENROLL NOW — 2.200.000 ₫</button>
+      </div>
+    </div>
+
+    <!-- Fighter Conditioning -->
+    <div class="program-block" id="program-block-3">
+      <div class="program-media" id="program-media-3">
+        <div class="program-media-placeholder"></div>
+      </div>
+      <div class="program-info" id="program-info-3">
+        <div class="program-tag" id="program-tag-3">ALL LEVELS</div>
+        <h2 id="program-title-3">FIGHTER<br>CONDITIONING</h2>
+        <p id="program-desc-3">Build fight-ready fitness from the ground up. Explosive power, endurance, speed, and recovery protocols used by competitive fighters worldwide.</p>
+        <ul class="program-features" id="program-features-3">
+          <li>12 weeks · 6 lessons</li>
+          <li>Coach Alex — S&amp;C Specialist</li>
+          <li>Nutrition guide included</li>
+          <li>Weekly check-ins</li>
+        </ul>
+        <button class="btn btn-primary" id="program-btn-3" onclick="App.navigate('courses')">ENROLL NOW — 1.800.000 ₫</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Table -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <h2>PRICING</h2>
+        <span style="font-size:0.8rem;color:var(--text-muted);letter-spacing:0.1em">CHOOSE YOUR PLAN</span>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="pricing-card">
+          <div class="pricing-tier">STARTER</div>
+          <h3>BASIC</h3>
+          <div class="pricing-amount">1.500.000 ₫</div>
+          <div class="pricing-period">PER COURSE / ONE-TIME</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li class="has">1 course of your choice</li>
+            <li class="has">Lifetime access to recordings</li>
+            <li class="has">Course certificate</li>
+            <li class="no">Live Q&A sessions</li>
+            <li class="no">Personal coaching feedback</li>
+            <li class="no">Full library access</li>
+          </ul>
+          <button class="btn btn-secondary btn-full" onclick="App.navigate('courses');document.getElementById('courses-grid').scrollIntoView({behavior:'smooth'})">GET STARTED</button>
+        </div>
+        <!-- Pro -->
+        <div class="pricing-card featured">
+          <div class="pricing-tier">PRO</div>
+          <h3>ALL ACCESS</h3>
+          <div class="pricing-amount">3.500.000 ₫</div>
+          <div class="pricing-period">PER MONTH</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li class="has">All courses — unlimited access</li>
+            <li class="has">Lifetime access to recordings</li>
+            <li class="has">All course certificates</li>
+            <li class="has">Monthly live Q&A sessions</li>
+            <li class="has">Community forum access</li>
+            <li class="no">1-on-1 coaching sessions</li>
+          </ul>
+          <button class="btn btn-primary btn-full" onclick="App.navigate('courses');document.getElementById('courses-grid').scrollIntoView({behavior:'smooth'})">JOIN NOW</button>
+        </div>
+        <!-- Elite -->
+        <div class="pricing-card">
+          <div class="pricing-tier">ELITE</div>
+          <h3>COACHING</h3>
+          <div class="pricing-amount">8.000.000 ₫</div>
+          <div class="pricing-period">PER MONTH</div>
+          <hr class="pricing-divider">
+          <ul class="pricing-features">
+            <li class="has">Everything in Pro</li>
+            <li class="has">4 x 1-on-1 sessions/month</li>
+            <li class="has">Personalised training plan</li>
+            <li class="has">Weekly video review</li>
+            <li class="has">Nutrition &amp; recovery guide</li>
+            <li class="has">Priority support</li>
+          </ul>
+          <button class="btn btn-secondary btn-full" onclick="App.navigate('courses');document.getElementById('courses-grid').scrollIntoView({behavior:'smooth'})">APPLY NOW</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule Table -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <h2>SCHEDULE</h2>
+        <span style="font-size:0.8rem;color:var(--text-muted);letter-spacing:0.1em">WEEKLY CLASS TIMES</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>TIME</th>
+              <th>MONDAY</th>
+              <th>TUESDAY</th>
+              <th>WEDNESDAY</th>
+              <th>THURSDAY</th>
+              <th>FRIDAY</th>
+              <th>SATURDAY</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text);font-size:0.8rem;letter-spacing:0.05em">06:00 – 07:30</td>
+              <td><span class="schedule-class beginner">FUNDAMENTALS</span></td>
+              <td>—</td>
+              <td><span class="schedule-class beginner">FUNDAMENTALS</span></td>
+              <td>—</td>
+              <td><span class="schedule-class beginner">FUNDAMENTALS</span></td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-size:0.8rem;letter-spacing:0.05em">09:00 – 10:30</td>
+              <td>—</td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+              <td>—</td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+              <td>—</td>
+              <td><span class="schedule-class advanced">ADVANCED COMBO</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-size:0.8rem;letter-spacing:0.05em">18:00 – 19:30</td>
+              <td><span class="schedule-class advanced">ADVANCED COMBO</span></td>
+              <td><span class="schedule-class beginner">FUNDAMENTALS</span></td>
+              <td><span class="schedule-class advanced">ADVANCED COMBO</span></td>
+              <td><span class="schedule-class beginner">FUNDAMENTALS</span></td>
+              <td><span class="schedule-class advanced">ADVANCED COMBO</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-size:0.8rem;letter-spacing:0.05em">20:00 – 21:30</td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+              <td>—</td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+              <td>—</td>
+              <td><span class="schedule-class">CONDITIONING</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem;letter-spacing:0.05em">All online classes include live Zoom sessions. Recordings available for 30 days after each session.</p>
+    </div>
+  </section>
+
+  <!-- Courses Trio Video Strip -->
+  <section id="section-courses-trio">
+    <div class="trio-video-panel" id="trio-panel-1">
+      <div class="trio-video-media" id="trio-media-1"></div>
+    </div>
+    <div class="trio-video-panel" id="trio-panel-2">
+      <div class="trio-video-media" id="trio-media-2"></div>
+    </div>
+    <div class="trio-video-panel" id="trio-panel-3">
+      <div class="trio-video-media" id="trio-media-3"></div>
+    </div>
+  </section>
+
+  <!-- Courses Video Banner A -->
+  <section class="courses-vbanner" id="section-courses-vbanner-a">
+    <div class="vbanner-media" id="courses-vbanner-a-media"></div>
+  </section>
+
+  <!-- Courses 9-Image Gallery -->
+  <section id="section-courses-gallery">
+    <div class="gallery9-cell" id="gallery9-cell-1"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-2"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-3"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-4"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-5"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-6"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-7"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-8"><div class="gallery9-placeholder"></div></div>
+    <div class="gallery9-cell" id="gallery9-cell-9"><div class="gallery9-placeholder"></div></div>
+  </section>
+
+  <!-- Courses Video Banner B -->
+  <section class="courses-vbanner" id="section-courses-vbanner-b">
+    <div class="vbanner-media" id="courses-vbanner-b-media"></div>
+  </section>
+
+  <!-- ── STATS STRIP ──────────────────────────────────────────────── -->
+  <section class="courses-stats-strip">
+    <div class="courses-stat">
+      <div class="courses-stat-num" id="stat-students">500+</div>
+      <div class="courses-stat-label">HỌC VIÊN ĐÃ THAM GIA</div>
+    </div>
+    <div class="courses-stat-divider"></div>
+    <div class="courses-stat">
+      <div class="courses-stat-num" id="stat-courses">12+</div>
+      <div class="courses-stat-label">KHÓA HỌC CHUYÊN SÂU</div>
+    </div>
+    <div class="courses-stat-divider"></div>
+    <div class="courses-stat">
+      <div class="courses-stat-num" id="stat-years">10+</div>
+      <div class="courses-stat-label">NĂM KINH NGHIỆM HUẤN LUYỆN</div>
+    </div>
+    <div class="courses-stat-divider"></div>
+    <div class="courses-stat">
+      <div class="courses-stat-num">4.9<span style="font-size:0.5em">★</span></div>
+      <div class="courses-stat-label">ĐÁNH GIÁ TRUNG BÌNH</div>
+    </div>
+  </section>
+
+  <!-- Sales Closer Section -->
+  <section class="sales-closer-section">
+    <div class="sales-closer-bg">
+      <video autoplay muted loop playsinline class="sales-closer-video">
+        <source src="https://assets.mixkit.co/videos/40972/40972-720.mp4" type="video/mp4">
+      </video>
+      <div class="sales-closer-overlay"></div>
+    </div>
+    <div class="sales-closer-inner">
+      <div class="sales-closer-left">
+        <div class="sales-closer-eyebrow">
+          <span class="sc-dot"></span> GIỚI HẠN CHỈ CÒN
+        </div>
+        <h2 class="sales-closer-headline">BẮT ĐẦU<br>HÀNH TRÌNH<br>CỦA BẠN<br>HÔM NAY.</h2>
+        <p class="sales-closer-sub">Hàng nghìn học viên đã thay đổi hoàn toàn thể trạng và kỹ năng chiến đấu của họ. Bạn đang chờ điều gì?</p>
+        <div class="sales-closer-urgency">
+          <div class="sc-urgency-item">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#e8c87a" stroke-width="1"/><path d="M5 8l2 2 4-4" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Miễn phí 7 ngày dùng thử — không cần thẻ tín dụng
+          </div>
+          <div class="sc-urgency-item">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#e8c87a" stroke-width="1"/><path d="M5 8l2 2 4-4" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Đảm bảo hoàn tiền 100% trong 14 ngày
+          </div>
+          <div class="sc-urgency-item">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#e8c87a" stroke-width="1"/><path d="M5 8l2 2 4-4" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Học liệu lưu trữ trọn đời, xem lại không giới hạn
+          </div>
+        </div>
+        <div class="sales-closer-actions">
+          <button class="btn-sc-primary" onclick="App.navigate('courses')">
+            ĐĂNG KÝ NGAY
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polyline points="11,5 16,10 11,15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </button>
+          <span class="sc-or">hoặc</span>
+          <button class="btn-sc-ghost" onclick="App.navigate('courses')">Xem khóa học →</button>
+        </div>
+      </div>
+      <div class="sales-closer-right">
+        <div class="sc-card">
+          <div class="sc-card-badge">PHỔ BIẾN NHẤT</div>
+          <div class="sc-card-plan">ALL ACCESS</div>
+          <div class="sc-card-price-wrap">
+            <div class="sc-card-original">~~5.000.000đ~~</div>
+            <div class="sc-card-price">3.500.000<span class="sc-currency">đ</span></div>
+            <div class="sc-card-billing">/ tháng</div>
+          </div>
+          <ul class="sc-card-features">
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Tất cả khóa học — không giới hạn</li>
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Live Q&amp;A hàng tuần với HLV</li>
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Phản hồi cá nhân từ Coach</li>
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Hướng dẫn dinh dưỡng cho võ sĩ</li>
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Chứng chỉ hoàn thành khóa học</li>
+            <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3 3 6-6" stroke="#e8c87a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Cộng đồng học viên độc quyền</li>
+          </ul>
+          <button class="btn-sc-card" onclick="App.navigate('courses')">BẮT ĐẦU NGAY</button>
+          <div class="sc-card-note">★★★★★ &nbsp;4.9/5 từ 500+ học viên</div>
+        </div>
+        <div class="sc-social-proof">
+          <div class="sc-avatars">
+            <img src="https://randomuser.me/api/portraits/men/47.jpg" alt="">
+            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="">
+            <img src="https://randomuser.me/api/portraits/men/61.jpg" alt="">
+            <img src="https://randomuser.me/api/portraits/women/39.jpg" alt="">
+            <img src="https://randomuser.me/api/portraits/men/23.jpg" alt="">
+          </div>
+          <span class="sc-social-text"><strong>127 người</strong> đã đăng ký tuần này</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="section-pricing" class="pricing-section hidden">
+    <div class="container">
+      <div class="pricing-header">
+        <div class="pricing-eyebrow" id="pricing-eyebrow">CHOOSE YOUR PLAN</div>
+        <h2 id="pricing-title">PRICING</h2>
+      </div>
+      <div class="pricing-grid" id="pricing-grid"></div>
+    </div>
+  </section>
+
+  <!-- Schedule Section -->
+  <section id="section-schedule" class="schedule-section hidden">
+    <div class="container">
+      <div class="schedule-header">
+        <h2 id="schedule-section-title">LỊCH HỌC</h2>
+        <p id="schedule-section-subtitle" class="schedule-subtitle"></p>
+      </div>
+      <div class="schedule-img-wrap">
+        <img id="schedule-img" src="" alt="Lịch học" class="schedule-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses Testimonials -->
+  <section class="courses-testimonials">
+    <div class="section-label-row">
+      <span class="section-tag" id="testimonials-eyebrow-courses">KẾT QUẢ THỰC TẾ</span>
+      <h2 class="section-headline" id="testimonials-title-courses">KẾT QUẢ THỰC TẾ</h2>
+    </div>
+    <div class="testimonials-carousel-wrap">
+      <button class="testimonials-nav prev" id="testimonials-prev-courses" aria-label="Previous">&#8592;</button>
+      <div class="testimonials-track-outer">
+        <div class="testimonials-track" id="testimonials-track-courses"></div>
+      </div>
+      <button class="testimonials-nav next" id="testimonials-next-courses" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ACCOUNT PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-account" class="page">
+  <div class="container">
+    <div class="account-grid">
+      <div class="account-sidebar">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-heading);font-size:1.5rem" id="account-name">User</div>
+          <div style="font-size:0.8rem;color:var(--text-muted)" id="account-email"></div>
+          <div class="tag mt-1" id="account-role">CUSTOMER</div>
+        </div>
+        <a class="account-nav-item active" data-tab="orders">MY ORDERS</a>
+        <a class="account-nav-item" data-tab="courses">MY COURSES</a>
+        <a class="account-nav-item" data-tab="profile">PROFILE</a>
+        <button id="btn-logout" class="btn btn-sm" style="margin-top:2rem;color:var(--accent-red);border:1px solid var(--accent-red);background:transparent;width:100%">LOGOUT</button>
+      </div>
+      <div class="account-content-area">
+        <div class="account-tab active" id="account-tab-orders">
+          <h3 style="margin-bottom:1.5rem">MY ORDERS</h3>
+          <div id="account-orders"></div>
+        </div>
+        <div class="account-tab" id="account-tab-courses">
+          <h3 style="margin-bottom:1.5rem">MY COURSES</h3>
+          <div id="account-courses"></div>
+        </div>
+        <div class="account-tab" id="account-tab-profile">
+          <h3 style="margin-bottom:1.5rem">PROFILE SETTINGS</h3>
+          <form id="form-profile" style="max-width:480px">
+            <div class="form-group"><label>Full Name</label><input id="profile-name" type="text"></div>
+            <div class="form-group"><label>Email</label><input id="profile-email" type="email"></div>
+            <div class="form-group"><label>New Password</label><input type="password" placeholder="Leave blank to keep current"></div>
+            <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CHECKOUT PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-checkout" class="page">
+  <div class="checkout-wrapper">
+
+    <!-- LEFT: Form -->
+    <div class="checkout-main">
+      <div class="checkout-crumb">
+        <span onclick="App.navigate('shop')" style="cursor:pointer">Giỏ hàng</span>
+        <span> › </span><span style="color:var(--text)">Thông tin đặt hàng</span>
+      </div>
+
+      <div class="checkout-block-title">THÔNG TIN GIAO HÀNG</div>
+      <div class="form-row">
+        <div class="form-group"><label>Họ và tên *</label><input type="text" id="ship-fullname" placeholder="Nguyễn Văn A" required></div>
+        <div class="form-group"><label>Số điện thoại *</label><input type="tel" id="ship-phone" placeholder="0912 345 678" required></div>
+      </div>
+      <div class="form-group"><label>Email *</label><input type="email" id="ship-email" placeholder="email@example.com" required></div>
+      <div class="form-group"><label>Địa chỉ *</label><input type="text" id="ship-address" placeholder="Số nhà, tên đường, phường/xã" required></div>
+      <div class="form-row">
+        <div class="form-group"><label>Tỉnh / Thành phố *</label><input type="text" id="ship-city" placeholder="TP. Hồ Chí Minh" required></div>
+        <div class="form-group"><label>Quận / Huyện</label><input type="text" id="ship-district" placeholder="Quận 1"></div>
+      </div>
+      <div class="form-group"><label>Ghi chú đơn hàng</label><textarea id="ship-note" rows="2" placeholder="Ghi chú cho người giao hàng (tùy chọn)"></textarea></div>
+
+      <div class="checkout-block-title" style="margin-top:2rem">PHƯƠNG THỨC VẬN CHUYỂN</div>
+      <div id="shipping-methods-container"></div>
+
+      <div class="checkout-block-title" style="margin-top:2rem">PHƯƠNG THỨC THANH TOÁN</div>
+      <div id="payment-options-container"></div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="btn-place-order" style="margin-top:2.5rem;padding:1.25rem">HOÀN TẤT ĐƠN HÀNG →</button>
+      <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:1rem">
+        🔒 Thông tin của bạn được bảo mật và mã hoá
+      </p>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <div class="checkout-aside">
+      <div class="checkout-summary-box">
+        <div class="checkout-summary-title">TÓM TẮT ĐƠN HÀNG</div>
+        <div id="checkout-summary"></div>
+        <div class="checkout-coupon-row">
+          <input type="text" id="coupon-input" placeholder="Mã khuyến mãi" style="text-transform:uppercase;flex:1;font-size:0.8rem">
+          <button class="btn btn-sm btn-primary" style="white-space:nowrap;font-family:var(--font-heading-viet);font-weight:700;letter-spacing:0.08em" onclick="App.applyCoupon()">ÁP DỤNG</button>
+        </div>
+        <div id="coupon-msg" style="display:none;font-size:0.75rem;padding:0.4rem 0"></div>
+        <div class="checkout-totals">
+          <div class="checkout-total-row"><span>Tạm tính</span><span id="checkout-subtotal">0 đ</span></div>
+          <div class="checkout-total-row" id="checkout-discount-row" style="display:none;color:var(--accent-red)"><span>Giảm giá</span><span id="checkout-discount-amount">0 đ</span></div>
+          <div class="checkout-total-row"><span>Vận chuyển</span><span id="checkout-shipping-cost">Miễn phí</span></div>
+          <div class="checkout-total-final"><span>TỔNG CỘNG</span><span id="checkout-total">0 đ</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSE PAYMENT PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-course-pay" class="page">
+  <div class="container" style="max-width:900px">
+    <div class="checkout-grid">
+      <div>
+        <button class="btn btn-sm btn-ghost" style="margin-bottom:2rem;font-size:0.75rem" onclick="App.navigate('courses')">← BACK TO COURSES</button>
+        <h2 style="margin-bottom:2rem">PAYMENT</h2>
+        <h4 style="margin-bottom:1rem;font-size:1rem;letter-spacing:0.1em">PAYMENT METHOD</h4>
+        <div class="payment-tabs" id="course-pay-tabs"></div>
+        <div id="course-pay-panels"></div>
+      </div>
+      <div>
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);padding:2rem;position:sticky;top:calc(var(--nav-height) + 2rem)">
+          <h4 style="margin-bottom:1.5rem;font-size:1rem;letter-spacing:0.1em">ENROLLMENT SUMMARY</h4>
+          <div id="course-pay-summary"></div>
+          <div class="order-summary-total">
+            <span>TOTAL</span>
+            <span id="course-pay-total">0 VND</span>
+          </div>
+          <button class="btn btn-primary btn-full btn-lg" style="margin-top:1.5rem" id="btn-confirm-course-pay">COMPLETE PAYMENT</button>
+          <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:1rem">Your enrollment is saved. Payment confirms your spot.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CART DRAWER
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div id="cart-drawer">
+  <div class="cart-header">
+    <h3 data-i18n="cart.title">GIỎ HÀNG</h3>
+    <button class="modal-close" id="cart-close">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label" data-i18n="cart.subtotal">TẠM TÍNH</span>
+      <span class="cart-total-amount" id="cart-total">0 VND</span>
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" data-i18n="cart.checkout" id="btn-checkout">THANH TOÁN →</button>
+    <button class="btn btn-secondary btn-full mt-1" data-i18n="cart.continue" onclick="App.closeCart()">TIẾP TỤC MUA SẮM</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     AUTH MODAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="auth-tabs" style="border:none;flex:1">
+        <button class="auth-tab active" data-tab="login" data-i18n="auth.login_tab">ĐĂNG NHẬP</button>
+        <button class="auth-tab" data-tab="register" data-i18n="auth.register_tab">TẠO TÀI KHOẢN</button>
+      </div>
+      <button class="modal-close" id="auth-close">✕</button>
+    </div>
+
+    <!-- Login Form -->
+    <form class="auth-form active" id="auth-form-login">
+      <div class="form-error" id="login-error"></div>
+      <div class="form-group">
+        <label data-i18n="auth.email">Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" data-i18n-placeholder="auth.email_placeholder" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.password">Mật khẩu</label>
+        <input type="password" id="login-password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem" data-i18n="auth.login_btn">ĐĂNG NHẬP</button>
+      <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:1rem">
+        <span data-i18n="auth.no_account">Chưa có tài khoản?</span> <a href="#" style="color:var(--accent)" data-i18n="auth.register_link" onclick="document.querySelector('[data-tab=register]').click();return false">Đăng ký tại đây</a>
+      </p>
+    </form>
+
+    <!-- Register Form -->
+    <form class="auth-form" id="auth-form-register">
+      <div class="form-error" id="reg-error"></div>
+      <div class="form-group">
+        <label data-i18n="auth.name">Họ và tên</label>
+        <input type="text" id="reg-name" placeholder="Nguyen Van A" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.email">Email</label>
+        <input type="email" id="reg-email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.password">Mật khẩu</label>
+        <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required>
+      </div>
+      <div class="form-group">
+        <label data-i18n="auth.account_type">Loại tài khoản</label>
+        <div class="role-select">
+          <button type="button" class="role-btn active" data-role="customer" data-i18n="auth.customer">KHÁCH HÀNG</button>
+          <button type="button" class="role-btn" data-role="student" data-i18n="auth.student">HỌC VIÊN</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem" data-i18n="auth.register_btn">TẠO TÀI KHOẢN</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSE MODAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="course-modal">
+  <div class="modal" style="max-width:900px;display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden">
+    <!-- Left: Thumbnail -->
+    <div id="course-modal-thumb" style="background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;min-height:480px;position:relative;overflow:hidden">
+      <div class="course-thumb-placeholder" style="font-size:5rem;opacity:0.15" id="course-modal-thumb-letter">C</div>
+      <img id="course-modal-thumb-img" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none">
+      <!-- DC watermark -->
+      <img src="/img/dc-mark.svg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:2rem;opacity:0.04;pointer-events:none">
+    </div>
+    <!-- Right: Details -->
+    <div style="padding:2.5rem;display:flex;flex-direction:column;overflow-y:auto;max-height:80vh">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:0.65rem;letter-spacing:0.25em;color:var(--accent);margin-bottom:0.4rem" id="course-modal-level">BEGINNER</div>
+          <h2 style="font-size:2rem;line-height:1;margin-bottom:0.5rem" id="course-modal-title">Course Title</h2>
+          <div style="font-size:0.8rem;color:var(--text-muted)" id="course-modal-instructor"></div>
+        </div>
+        <button class="modal-close" onclick="App.closeCourseModal()" style="flex-shrink:0;margin-left:1rem">✕</button>
+      </div>
+
+      <div style="display:flex;gap:1.5rem;margin-bottom:1.25rem;font-size:0.78rem;color:var(--text-muted)">
+        <span>⏱ <span id="course-modal-duration"></span></span>
+        <span>👥 <span id="course-modal-students"></span> <span data-i18n="courses.students">học viên</span></span>
+        <span>📚 <span id="course-modal-lessons-count"></span> <span data-i18n="courses.lessons">bài học</span></span>
+      </div>
+
+      <p id="course-modal-desc" style="color:var(--text-muted);line-height:1.7;font-size:0.875rem;margin-bottom:1.25rem"></p>
+
+      <div style="border-top:1px solid var(--border);padding-top:1.25rem;margin-bottom:1.25rem">
+        <div style="font-family:var(--font-heading);font-size:0.85rem;letter-spacing:0.1em;margin-bottom:0.75rem" data-i18n="courses.curriculum">NỘI DUNG KHÓA HỌC</div>
+        <div id="course-modal-lessons" class="lesson-list"></div>
+      </div>
+
+      <div style="margin-top:auto">
+        <ul style="list-style:none;margin-bottom:1.25rem">
+          <li style="font-size:0.8rem;color:var(--text-muted);padding:0.25rem 0;border-bottom:1px solid var(--border)">✓ 6 weeks · <span id="course-modal-lessons-count2"></span> <span data-i18n="courses.lessons">bài học</span></li>
+          <li style="font-size:0.8rem;color:var(--text-muted);padding:0.25rem 0;border-bottom:1px solid var(--border)">✓ <span id="course-modal-instructor2"></span><span data-i18n="courses.champ"> — Nhà vô địch quốc gia</span></li>
+          <li style="font-size:0.8rem;color:var(--text-muted);padding:0.25rem 0;border-bottom:1px solid var(--border)">✓ <span data-i18n="courses.lifetime">Học liệu lưu trữ trọn đời</span></li>
+          <li style="font-size:0.8rem;color:var(--text-muted);padding:0.25rem 0">✓ <span data-i18n="courses.certificate">Chứng chỉ sau khi hoàn thành</span></li>
+        </ul>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1.25rem;border-top:1px solid var(--border)">
+          <div class="course-price" id="course-modal-price" style="font-size:1.5rem"></div>
+          <button class="btn btn-primary btn-lg" style="min-width:200px" data-i18n="courses.enroll" onclick="App.openEnrollForm()">ĐĂNG KÝ HỌC NGAY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ENROLLMENT FORM MODAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="enroll-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:0.65rem;letter-spacing:0.2em;color:var(--accent);margin-bottom:0.25rem">ENROLLMENT</div>
+        <h3 id="enroll-modal-title">Course Name</h3>
+      </div>
+      <button class="modal-close" onclick="App.closeEnrollModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.5rem">Fill in your information and we'll contact you to confirm enrollment and arrange payment.</p>
+      <form id="enroll-form">
+        <div class="form-row">
+          <div class="form-group"><label>Full Name *</label><input type="text" id="enroll-name" required placeholder="Nguyen Van A"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="enroll-email" required placeholder="your@email.com"></div>
+        </div>
+        <div class="form-group"><label>Phone Number *</label><input type="tel" id="enroll-phone" required placeholder="+84 xxx xxx xxx"></div>
+        <div class="form-group"><label>Notes (optional)</label><textarea id="enroll-notes" rows="3" placeholder="Any questions or notes for the instructor..."></textarea></div>
+        <div id="enroll-error" style="color:var(--accent-red);font-size:0.8rem;margin-bottom:0.75rem;display:none"></div>
+        <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1.5rem">
+          <button type="button" class="btn btn-secondary" onclick="App.closeEnrollModal()">CANCEL</button>
+          <button type="submit" class="btn btn-primary btn-lg" id="enroll-submit-btn">CONFIRM &amp; PAY →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSE LEARN PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-learn" class="page">
+  <div class="learn-layout">
+    <div class="learn-sidebar">
+      <button class="btn btn-sm btn-ghost" style="margin-bottom:1.5rem;font-size:0.75rem" onclick="App.navigate('courses')">← BACK TO COURSES</button>
+      <div id="learn-course-title" style="font-family:var(--font-heading);font-size:1.3rem;letter-spacing:0.05em;margin-bottom:0.5rem"></div>
+      <div id="learn-course-instructor" style="font-size:0.75rem;color:var(--text-muted);margin-bottom:2rem"></div>
+      <div class="learn-lesson-list" id="learn-lesson-list"></div>
+    </div>
+    <div class="learn-main">
+      <div class="learn-video-area" id="learn-video-area">
+        <div class="learn-video-placeholder">
+          <div class="play-icon">▶</div>
+          <p>SELECT A LESSON TO BEGIN</p>
+        </div>
+      </div>
+      <div class="learn-content">
+        <div id="learn-lesson-title" style="font-family:var(--font-heading);font-size:1.8rem;letter-spacing:0.05em;margin-bottom:0.5rem"></div>
+        <div id="learn-lesson-meta" style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.5rem"></div>
+        <div id="learn-lesson-content" style="line-height:1.8;color:var(--text-muted)"></div>
+        <button class="btn btn-primary" id="btn-mark-complete" style="margin-top:2rem" onclick="App.markLessonComplete()">MARK AS COMPLETE ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Floating Social Buttons ──────────────────────────────────────────── -->
+<div class="floating-social" id="floating-social">
+  <a class="float-btn float-zalo" id="float-zalo" href="#" target="_blank" rel="noopener" aria-label="Zalo" style="display:none">
+    <svg width="22" height="22" viewBox="0 0 48 48" fill="white"><text x="4" y="36" font-family="Arial Black,sans-serif" font-weight="900" font-size="28" fill="white">Z</text></svg>
+    <span class="float-label">Zalo</span>
+  </a>
+  <a class="float-btn float-messenger" id="float-messenger" href="#" target="_blank" rel="noopener" aria-label="Messenger" style="display:none">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.942 1.46 5.56 3.746 7.28V22l3.416-1.876c.912.254 1.877.39 2.838.39 5.523 0 10-4.145 10-9.271C22 6.145 17.523 2 12 2zm1.087 12.49l-2.548-2.717-4.97 2.717 5.467-5.8 2.61 2.717 4.908-2.717-5.467 5.8z"/></svg>
+    <span class="float-label">Chat</span>
+  </a>
+  <a class="float-btn float-phone" id="float-phone" href="#" aria-label="Hotline" style="display:none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    <span class="float-label" id="float-phone-label">Hotline</span>
+  </a>
+</div>
+
+<!-- ─── Toast Container ──────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ─── Back To Top ───────────────────────────────────────────────────────── -->
+<button id="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Size Chart Modal -->
+<div class="modal-overlay" id="size-chart-modal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-header" style="justify-content:space-between">
+      <h3>SIZE GUIDE</h3>
+      <button class="modal-close" onclick="document.getElementById('size-chart-modal').classList.remove('open')">&#x2715;</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <img id="size-chart-img" src="" alt="Size Chart" style="max-width:100%;height:auto;display:none;margin:0 auto">
+      <p id="size-chart-fallback" style="color:var(--text-muted);font-size:0.875rem;padding:2rem">Size chart image not configured. Go to Admin &#x2192; Products &#x2192; Size Chart to add one.</p>
+    </div>
+  </div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

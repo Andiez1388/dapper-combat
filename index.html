@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAPPER COMBAT</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ─── Navbar ──────────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#" onclick="App.navigate('home');return false;">
+      <span class="site-name">DAPPER COMBAT</span>
+    </a>
+    <ul class="nav-links" id="nav-links"></ul>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" id="btn-login" title="Account">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button class="nav-icon-btn" id="btn-cart" title="Cart">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+      <button class="hamburger nav-icon-btn" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Mobile Nav ───────────────────────────────────────────────────────── -->
+<div id="mobile-nav"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active" style="padding-top:0">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-media" id="hero-media"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content container">
+      <div class="hero-headline" id="hero-headline">FIGHT YOUR<br>BEST FIGHT</div>
+      <div class="hero-subtext" id="hero-subtext">Premium training gear &amp; knowledge for serious fighters</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="App.navigate('shop')">SHOP NOW</button>
+        <button class="btn btn-secondary btn-lg" onclick="App.navigate('courses')">VIEW COURSES</button>
+      </div>
+    </div>
+    <div class="hero-scroll">SCROLL</div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section section-dark" id="section-featured">
+    <div class="container">
+      <div class="section-header">
+        <h2>NEW ARRIVALS</h2>
+        <a href="#" onclick="App.navigate('shop');return false;">VIEW ALL →</a>
+      </div>
+      <div class="product-grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section section-alt" id="section-categories">
+    <div class="container">
+      <div class="section-header"><h2>SHOP BY CATEGORY</h2></div>
+      <div class="category-grid">
+        <div class="category-banner" onclick="App.navigate('shop');App.renderShop('apparel')">
+          <div class="category-banner-placeholder">A</div>
+          <div class="category-label">
+            <h3>APPAREL</h3>
+            <a href="#">SHOP NOW</a>
+          </div>
+        </div>
+        <div class="category-banner" onclick="App.navigate('shop');App.renderShop('equipment')">
+          <div class="category-banner-placeholder">E</div>
+          <div class="category-label">
+            <h3>EQUIPMENT</h3>
+            <a href="#">SHOP NOW</a>
+          </div>
+        </div>
+        <div class="category-banner" onclick="App.navigate('courses')">
+          <div class="category-banner-placeholder">C</div>
+          <div class="category-label">
+            <h3>COURSES</h3>
+            <a href="#">LEARN NOW</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Promo -->
+  <section class="section section-dark" id="section-course-promo">
+    <div class="container">
+      <div class="promo-banner">
+        <div class="promo-bg"></div>
+        <div class="promo-content">
+          <div class="promo-tag">FEATURED COURSE</div>
+          <h2 id="promo-course-title">BOXING FUNDAMENTALS</h2>
+          <p id="promo-course-desc">Master the basics of boxing with expert guidance from world-class coaches.</p>
+          <button class="btn btn-primary" onclick="App.navigate('courses')">EXPLORE COURSES</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section" id="section-newsletter">
+    <div class="container">
+      <h2>STAY IN THE FIGHT</h2>
+      <p>Get early access to new drops, exclusive offers, and training tips.</p>
+      <form class="newsletter-form" onsubmit="App.toast('Thank you for subscribing!');return false;">
+        <input type="email" placeholder="YOUR EMAIL ADDRESS">
+        <button type="submit" class="btn btn-primary">SUBSCRIBE</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="nav-logo"><span class="site-name">DAPPER COMBAT</span></span>
+          <p>Premium training gear and education for fighters at every level.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="#" onclick="App.navigate('shop');return false">New Arrivals</a>
+          <a href="#" onclick="App.renderShop('apparel');App.navigate('shop');return false">Apparel</a>
+          <a href="#" onclick="App.renderShop('equipment');App.navigate('shop');return false">Equipment</a>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a href="#" onclick="App.navigate('courses');return false">All Courses</a>
+          <a href="#" onclick="App.navigate('account');return false">My Learning</a>
+        </div>
+        <div class="footer-col">
+          <h4>Account</h4>
+          <a href="#" onclick="App.openAuth('login');return false">Sign In</a>
+          <a href="#" onclick="App.openAuth('register');return false">Register</a>
+          <a href="#" onclick="App.navigate('account');return false">My Account</a>
+          <a href="admin.html">Admin Panel</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 <span class="site-name">DAPPER COMBAT</span>. All rights reserved.</span>
+        <span style="color:var(--text-muted)">FIGHT LIFESTYLE</span>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /page-home -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SHOP PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-shop" class="page">
+  <div class="container" style="padding-top:3rem;padding-bottom:5rem">
+    <div class="section-header">
+      <h2>SHOP</h2>
+    </div>
+    <div class="filters-bar" id="shop-filters">
+      <button class="filter-btn active" data-filter="all">ALL</button>
+      <button class="filter-btn" data-filter="apparel">APPAREL</button>
+      <button class="filter-btn" data-filter="equipment">EQUIPMENT</button>
+    </div>
+    <div class="product-grid" id="shop-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PRODUCT DETAIL PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-product" class="page">
+  <div class="product-detail-grid">
+    <div class="product-gallery-col" id="product-gallery-col">
+      <div class="product-gallery-grid" id="product-gallery-main">
+        <!-- Slot 1: Carousel (top-left) -->
+        <div class="gallery-slot gallery-carousel-slot" id="gallery-slot-1">
+          <div class="gallery-carousel-wrap" id="gallery-carousel-wrap">
+            <!-- JS renders <img> elements here -->
+          </div>
+          <button class="gallery-carousel-prev" id="gallery-carousel-prev" onclick="App.carouselNav(-1)">&#8249;</button>
+          <button class="gallery-carousel-next" id="gallery-carousel-next" onclick="App.carouselNav(1)">&#8250;</button>
+          <div class="gallery-carousel-dots" id="gallery-carousel-dots"></div>
+        </div>
+        <!-- Slot 2: Video (top-right) -->
+        <div class="gallery-slot gallery-video-slot" id="gallery-slot-2">
+          <div id="gallery-video-wrap" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-card)">
+            <img src="/img/dc-mark.svg" alt="" style="width:40%;opacity:0.06" id="gallery-video-placeholder">
+          </div>
+        </div>
+        <!-- Slots 3–8: Static images -->
+        <div class="gallery-slot" id="gallery-slot-3"></div>
+        <div class="gallery-slot" id="gallery-slot-4"></div>
+        <div class="gallery-slot" id="gallery-slot-5"></div>
+        <div class="gallery-slot" id="gallery-slot-6"></div>
+        <div class="gallery-slot" id="gallery-slot-7"></div>
+        <div class="gallery-slot" id="gallery-slot-8"></div>
+      </div>
+    </div>
+    <div class="product-detail-info" id="product-info-col">
+      <button class="btn btn-sm" style="margin-bottom:2rem;color:var(--text-muted);padding:0;font-size:0.8rem;letter-spacing:0.1em" onclick="App.navigate('shop')">← BACK TO SHOP</button>
+      <div class="product-detail-category" id="product-category">APPAREL</div>
+      <div class="product-detail-name" id="product-name">Product Name</div>
+      <div class="product-detail-price" id="product-price">0 VND</div>
+
+      <div class="option-label">SELECT SIZE</div>
+      <div class="size-options" id="product-sizes"></div>
+
+      <div class="option-label">SELECT COLOR <span id="pd-selected-color" style="color:var(--text);margin-left:0.5rem;font-size:0.85rem;font-family:var(--font-body);letter-spacing:0"></span></div>
+      <div class="color-options" id="product-colors"></div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="btn-add-cart" style="margin-bottom:1.5rem">ADD TO CART</button>
+
+      <div class="product-detail-desc" id="product-desc"></div>
+
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem;line-height:1.8">
+        ✓ Free shipping on orders over 500,000 VND<br>
+        ✓ 30-day returns<br>
+        ✓ Authentic guarantee
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSES PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-courses" class="page">
+  <div class="container" style="padding-top:3rem;padding-bottom:5rem">
+    <div class="section-header">
+      <h2>COURSES</h2>
+      <span style="font-size:0.8rem;color:var(--text-muted);letter-spacing:0.1em">LEARN FROM THE BEST</span>
+    </div>
+    <div class="course-grid" id="courses-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ACCOUNT PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-account" class="page">
+  <div class="container">
+    <div class="account-grid">
+      <div class="account-sidebar">
+        <div style="margin-bottom:1.5rem">
+          <div style="font-family:var(--font-heading);font-size:1.5rem" id="account-name">User</div>
+          <div style="font-size:0.8rem;color:var(--text-muted)" id="account-email"></div>
+          <div class="tag mt-1" id="account-role">CUSTOMER</div>
+        </div>
+        <a class="account-nav-item active" data-tab="orders">MY ORDERS</a>
+        <a class="account-nav-item" data-tab="courses">MY COURSES</a>
+        <a class="account-nav-item" data-tab="profile">PROFILE</a>
+        <button id="btn-logout" class="btn btn-sm" style="margin-top:2rem;color:var(--accent-red);border:1px solid var(--accent-red);background:transparent;width:100%">LOGOUT</button>
+      </div>
+      <div class="account-content-area">
+        <div class="account-tab active" id="account-tab-orders">
+          <h3 style="margin-bottom:1.5rem">MY ORDERS</h3>
+          <div id="account-orders"></div>
+        </div>
+        <div class="account-tab" id="account-tab-courses">
+          <h3 style="margin-bottom:1.5rem">MY COURSES</h3>
+          <div id="account-courses"></div>
+        </div>
+        <div class="account-tab" id="account-tab-profile">
+          <h3 style="margin-bottom:1.5rem">PROFILE SETTINGS</h3>
+          <form id="form-profile" style="max-width:480px">
+            <div class="form-group"><label>Full Name</label><input id="profile-name" type="text"></div>
+            <div class="form-group"><label>Email</label><input id="profile-email" type="email"></div>
+            <div class="form-group"><label>New Password</label><input type="password" placeholder="Leave blank to keep current"></div>
+            <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CHECKOUT PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="page-checkout" class="page">
+  <div class="container">
+    <div class="checkout-grid">
+      <div>
+        <h2 style="margin-bottom:2rem">CHECKOUT</h2>
+        <h4 style="margin-bottom:1rem;font-size:1rem;letter-spacing:0.1em">SHIPPING INFORMATION</h4>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text"></div>
+          <div class="form-group"><label>Last Name</label><input type="text"></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email"></div>
+        <div class="form-group"><label>Phone</label><input type="tel"></div>
+        <div class="form-group"><label>Address</label><input type="text"></div>
+        <div class="form-row">
+          <div class="form-group"><label>City</label><input type="text"></div>
+          <div class="form-group"><label>Postal Code</label><input type="text"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h4 style="margin-bottom:1rem;font-size:1rem;letter-spacing:0.1em">PAYMENT METHOD</h4>
+        <div class="payment-tabs" id="payment-tabs"></div>
+        <div id="payment-panels"></div>
+      </div>
+      <div>
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);padding:2rem;position:sticky;top:calc(var(--nav-height) + 2rem)">
+          <h4 style="margin-bottom:1.5rem;font-size:1rem;letter-spacing:0.1em">ORDER SUMMARY</h4>
+          <div id="checkout-summary"></div>
+          <div class="order-summary-total">
+            <span>TOTAL</span>
+            <span id="checkout-total">0 VND</span>
+          </div>
+          <button class="btn btn-primary btn-full btn-lg" id="btn-place-order" style="margin-top:1.5rem">PLACE ORDER</button>
+          <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:1rem">
+            Secured checkout. Your data is protected.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CART DRAWER
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div id="cart-drawer">
+  <div class="cart-header">
+    <h3>YOUR BAG</h3>
+    <button class="modal-close" id="cart-close">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">SUBTOTAL</span>
+      <span class="cart-total-amount" id="cart-total">0 VND</span>
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" id="btn-checkout">CHECKOUT →</button>
+    <button class="btn btn-secondary btn-full mt-1" onclick="App.closeCart()">CONTINUE SHOPPING</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     AUTH MODAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="auth-tabs" style="border:none;flex:1">
+        <button class="auth-tab active" data-tab="login">SIGN IN</button>
+        <button class="auth-tab" data-tab="register">CREATE ACCOUNT</button>
+      </div>
+      <button class="modal-close" id="auth-close">✕</button>
+    </div>
+
+    <!-- Login Form -->
+    <form class="auth-form active" id="auth-form-login">
+      <div class="form-error" id="login-error"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem">SIGN IN</button>
+      <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:1rem">
+        Don't have an account? <a href="#" style="color:var(--accent)" onclick="document.querySelector('[data-tab=register]').click();return false">Register here</a>
+      </p>
+    </form>
+
+    <!-- Register Form -->
+    <form class="auth-form" id="auth-form-register">
+      <div class="form-error" id="reg-error"></div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="John Doe" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="••••••••" minlength="6" required>
+      </div>
+      <div class="form-group">
+        <label>Account Type</label>
+        <div class="role-select">
+          <button type="button" class="role-btn active" data-role="customer">CUSTOMER</button>
+          <button type="button" class="role-btn" data-role="student">STUDENT</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem">CREATE ACCOUNT</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COURSE MODAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="course-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:0.7rem;letter-spacing:0.2em;color:var(--accent);margin-bottom:0.25rem" id="course-modal-level"></div>
+        <h3 id="course-modal-title">Course Title</h3>
+        <div style="font-size:0.8rem;color:var(--text-muted)" id="course-modal-instructor"></div>
+      </div>
+      <button class="modal-close" onclick="App.closeCourseModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:1.5rem;margin-bottom:1rem;font-size:0.8rem;color:var(--text-muted)">
+        <span>⏱ <span id="course-modal-duration"></span></span>
+      </div>
+      <p id="course-modal-desc" style="color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem"></p>
+      <div class="divider"></div>
+      <h4 style="font-size:1rem;letter-spacing:0.1em;margin-bottom:0.5rem">CURRICULUM</h4>
+      <div id="course-modal-lessons" class="lesson-list"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <div class="course-price" id="course-modal-price"></div>
+        <button class="btn btn-primary btn-lg" onclick="App.enrollCourse()">ENROLL NOW</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Toast Container ──────────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

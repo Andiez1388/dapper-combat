@@ -1,0 +1,128 @@
+[
+  {
+    "id": "c1",
+    "title": "Boxing Fundamentals",
+    "instructor": "Coach Marcus",
+    "price": 1500000,
+    "thumbnail": "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&h=600&fit=crop&q=85",
+    "description": "Master the basics: stance, guard, footwork, and the fundamental punches. This is where every champion starts. 6 weeks of structured learning with Coach Marcus.",
+    "lessons": [
+      "Introduction to Boxing",
+      "Stance & Footwork",
+      "The Jab — Speed & Timing",
+      "The Cross — Power Generation",
+      "Hooks & Uppercuts",
+      "Defense Basics — Slip, Roll, Block"
+    ],
+    "duration": "6 weeks",
+    "level": "Beginner",
+    "students": 234,
+    "visible": true,
+    "featured": true
+  },
+  {
+    "id": "c2",
+    "title": "Advanced Combinations",
+    "instructor": "Coach Sarah",
+    "price": 2200000,
+    "thumbnail": "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&h=600&fit=crop&q=85",
+    "description": "String together powerful combinations and learn ring generalship. Elevate your boxing IQ and develop the offensive variety that separates good fighters from great ones.",
+    "lessons": [
+      "1-2-3 Combinations",
+      "Body Work — Targeting & Timing",
+      "Countering — Read & Respond",
+      "Pressure Fighting",
+      "Ring Generalship",
+      "Sparring Preparation"
+    ],
+    "duration": "8 weeks",
+    "level": "Intermediate",
+    "students": 156,
+    "visible": true,
+    "featured": true
+  },
+  {
+    "id": "c3",
+    "title": "Fighter Conditioning",
+    "instructor": "Coach Alex",
+    "price": 1800000,
+    "thumbnail": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&q=85",
+    "description": "Elite fight conditioning: strength, cardio, speed, and recovery protocols. Build the engine that keeps you going hard for every round.",
+    "lessons": [
+      "Conditioning Assessment",
+      "Roadwork & Cardio Base",
+      "Strength Training for Fighters",
+      "Speed & Agility Drills",
+      "Recovery Methods & Mobility",
+      "Fight Week Preparation"
+    ],
+    "duration": "12 weeks",
+    "level": "All Levels",
+    "students": 412,
+    "visible": true,
+    "featured": false
+  },
+  {
+    "id": "c4",
+    "title": "Muay Thai Basics",
+    "instructor": "Coach Kru Chai",
+    "price": 1700000,
+    "thumbnail": "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&h=600&fit=crop&q=85",
+    "description": "The Art of 8 Limbs. Learn punches, kicks, elbows, and knees — the complete Muay Thai arsenal taught from traditional Thai foundations.",
+    "lessons": [
+      "Muay Thai Stance & Guard",
+      "The Teep — Push Kick",
+      "Roundhouse Kick Mechanics",
+      "Elbow Techniques",
+      "Knee Strikes in the Clinch",
+      "Pad Work Fundamentals"
+    ],
+    "duration": "8 weeks",
+    "level": "Beginner",
+    "students": 198,
+    "visible": true,
+    "featured": true
+  },
+  {
+    "id": "c5",
+    "title": "BJJ Fundamentals",
+    "instructor": "Coach Roberto",
+    "price": 2000000,
+    "thumbnail": "https://images.unsplash.com/photo-1517438476312-10d79c077509?w=800&h=600&fit=crop&q=85",
+    "description": "Brazilian Jiu-Jitsu ground game essentials. Learn takedowns, positional control, escapes, and submissions. The most effective martial art for self-defense.",
+    "lessons": [
+      "Guard Position — Full & Half",
+      "Mount & Back Control",
+      "Armbar & Triangle Choke",
+      "Escapes — Bridges & Shrimping",
+      "Standing — Takedown Basics",
+      "Submission Defense"
+    ],
+    "duration": "10 weeks",
+    "level": "Beginner",
+    "students": 167,
+    "visible": true,
+    "featured": true
+  },
+  {
+    "id": "c6",
+    "title": "Speed & Power",
+    "instructor": "Coach Marcus",
+    "price": 1900000,
+    "thumbnail": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=600&fit=crop&q=85",
+    "description": "Develop devastating hand speed and knockout power through scientifically designed drills. This advanced program takes your offensive game to the next level.",
+    "lessons": [
+      "Speed vs. Power — Understanding the Balance",
+      "Fast-Twitch Muscle Activation",
+      "Heavy Bag Power Training",
+      "Speed Bag Coordination",
+      "Combination Speed Drills",
+      "Power Testing & Progress Tracking"
+    ],
+    "duration": "6 weeks",
+    "level": "Intermediate",
+    "students": 89,
+    "visible": true,
+    "featured": false
+  }
+]
