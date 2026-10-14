@@ -1245,7 +1245,6 @@ h4 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
   align-items: center;
   background: #080808;
   overflow: hidden;
-  border-bottom: 1px solid var(--border);
 }
 .courses-hero::before {
   content: '';
@@ -2412,8 +2411,6 @@ h4 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
 /* ─── Community Section ───────────────────────────────────────────────────── */
 .community-section {
   background: linear-gradient(135deg, #0a0a0a 0%, #141410 50%, #0a0a0a 100%);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
   padding: 6rem 2rem;
 }
 .community-inner {
@@ -2764,7 +2761,6 @@ h4 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
 .pricing-section {
   padding: 6rem 0;
   background: var(--bg-secondary);
-  border-top: 1px solid var(--border);
 }
 .pricing-header {
   margin-bottom: 4rem;
@@ -4063,6 +4059,90 @@ footer {
 @media (max-width: 600px) {
   .courses-testimonials { padding: 3rem 0; }
   .courses-testimonials .section-label-row { padding: 0 1rem; }
+}
+
+/* ─── Mobile & Tablet Responsive Fixes ──────────────────────────────────── */
+
+/* Announcement bar — thinner on mobile, hide 2nd row */
+@media (max-width: 768px) {
+  .announcement-bar { height: 40px; }
+  .ann-ticker-2 { display: none; }
+}
+
+/* Nav — keep full nav on tablet, collapse only on phone */
+@media (max-width: 768px) {
+  .nav-links { display: flex; }
+  .hamburger { display: none; }
+}
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .nav-logo-text { font-size: 1rem; white-space: nowrap; }
+}
+
+/* Hero content — restore padding zeroed out by .container override */
+@media (max-width: 480px) {
+  .hero-content.container { padding: 2.5rem 1.25rem 3rem; }
+}
+
+/* Philosophy section */
+@media (max-width: 768px) {
+  #section-philosophy { padding: 3.5rem 0 3rem; }
+}
+@media (max-width: 480px) {
+  #section-philosophy { padding: 2.5rem 0 2rem; }
+  .philosophy-headline { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
+}
+
+/* Instructor section */
+@media (max-width: 768px) {
+  #section-instructor-stats { padding: 3rem 1.5rem; }
+  .instructor-name { font-size: clamp(1.8rem, 6vw, 2.8rem); }
+}
+@media (max-width: 480px) {
+  #section-instructor-stats { padding: 2rem 1rem; }
+  .instructor-info-col { padding: 1.5rem 1rem; }
+  .instructor-name { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+}
+
+/* New Arrivals / Featured strip header */
+@media (max-width: 768px) {
+  .featured-strip-header { padding: 2rem 0 1.5rem; }
+}
+
+/* Community section */
+@media (max-width: 768px) {
+  .community-section { padding: 3.5rem 1.5rem; }
+  .community-stat-label { font-size: 0.75rem; }
+}
+@media (max-width: 480px) {
+  .community-section { padding: 2.5rem 1rem; }
+  .community-inner { flex-direction: column; gap: 2.5rem; }
+  .community-stat-num { font-size: 2rem; }
+}
+
+/* Sales closer section */
+@media (max-width: 768px) {
+  .sales-closer-inner { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 2rem; }
+  .sales-closer-right { width: 100%; }
+  .sales-closer-headline { font-size: clamp(2rem, 8vw, 3.5rem); }
+}
+@media (max-width: 480px) {
+  .sales-closer-inner { padding: 3rem 1.25rem; gap: 2rem; }
+  .sc-card { padding: 1.75rem; }
+}
+
+/* Pricing section */
+@media (max-width: 768px) {
+  .pricing-section { padding: 3.5rem 0; }
+}
+
+/* Course grid on tablet — 2 columns */
+@media (max-width: 768px) {
+  .course-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .course-grid { grid-template-columns: 1fr; }
 }
 
 /* ─── Courses CTA Banner ────────────────────────────────────────────────── */
