@@ -42,6 +42,24 @@ Không có Chrome / Edge ở chỗ mặc định thì đặt `CHROME_PATH`. Kế
 
 Website lưu dữ liệu trong file (thư mục `DC_DATA_DIR`) nên cần hosting có **ổ đĩa giữ dữ liệu** — không dùng được Vercel / Netlify. Hai cách có sẵn cấu hình:
 
+**Hostinger** (gói **Business Web Hosting** hoặc **Cloud** — có mục Node.js web app; gói Single / Premium không chạy được):
+1. hPanel → **Websites → Add Website → Node.js web app** → **Connect with GitHub** → chọn repo này, nhánh `main` → Deploy.
+2. Build settings: Framework **Express** (hoặc Other), Node.js **22**, Build command **để trống**, Entry file **`server.js`**.
+3. **Environment variables** (dán vào ô nhập / import .env):
+   ```
+   NODE_ENV=production
+   DC_DATA_DIR=~/dapper-data/data
+   DC_UPLOAD_DIR=~/dapper-data/uploads
+   TRUST_PROXY=1
+   SITE_URL=https://ten-mien-cua-ban
+   ADMIN_EMAIL=email-cua-ban
+   ADMIN_PASSWORD=mat-khau-it-nhat-10-ky-tu
+   ANTHROPIC_API_KEY=
+   ```
+   **Bắt buộc** đặt `DC_DATA_DIR` / `DC_UPLOAD_DIR` ra ngoài thư mục code như trên: Hostinger dựng thư mục code mới mỗi lần cập nhật (`hbuilds/current` là liên kết tới bản mới nhất), dữ liệu để trong code sẽ mất.
+4. Mỗi lần đẩy code lên nhánh `main`, Hostinger tự cập nhật. Đổi biến môi trường xong phải bấm **Redeploy**.
+5. Sao lưu: tải bản sao lưu trong `/admin` → Sao lưu dữ liệu, và chép thư mục `~/dapper-data/uploads` (File Manager).
+
 **Cách 1 — Render.com** (dễ nhất, tự cập nhật mỗi khi đẩy code lên GitHub nhánh `main`):
 1. render.com → New → **Blueprint** → chọn repo này (đọc `render.yaml`: gói Starter + ổ đĩa 1GB).
 2. Nhập `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SITE_URL` (vd `https://dappercombat.vn`), tùy chọn `ANTHROPIC_API_KEY`.
