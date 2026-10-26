@@ -55,7 +55,7 @@
       var addr = [d.customer.address, d.customer.ward, d.customer.city].filter(Boolean).join(', ');
       if (addr && d.ship !== 'pickup') m.info.push([L('address', 'Giao đến', 'Deliver to', lang), addr]);
       m.info.push([L('delivery', 'Giao hàng', 'Delivery', lang), d.ship === 'pickup' ? L('ship.pickup', 'Nhận tại phòng tập', 'Pick up at the gym', lang) : d.ship === 'exp' ? L('ship.exp', 'Hỏa tốc nội thành TP.HCM', 'Same-day in HCMC', lang) : L('ship.std', 'Giao tiêu chuẩn ({ship.eta} ngày)', 'Standard delivery ({ship.eta} days)', lang)]);
-      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { cod: L('pay.cod', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)', lang), bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang) }[d.payMethod] || d.payMethod]);
+      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { cod: L('pay.cod', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)', lang), bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang), vnpay: L('pay.vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', lang) }[d.payMethod] || d.payMethod]);
       if (d.carrier) m.info.push([L('carrier', 'Đơn vị vận chuyển', 'Carrier', lang), d.carrier]);
       if (d.trackingCode) m.info.push([L('tracking', 'Mã vận đơn', 'Tracking code', lang), d.trackingCode]);
       m.itemsLab = L('items', 'Sản phẩm', 'Items', lang);
@@ -72,6 +72,11 @@
       if (d.total) m.totals.push([L('fee', 'Học phí', 'Tuition', lang), money(d.total, lang)]);
       if (d.due) m.totals.push([L('due', 'Cần thanh toán', 'Amount due', lang), money(d.due, lang), true]);
     }
+    // đã thanh toán qua cổng / chuyển khoản tự xác nhận: VNPay · 1.290.000đ · 26/10/2026 10:30
+    (Array.isArray(d.payments) ? d.payments : []).forEach(function (x) {
+      if (!x || !x.amount) return;
+      m.info.push([L('paidvia', 'Đã thanh toán qua', 'Paid via', lang), [S.provider(x.provider, lang), money(x.amount, lang), x.at ? date(x.at, lang) : ''].filter(Boolean).join(' · ')]);
+    });
     if (d.pay) m.pay = {
       lab: L('transfer', 'Chuyển khoản tới', 'Transfer to', lang),
       rows: [[L('bank', 'Ngân hàng', 'Bank', lang), d.pay.bank], [L('acc', 'Số tài khoản', 'Account no.', lang), d.pay.acc]]
@@ -207,6 +212,84 @@
     var v = e.key === 'Escape' && document.getElementById('dcSlipView');
     if (v) { e.preventDefault(); e.stopImmediatePropagation(); v.remove(); }
   }, true);
+  /* ─── Thanh toán online ───────────────────────────────────────────────────
+     nút "Thanh toán bằng thẻ (VNPay)" / "Thanh toán bằng ví MoMo" → POST /api/pay/<cổng>/create {code, k, lang} → chuyển sang cổng;
+     theo dõi phiếu (GET /api/slip, không tính lượt xem) cho tới khi server ghi đã nhận tiền */
+  S.provider = function (p, lang) { return p === 'vnpay' ? 'VNPay' : p === 'momo' ? 'MoMo' : L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang); };
+  S.payBtns = function (ref, online, lang) {
+    var list = (online || []).filter(function (p) { return p === 'vnpay' || p === 'momo'; });
+    if (!ref || !ref.k || !list.length) return '';
+    return '<div class="dc-paybtns"><p class="dc-paybtns-h">' + DC.esc(L('payonline', 'Thanh toán online', 'Pay online', lang)) + '</p><div class="dc-paybtns-row">' +
+      list.map(function (p) {
+        return '<button type="button" class="dc-paybtn dc-paybtn-' + p + '" data-pay-go="' + p + '" data-slip="' + DC.esc(ref.code) + '" data-k="' + DC.esc(ref.k) + '" data-lang="' + (lang === 'en' ? 'en' : 'vi') + '">' +
+          DC.esc(p === 'vnpay' ? L('paybtn.vnpay', 'Thanh toán bằng thẻ (VNPay)', 'Pay by card (VNPay)', lang) : L('paybtn.momo', 'Thanh toán bằng ví MoMo', 'Pay with MoMo', lang)) + '</button>';
+      }).join('') + '</div><p class="dc-pay-err" role="alert" hidden></p></div>';
+  };
+  // màn hình chờ chuyển sang cổng thanh toán
+  S.goOverlay = function (lang) {
+    if (document.getElementById('dcPayGo')) return;
+    document.body.insertAdjacentHTML('beforeend', '<div class="dc-paygo" id="dcPayGo" role="status" aria-live="polite"><div><i></i><p>' + DC.esc(L('paygo', 'Đang chuyển sang cổng thanh toán…', 'Redirecting to the payment gateway…', lang)) + '</p></div></div>');
+  };
+  // khách bấm Back từ cổng thanh toán (trang lấy lại từ bộ nhớ đệm) → tải lại để bỏ màn chờ, thấy trạng thái mới
+  window.addEventListener('pageshow', function (e) { if (e.persisted && document.getElementById('dcPayGo')) location.reload(); });
+  S.payGo = function (provider, ref, lang) {
+    return DC.api('/pay/' + encodeURIComponent(provider) + '/create', { code: ref.code, k: ref.k, lang: lang || DC.lang() }).then(function (r) {
+      if (!r || !r.url) throw new Error(L('payerr', 'Chưa mở được cổng thanh toán, vui lòng thử lại.', 'Couldn\'t open the payment gateway, please try again.', lang));
+      S.goOverlay(lang);
+      location.href = r.url;
+      return r.url;
+    });
+  };
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-pay-go]');
+    if (!b || b.disabled) return;
+    e.preventDefault();
+    var box = b.closest('.dc-paybtns'), err = box && box.querySelector('.dc-pay-err'), btns = box ? box.querySelectorAll('[data-pay-go]') : [b];
+    [].forEach.call(btns, function (x) { x.disabled = true; });
+    b.classList.add('dc-busy');
+    if (err) { err.hidden = true; err.textContent = ''; }
+    S.payGo(b.dataset.payGo, { code: b.dataset.slip, k: b.dataset.k }, b.dataset.lang || DC.lang()).catch(function (x) {
+      [].forEach.call(btns, function (y) { y.disabled = false; });
+      b.classList.remove('dc-busy');
+      if (err) { err.textContent = x.message; err.hidden = false; }
+    });
+  });
+  // theo dõi phiếu tới khi đã nhận tiền: mỗi 'every' ms, tối đa 'max' ms, chỉ khi trang đang hiện; mỗi phiếu 1 vòng theo dõi
+  var W = {};
+  // alive (tùy chọn): khung thanh toán còn hiện không — đóng khung thì thôi theo dõi
+  S.watch = function (ref, every, max, onPaid, alive) {
+    if (!ref || !ref.k) return null;
+    var w = W[ref.code];
+    if (w && !w.done) { w.onPaid = onPaid; w.alive = alive; return w; }
+    w = W[ref.code] = { done: false, onPaid: onPaid, alive: alive, until: Date.now() + max, t: null };
+    var tick = function () {
+      w.t = null;
+      if (w.done) return;
+      if (Date.now() > w.until || (w.alive && !w.alive())) { w.done = true; return; }
+      if (document.hidden) return;                       // tạm dừng khi ẩn trang — hiện lại thì chạy tiếp
+      S.load(ref, false).then(function (d) {
+        if (w.done) return;
+        if (d.paid) { w.done = true; w.data = d; if (w.onPaid) w.onPaid(d); return; }
+        w.t = setTimeout(tick, every);
+      }, function () { if (!w.done) w.t = setTimeout(tick, every); });
+    };
+    w.stop = function () { w.done = true; if (w.t) clearTimeout(w.t); };
+    w.vis = function () { if (!w.done && !document.hidden && !w.t) w.t = setTimeout(tick, 300); };
+    document.addEventListener('visibilitychange', w.vis);
+    w.t = setTimeout(tick, every);
+    return w;
+  };
+  S.unwatch = function (ref) { var w = ref && W[ref.code]; if (w) w.stop(); };
+  // khung thanh toán ở màn đặt hàng / đăng ký thành công: nút cổng (nếu còn dùng được) + theo dõi đã nhận tiền (chuyển khoản tự xác nhận)
+  S.live = function (box, ref, lang, opt) {
+    opt = opt || {};
+    if (!ref || !ref.k) return;
+    S.load(ref, false).then(function (d) {
+      if (d.paid) { if (opt.onPaid) opt.onPaid(d); return; }
+      if (box && opt.buttons !== false) box.innerHTML = S.payBtns(ref, d.online, lang);
+      if (opt.poll) S.watch(ref, 5000, 15 * 60 * 1000, function (x) { if (opt.onPaid) opt.onPaid(x); }, opt.alive);
+    }, function () {});
+  };
   // khung nút trên màn hình đặt hàng / đăng ký thành công
   S.box = function (ref, lang) {
     if (!ref || !ref.k) return '';

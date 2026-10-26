@@ -16,7 +16,8 @@
   var KINDS = [['group', 'Group Training'], ['hssv', 'Học sinh – sinh viên'], ['found', 'Foundation'], ['other', 'Khác']];
   var PROGS = [['', 'Không mở form'], ['gt', 'Form Group Training'], ['hssv', 'Form lớp HSSV'], ['found', 'Form Foundation (BOOK I)'], ['mem', 'Form Membership'], ['pt', 'Form PT 1-1'], ['trial', 'Form học thử miễn phí']];
   var OPTS = { found: [['A', 'Lớp A'], ['B', 'Lớp B']], gt: [['am', 'Sáng'], ['pm', 'Tối']], trial: [['am', 'Sáng'], ['pm', 'Tối']] };
-  var PAYS = [['cod', 'Thanh toán khi nhận hàng (COD)'], ['bank', 'Chuyển khoản ngân hàng (VietQR)'], ['momo', 'Ví MoMo / ZaloPay']];
+  var PAYS = [['cod', 'Thanh toán khi nhận hàng (COD)'], ['bank', 'Chuyển khoản ngân hàng (VietQR)'], ['momo', 'Ví MoMo (cổng MoMo nếu đã bật ở Thanh toán online, không thì quét mã VietQR)'],
+    ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chỉ hiện khi đã bật VNPay ở Thanh toán online']];
   var FIELD_MODES = [['optional', 'Không bắt buộc'], ['required', 'Bắt buộc'], ['hidden', 'Ẩn']];
   var PDP = [['videos', 'Video trong bộ ảnh'], ['trust', 'Dòng cam kết (giao toàn quốc, đổi trả…)'], ['pay', 'Logo phương thức thanh toán'], ['fit', 'Gợi ý chọn size'],
     ['stock', 'Báo “chỉ còn N sản phẩm”'], ['ship', 'Ngày giao dự kiến'], ['feats', 'Điểm nổi bật'], ['set', 'Gợi ý “Hoàn thiện bộ trang phục”'], ['faq', 'Câu hỏi thường gặp'],
@@ -279,7 +280,8 @@
   function renderCheckout(focusSel) {
     var box = $('[data-ck-box]'); if (!box) return;
     var ck = draft('shop').checkout || {}, pay = ck.pay || {};
-    var onN = PAYS.filter(function (p) { return pay[p[0]]; }).length;
+    // VNPay chỉ có khi đã cài cổng → luôn phải còn ít nhất 1 trong COD / chuyển khoản / MoMo
+    var onN = PAYS.filter(function (p) { return p[0] !== 'vnpay' && pay[p[0]] !== false; }).length;
     var sel = function (k, label, modes, hint) {
       return '<label class="field"><span class="field__label">' + esc(label) + '</span><select data-ck="' + k + '">' + modes.map(function (m) {
         return '<option value="' + m[0] + '"' + (ck[k] === m[0] ? ' selected' : '') + '>' + esc(m[1]) + '</option>'; }).join('') + '</select>' +
@@ -287,7 +289,7 @@
     };
     box.innerHTML = '<p class="field__label">Cách thanh toán khách được chọn</p>' +
       '<div class="ck-pay">' + PAYS.map(function (p) {
-        var on = !!pay[p[0]], last = on && onN === 1;
+        var on = pay[p[0]] !== false, last = on && p[0] !== 'vnpay' && onN === 1;
         return '<label class="check set-switch' + (last ? ' is-locked' : '') + '"' + (last ? ' title="Cần ít nhất một cách thanh toán"' : '') + '>' +
           '<input type="checkbox" data-ck-pay="' + p[0] + '"' + (on ? ' checked' : '') + (last ? ' disabled aria-describedby="ckPayNote"' : '') + '>' +
           '<span class="switch__ui" aria-hidden="true"></span><span>' + esc(p[1]) + '</span></label>';
@@ -796,6 +798,10 @@
           '<label class="field"><span class="field__label">Nội dung</span><textarea rows="11" maxlength="4000" data-tpl-f="body" spellcheck="false">' + esc(d.body || '') + '</textarea></label>' +
           '<p class="field__hint">Mỗi dòng một ý. ' + (G === 'templates' ? 'Dòng dạng “Nhãn: {biến}” sẽ in đậm phần giá trị. ' : '') +
             '<strong>Dòng có {biến} mà biến nào cũng trống</strong> (vd khách không nhập email) <strong>sẽ tự bỏ</strong> khi gửi.</p>' +
+          (G === 'customer' ? '<details class="tpl-en"><summary>Bản tiếng Anh — AI tự dịch, gửi cho khách đặt bằng tiếng Anh</summary>' +
+            (d.subjectEn && d.bodyEn ? '<p class="field__label">Tiêu đề</p><p>' + esc(d.subjectEn) + '</p><p class="field__label">Nội dung</p><pre class="tpl-en__body">' + esc(d.bodyEn) + '</pre>'
+              : '<p class="field__hint">Chưa có bản tiếng Anh (AI đang dịch hoặc chưa cài khóa ở <a href="#/cms-ai">Tiếng Anh (AI)</a>) — khách đặt bằng tiếng Anh tạm nhận bản tiếng Việt.</p>') +
+            '<p class="field__hint">Sửa mẫu tiếng Việt rồi bấm Lưu là AI dịch lại bản này.</p></details>' : '') +
           '<div class="tpl__vars"><span class="field__label">Bấm để chèn biến vào chỗ con trỏ</span><div class="tpl__chips">' + (vars ? vars.map(function (v) {
             var hint = VAR_HINT[v] || '';
             return '<button type="button" class="tpl-var" data-tpl-var="' + esc(v) + '" title="' + esc(hint + (v === 'slip' ? ' — cần “Địa chỉ website”' : '')) + '">{' + esc(v) + '}' + (hint ? '<small>' + esc(hint) + '</small>' : '') + '</button>';

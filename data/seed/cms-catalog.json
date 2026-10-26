@@ -19367,6 +19367,235 @@
    "label": "Nhận tại phòng tập (cách giao)",
    "vi": "Nhận tại phòng tập",
    "order": 63
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "ATM / Visa / Mastercard card (VNPay)",
+   "key": "shop.pay.vnpay",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "label": "Cách thanh toán — thẻ (VNPay): tên (chỉ hiện khi cổng VNPay bật)",
+   "vi": "Thẻ ATM / Visa / Mastercard (VNPay)"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "You'll be taken to VNPay to pay securely",
+   "key": "shop.pay.vnpaySub",
+   "section": "shop.checkout",
+   "type": "text",
+   "label": "Cách thanh toán — thẻ (VNPay): dòng mô tả",
+   "vi": "Chuyển sang cổng VNPay để thanh toán an toàn"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": null,
+   "key": "shop.checkout.11",
+   "section": "shop.checkout",
+   "type": "label",
+   "label": "Chữ phương thức thanh toán — thẻ (VNPay)",
+   "vi": "VISA · MASTERCARD · ATM",
+   "itemLabel": "Nhãn góc ảnh"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "You'll be taken to MoMo to pay — no QR scan",
+   "key": "shop.pay.momoGo",
+   "section": "shop.checkout",
+   "type": "text",
+   "label": "Cách thanh toán — ví MoMo: dòng mô tả khi cổng MoMo bật (thay cho \"Quét mã sau khi đặt\")",
+   "vi": "Chuyển sang MoMo để thanh toán (không cần quét mã)"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": "Online payment",
+   "key": "shop.success.online",
+   "section": "shop.success",
+   "type": "label",
+   "label": "Tiêu đề khung thanh toán online (đơn trả bằng thẻ / ví MoMo)",
+   "vi": "Thanh toán online"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": "We couldn't open the payment gateway — you can pay again from your confirmation.",
+   "key": "shop.success.payerr",
+   "section": "shop.success",
+   "type": "text",
+   "label": "Báo khi chưa mở được cổng thanh toán",
+   "vi": "Chưa mở được cổng thanh toán — bạn có thể thanh toán lại từ phiếu xác nhận."
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "ATM / Visa / Mastercard card (VNPay)",
+   "key": "global.slip.pay.vnpay",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Cách thanh toán — thẻ (VNPay)",
+   "vi": "Thẻ ATM / Visa / Mastercard (VNPay)",
+   "order": 70
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Paid via",
+   "key": "global.slip.paidvia",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Nhãn dòng đã thanh toán qua cổng / chuyển khoản",
+   "vi": "Đã thanh toán qua",
+   "order": 71
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pay online",
+   "key": "global.slip.payonline",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Tiêu đề khung nút thanh toán online",
+   "vi": "Thanh toán online",
+   "order": 72
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pay by card (VNPay)",
+   "key": "global.slip.paybtn.vnpay",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Nút thanh toán bằng thẻ (VNPay)",
+   "vi": "Thanh toán bằng thẻ (VNPay)",
+   "order": 73
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pay with MoMo",
+   "key": "global.slip.paybtn.momo",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Nút thanh toán bằng ví MoMo",
+   "vi": "Thanh toán bằng ví MoMo",
+   "order": 74
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Redirecting to the payment gateway…",
+   "key": "global.slip.paygo",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Màn chờ chuyển sang cổng thanh toán",
+   "vi": "Đang chuyển sang cổng thanh toán…",
+   "order": 75
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "The payment didn't go through. You can try again with the buttons below.",
+   "key": "global.slip.payfail",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Báo thanh toán chưa thành công (quay về từ cổng)",
+   "vi": "Thanh toán chưa thành công. Bạn có thể thử lại bằng các nút bên dưới.",
+   "order": 76
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Couldn't open the payment gateway, please try again.",
+   "key": "global.slip.payerr",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Báo khi bấm nút thanh toán mà chưa mở được cổng",
+   "vi": "Chưa mở được cổng thanh toán, vui lòng thử lại.",
+   "order": 77
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Payment successful — thank you!",
+   "key": "global.slip.payok",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Báo thanh toán thành công (quay về từ cổng)",
+   "vi": "Thanh toán thành công — cảm ơn bạn!",
+   "order": 78
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Waiting for payment confirmation…",
+   "key": "global.slip.paywait",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Báo đang chờ cổng xác nhận thanh toán",
+   "vi": "Đang chờ xác nhận thanh toán…",
+   "order": 79
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "You cancelled the payment.",
+   "key": "global.slip.paycancel",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Báo khách đã hủy thanh toán ở cổng",
+   "vi": "Bạn đã hủy thanh toán.",
+   "order": 80
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "✓ Payment received — thank you!",
+   "key": "global.slip.received",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Thay mã QR khi đã nhận tiền (tự xác nhận / cổng báo về)",
+   "vi": "✓ Đã nhận tiền — cảm ơn bạn!",
+   "order": 81
   }
  ],
  "media": [
@@ -24207,6 +24436,17 @@
      "links": [],
      "lists": [],
      "title": "shop.checkout.7"
+    },
+    {
+     "id": "4",
+     "fields": [
+      "shop.checkout.11"
+     ],
+     "media": [],
+     "icons": [],
+     "links": [],
+     "lists": [],
+     "title": "shop.checkout.11"
     }
    ]
   },
@@ -29843,7 +30083,7 @@
  "palette": [
   {
    "hex": "#FFFFFF",
-   "n": 565,
+   "n": 569,
    "pages": [
     "home",
     "course",
@@ -29965,6 +30205,17 @@
    "group": "neutral"
   },
   {
+   "hex": "#1C9B52",
+   "n": 8,
+   "pages": [
+    "home",
+    "course",
+    "shop",
+    "global"
+   ],
+   "group": "other"
+  },
+  {
    "hex": "#E6E6E6",
    "n": 8,
    "pages": [
@@ -29985,17 +30236,6 @@
     "services"
    ],
    "group": "neutral"
-  },
-  {
-   "hex": "#1C9B52",
-   "n": 7,
-   "pages": [
-    "home",
-    "course",
-    "shop",
-    "global"
-   ],
-   "group": "other"
   },
   {
    "hex": "#111111",
@@ -30032,6 +30272,15 @@
     "course",
     "shop",
     "services"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#15181C",
+   "n": 7,
+   "pages": [
+    "shop",
+    "global"
    ],
    "group": "neutral"
   },
@@ -30096,14 +30345,6 @@
    "group": "neutral"
   },
   {
-   "hex": "#15181C",
-   "n": 5,
-   "pages": [
-    "shop"
-   ],
-   "group": "neutral"
-  },
-  {
    "hex": "#2EC27E",
    "n": 4,
    "pages": [
@@ -30135,6 +30376,15 @@
     "shop"
    ],
    "group": "neutral"
+  },
+  {
+   "hex": "#17703C",
+   "n": 4,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "other"
   },
   {
    "hex": "#555555",
@@ -30179,6 +30429,15 @@
     "services"
    ],
    "group": "neutral"
+  },
+  {
+   "hex": "#A50064",
+   "n": 3,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "warm"
   },
   {
    "hex": "#19222C",
@@ -30300,7 +30559,15 @@
    "group": "other"
   },
   {
-   "hex": "#A50064",
+   "hex": "#1A1F71",
+   "n": 2,
+   "pages": [
+    "shop"
+   ],
+   "group": "other"
+  },
+  {
+   "hex": "#EB001B",
    "n": 2,
    "pages": [
     "shop"
@@ -30326,20 +30593,30 @@
    "group": "neutral"
   },
   {
+   "hex": "#005BAA",
+   "n": 2,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "other"
+  },
+  {
+   "hex": "#9B261F",
+   "n": 2,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "warm"
+  },
+  {
    "hex": "#444444",
    "n": 2,
    "pages": [
     "global"
    ],
    "group": "neutral"
-  },
-  {
-   "hex": "#17703C",
-   "n": 2,
-   "pages": [
-    "global"
-   ],
-   "group": "other"
   },
   {
    "hex": "#EDE9E3",
@@ -30510,22 +30787,6 @@
    "group": "other"
   },
   {
-   "hex": "#1A1F71",
-   "n": 1,
-   "pages": [
-    "shop"
-   ],
-   "group": "other"
-  },
-  {
-   "hex": "#EB001B",
-   "n": 1,
-   "pages": [
-    "shop"
-   ],
-   "group": "warm"
-  },
-  {
    "hex": "#F79E1B",
    "n": 1,
    "pages": [
@@ -30540,6 +30801,22 @@
     "global"
    ],
    "group": "warm"
+  },
+  {
+   "hex": "#7F7F7F",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#0F1114",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
   }
  ]
 }

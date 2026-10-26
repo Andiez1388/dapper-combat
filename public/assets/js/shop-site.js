@@ -44,6 +44,8 @@ function DCshopSubmit(ok, fail) {
   }).then(function (res) {
     DCS.busy = false;
     window.DC_LAST_ORDER = res;
+    // thanh toán qua cổng (VNPay / MoMo): làm trống giỏ rồi chuyển sang cổng; cổng lỗi (payError) → màn thành công + nút thanh toán lại
+    if (res.payUrl) { dcPayRedirect(res.payUrl); return; }
     ok();                       // màn "Đặt hàng thành công" chụp lại giỏ ngay trong lệnh này
     cart = {}; sync();          // rồi làm trống giỏ (cả bản lưu)
     if (location.pathname !== '/shop/checkout') history.replaceState(null, '', '/shop/checkout');
@@ -60,6 +62,17 @@ function DCshopSubmit(ok, fail) {
     }
     dcOrderErr(err.message);
   });
+}
+
+function dcPayRedirect(url) {
+  try {
+    var rm = document.getElementById('v3Remember'), f = document.getElementById('checkoutForm');
+    if (rm && rm.checked && f) { var o = {}; V3U_F.forEach(function (k) { var i = f.querySelector('[name="' + k + '"]'); if (i) o[k] = i.value.trim(); }); localStorage.setItem('dc_ship', JSON.stringify(o)); }
+    else if (rm) localStorage.removeItem('dc_ship');
+  } catch (e) {}
+  cart = {}; sync();
+  if (DC.slip) DC.slip.goOverlay(DC.lang());
+  setTimeout(function () { location.href = url; }, 150);
 }
 
 /* ---- URL: /shop[?cat=<danh mục>] · /shop/<tên-sản-phẩm> · /shop/checkout ---- */
@@ -159,6 +172,15 @@ v3okRender = function () {
   // phiếu xác nhận cho khách: tải ảnh / xem & in (lượt tải hiện ở /admin)
   var act = document.querySelector('#v3Ok .v3ok-actions'), last = window.DC_LAST_ORDER;
   if (act && last && last.slip && DC.slip) act.insertAdjacentHTML('beforebegin', DC.slip.box(last.slip, DC.lang()));
+  // thanh toán online / chuyển khoản tự xác nhận
+  var d = window.V3OK && V3OK.d, po = DC.payOnline();
+  if (!d || !last || !last.slip || !DC.slip) return;
+  if (d.paid) { var q = document.querySelector('#v3Ok .v3ok-qr'); if (q) q.outerHTML = '<p class="dc-paid-ok">' + DC.esc(DC.tx('global.slip.received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!')) + '</p>'; return; }
+  var onPaid = function () { if (window.V3OK && V3OK.d === d) { d.paid = true; v3okRender(); } };
+  var alive = function () { var sc = document.getElementById('success'); return !!(sc && sc.classList.contains('active') && window.V3OK && V3OK.d === d); };
+  var gw = d.pay === 'vnpay' || (d.pay === 'momo' && po.momo);
+  if (gw) DC.slip.live(document.getElementById('dcOkPay'), last.slip, DC.lang(), { onPaid: onPaid, poll: po.auto, alive: alive });
+  else if (po.auto && (d.pay === 'bank' || d.pay === 'momo')) DC.slip.live(null, last.slip, DC.lang(), { buttons: false, poll: true, onPaid: onPaid, alive: alive });
 };
 
 /* giao hỏa tốc tắt trong /admin → Thiết lập → Bán hàng: bỏ lựa chọn này ở trang thanh toán */
@@ -179,6 +201,25 @@ if (!DC.setting('shop.expressEnabled', true)) {
   var off = Object.keys(SEL).filter(function (k) { return pdp[k] === false; }).map(function (k) { return SEL[k]; });
   if (off.length) document.head.insertAdjacentHTML('beforeend', '<style id="dc-pdp">' + off.join(',') + '{display:none!important}</style>');
 })();
+
+/* thanh toán online (/admin → Thiết lập → Thanh toán online): lựa chọn thẻ (VNPay) + logo thẻ chỉ hiện khi cổng VNPay bật;
+   cổng MoMo bật → lựa chọn MoMo chuyển sang MoMo để trả (không quét mã) */
+(function () {
+  var po = DC.payOnline(), ck = DC.setting('shop.checkout', null) || {};
+  var vn = po.vnpay && !(ck.pay && ck.pay.vnpay === false);
+  var opt = document.querySelector('#payOpts [data-pay-opt="vnpay"]');
+  if (opt) { if (vn) opt.style.removeProperty('display'); else opt.style.setProperty('display', 'none', 'important'); var i = opt.querySelector('input'); if (i) { i.disabled = !vn; if (!vn) i.checked = false; } }
+  document.querySelectorAll('.pay-methods [data-pay="vnpay"], .pay-badges [data-pay="vnpay"]').forEach(function (el) { if (vn) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important'); });
+  if (!po.momo) return;
+  var momoSub = function () {
+    var i = document.querySelector('#payOpts input[value="momo"]'), sub = i && i.closest('.pay-opt').querySelector('.po-sub');
+    if (sub) sub.textContent = DC.tx('shop.pay.momoGo', 'Chuyển sang MoMo để thanh toán (không cần quét mã)', "You'll be taken to MoMo to pay — no QR scan");
+  };
+  momoSub();
+  var _al = applyLang; applyLang = function () { _al.apply(this, arguments); momoSub(); };
+})();
+// đóng màn đặt hàng thành công → thôi theo dõi thanh toán
+document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-v3okclose]') && window.DC_LAST_ORDER && DC.slip) DC.slip.unwatch(DC_LAST_ORDER.slip); }, true);
 
 /* trang thanh toán: phương thức thanh toán đang nhận, ô email / phường xã / ghi chú bắt buộc hoặc ẩn (/admin → Thiết lập → Bán hàng) */
 (function () {

@@ -494,7 +494,7 @@ function shopRules() {
   const sh = settings.all().shop;
   return { freeShip: sh.freeShip, fee: sh.shipFee, express: sh.expressFee, expressOn: sh.expressEnabled, expressHcmOnly: sh.expressHcmOnly !== false };
 }
-const PAY = ['cod', 'bank', 'momo'];
+const PAY = ['cod', 'bank', 'momo', 'vnpay'];
 const ORDER_STATUS = ['new', 'confirmed', 'shipping', 'done', 'cancelled'];
 // giao hỏa tốc chỉ trong TP.HCM (Thiết lập → Bán hàng); trang Shop dùng đúng phép thử này (DC.isHcm)
 const isHcm = c => /ho\s*chi\s*minh|hcm|sai\s*gon/i.test(String(c || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd'));
@@ -614,7 +614,7 @@ function priceOrder(body, req) {
   return { items, subtotal, discount, shipping, ship, promo: promo ? promoCode : '', total: Math.max(0, subtotal - discount) + shipping };
 }
 
-router.post('/orders', limit('order', 10), (req, res) => {
+router.post('/orders', limit('order', 10), async (req, res) => {
   const b = req.body || {};
   const c = b.customer || {};
   const customer = {
@@ -631,6 +631,9 @@ router.post('/orders', limit('order', 10), (req, res) => {
   if (ck.email === 'required' && !customer.email) return bad('Vui lòng nhập email', 'Please enter your email');
   if (ck.ward === 'required' && customer.ward.length < 2) return bad('Vui lòng nhập phường / xã', 'Please enter your ward');
   if (ck.note === 'required' && customer.note.length < 2) return bad('Vui lòng nhập ghi chú cho đơn hàng', 'Please add an order note');
+  // VNPay: chỉ khi cổng đã bật; MoMo: cổng bật thì chuyển sang MoMo, không thì quét mã VietQR bằng app MoMo như trước
+  const online = payments.online(), gateway = b.pay === 'vnpay' ? 'vnpay' : b.pay === 'momo' && online.momo ? 'momo' : '';
+  if (b.pay === 'vnpay' && !online.vnpay) return bad('Thanh toán bằng thẻ đang tạm ngưng, vui lòng chọn cách khác', 'Card payment is unavailable, please choose another method');
   if (ck.pay[b.pay] === false) return bad('Phương thức thanh toán này đang tạm ngưng, vui lòng chọn cách khác', 'This payment method is unavailable, please choose another');
   const priced = priceOrder(b, req);
   if (priced.error) return res.status(priced.code || 400).json({ error: priced.error, ...(priced.promoError ? { promoError: true } : {}) });
@@ -647,7 +650,13 @@ router.post('/orders', limit('order', 10), (req, res) => {
   orders.unshift(order);
   writeFile('orders.json', orders);
   notify.order(order, r => setConfirm('orders.json', order.id, { email: r }));
-  res.status(201).json({ id: order.id, code: order.code, total: order.total, subtotal: order.subtotal, discount: order.discount, shipping: order.shipping, slip: slipRef(order) });
+  const out = { id: order.id, code: order.code, total: order.total, subtotal: order.subtotal, discount: order.discount, shipping: order.shipping, slip: slipRef(order) };
+  // thanh toán qua cổng: trả link để trang chuyển khách sang VNPay / MoMo (lỗi thì khách thanh toán lại từ phiếu xác nhận)
+  if (gateway) {
+    try { out.payUrl = await startPay(req, { x: order, file: 'orders.json', type: 'order' }, gateway, order.lang); }
+    catch (e) { out.payError = e.message; console.warn('[thanh toán ' + gateway + ']', e.message); }
+  }
+  res.status(201).json(out);
 });
 
 /* ─── Xác nhận cho khách: email + phiếu xác nhận tải về ───────────────────── */
@@ -719,7 +728,8 @@ router.get('/slip/:code', limit('slip', 60), (req, res) => {
   const { x, type } = f;
   if (req.query.view) setConfirm(f.file, x.id, { slip: { views: (x.confirm.slip.views || 0) + 1, viewedAt: Date.now() } });
   const pay = payInfo(type, x);
-  const base = { type, code: x.code, createdAt: x.createdAt, lang: x.lang, status: x.status, pay: pay ? { ...pay, qr: true } : null, paid: !!x.paid };
+  const base = { type, code: x.code, createdAt: x.createdAt, lang: x.lang, status: x.status, pay: pay ? { ...pay, qr: true } : null, paid: !!x.paid,
+    online: onlineFor(type, x), payments: (x.payments || []).map(p => ({ provider: p.provider, amount: p.amount, at: p.at })) };
   if (type === 'order') return res.json({ ...base, customer: x.customer, items: x.items, subtotal: x.subtotal, discount: x.discount, shipping: x.shipping, total: x.total, payMethod: x.pay, ship: x.ship, promo: x.promo || '',
     carrier: x.carrier || '', trackingCode: x.trackingCode || '' });
   res.json({ ...base, customer: { name: x.name, phone: x.phone, email: x.email, note: x.note }, program: x.programName || x.program, detail: x.detail, total: x.total, due: x.due, payName: x.payName, date: x.date });
@@ -754,6 +764,143 @@ router.post('/slip/:code/download', limit('slipdl', 30), (req, res) => {
   setConfirm(f.file, f.x.id, { slip: { downloads: (s.downloads || 0) + 1, firstAt: s.firstAt || now, lastAt: now } });
   res.json({ ok: true });
 });
+/* ─── Thanh toán online: SePay (tự xác nhận chuyển khoản), VNPay, MoMo — lib/payments.js ───────────────────── */
+const payments = require('../lib/payments');
+const KIND_OF = { order: 'orders', registration: 'registrations' };
+const alnum = code => String(code || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();   // #DC-871627 → DC871627 (nội dung chuyển khoản / mã giao dịch)
+const siteBase = req => ((settings.all().notify || {}).siteUrl || process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+// tìm đơn / đăng ký theo mã viết liền (DC871627, DCREG12345)
+function byAlnum(code) {
+  const c = alnum(code);
+  if (!c) return null;
+  for (const [file, type] of [['orders.json', 'order'], ['registrations.json', 'registration']]) {
+    const x = read(file, []).find(e => alnum(e.code) === c);
+    if (x) return { x, file, type };
+  }
+  return null;
+}
+// mã giao dịch gửi sang cổng: <mã đơn>T<thời gian> (mỗi lần bấm thanh toán là một mã mới — cổng không nhận trùng)
+// mã đơn (DC123456 / DCREG12345) không có chữ T; phần thời gian sau T chỉ gồm chữ số
+const refCode = ref => { const s = String(ref || ''), i = s.indexOf('T'); return i > 0 ? s.slice(0, i) : ''; };
+const newRef = code => code + 'T' + Date.now();
+// còn phải trả bao nhiêu (0 = đã trả / đã hủy / không cần trả trước)
+const owed = (type, x) => (x.paid || x.status === 'cancelled' ? 0 : dueOf(KIND_OF[type], x));
+// cổng khách còn dùng được cho đơn / đăng ký này
+function onlineFor(type, x) { const o = payments.online(); return owed(type, x) > 0 ? ['vnpay', 'momo'].filter(p => o[p]) : []; }
+// tạo link thanh toán ở cổng → url (lỗi thì ném, lời nhắn theo ngôn ngữ khách)
+async function startPay(req, f, provider, lang) {
+  const L = (vi, en) => (lang === 'en' ? en : vi);
+  if (!payments.online()[provider]) throw new Error(L('Cổng thanh toán này đang tắt', 'This payment method is unavailable'));
+  const amount = owed(f.type, f.x);
+  if (!amount) throw new Error(f.x.paid ? L('Đơn này đã thanh toán', 'This order is already paid') : L('Không có khoản nào cần thanh toán', 'Nothing to pay'));
+  const code = alnum(f.x.code), ref = newRef(code), base = siteBase(req);
+  const list = read(f.file, []), x = list.find(e => e.id === f.x.id);
+  x.payAttempts = (x.payAttempts || []).concat({ provider, ref, amount, at: Date.now() }).slice(-10);
+  writeFile(f.file, list);
+  if (provider === 'vnpay') return payments.vnpayUrl({ ref, amount, info: 'Thanh toan ' + code, ip: req.ip, returnUrl: base + '/api/pay/vnpay/return', lang });
+  return payments.momoCreate({ ref, amount, info: 'Dapper Combat ' + code, redirectUrl: base + '/api/pay/momo/return', ipnUrl: base + '/api/pay/momo/ipn', lang });
+}
+// giao dịch đã xử lý (cổng / SePay gửi lại nhiều lần) — data/pay-events.json
+function seenEvent(key) {
+  const list = read('pay-events.json', []);
+  if (list.includes(key)) return true;
+  writeFile('pay-events.json', [key].concat(list).slice(0, 5000));
+  return false;
+}
+// ghi nhận tiền về: { provider, ref?, code?, amount, txn } → 'paid' | 'already' | 'partial' | 'notfound' | 'amount' | 'dup'
+function confirmPay({ provider, ref, code, amount, txn }) {
+  const f = byAlnum(ref ? refCode(ref) : code);
+  if (!f) return 'notfound';
+  const list = read(f.file, []), x = list.find(e => e.id === f.x.id), kind = KIND_OF[f.type];
+  if (ref) {
+    const att = (x.payAttempts || []).find(a => a.ref === ref);
+    if (!att) return 'notfound';
+    if (Math.round(att.amount) !== Math.round(amount)) return 'amount';
+  }
+  if (txn && seenEvent(provider + ':' + txn)) return 'dup';
+  const NAME = { sepay: 'Chuyển khoản (tự xác nhận)', vnpay: 'VNPay', momo: 'MoMo' };
+  x.payments = (x.payments || []).concat({ provider, amount, at: Date.now(), txn: String(txn || '').slice(0, 60) });
+  let result;
+  if (x.paid) {
+    result = 'already';
+    x.history = (x.history || []).concat({ at: Date.now(), by: 'Tự động · ' + NAME[provider], note: 'Nhận thêm ' + vnd(amount) + ' sau khi đơn đã thanh toán — kiểm tra hoàn tiền nếu khách trả 2 lần' });
+  } else {
+    const got = x.payments.reduce((s, p) => s + (Number(p.amount) || 0), 0), due = dueOf(kind, x);
+    if (got >= due) { markPaid(kind, x, 'Tự động · ' + NAME[provider], got, NAME[provider] + (txn ? ' · mã GD ' + txn : '')); result = 'paid'; }
+    else { x.history = (x.history || []).concat({ at: Date.now(), by: 'Tự động · ' + NAME[provider], note: 'Nhận ' + vnd(amount) + ' — còn thiếu ' + vnd(due - got) }); result = 'partial'; }
+  }
+  writeFile(f.file, list);
+  notify.paid(f.type, x, { provider: NAME[provider], amount, txn, result });
+  return result;
+}
+const slipBack = (f, state) => `/phieu/${String(f.x.code).replace(/^#/, '')}?k=${f.x.confirm ? f.x.confirm.token : ''}&pay=${state}`;
+
+// khách bấm "Thanh toán bằng thẻ / MoMo" ở phiếu xác nhận
+router.post('/pay/:provider/create', limit('paycreate', 20), async (req, res) => {
+  const b = req.body || {}, provider = req.params.provider, lang = b.lang === 'en' ? 'en' : 'vi';
+  if (!['vnpay', 'momo'].includes(provider)) return res.status(404).json({ error: 'Not found' });
+  const f = bySlip(b.code, b.k);
+  if (!f) return res.status(404).json({ error: msg(req, 'Không tìm thấy phiếu', 'Confirmation not found') });
+  try { res.json({ url: await startPay(req, f, provider, lang) }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+// VNPay: khách quay về (kiểm tra chữ ký, ghi nhận nếu chưa có IPN — cùng kết quả, không ghi trùng)
+router.get('/pay/vnpay/return', (req, res) => {
+  const v = payments.vnpayVerify(req.query), f = v.ok ? byAlnum(refCode(v.ref)) : null;
+  if (!f) return res.redirect('/');
+  if (v.success) confirmPay({ provider: 'vnpay', ref: v.ref, amount: v.amount, txn: v.txn });
+  res.redirect(slipBack(f, v.success ? 'ok' : v.cancel ? 'cancel' : 'fail'));
+});
+// VNPay IPN: máy chủ VNPay báo kết quả (nguồn chính xác nhất)
+router.get('/pay/vnpay/ipn', (req, res) => {
+  const v = payments.vnpayVerify(req.query);
+  if (!v.ok || !v.tmn) return res.json({ RspCode: '97', Message: 'Invalid signature' });
+  const f = byAlnum(refCode(v.ref)), att = f && (f.x.payAttempts || []).find(a => a.ref === v.ref);
+  if (!att) return res.json({ RspCode: '01', Message: 'Order not found' });
+  if (Math.round(att.amount) !== v.amount) return res.json({ RspCode: '04', Message: 'invalid amount' });
+  if (!v.success) return res.json({ RspCode: '00', Message: 'Confirm Success' });   // giao dịch lỗi / bị hủy: đã nhận thông báo, không đổi đơn
+  if (f.x.paid && (f.x.payments || []).some(p => p.provider === 'vnpay' && p.txn === v.txn)) return res.json({ RspCode: '02', Message: 'Order already confirmed' });
+  const r = confirmPay({ provider: 'vnpay', ref: v.ref, amount: v.amount, txn: v.txn });
+  res.json(r === 'dup' ? { RspCode: '02', Message: 'Order already confirmed' } : { RspCode: '00', Message: 'Confirm Success' });
+});
+// MoMo IPN (POST JSON) → trả 204
+router.post('/pay/momo/ipn', (req, res) => {
+  const v = payments.momoVerify(req.body || {});
+  if (v.ok && v.success) confirmPay({ provider: 'momo', ref: v.ref, amount: v.amount, txn: v.txn });
+  res.status(204).end();
+});
+router.get('/pay/momo/return', (req, res) => {
+  const v = payments.momoVerify(req.query), f = v.ok ? byAlnum(refCode(v.ref)) : null;
+  if (!f) return res.redirect('/');
+  if (v.success) confirmPay({ provider: 'momo', ref: v.ref, amount: v.amount, txn: v.txn });
+  res.redirect(slipBack(f, v.success ? 'ok' : v.cancel ? 'cancel' : 'fail'));
+});
+// SePay: tài khoản ngân hàng có tiền vào → tìm mã đơn trong nội dung chuyển khoản
+router.post('/pay/sepay/webhook', (req, res) => {
+  if (!payments.sepayAuth(req.headers.authorization)) return res.status(401).json({ success: false });
+  const b = req.body || {};
+  if (b.transferType === 'in' && Number(b.transferAmount) > 0) {
+    const code = payments.codeInContent(b.content, b.description, b.code);
+    if (code) confirmPay({ provider: 'sepay', code, amount: Math.round(Number(b.transferAmount)), txn: b.id != null ? String(b.id) : b.referenceCode });
+  }
+  res.json({ success: true });   // luôn trả thành công (giao dịch không phải của web cũng vậy) để SePay không gửi lại
+});
+// /admin: thử cấu hình cổng (VNPay: link thử 10.000đ không gắn đơn; MoMo: gọi API tạo giao dịch thử)
+router.post('/pay/test/:provider', adminOnly, async (req, res) => {
+  const p = req.params.provider, ready = payments.ready(), base = siteBase(req);
+  try {
+    if (p === 'vnpay') {
+      if (!ready.vnpay) return res.status(400).json({ error: 'Chưa bật / chưa nhập đủ mã website (TMN) và chuỗi bí mật VNPay.' });
+      return res.json({ url: payments.vnpayUrl({ ref: newRef('TEST'), amount: 10000, info: 'Thu cau hinh Dapper Combat', ip: req.ip, returnUrl: base + '/api/pay/vnpay/return', lang: 'vi' }) });
+    }
+    if (p === 'momo') {
+      if (!ready.momo) return res.status(400).json({ error: 'Chưa bật / chưa nhập đủ Partner code, Access key, Secret key MoMo.' });
+      return res.json({ url: await payments.momoCreate({ ref: newRef('TEST'), amount: 10000, info: 'Thu cau hinh Dapper Combat', redirectUrl: base + '/admin#/set-payments', ipnUrl: base + '/api/pay/momo/ipn', lang: 'vi' }) });
+    }
+    res.status(404).json({ error: 'Not found' });
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
+
 // /admin: gửi lại email xác nhận cho khách
 for (const [name, file, kind] of [['orders', 'orders.json', 'order'], ['registrations', 'registrations.json', 'registration']]) {
   router.post(`/${name}/:id/confirm-email`, staffOk, async (req, res) => {

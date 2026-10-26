@@ -36,7 +36,29 @@ cv3Render = function () {
   // phiếu xác nhận cho khách ở bước cuối
   var body = CV3.step === 3 && CV3.done && CV3.done.slip && DC.slip && document.querySelector('#cv3Reg .cv3-body');
   if (body) body.insertAdjacentHTML('beforeend', DC.slip.box(CV3.done.slip, DC.lang()));
+  if (body && CV3.done.due > 0) dcRegPay(body);
 };
+/* còn tiền cọc / học phí cần trả: nút "Thanh toán bằng thẻ (VNPay)" / "ví MoMo" (cổng đang bật) và
+   tự đổi mã QR thành "Đã nhận tiền" khi chuyển khoản được xác nhận (SePay) */
+function dcRegPay(body) {
+  var d = CV3.done, po = DC.payOnline();
+  var recv = function () {
+    var bd = document.querySelector('#cv3Reg .cv3-body'), q = bd && bd.querySelector('.cv3-qr'), b = document.getElementById('dcRegPay'), sb = bd && bd.querySelector('.dc-slipbox');
+    var h = '<p class="dc-paid-ok">' + DC.esc(DC.tx('global.slip.received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!')) + '</p>';
+    if (b) b.remove();
+    if (q) q.outerHTML = h; else if (sb) sb.insertAdjacentHTML('beforebegin', h);
+  };
+  if (d.paidLive) { recv(); return; }
+  if (!po.vnpay && !po.momo && !po.auto) return;
+  var q = body.querySelector('.cv3-qr'), slipBox = body.querySelector('.dc-slipbox');
+  var html = '<div class="dc-paylive" id="dcRegPay"></div>';
+  if (q) q.insertAdjacentHTML('afterend', html); else if (slipBox) slipBox.insertAdjacentHTML('beforebegin', html); else body.insertAdjacentHTML('beforeend', html);
+  DC.slip.live(document.getElementById('dcRegPay'), d.slip, DC.lang(), {
+    buttons: po.vnpay || po.momo, poll: po.auto,
+    alive: function () { return CV3.open && CV3.step === 3 && CV3.done === d; },
+    onPaid: function () { d.paidLive = true; if (CV3.done === d && CV3.step === 3) recv(); },
+  });
+}
 
 /* học phí, gói Group Training, lịch tập theo /admin → Thiết lập → Học phí & lịch tập */
 var DCC = {

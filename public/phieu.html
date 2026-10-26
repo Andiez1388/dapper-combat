@@ -29,7 +29,12 @@
   .sl-msg{padding:3rem 1rem;text-align:center;color:#555;}
   .sl-msg button{margin-top:1rem;min-height:44px;padding:0.7rem 1.4rem;border:1px solid #0b0b0b;background:#fff;font-family:var(--f-mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;}
   .sl-err{margin:0 0 1.2rem;}
-  @media print{.pg-nav,.sl-actions,.sl-err{display:none!important;}body{background:#fff;}main{padding:0;}.sl-card{box-shadow:none!important;border:1px solid #ddd;}}
+  .sl-banner{margin:0 0 1.2rem;padding:0.9rem 1rem;border-left:3px solid #6b6b6b;background:#fff;font-size:0.92rem;line-height:1.55;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+  .sl-banner.ok{border-left-color:#1C9B52;color:#17703c;}
+  .sl-banner.fail{border-left-color:var(--accent);color:#9b261f;}
+  .sl-banner.wait{border-left-color:#c9a227;}
+  .sl-pay{margin:0 0 1.2rem;}
+  @media print{.pg-nav,.sl-actions,.sl-err,.sl-banner,.sl-pay{display:none!important;}body{background:#fff;}main{padding:0;}.sl-card{box-shadow:none!important;border:1px solid #ddd;}}
 </style>
 <link rel="stylesheet" href="/assets/css/site.css">
 <script src="/assets/js/site.js"></script>
@@ -48,6 +53,8 @@
     <button type="button" class="pr" id="slPrint"></button>
   </div>
   <p class="dc-form-err sl-err" id="slErr" role="alert" hidden></p>
+  <div class="sl-banner" id="slBanner" role="status" aria-live="polite" hidden></div>
+  <div class="sl-pay" id="slPay" hidden></div>
   <div id="slip"><p class="sl-msg">…</p></div>
 </main>
 <script>
@@ -56,7 +63,9 @@
   var qs = new URLSearchParams(location.search);
   var ref = { code: decodeURIComponent(location.pathname.split('/').pop() || ''), k: qs.get('k') || '' };
   var staff = qs.get('staff') === '1';   // /admin mở phiếu: không tính là lượt khách xem
-  var data = null, lang = 'vi', failed = null;
+  var payRet = /^(ok|fail|cancel)$/.test(qs.get('pay') || '') ? qs.get('pay') : '';   // quay về từ cổng thanh toán
+  if (qs.has('pay')) { qs.delete('pay'); try { history.replaceState(null, '', location.pathname + (qs.toString() ? '?' + qs.toString() : '')); } catch (e) {} }
+  var data = null, lang = 'vi', failed = null, banner = '', waiting = false;
   var L = function (k, vi, en) { return DC.x('global.slip.' + k, lang === 'en' ? 1 : 0, lang === 'en' ? en : vi); };
   function render() {
     document.documentElement.lang = lang;
@@ -67,6 +76,26 @@
     document.getElementById('slPrint').textContent = L('btn.print', 'In / lưu PDF', 'Print / save as PDF');
     document.getElementById('slActions').hidden = false;
     document.title = DC.slip.model(data, lang).title + ' ' + data.code + ' — Dapper Combat';
+    renderPay();
+  }
+  /* thanh toán online: thông báo kết quả từ cổng + nút thanh toán (VNPay / MoMo) khi còn cần trả */
+  function renderPay() {
+    var b = document.getElementById('slBanner'), p = document.getElementById('slPay');
+    var msg = { ok: ['ok', L('payok', 'Thanh toán thành công — cảm ơn bạn!', 'Payment successful — thank you!')],
+      wait: ['wait', L('paywait', 'Đang chờ xác nhận thanh toán…', 'Waiting for payment confirmation…')],
+      fail: ['fail', L('payfail', 'Thanh toán chưa thành công. Bạn có thể thử lại bằng các nút bên dưới.', 'The payment didn\'t go through. You can try again with the buttons below.')],
+      cancel: ['', L('paycancel', 'Bạn đã hủy thanh toán.', 'You cancelled the payment.')],
+      received: ['ok', L('received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!')] }[banner];
+    b.hidden = !msg; b.className = 'sl-banner' + (msg && msg[0] ? ' ' + msg[0] : ''); b.textContent = msg ? msg[1] : '';
+    var btns = data && !data.paid ? DC.slip.payBtns(ref, data.online, lang) : '';
+    p.innerHTML = btns; p.hidden = !btns;
+  }
+  // đã nhận tiền (cổng báo về / chuyển khoản tự xác nhận) → vẽ lại phiếu: nhãn "Đã thanh toán", bỏ mã QR
+  function paidNow(d) { data = d; if (banner !== 'ok') banner = waiting ? 'ok' : 'received'; waiting = false; render(); }
+  function watch() {
+    if (!data || data.paid) return;
+    if (payRet === 'ok') { waiting = true; banner = 'wait'; renderPay(); DC.slip.watch(ref, 3000, 60 * 1000, paidNow); return; }   // cổng báo về có thể chậm vài giây
+    if (DC.payOnline().auto && data.pay) DC.slip.watch(ref, 5000, 15 * 60 * 1000, paidNow);            // chuyển khoản tự xác nhận
   }
   // không tải được: link sai / hết hiệu lực (404) khác với mất mạng (cho thử lại)
   function fail() {
@@ -82,7 +111,10 @@
       data = d;
       var want; try { want = localStorage.getItem('dc_lang'); } catch (e) {}
       lang = want === 'en' || want === 'vi' ? want : (d.lang || 'vi');
+      if (payRet === 'ok') banner = d.paid ? 'ok' : 'wait';
+      else if (payRet) banner = payRet;
       render();
+      watch();
     }, function (err) {
       failed = err && err.status === 404 ? 404 : (err && err.status) || 0;
       try { var want = localStorage.getItem('dc_lang'); if (want === 'en' || want === 'vi') lang = want; } catch (e) {}

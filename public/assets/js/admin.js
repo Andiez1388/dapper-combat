@@ -30,8 +30,8 @@
     consults: [['new', 'Mới'], ['contacted', 'Đã liên hệ'], ['surveyed', 'Đã khảo sát'], ['quoted', 'Đã báo giá'], ['won', 'Chốt hợp đồng'], ['lost', 'Không thành']],
   };
   var TONE = { 'new': 'new', done: 'done', enrolled: 'done', won: 'done', cancelled: 'off', lost: 'off' };
-  var PAY = { cod: 'COD (thu tiền khi nhận)', bank: 'Chuyển khoản', momo: 'MoMo/ZaloPay' };
-  var PAY_SHORT = { cod: 'COD', bank: 'Chuyển khoản', momo: 'MoMo/ZaloPay' };
+  var PAY = { cod: 'COD (thu tiền khi nhận)', bank: 'Chuyển khoản', momo: 'MoMo', vnpay: 'Thẻ / ATM (VNPay)' };
+  var PAY_SHORT = { cod: 'COD', bank: 'Chuyển khoản', momo: 'MoMo', vnpay: 'VNPay' };
   var SHIP = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc TP.HCM', pickup: 'Nhận tại phòng tập' };
   // nguồn đơn tạo tay (bán qua điện thoại / mạng xã hội / tại chỗ)
   var SOURCE = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
@@ -1229,8 +1229,13 @@
       '<p class="field__hint">' + (on ? 'Ghi nhận lúc ' + esc(fmtDate(x.paidAt)) + (x.paidBy ? ' · bởi ' + esc(x.paidBy) : '') + (Number(x.paidAmount) !== due && due ? ' · <strong>' + (Number(x.paidAmount) < due ? 'còn thiếu ' + esc(money(due - x.paidAmount)) : 'nhận dư ' + esc(money(x.paidAmount - due))) + '</strong>' : '')
         : awaitingPay(kind, x) ? 'Khách chưa thanh toán — bật khi đã nhận tiền (kiểm tra sao kê ngân hàng / MoMo).'
           : kind === 'orders' && x.pay === 'cod' ? 'Đơn COD tự ghi “Đã nhận tiền” khi chuyển sang “Hoàn tất”.' : 'Bật khi đã nhận tiền của khách.') + '</p>' +
+      // tiền về tự động (SePay / VNPay / MoMo)
+      (Array.isArray(x.payments) && x.payments.length ? '<p class="field__label">Tiền về tự động</p><ul class="paylog">' + x.payments.map(function (p) {
+        return '<li><strong>' + esc(PAY_SRC[p.provider] || p.provider) + '</strong> · ' + esc(money(p.amount)) + ' · ' + esc(fmtDate(p.at)) + (p.txn ? ' · mã GD ' + esc(p.txn) : '') + '</li>';
+      }).join('') + '</ul>' : '') +
       '</div>';
   }
+  var PAY_SRC = { sepay: 'Chuyển khoản (SePay tự xác nhận)', vnpay: 'VNPay', momo: 'MoMo' };
   var CARRIERS = ['GHN', 'GHTK', 'Viettel Post', 'J&T Express', 'Ninja Van', 'VNPost', 'Ahamove', 'Grab Express', 'Nhân viên giao'];
   function drawerHead(eyebrow, title, subHtml) {
     return '<header class="drawer__head"><div class="drawer__heading">' +

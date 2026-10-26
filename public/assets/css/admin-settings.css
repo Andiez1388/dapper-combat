@@ -382,3 +382,15 @@
 @media (max-width: 1023.98px) {
   .conf-row__act .btn--sm, .cf-act .btn--sm { min-height: var(--tap); }
 }
+
+/* mẫu email tiếng Anh (AI tự dịch) */
+.tpl-en { margin: 4px 0 14px; padding: 10px 12px; border: 1px dashed var(--line-2, #ccc); }
+.tpl-en summary { cursor: pointer; font-weight: 600; font-size: 13px; }
+.tpl-en__body { margin: 4px 0 8px; white-space: pre-wrap; font-family: inherit; font-size: 13px; line-height: 1.55; }
+
+/* Thanh toán online */
+.pay-steps { margin: 0 0 12px; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+.pay-url { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }
+.pay-url .field__label { flex: 0 0 100%; margin: 0; }
+.pay-url code { flex: 1 1 260px; min-width: 0; padding: 6px 8px; background: var(--paper, #f6f6f6); border: 1px solid var(--line, #e5e5e5); font-size: 12px; overflow-wrap: anywhere; }
+.paylog { margin: 4px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }

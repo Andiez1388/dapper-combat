@@ -159,6 +159,7 @@ function fixups() {
   auditFixups();
   audit2Fixups();
   audit3Fixups();
+  audit4Fixups();
 }
 /* ─── Đợt sửa 1 (rà soát trang công khai): chữ mới, chữ mặc định đổi, chữ bỏ ───────────── */
 // đổi chữ mặc định của trường đã có (giữ nguyên phần đã sửa trong /admin — nằm ở data/cms.json)
@@ -247,6 +248,29 @@ function audit3Fixups() {
   [['paid', 'Nhãn đã thanh toán (khi đã ghi nhận tiền)', 'Đã thanh toán', 'Paid'], ['carrier', 'Nhãn đơn vị vận chuyển', 'Đơn vị vận chuyển', 'Carrier'],
     ['tracking', 'Nhãn mã vận đơn', 'Mã vận đơn', 'Tracking code'], ['ship.pickup', 'Nhận tại phòng tập (cách giao)', 'Nhận tại phòng tập', 'Pick up at the gym']]
     .forEach(([k, label, vi, en], i) => newField({ key: 'global.slip.' + k, section: 'global.slip', page: 'global', type: 'label', label, vi, en, src: 'js', locate: false, order: 60 + i }));
+}
+/* ─── Đợt sửa 4: thanh toán online (thẻ ATM / Visa / Mastercard qua VNPay, ví MoMo qua cổng MoMo, tự xác nhận chuyển khoản) ─── */
+function audit4Fixups() {
+  const f = (key, section, type, label, vi, en, src) => newField({ key, section, type, label, vi, en, src: src || 'js', ...(src === 'html' ? {} : { locate: false }) });
+  f('shop.pay.vnpay', 'shop.checkout', 'subtitle', 'Cách thanh toán — thẻ (VNPay): tên (chỉ hiện khi cổng VNPay bật)', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', 'html');
+  f('shop.pay.vnpaySub', 'shop.checkout', 'text', 'Cách thanh toán — thẻ (VNPay): dòng mô tả', 'Chuyển sang cổng VNPay để thanh toán an toàn', "You'll be taken to VNPay to pay securely", 'html');
+  f('shop.checkout.11', 'shop.checkout', 'label', 'Chữ phương thức thanh toán — thẻ (VNPay)', 'VISA · MASTERCARD · ATM', null, 'html');
+  f('shop.pay.momoGo', 'shop.checkout', 'text', 'Cách thanh toán — ví MoMo: dòng mô tả khi cổng MoMo bật (thay cho "Quét mã sau khi đặt")', 'Chuyển sang MoMo để thanh toán (không cần quét mã)', "You'll be taken to MoMo to pay — no QR scan");
+  f('shop.success.online', 'shop.success', 'label', 'Tiêu đề khung thanh toán online (đơn trả bằng thẻ / ví MoMo)', 'Thanh toán online', 'Online payment');
+  f('shop.success.payerr', 'shop.success', 'text', 'Báo khi chưa mở được cổng thanh toán', 'Chưa mở được cổng thanh toán — bạn có thể thanh toán lại từ phiếu xác nhận.', "We couldn't open the payment gateway — you can pay again from your confirmation.");
+  [['pay.vnpay', 'Cách thanh toán — thẻ (VNPay)', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)'],
+    ['paidvia', 'Nhãn dòng đã thanh toán qua cổng / chuyển khoản', 'Đã thanh toán qua', 'Paid via'],
+    ['payonline', 'Tiêu đề khung nút thanh toán online', 'Thanh toán online', 'Pay online'],
+    ['paybtn.vnpay', 'Nút thanh toán bằng thẻ (VNPay)', 'Thanh toán bằng thẻ (VNPay)', 'Pay by card (VNPay)'],
+    ['paybtn.momo', 'Nút thanh toán bằng ví MoMo', 'Thanh toán bằng ví MoMo', 'Pay with MoMo'],
+    ['paygo', 'Màn chờ chuyển sang cổng thanh toán', 'Đang chuyển sang cổng thanh toán…', 'Redirecting to the payment gateway…'],
+    ['payfail', 'Báo thanh toán chưa thành công (quay về từ cổng)', 'Thanh toán chưa thành công. Bạn có thể thử lại bằng các nút bên dưới.', "The payment didn't go through. You can try again with the buttons below."],
+    ['payerr', 'Báo khi bấm nút thanh toán mà chưa mở được cổng', 'Chưa mở được cổng thanh toán, vui lòng thử lại.', "Couldn't open the payment gateway, please try again."],
+    ['payok', 'Báo thanh toán thành công (quay về từ cổng)', 'Thanh toán thành công — cảm ơn bạn!', 'Payment successful — thank you!'],
+    ['paywait', 'Báo đang chờ cổng xác nhận thanh toán', 'Đang chờ xác nhận thanh toán…', 'Waiting for payment confirmation…'],
+    ['paycancel', 'Báo khách đã hủy thanh toán ở cổng', 'Bạn đã hủy thanh toán.', 'You cancelled the payment.'],
+    ['received', 'Thay mã QR khi đã nhận tiền (tự xác nhận / cổng báo về)', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!']]
+    .forEach(([k, label, vi, en], i) => newField({ key: 'global.slip.' + k, section: 'global.slip', page: 'global', type: 'label', label, vi, en, src: 'js', locate: false, order: 70 + i }));
 }
 /* ─── Đợt sửa 2: chân trang sửa được (danh sách, link, nhóm Chính sách), biến giờ / lịch / thời gian giao, SEO tiếng Anh ─── */
 function setField(key, props) { const x = fieldBy.get(key); if (x) Object.assign(x, props); else console.warn('  ! thiếu trường', key); }

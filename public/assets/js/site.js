@@ -137,6 +137,8 @@
 
   /* mã VietQR thật (tài khoản cài ở /admin → Thanh toán): quét bằng app ngân hàng hoặc MoMo, có sẵn số tiền + nội dung */
   DC.pay = function () { return (window.__CMS && window.__CMS.p) || null; };
+  /* thanh toán online (/admin → Thiết lập → Thanh toán online): cổng VNPay / MoMo đã bật + cấu hình; auto = chuyển khoản tự xác nhận (SePay) */
+  DC.payOnline = function () { var o = DC.setting('shop.payOnline', null) || {}; return { vnpay: !!o.vnpay, momo: !!o.momo, auto: !!o.auto }; };
   DC.payQr = function (ref, amount) {
     var p = DC.pay();
     if (!p) return null;

@@ -144,8 +144,10 @@ lib/pages.js            Trang phụ (/trang/<slug>): lưu ở data/pages.json, l
 lib/settings.js         Thiết lập kinh doanh (phí giao, mã giảm giá, học phí, lịch tập, thương hiệu, thông báo) + biến giá
 lib/notify.js           Báo đơn mới qua Telegram / email + email xác nhận cho khách (theo mẫu trong Thiết lập)
 lib/maillog.js          Nhật ký gửi tin (data/maillog.json)
+lib/payments.js         Thanh toán online: SePay (webhook chuyển khoản), VNPay (HMAC-SHA512), MoMo (HMAC-SHA256)
 lib/translate.js        Tiếng Anh tự dịch bằng Claude (hàng đợi nền, bộ nhớ dịch data/translations.json)
 lib/paths.js            Thư mục dữ liệu (DC_DATA_DIR, mặc định data/) và ảnh tải lên (DC_UPLOAD_DIR)
+public/assets/js/admin-pay.js  Màn hình Thanh toán online: khóa SePay / VNPay / MoMo, đường dẫn webhook / IPN, nút thử
 public/assets/js/admin-ai.js   Màn hình Tiếng Anh (AI): khóa, trạng thái, dịch phần còn thiếu
 public/assets/js/admin-ops.js  Màn hình vận hành: Khách hàng, Hội viên, Tài khoản & phân quyền, Sao lưu
 tests/                  Kiểm tra tự động (npm test)
@@ -213,6 +215,21 @@ Mỗi sản phẩm (mục Sản phẩm) có:
 - **Ảnh phụ** cho trang chi tiết (tối đa 12), **video riêng** (thay 2 video chung) và **nhãn trên ảnh**: Tự động / Mới / Bán chạy / Không nhãn.
 - **Tên tiếng Anh**, **điểm nổi bật riêng** (trống = 4 điểm chung), **màu tự đặt tên** (ngoài 6 màu có sẵn; tên màu lưu kèm đơn hàng).
 - **SEO & đường dẫn:** tiêu đề / mô tả trên Google, đường dẫn `/shop/<đường-dẫn>` tự đặt. Đổi tên hoặc đường dẫn → link cũ tự chuyển (301) sang link mới.
+
+## Thanh toán online (`/admin` → Thiết lập → Thanh toán online)
+
+Tiền về là đơn hàng / đăng ký **tự chuyển “Đã nhận tiền”**, báo Telegram / email cho chủ shop, khách thấy “Đã thanh toán” trên màn hình đặt hàng và phiếu xác nhận. Ba cách độc lập:
+
+- **Chuyển khoản tự xác nhận — SePay:** khách vẫn quét mã VietQR (nội dung chuyển khoản = mã đơn, vd `DC123456`). SePay theo dõi tài khoản ngân hàng và gọi `POST /api/pay/sepay/webhook` (chứng thực `Authorization: Apikey <khóa>`). Chuyển thiếu → đơn ghi “còn thiếu”; giao dịch gửi lại không ghi 2 lần. Trong lúc khách mở màn hình có mã QR, trang tự kiểm tra và báo “Đã nhận tiền”.
+- **VNPay** (thẻ ATM, Visa / Mastercard, QR ngân hàng): chuẩn 2.1.0, chữ ký HMAC-SHA512. Khách chọn “Thẻ” ở trang thanh toán → sang VNPay → quay về phiếu xác nhận. Kết quả chính thức qua IPN `GET /api/pay/vnpay/ipn` (khai báo với VNPay). Có chế độ sandbox + nút “Tạo link thử”.
+- **MoMo** (ví MoMo): API v2 `captureWallet`, chữ ký HMAC-SHA256, IPN `POST /api/pay/momo/ipn`. Bật cổng MoMo thì lựa chọn “Ví MoMo” chuyển khách sang MoMo (tắt thì vẫn quét VietQR bằng app MoMo).
+- Khách chưa trả (hoặc hủy giữa chừng) có thể **thanh toán lại từ phiếu xác nhận**; đăng ký khóa học có nút thanh toán online ở bước cuối.
+- Mỗi lần thanh toán là một mã giao dịch mới `<mã đơn>T<thời gian>`; server kiểm tra chữ ký, số tiền, mã website, không xử lý trùng (`data/pay-events.json`). Khóa bí mật chỉ lưu trên máy chủ.
+- Cần **Địa chỉ website** (Thiết lập → Thông báo) để các cổng gọi về đúng tên miền; IPN cần web đã chạy trên mạng (HTTPS).
+
+## Email xác nhận tiếng Anh
+
+Khách đặt hàng / đăng ký bằng tiếng Anh nhận email tiếng Anh (giá, cách thanh toán, cách giao ghi bằng tiếng Anh). Có sẵn mẫu tiếng Anh; sửa mẫu tiếng Việt ở Thiết lập → Thông báo thì AI dịch lại (xem trong mục “Bản tiếng Anh” của từng mẫu). Chưa có bản tiếng Anh thì tạm gửi bản tiếng Việt.
 
 ## Tiếng Anh tự dịch (AI)
 

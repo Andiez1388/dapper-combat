@@ -20,7 +20,7 @@ function freePort() {
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function start() {
+async function start(extraEnv = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dc-test-'));
   const data = path.join(dir, 'data'), uploads = path.join(dir, 'uploads');
   fs.mkdirSync(data);
@@ -32,6 +32,8 @@ async function start() {
     JWT_SECRET: '', SITE_URL: '', TRUST_PROXY: '', TELEGRAM_BOT_TOKEN: '', TELEGRAM_CHAT_ID: '', SMTP_HOST: '', SMTP_USER: '', SMTP_PASS: '', NOTIFY_EMAIL: '',
     // dịch tự động: dịch giả "[EN] …", không gọi AI thật (không tốn tiền, không cần khóa)
     DC_AI_MOCK: '1', ANTHROPIC_API_KEY: '',
+    DC_PAY_MOCK: '1',   // cổng MoMo: không gọi API thật
+    ...extraEnv,
   };
   const proc = spawn(process.execPath, ['server.js'], { cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'] });
   let log = '';

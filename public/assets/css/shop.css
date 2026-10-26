@@ -1471,3 +1471,19 @@ footer .footer-bottom{padding-top:1.2rem;border-top:1px solid var(--line);}
 .v3-ctile.oos{opacity:0.45;position:relative;}
 .v3-ctile.oos::after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:1.5px;background:#6b6b6b;transform:rotate(-45deg);}
 .v3c-qa button.oos{text-decoration:line-through;opacity:0.45;}
+/* thanh toán online: logo thẻ (VISA / MASTERCARD / ATM — chỉ hiện khi cổng VNPay bật), khung thanh toán ở màn đặt hàng thành công */
+.pay-logo.pl-card{gap:0.4rem;}
+.pay-logo.pl-card b{font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:0.62rem;letter-spacing:0.03em;color:#1A1F71;}
+.pay-logo.pl-card b:nth-child(2){color:#EB001B;}
+.pay-logo.pl-card b:nth-child(3){color:#005BAA;}
+.v3ok-cod .dc-pay-note{color:#9b261f;}
+.v3ok-cod .dc-paid-ok{color:#17703c;}
+.v3ok-pay .dc-paybtns{margin:0.9rem 0 0;}
+#payOpts .pay-opt > span:not(.v3-po-logos){min-width:0;overflow-wrap:break-word;}
+/* màn hẹp: tên lựa chọn đã ghi ATM / Visa / Mastercard → bỏ logo thẻ trong ô để chữ đủ chỗ (logo vẫn ở dòng phương thức cuối tóm tắt đơn) */
+@media (max-width:520px){#payOpts [data-pay-opt="vnpay"] .v3-po-logos{display:none;}}
+.success .dc-paybtn{padding:0.7rem 1rem;border-radius:2px;letter-spacing:0.01em;}
+.success .dc-paybtn-vnpay,.success .dc-paybtn-vnpay:hover{background:#005BAA;}
+.success .dc-paybtn-momo,.success .dc-paybtn-momo:hover{background:#A50064;}
+#v3Ok .dc-paid-ok{max-width:none;}
+.v3ok-pay .dc-paybtns{border:0;padding:0;}.v3ok-pay .dc-paybtns-h{display:none;}
