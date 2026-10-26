@@ -102,12 +102,24 @@ setInterval(() => {
 function msg(req, vi, en) { return ((req.body || {}).lang || req.query.lang) === 'en' ? en : vi; }
 
 // Seed default admin on first run (bắt đổi mật khẩu ở lần đăng nhập đầu)
+// Tài khoản admin đầu tiên (khi chưa có admin nào):
+//   - ADMIN_EMAIL + ADMIN_PASSWORD (biến môi trường của hosting, ≥ 10 ký tự) → dùng đúng mật khẩu đó
+//   - chạy thật (NODE_ENV=production) mà chưa đặt ADMIN_PASSWORD → tạo mật khẩu ngẫu nhiên, in 1 lần ra log máy chủ, bắt đổi khi đăng nhập
+//     (không bao giờ dùng mật khẩu mặc định ghi trong README — mã nguồn công khai)
+//   - chạy thử trên máy (không phải production) → mật khẩu mặc định, bắt đổi khi đăng nhập
 function ensureAdmin() {
   const users = read('users.json', []);
-  if (!users.find(u => u.email === 'admin@dappercombat.com')) {
-    users.push({ id: 'admin', name: 'Admin', email: 'admin@dappercombat.com', password: hashPw(DEFAULT_PW), role: 'admin', mustChange: true, createdAt: Date.now() });
-    writeFile('users.json', users);
+  if (users.some(u => u.role === 'admin')) return;
+  const email = String(process.env.ADMIN_EMAIL || 'admin@dappercombat.com').trim().toLowerCase();
+  let pw = String(process.env.ADMIN_PASSWORD || '');
+  if (pw && pw.length < 10) { console.warn('[quản trị] ADMIN_PASSWORD quá ngắn (cần ít nhất 10 ký tự) — bỏ qua'); pw = ''; }
+  const fromEnv = !!pw;
+  if (!pw && process.env.NODE_ENV === 'production') {
+    pw = crypto.randomBytes(9).toString('base64url');
+    console.log(`[quản trị] Tạo tài khoản ${email} với mật khẩu tạm: ${pw} — đăng nhập /admin và đổi ngay (mật khẩu này chỉ in một lần)`);
   }
+  users.push({ id: 'admin', name: 'Admin', email, password: hashPw(pw || DEFAULT_PW), role: 'admin', mustChange: !fromEnv, createdAt: Date.now() });
+  writeFile('users.json', users);
 }
 ensureAdmin();
 const safeUser = ({ password, tv, ...u }) => ({ ...u, mustChange: !!u.mustChange });

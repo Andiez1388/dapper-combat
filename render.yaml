@@ -1,0 +1,38 @@
+# Render.com Blueprint — tạo dịch vụ web từ GitHub (New → Blueprint → chọn repo này).
+# Cần gói trả phí (Starter) vì website lưu dữ liệu vào ổ đĩa (disk) — gói Free mất dữ liệu mỗi lần khởi động lại.
+services:
+  - type: web
+    name: dapper-combat
+    runtime: node
+    plan: starter
+    branch: main
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /robots.txt
+    autoDeploy: true
+    disk:
+      name: dapper-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # dữ liệu (đơn hàng, khách, nội dung) + ảnh / video tải lên: nằm trên ổ đĩa, không mất khi cập nhật code
+      - key: DC_DATA_DIR
+        value: /var/data/data
+      - key: DC_UPLOAD_DIR
+        value: /var/data/uploads
+      # Render đứng trước 1 lớp proxy → lấy đúng IP khách (chống spam / đoán mật khẩu)
+      - key: TRUST_PROXY
+        value: "1"
+      # tài khoản quản trị đầu tiên — tự nhập trên Render (không ghi vào mã nguồn)
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # địa chỉ website, vd https://dappercombat.vn (link phiếu xác nhận, ảnh chia sẻ, sitemap)
+      - key: SITE_URL
+        sync: false
+      # tiếng Anh tự dịch (không bắt buộc — có thể nhập trong /admin → Tiếng Anh (AI))
+      - key: ANTHROPIC_API_KEY
+        sync: false

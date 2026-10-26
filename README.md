@@ -17,9 +17,13 @@ npm install
 npm start          # http://localhost:3000
 ```
 
-Cần Node 18 trở lên. Sao chép `.env.example` thành `.env`.
+Cần Node 20 trở lên. Sao chép `.env.example` thành `.env` (chạy thử trên máy: đổi `NODE_ENV=development`).
 
-Tài khoản quản trị mặc định: `admin@dappercombat.com` / `admin123`. Lần đầu đăng nhập, trang quản trị **bắt đổi mật khẩu** trước khi dùng (không đổi thì không xem được dữ liệu). Đổi mật khẩu xong, các máy khác đang đăng nhập phải đăng nhập lại.
+**Tài khoản quản trị đầu tiên** (tạo khi chưa có admin nào):
+- **Chạy thật** (`NODE_ENV=production`): đặt `ADMIN_EMAIL` + `ADMIN_PASSWORD` (≥ 10 ký tự) trong `.env` / biến môi trường của hosting → đăng nhập bằng đúng email + mật khẩu đó. Không đặt thì máy chủ tạo mật khẩu tạm ngẫu nhiên, in **một lần** ra log, đăng nhập xong bắt đổi. Mật khẩu mặc định bên dưới **không bao giờ** được dùng khi chạy thật (mã nguồn công khai).
+- **Chạy thử trên máy:** `admin@dappercombat.com` / `admin123`, lần đầu đăng nhập bắt đổi mật khẩu.
+
+Đổi mật khẩu xong, các máy khác đang đăng nhập phải đăng nhập lại. Quên mật khẩu: một admin khác cấp lại ở Tài khoản & phân quyền.
 
 ### Kiểm tra tự động
 
@@ -35,6 +39,21 @@ Bộ kiểm tra (`tests/`) tự dựng máy chủ thử với dữ liệu tạm 
 Không có Chrome / Edge ở chỗ mặc định thì đặt `CHROME_PATH`. Kết quả cuối ghi số kiểm tra đạt và liệt kê mục chưa đạt.
 
 ### Đưa lên mạng
+
+Website lưu dữ liệu trong file (thư mục `DC_DATA_DIR`) nên cần hosting có **ổ đĩa giữ dữ liệu** — không dùng được Vercel / Netlify. Hai cách có sẵn cấu hình:
+
+**Cách 1 — Render.com** (dễ nhất, tự cập nhật mỗi khi đẩy code lên GitHub nhánh `main`):
+1. render.com → New → **Blueprint** → chọn repo này (đọc `render.yaml`: gói Starter + ổ đĩa 1GB).
+2. Nhập `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SITE_URL` (vd `https://dappercombat.vn`), tùy chọn `ANTHROPIC_API_KEY`.
+3. Settings → Custom Domains → thêm tên miền → làm theo hướng dẫn trỏ DNS (CNAME / A) ở nơi mua tên miền. HTTPS tự cấp.
+
+**Cách 2 — VPS Ubuntu** (máy chủ riêng, tốc độ tốt ở Việt Nam): trỏ tên miền (bản ghi A cho `@` và `www`) về IP VPS, rồi chạy `deploy/setup-vps.sh` (cài Node, PM2, Nginx, HTTPS Let's Encrypt; chạy lại để cập nhật code):
+
+```bash
+sudo DOMAIN=dappercombat.vn EMAIL=ban@gmail.com ADMIN_EMAIL=ban@gmail.com ADMIN_PASSWORD='mat-khau-cua-ban' bash deploy/setup-vps.sh
+```
+
+Dữ liệu nằm ở `/var/lib/dapper-combat` (VPS) hoặc ổ đĩa `/var/data` (Render) — tách khỏi code nên cập nhật code không mất đơn hàng.
 
 - **Khóa đăng nhập:** đặt `JWT_SECRET` trong `.env` (chuỗi ngẫu nhiên ≥ 32 ký tự), hoặc để trống — server tự tạo và lưu ở `data/.jwt-secret`. Đổi khóa này thì mọi người phải đăng nhập lại.
 - **HTTPS:** chạy sau Nginx / Caddy (có HTTPS) trên cùng máy, chuyển tiếp về cổng `PORT`. Nếu có thêm Cloudflare phía trước, đặt `TRUST_PROXY=2` để server biết IP thật của khách (dùng cho chặn spam, chặn đoán mật khẩu).
