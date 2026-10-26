@@ -1,0 +1,114 @@
+/* Dapper Combat — phần bổ sung dùng chung khi chạy thành website (lỗi gửi form, chọn size nhanh ở Home) */
+.dc-form-err{margin:0.8rem 0 0;padding:0.75rem 0.9rem;border-left:3px solid #D4372E;background:rgba(212,55,46,0.08);color:#B82E26;font-family:'Roboto Mono',monospace;font-size:0.74rem;line-height:1.55;letter-spacing:0.01em;}
+.cv3-foot .dc-form-err{margin:0 0 0.8rem;}
+button[disabled]{cursor:progress;opacity:0.75;}
+
+/* Home: chọn size ngay trên thẻ sản phẩm */
+.product-media{position:relative;}
+.dc-qs{position:absolute;left:0;right:0;bottom:0;z-index:6;background:#fff;color:#0b0b0b;padding:0.9rem 0.9rem 0.8rem;border-top:2px solid #D4372E;box-shadow:0 -8px 24px rgba(0,0,0,0.12);animation:dcQs .2s ease-out;}
+@keyframes dcQs{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.dc-qs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;}
+.dc-qs-top span{font-family:'Roboto Mono',monospace;font-size:0.64rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;}
+.dc-qs-x{background:none;border:none;font-size:0.9rem;line-height:1;padding:0.3rem;cursor:pointer;color:#0b0b0b;}
+.dc-qs-sizes{display:flex;flex-wrap:wrap;gap:0.35rem;}
+.dc-qs-sizes button{flex:1 1 0;min-width:44px;min-height:40px;background:#fff;border:1px solid rgba(0,0,0,0.2);font-family:'Roboto Mono',monospace;font-size:0.7rem;font-weight:500;cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
+.dc-qs-sizes button:hover,.dc-qs-sizes button:focus-visible{background:#0b0b0b;border-color:#0b0b0b;color:#fff;outline:none;}
+.dc-qs-view{display:inline-block;margin-top:0.65rem;font-family:'Roboto Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#0b0b0b;text-decoration:none;border-bottom:1px solid #D4372E;}
+.cart-item .ci-var{font-family:'Roboto Mono',monospace;font-size:0.66rem;letter-spacing:0.04em;color:#6b6b6b;margin:0.15rem 0 0.2rem;}
+.cart-item>a{flex-shrink:0;display:block;}
+#cartDrawer .ci-qty span{color:#0b0b0b!important;}
+/* khối tràn viền: dùng bề rộng thật của cửa sổ (100vw tính cả thanh cuộn trên desktop → lệch ngang) */
+.product-grid{width:var(--dc-vw,100vw)!important;margin-left:calc(50% - var(--dc-vw,100vw) / 2)!important;margin-right:calc(50% - var(--dc-vw,100vw) / 2)!important;}
+/* điện thoại hẹp (≤400px, vd. Android 360px): thanh menu gọn lại cho vừa logo + VI/EN + giỏ + menu */
+@media(max-width:400px){
+  .nav{padding-left:14px!important;padding-right:14px!important;}
+  .nav .nav-right{gap:6px!important;}
+  .nav .nav-logo{font-size:15px!important;letter-spacing:0.06em!important;}
+  .nav .nav-logo svg{width:26px!important;height:auto!important;}
+  .nav .lang-switch button{padding-left:8px!important;padding-right:8px!important;}
+}
+/* tablet ngang / laptop nhỏ (901–1120px): menu chữ gọn lại để không chạm logo ở giữa */
+@media(min-width:901px) and (max-width:1120px){
+  .nav .nav-links{gap:1rem!important;}
+  .nav .nav-links a{font-size:0.66rem!important;letter-spacing:0.05em!important;}
+}
+/* Dịch vụ Setup: hero giữ lề hai bên khi màn hẹp hơn khung 1200px */
+.hero-in.wrap{padding-left:2rem;padding-right:2rem;}
+@media(max-width:600px){.hero-in.wrap{padding-left:1.15rem;padding-right:1.15rem;}}
+/* ngăn kéo đang đóng (giỏ hàng, bảng size, bộ lọc, đăng ký) không đổ bóng vào mép phải màn hình */
+#cart:not(.open),#v3Sg:not(.on),#v3F:not(.on),.cart-drawer:not(.open),.cv3-reg:not(.on){box-shadow:none!important;}
+/* mã VietQR thật + thông tin chuyển khoản (khi đã cài tài khoản trong /admin → Thanh toán) */
+.dc-vietqr{display:block;width:100%;max-width:220px;height:auto;aspect-ratio:1/1;background:#fff;margin:0 auto;}
+.dc-paylines{margin-top:0.6rem;font-family:'Roboto Mono',monospace;font-size:0.66rem;line-height:1.45;text-align:left;color:#0b0b0b;}
+.dc-paylines div{display:flex;justify-content:space-between;gap:0.6rem;border-top:1px solid rgba(0,0,0,0.08);padding:0.32rem 0;}
+.dc-paylines span{color:#6b6b6b;white-space:nowrap;}
+.dc-paylines b{font-weight:500;text-align:right;word-break:break-all;}
+:is(.ok-qr-box,.v3ok-qr-box,.cv3-qr-box):has(.dc-vietqr){width:auto!important;height:auto!important;max-width:250px;padding:10px!important;background:#fff!important;}
+.dc-pay-real :is(.ok-qr-demo,.cv3-qr-demo,.v3ok-qr-demo,.v3ok-demo){display:none!important;}
+.v3ok-qr-info .dc-paylines,.cv3-qr .dc-paylines{max-width:340px;}
+
+/* khu vực / chữ / nút đã ẩn trong /admin */
+[data-cms-off]{display:none!important}
+
+/* ô bắt buộc chọn trong /admin → Thiết lập → Bán hàng (email, phường / xã) */
+.field.dc-req label::after{content:" *";}
+
+/* ===== Phiếu xác nhận cho khách (assets/js/slip.js) ===== */
+.sl-card{background:#fff;color:#111;box-shadow:0 10px 40px rgba(0,0,0,0.08);font-family:var(--f-body,'Inter',sans-serif);}
+.sl-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;background:#0B0B0B;color:#fff;padding:1.2rem 1.4rem;border-bottom:4px solid #D4372E;}
+.sl-top b{font-family:var(--f-display,'Barlow Condensed',sans-serif);font-weight:900;font-size:1.5rem;letter-spacing:0.05em;}
+.sl-top span{font-family:var(--f-mono,'Roboto Mono',monospace);font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.75);}
+.sl-code{padding:1.4rem 1.4rem 0.6rem;}
+.sl-code small{display:block;font-family:var(--f-mono,'Roboto Mono',monospace);font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:#6b6b6b;}
+.sl-code strong{display:block;font-family:var(--f-display,'Barlow Condensed',sans-serif);font-weight:900;font-size:2.4rem;line-height:1.1;margin:0.2rem 0;}
+.sl-code em{font-style:normal;font-size:0.85rem;color:#444;}
+.sl-sec{margin:0 1.4rem;padding:1rem 0;border-top:1px solid #e6e6e6;}
+.sl-sec h3{margin:0 0 0.6rem;font-family:var(--f-mono,'Roboto Mono',monospace);font-size:0.66rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#6b6b6b;}
+.sl-row,.sl-item{display:flex;justify-content:space-between;gap:1rem;padding:0.32rem 0;font-size:0.9rem;}
+.sl-row span{color:#6b6b6b;flex:0 0 auto;}
+.sl-row b{text-align:right;font-weight:600;overflow-wrap:anywhere;}
+.sl-item span{font-weight:600;}
+.sl-item small{display:block;font-weight:400;color:#6b6b6b;font-size:0.8rem;}
+.sl-item b{font-weight:600;white-space:nowrap;}
+.sl-strong span{color:#111;font-weight:600;}
+.sl-strong b{color:#D4372E;font-size:1.15rem;}
+.sl-pay-in{display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap;}
+.sl-pay-in img{width:180px;height:auto;border:1px solid #e6e6e6;}
+.sl-pay-in > div{flex:1 1 220px;}
+.sl-pay-in p{font-size:0.8rem;color:#555;margin:0.6rem 0 0;}
+.sl-foot{margin:0;padding:1rem 1.4rem 1.4rem;font-size:0.8rem;color:#555;line-height:1.6;border-top:1px solid #e6e6e6;}
+/* khung nút trên màn hình đặt hàng / đăng ký thành công */
+.dc-slipbox{margin:1rem 0;padding:1rem;border:1px dashed currentColor;border-radius:4px;}
+.dc-slipbox p{margin:0 0 0.7rem;font-size:0.85rem;opacity:0.8;}
+.dc-slipbox-btns{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.dc-slipbox-btns > *{flex:1 1 180px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0.7rem 1rem;font-family:var(--f-mono,'Roboto Mono',monospace);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:1px solid currentColor;background:transparent;color:inherit;}
+.dc-slipbox-btns .dc-slip-dl{background:#D4372E;border-color:#D4372E;color:#fff;}
+.dc-slipbox-btns .dc-busy{opacity:0.6;cursor:wait;}
+.dc-slipview{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.dc-slipview-in{position:relative;max-width:480px;width:100%;max-height:100%;overflow:auto;background:#fff;padding:0.8rem;text-align:center;}
+.dc-slipview-in img{width:100%;height:auto;display:block;}
+.dc-slipview-in p{font-size:0.8rem;color:#444;margin:0.6rem 0 0;}
+.dc-slipview-x{position:absolute;top:0.3rem;right:0.3rem;width:40px;height:40px;border:0;background:#0B0B0B;color:#fff;font-size:1rem;cursor:pointer;}
+
+/* giỏ hàng được bớt theo số còn trong kho (Trang chủ + Shop) */
+.dc-cart-note{margin:0.6rem 0 0.4rem;padding:0.6rem 0.75rem;border-left:3px solid #D4372E;background:rgba(212,55,46,0.07);font-family:'Roboto Mono',monospace;font-size:0.66rem;line-height:1.5;color:#7a1f19;}
+/* chưa có sản phẩm nào (Trang chủ) */
+.dc-noproducts{text-align:center;padding:2.5rem 1rem;font-family:'Roboto Mono',monospace;font-size:0.8rem;color:#6b6b6b;}
+/* phiếu xác nhận: trạng thái đơn / đăng ký, lỗi tải ảnh phiếu */
+.sl-status{display:block;width:fit-content;margin-top:0.7rem;padding:0.32rem 0.6rem;background:rgba(212,55,46,0.08);color:#B82E26;font-family:var(--f-mono,'Roboto Mono',monospace);font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;}
+.sl-status b{font-weight:600;}
+.sl-st-done,.sl-st-enrolled,.sl-st-paid,.sl-st-confirmed{background:rgba(28,155,82,0.1);color:#17703c;}
+.sl-st-cancelled{background:#eeeeee;color:#555555;}
+.dc-slip-err{margin:0.7rem 0 0;font-size:0.8rem;line-height:1.5;color:#B82E26;}
+
+/* logo tải lên thay chữ thương hiệu (menu điện thoại, trang phiếu…) */
+.dc-brand-img{display:block;height:28px;width:auto;max-width:180px;object-fit:contain;}
+/* chân trang: dòng thông tin doanh nghiệp (tên · MST · địa chỉ · điện thoại · email) */
+.dc-biz{max-width:1200px;margin:0 auto 1.2rem;font-size:0.72rem;line-height:1.6;letter-spacing:0.02em;opacity:0.75;}
+.dc-biz[hidden],[data-dc-hide-empty][hidden]{display:none!important;}
+.dc-biz a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
+
+/* Trang chủ: size đã hết trong ô chọn size nhanh */
+.dc-qs-sizes button.oos,.dc-qs-sizes button[disabled]{opacity:0.4;text-decoration:line-through;cursor:not-allowed;background:#f4f4f4;}
+.dc-qs-sizes button[disabled]:hover{background:#f4f4f4;color:inherit;border-color:rgba(0,0,0,0.2);}
+.sl-status.sl-paid{background:rgba(28,155,82,0.12);color:#17703c;font-weight:600;}

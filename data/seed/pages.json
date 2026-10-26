@@ -1,0 +1,82 @@
+[
+  {
+    "id": "pgdoitra1",
+    "slug": "chinh-sach-doi-tra",
+    "title": {
+      "vi": "Chính sách đổi trả & bảo hành",
+      "en": "Returns & warranty policy"
+    },
+    "desc": {
+      "vi": "Đổi trả trong 7 ngày, hàng chính hãng, giao hàng toàn quốc — cách gửi yêu cầu đổi trả tại Dapper Combat.",
+      "en": "7-day returns, genuine products, nationwide delivery — how to request a return at Dapper Combat."
+    },
+    "body": {
+      "vi": "<h2>Đổi trả trong 7 ngày</h2><p>Bạn có thể đổi size, đổi mẫu hoặc trả hàng trong vòng 7 ngày kể từ khi nhận hàng.</p><ul><li>Sản phẩm còn nguyên tem, nhãn và bao bì, chưa qua sử dụng.</li><li>Kèm mã đơn hàng (vd #DC-123456) để Dapper Combat tra cứu nhanh.</li></ul><h2>Bảo hành</h2><p>Sản phẩm Dapper Combat là hàng chính hãng. Thời gian bảo hành theo từng loại sản phẩm được ghi ở mục <em>Thông số kỹ thuật</em> trên trang sản phẩm.</p><h2>Giao hàng</h2><p>Giao hàng toàn quốc trong {ship.eta} ngày làm việc. Miễn phí giao hàng tiêu chuẩn cho đơn từ {ship.free}đ.</p><h2>Cách gửi yêu cầu</h2><p>Gọi hotline 0909 xxx xxx hoặc nhắn <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Zalo Dapper Combat</a>, gửi kèm mã đơn hàng và ảnh sản phẩm.</p>",
+      "en": "<h2>7-day returns</h2><p>You can exchange the size or model, or return an item, within 7 days of receiving it.</p><ul><li>The item still has its original tags, labels and packaging and has not been used.</li><li>Include your order code (e.g. #DC-123456) so Dapper Combat can find it quickly.</li></ul><h2>Warranty</h2><p>Dapper Combat products are genuine. The warranty period for each product type is listed under <em>Specifications</em> on the product page.</p><h2>Delivery</h2><p>Nationwide delivery in {ship.eta} working days. Free standard delivery on orders from {ship.free}đ.</p><h2>How to request</h2><p>Call 0909 xxx xxx or message <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Dapper Combat on Zalo</a> with your order code and photos of the item.</p>"
+    },
+    "cover": "",
+    "published": false,
+    "createdAt": 1792656000000,
+    "updatedAt": 1792656000000
+  },
+  {
+    "id": "pgbaomat1",
+    "slug": "chinh-sach-bao-mat",
+    "title": {
+      "vi": "Chính sách bảo mật thông tin",
+      "en": "Privacy policy"
+    },
+    "desc": {
+      "vi": "Dapper Combat thu thập thông tin gì khi bạn đặt hàng, đăng ký khóa học, dùng vào việc gì và cách bạn yêu cầu xem, sửa hoặc xóa.",
+      "en": "What information Dapper Combat collects when you order or register for a course, how it is used, and how to ask us to view, correct or delete it."
+    },
+    "body": {
+      "vi": "<p><em>Bản nháp — vui lòng đọc lại, điền đúng thông tin doanh nghiệp và chỉnh theo cách làm thực tế của shop trước khi bật hiển thị.</em></p><h2>Thông tin chúng tôi thu thập</h2><ul><li>Khi đặt hàng: họ tên, số điện thoại, email (nếu bạn nhập), địa chỉ nhận hàng, ghi chú và sản phẩm đã mua.</li><li>Khi đăng ký khóa học hoặc học thử: họ tên, số điện thoại, email (nếu có), chương trình, ngày muốn bắt đầu và ghi chú.</li><li>Khi gửi yêu cầu tư vấn setup phòng tập: họ tên, số điện thoại, tỉnh / thành, nhu cầu và ghi chú.</li><li>Khi đăng ký nhận tin: địa chỉ email.</li></ul><p>Giỏ hàng, ngôn ngữ và sản phẩm yêu thích được lưu ngay trên trình duyệt của bạn, không gửi về máy chủ.</p><h2>Mục đích sử dụng</h2><ul><li>Xác nhận và xử lý đơn hàng, giao hàng, đổi trả, bảo hành.</li><li>Liên hệ xếp lịch học, nhắc lịch và chăm sóc học viên.</li><li>Gửi email / phiếu xác nhận đơn hàng, đăng ký.</li><li>Gửi tin khuyến mãi khi bạn đã đăng ký nhận tin (bạn có thể hủy bất cứ lúc nào).</li></ul><h2>Chia sẻ thông tin</h2><p>Chúng tôi không bán thông tin của bạn. Thông tin chỉ được chia sẻ ở mức cần thiết với đơn vị vận chuyển để giao hàng, hoặc khi cơ quan nhà nước có thẩm quyền yêu cầu theo quy định pháp luật.</p><h2>Lưu trữ và bảo vệ</h2><p>Thông tin được lưu trên máy chủ của Dapper Combat, chỉ người phụ trách được truy cập bằng tài khoản có mật khẩu. Chúng tôi giữ thông tin trong thời gian cần thiết cho các mục đích trên hoặc theo quy định về lưu trữ chứng từ.</p><h2>Quyền của bạn</h2><p>Theo Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân, bạn có quyền được biết, xem, sửa, yêu cầu xóa thông tin hoặc rút lại sự đồng ý. Gọi 0909 xxx xxx hoặc nhắn <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Zalo Dapper Combat</a> — chúng tôi phản hồi trong vòng 72 giờ làm việc.</p>",
+      "en": "<p><em>Draft — please review, fill in your business details and adjust to how the shop actually works before publishing.</em></p><h2>What we collect</h2><ul><li>When you order: name, phone number, email (if given), delivery address, notes and the items you bought.</li><li>When you register for a course or a trial: name, phone number, email (if given), programme, preferred start date and notes.</li><li>When you request a gym-setup consultation: name, phone number, province / city, needs and notes.</li><li>When you subscribe to our newsletter: your email address.</li></ul><p>Your cart, language and favourites are stored in your own browser and are not sent to our server.</p><h2>How we use it</h2><ul><li>To confirm and process orders, deliveries, returns and warranty.</li><li>To schedule classes, send reminders and look after members.</li><li>To send order / registration confirmations.</li><li>To send offers if you subscribed (you can unsubscribe at any time).</li></ul><h2>Sharing</h2><p>We never sell your information. It is only shared as needed with delivery companies to ship your order, or with authorities when required by law.</p><h2>Storage and security</h2><p>Information is stored on Dapper Combat's server and can only be accessed by staff with a password-protected account. We keep it as long as needed for the purposes above or as required for accounting records.</p><h2>Your rights</h2><p>Under Vietnam's Decree 13/2023/ND-CP on personal data protection, you can ask to see, correct or delete your information, or withdraw your consent. Call 0909 xxx xxx or message <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Dapper Combat on Zalo</a> — we reply within 72 working hours.</p>"
+    },
+    "cover": "",
+    "published": false,
+    "createdAt": 1792800000000,
+    "updatedAt": 1792800000000
+  },
+  {
+    "id": "pgdieukhoan1",
+    "slug": "dieu-khoan-su-dung",
+    "title": {
+      "vi": "Điều khoản sử dụng",
+      "en": "Terms of use"
+    },
+    "desc": {
+      "vi": "Điều khoản khi mua hàng và đăng ký khóa học trên website Dapper Combat: giá, đặt hàng, thanh toán, giao hàng, đổi trả.",
+      "en": "Terms for buying and registering for courses on the Dapper Combat website: prices, orders, payment, delivery and returns."
+    },
+    "body": {
+      "vi": "<p><em>Bản nháp — vui lòng đọc lại, điền đúng thông tin doanh nghiệp và chỉnh theo cách làm thực tế của shop trước khi bật hiển thị.</em></p><h2>Phạm vi</h2><p>Khi đặt hàng, đăng ký khóa học hoặc gửi yêu cầu trên website này, bạn đồng ý với các điều khoản dưới đây.</p><h2>Sản phẩm và giá</h2><p>Giá trên website là giá bán lẻ bằng đồng Việt Nam. Hình ảnh sản phẩm có thể chênh lệch nhẹ về màu do màn hình. Nếu có sai sót về giá hoặc tồn kho, chúng tôi sẽ liên hệ trước khi giao hàng; bạn có quyền hủy đơn mà không mất phí.</p><h2>Đặt hàng</h2><p>Đơn hàng được ghi nhận khi bạn nhận được mã đơn (vd #DC-123456). Chúng tôi gọi hoặc nhắn Zalo để xác nhận trước khi giao.</p><h2>Thanh toán</h2><p>Thanh toán khi nhận hàng (COD), chuyển khoản ngân hàng qua mã VietQR hoặc ví MoMo. Xem chi tiết ở <a href=\"/trang/chinh-sach-giao-hang-thanh-toan\">Chính sách giao hàng & thanh toán</a>.</p><h2>Đổi trả và bảo hành</h2><p>Xem <a href=\"/trang/chinh-sach-doi-tra\">Chính sách đổi trả & bảo hành</a>.</p><h2>Khóa học</h2><p>Học phí, lịch học và điều kiện bảo lưu / hoàn phí được thông báo khi huấn luyện viên xác nhận đăng ký. Học viên cần tuân thủ hướng dẫn an toàn của huấn luyện viên trong buổi tập.</p><h2>Bản quyền</h2><p>Hình ảnh, video, logo và nội dung trên website thuộc Dapper Combat. Không sao chép cho mục đích thương mại khi chưa được đồng ý.</p><h2>Liên hệ</h2><p>Hotline 0909 xxx xxx · <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Zalo Dapper Combat</a>.</p>",
+      "en": "<p><em>Draft — please review, fill in your business details and adjust to how the shop actually works before publishing.</em></p><h2>Scope</h2><p>By placing an order, registering for a course or sending a request on this website, you agree to the terms below.</p><h2>Products and prices</h2><p>Prices are retail prices in Vietnamese dong. Product colours may look slightly different on your screen. If a price or stock error occurs, we will contact you before delivery and you may cancel at no cost.</p><h2>Orders</h2><p>Your order is recorded once you receive an order code (e.g. #DC-123456). We call or message you on Zalo to confirm before shipping.</p><h2>Payment</h2><p>Cash on delivery (COD), bank transfer via VietQR, or MoMo. See <a href=\"/trang/chinh-sach-giao-hang-thanh-toan\">Shipping & payment policy</a>.</p><h2>Returns and warranty</h2><p>See <a href=\"/trang/chinh-sach-doi-tra\">Returns & warranty policy</a>.</p><h2>Courses</h2><p>Fees, schedules and pause / refund conditions are confirmed when the coach confirms your registration. Members must follow the coach's safety instructions during training.</p><h2>Copyright</h2><p>Images, videos, logos and content on this website belong to Dapper Combat and may not be copied for commercial use without permission.</p><h2>Contact</h2><p>Hotline 0909 xxx xxx · <a href=\"https://zalo.me/dappercombat\" target=\"_blank\" rel=\"noopener\">Dapper Combat on Zalo</a>.</p>"
+    },
+    "cover": "",
+    "published": false,
+    "createdAt": 1792800000000,
+    "updatedAt": 1792800000000
+  },
+  {
+    "id": "pggiaohang1",
+    "slug": "chinh-sach-giao-hang-thanh-toan",
+    "title": {
+      "vi": "Chính sách giao hàng & thanh toán",
+      "en": "Shipping & payment policy"
+    },
+    "desc": {
+      "vi": "Phí giao hàng, thời gian giao, giao hỏa tốc TP.HCM và các cách thanh toán tại Dapper Combat.",
+      "en": "Delivery fees, delivery times, HCMC express delivery and payment methods at Dapper Combat."
+    },
+    "body": {
+      "vi": "<p><em>Bản nháp — vui lòng đọc lại, điền đúng thông tin doanh nghiệp và chỉnh theo cách làm thực tế của shop trước khi bật hiển thị.</em></p><h2>Giao hàng</h2><ul><li>Giao toàn quốc, tiêu chuẩn {ship.eta} ngày làm việc (không tính Chủ nhật, ngày lễ).</li><li>Phí giao tiêu chuẩn {ship.fee}đ; miễn phí cho đơn từ {ship.free}đ.</li><li>Giao hỏa tốc nội thành TP.HCM: cộng thêm {ship.express}đ, nhận hàng trong khoảng {ship.eta.exp} ngày làm việc.</li><li>Bạn được kiểm tra hàng trước khi thanh toán cho người giao.</li></ul><h2>Thanh toán</h2><ul><li><strong>Thanh toán khi nhận hàng (COD):</strong> trả tiền mặt cho người giao.</li><li><strong>Chuyển khoản ngân hàng:</strong> quét mã VietQR ở màn hình đặt hàng thành công hoặc trên phiếu xác nhận; nội dung chuyển khoản là mã đơn hàng.</li><li><strong>Ví MoMo:</strong> mở app MoMo quét cùng mã VietQR.</li></ul><p>Sau khi nhận được tiền, Dapper Combat gọi hoặc nhắn Zalo xác nhận và giao hàng.</p><h2>Kiểm tra đơn</h2><p>Mỗi đơn có phiếu xác nhận để xem lại hoặc tải về. Cần hỗ trợ, gọi 0909 xxx xxx kèm mã đơn hàng.</p>",
+      "en": "<p><em>Draft — please review, fill in your business details and adjust to how the shop actually works before publishing.</em></p><h2>Delivery</h2><ul><li>Nationwide delivery, standard {ship.eta} working days (excluding Sundays and public holidays).</li><li>Standard delivery fee {ship.fee}đ; free for orders from {ship.free}đ.</li><li>Express delivery within Ho Chi Minh City: an extra {ship.express}đ, delivered in about {ship.eta.exp} working day(s).</li><li>You may inspect the parcel before paying the courier.</li></ul><h2>Payment</h2><ul><li><strong>Cash on delivery (COD):</strong> pay the courier in cash.</li><li><strong>Bank transfer:</strong> scan the VietQR code on the order confirmation screen or slip; use your order code as the transfer message.</li><li><strong>MoMo:</strong> scan the same VietQR code with the MoMo app.</li></ul><p>Once we receive your payment, Dapper Combat confirms by phone or Zalo and ships your order.</p><h2>Checking your order</h2><p>Every order has a confirmation slip you can view again or download. For help, call 0909 xxx xxx with your order code.</p>"
+    },
+    "cover": "",
+    "published": false,
+    "createdAt": 1792800000000,
+    "updatedAt": 1792800000000
+  }
+]

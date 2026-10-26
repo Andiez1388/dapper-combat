@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-cms="global.404.title">Không tìm thấy trang — Dapper Combat</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=Ysabeau:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{--red:#D4372E;}
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:#0b0b0b;color:#fff;font-family:'Roboto Mono',monospace;}
+  header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.4rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.1);}
+  header a{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.35rem;letter-spacing:0.06em;color:#fff;text-decoration:none;}
+  .lang-switch{display:flex;border:1px solid rgba(255,255,255,0.3);}
+  .lang-switch button{background:none;border:0;color:rgba(255,255,255,0.6);font-family:'Roboto Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;padding:0.45rem 0.7rem;cursor:pointer;min-height:36px;}
+  .lang-switch button.on{background:#fff;color:#0b0b0b;}
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:1100px;width:100%;margin:0 auto;padding:4rem 1.5rem;}
+  .eyebrow{display:flex;align-items:center;gap:0.7rem;font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.6);}
+  .eyebrow::before{content:'';width:28px;height:1px;background:var(--red);}
+  h1{font-family:'Ysabeau',sans-serif;font-weight:400;font-size:clamp(2.6rem,8vw,5.4rem);line-height:1.02;margin:1.2rem 0 1.4rem;font-variant-numeric:lining-nums;}
+  h1 em{font-style:normal;color:var(--red);}
+  p{max-width:520px;font-size:0.85rem;line-height:1.75;color:rgba(255,255,255,0.72);margin:0 0 2.2rem;}
+  nav{display:flex;flex-wrap:wrap;gap:0.6rem;}
+  nav a{font-size:0.72rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#fff;text-decoration:none;padding:1rem 1.4rem;border:1px solid rgba(255,255,255,0.4);transition:background .2s,color .2s,border-color .2s;}
+  nav a:first-child{background:var(--red);border-color:var(--red);}
+  nav a:hover{background:#fff;color:#0b0b0b;border-color:#fff;}
+  @media(max-width:600px){nav a{flex:1 1 100%;text-align:center;}}
+  .dc-brand-img{display:block;height:30px;width:auto;max-width:200px;object-fit:contain;}
+</style>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/data/cms.js"></script>
+</head>
+<body>
+<header><a href="/" data-dc-logo><span data-cms="global.brand">DAPPER COMBAT</span></a><div class="lang-switch"><button type="button" data-lang="vi" class="on">VI</button><button type="button" data-lang="en">EN</button></div></header>
+<main>
+  <div class="eyebrow" data-cms="global.404.eyebrow">Lỗi 404</div>
+  <h1 data-cms="global.404.h">Trang này đã<br><em>rời sàn đấu.</em></h1>
+  <p data-cms="global.404.p">Đường dẫn bạn mở không tồn tại hoặc đã được chuyển. Chọn một trong các mục dưới đây để tiếp tục.</p>
+  <nav>
+    <a href="/" data-cms="global.404.b1">Trang chủ</a>
+    <a href="/shop" data-cms="global.404.b2">Shop</a>
+    <a href="/khoa-hoc" data-cms="global.404.b3">Khóa học</a>
+    <a href="/dich-vu-setup" data-cms="global.404.b4">Dịch vụ Setup</a>
+  </nav>
+</main>
+<script>
+/* trang 404: đổi VI / EN (theo lựa chọn đã lưu ở các trang khác — site.js); chữ tiếng Anh sửa ở /admin → Chữ trên trang → Chung → Trang báo lỗi 404 */
+(function () {
+  var EN = {
+    'global.404.title': 'Page not found — Dapper Combat', 'global.404.eyebrow': 'Error 404', 'global.404.h': 'This page has<br><em>left the ring.</em>',
+    'global.404.p': "The link you opened doesn't exist or has moved. Pick one of the options below to continue.",
+    'global.404.b1': 'Home', 'global.404.b2': 'Shop', 'global.404.b3': 'Courses', 'global.404.b4': 'Gym Setup',
+  };
+  var VI = {};
+  Object.keys(EN).forEach(function (k) { var el = document.querySelector('[data-cms="' + k + '"]'); if (el) VI[k] = el.innerHTML; });
+  function set(l) {
+    document.documentElement.lang = l;
+    Object.keys(EN).forEach(function (k) {
+      var el = document.querySelector('[data-cms="' + k + '"]');
+      if (!el) return;
+      var v = l === 'en' ? DC.x(k, 1, EN[k]) : VI[k];
+      if (el.tagName === 'TITLE') document.title = String(v).replace(/<[^>]*>/g, '').replace(/&amp;/g, '&');
+      else el.innerHTML = v;
+    });
+    document.querySelectorAll('.lang-switch button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === l); });
+  }
+  document.querySelector('.lang-switch').addEventListener('click', function (e) { var b = e.target.closest('[data-lang]'); if (b) set(b.dataset.lang); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0b0b">
+<title>Quản trị — Dapper Combat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Ysabeau:wght@400;500;600&family=Barlow+Condensed:wght@700;900&display=swap">
+<link rel="stylesheet" href="/assets/css/admin.css">
+<link rel="stylesheet" href="/assets/css/admin-content.css">
+<link rel="stylesheet" href="/assets/css/admin-settings.css">
+<link rel="stylesheet" href="/assets/css/admin-ops.css">
+</head>
+<body>
+<!-- Logo DC dùng chung (symbol) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="dcGrad" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="190" y2="158">
+      <stop offset="0" stop-color="#e2e2e2"/><stop offset=".5" stop-color="#9a9a9a"/><stop offset="1" stop-color="#484848"/>
+    </linearGradient>
+    <symbol id="dcMark" viewBox="0 0 200 168">
+      <path fill="url(#dcGrad)" fill-rule="evenodd" d="M10,28 L28,10 L110,10 L122,26 L128,60 L130,84 L128,108 L122,142 L110,158 L28,158 L10,140 Z M42,52 L100,52 L108,84 L100,116 L42,116 Z"/>
+      <path fill="url(#dcGrad)" d="M132,10 L172,10 L194,32 L174,54 L154,54 L154,114 L174,114 L194,136 L172,158 L132,158 Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Bỏ qua đến nội dung</a>
+
+<div class="boot" id="boot" aria-live="polite">
+  <svg class="boot__mark" aria-hidden="true"><use href="#dcMark"/></svg>
+  <span>Đang tải…</span>
+</div>
+
+<!-- ─── Đăng nhập ─────────────────────────────────────────── -->
+<main class="login" id="login" hidden>
+  <div class="login__wrap">
+    <div class="brand brand--login">
+      <svg class="brand__mark" aria-hidden="true"><use href="#dcMark"/></svg>
+      <span class="brand__word">Dapper Combat</span>
+    </div>
+    <div class="login__panel">
+      <p class="eyebrow">Quản trị vận hành</p>
+      <h1 class="login__title">Đăng nhập</h1>
+      <form id="loginForm" novalidate>
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input type="email" name="email" autocomplete="username" inputmode="email" required spellcheck="false">
+        </label>
+        <label class="field">
+          <span class="field__label">Mật khẩu</span>
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <p class="form-msg" id="loginMsg" role="alert" hidden></p>
+        <button class="btn btn--primary btn--block" type="submit">Đăng nhập</button>
+      </form>
+    </div>
+    <a class="login__back" href="/">← Về website</a>
+  </div>
+</main>
+
+<!-- ─── Ứng dụng ──────────────────────────────────────────── -->
+<div class="app" id="app" hidden>
+  <header class="topbar">
+    <button class="icon-btn icon-btn--dark" type="button" id="menuBtn" aria-label="Mở menu" aria-controls="side" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <a class="brand brand--top" href="#/dashboard" aria-label="Tổng quan">
+      <svg class="brand__mark" aria-hidden="true"><use href="#dcMark"/></svg>
+      <span class="brand__word">Dapper Combat</span>
+    </a>
+    <button class="icon-btn icon-btn--dark" type="button" data-refresh aria-label="Làm mới dữ liệu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
+    </button>
+  </header>
+
+  <aside class="side" id="side" aria-label="Điều hướng quản trị">
+    <div class="side__head">
+      <a class="brand" href="#/dashboard">
+        <svg class="brand__mark" aria-hidden="true"><use href="#dcMark"/></svg>
+        <span class="brand__word">Dapper Combat</span>
+      </a>
+      <button class="icon-btn icon-btn--dark side__close" type="button" id="sideClose" aria-label="Đóng menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="side__tag">Quản trị vận hành</p>
+    <nav class="side__nav" id="nav">
+      <p class="side__group">Vận hành</p>
+      <a href="#/dashboard" data-nav="dashboard">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg>
+        <span>Tổng quan</span>
+      </a>
+      <a href="#/orders" data-nav="orders">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.2 13H6.2zM9 7V5a3 3 0 0 1 6 0v2"/></svg>
+        <span>Đơn hàng</span><b class="nav-badge" data-badge="orders" hidden></b>
+      </a>
+      <a href="#/registrations" data-nav="registrations">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v15H4zM4 10h16M9 3v4M15 3v4"/></svg>
+        <span>Đăng ký khóa học</span><b class="nav-badge" data-badge="registrations" hidden></b>
+      </a>
+      <a href="#/members" data-nav="members">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14c2 .8 3.5 3 3.5 6"/></svg>
+        <span>Hội viên</span><b class="nav-badge nav-badge--muted" data-badge="members" hidden></b>
+      </a>
+      <a href="#/consults" data-nav="consults">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11zM9 20v-6h6v6"/></svg>
+        <span>Tư vấn setup</span><b class="nav-badge" data-badge="consults" hidden></b>
+      </a>
+      <a href="#/customers" data-nav="customers">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        <span>Khách hàng</span>
+      </a>
+      <a href="#/confirmations" data-nav="confirmations">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 12l3 3 5-6"/></svg>
+        <span>Xác nhận & nhật ký</span>
+      </a>
+      <a href="#/products" data-nav="products">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-4 8 4v9l-8 4-8-4zM4 8l8 4 8-4M12 12v9"/></svg>
+        <span>Sản phẩm</span><b class="nav-badge nav-badge--muted" data-badge="products" hidden></b>
+      </a>
+      <a href="#/categories" data-nav="categories">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3.5h8l9 9-8 8-9-9z"/><circle cx="8" cy="8" r="1.5"/></svg>
+        <span>Danh mục sản phẩm</span>
+      </a>
+      <a href="#/subscribers" data-nav="subscribers">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>
+        <span>Nhận tin</span>
+      </a>
+      <p class="side__group">Nội dung website</p>
+      <a href="#/cms-text" data-nav="cms-text">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M12 5v15M8.5 20h7"/></svg>
+        <span>Chữ trên trang</span><b class="nav-badge nav-badge--muted" data-cms-badge="text" hidden></b>
+      </a>
+      <a href="#/cms-media" data-nav="cms-media">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 15l4.5-4.5L13 15l3-3 4 4"/><circle cx="15.5" cy="9" r="1.5"/></svg>
+        <span>Hình ảnh &amp; video</span>
+      </a>
+      <a href="#/cms-icons" data-nav="cms-icons">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6L12 15.4 6.9 18.2l1.2-5.6L4 8.8l5.6-.6z"/></svg>
+        <span>Icon</span>
+      </a>
+      <a href="#/cms-links" data-nav="cms-links" title="Liên kết &amp; nút">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+        <span>Liên kết &amp; nút</span>
+      </a>
+      <a href="#/cms-layout" data-nav="cms-layout">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v5H4zM4 11h16v4H4zM4 17h16v3H4z"/></svg>
+        <span>Bố cục trang</span>
+      </a>
+      <a href="#/cms-colors" data-nav="cms-colors">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.3-1.7-.4-1.2.3-2.3 1.6-2.3H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg>
+        <span>Màu sắc</span>
+      </a>
+      <a href="#/cms-fonts" data-nav="cms-fonts">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l6-16h1l6 16M7 14h7M16 20h4"/></svg>
+        <span>Phông chữ</span>
+      </a>
+      <a href="#/pages" data-nav="pages">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/></svg>
+        <span>Trang phụ</span>
+      </a>
+      <a href="#/cms-contact" data-nav="cms-contact" title="Liên hệ &amp; mạng xã hội">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3h3l1.6 4.4-2.1 1.5a11 11 0 0 0 6 6l1.5-2.1 4.4 1.6v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.2 2 2 0 0 1 6.6 3z"/></svg>
+        <span>Liên hệ &amp; MXH</span>
+      </a>
+      <a href="#/cms-payment" data-nav="cms-payment">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 10h18M7 15h4"/></svg>
+        <span>Thanh toán</span>
+      </a>
+      <a href="#/cms-code" data-nav="cms-code">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>
+        <span>Mã tùy chỉnh</span>
+      </a>
+      <a href="#/cms-ai" data-nav="cms-ai" title="Tiếng Anh tự dịch (AI)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h9M7.5 3v2M5 5c.5 3 2.5 5.5 5 7M10 5c-.5 3-3 6-6.5 7.5M12 21l4.5-10L21 21M13.6 17.5h5.8"/></svg>
+        <span>Tiếng Anh (AI)</span>
+      </a>
+      <p class="side__group">Thiết lập</p>
+      <a href="#/set-shop" data-nav="set-shop">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.5 11h-13zM8 9l2-5M16 9l-2-5M9 13v4M15 13v4"/></svg>
+        <span>Bán hàng</span>
+      </a>
+      <a href="#/set-course" data-nav="set-course" title="Học phí &amp; lịch tập">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v15H4zM4 10h16M9 3v4M15 3v4M8 14h2M14 14h2M8 17h2"/></svg>
+        <span>Học phí &amp; lịch tập</span>
+      </a>
+      <a href="#/set-brand" data-nav="set-brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>
+        <span>Thương hiệu</span>
+      </a>
+      <a href="#/set-notify" data-nav="set-notify">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10a6 6 0 0 1 12 0v4l2 3H4l2-3zM10 20h4"/></svg>
+        <span>Thông báo</span>
+      </a>
+      <a href="#/users" data-nav="users" title="Tài khoản &amp; phân quyền">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4"/></svg>
+        <span>Tài khoản &amp; phân quyền</span>
+      </a>
+      <a href="#/backup" data-nav="backup">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+        <span>Sao lưu dữ liệu</span>
+      </a>
+    </nav>
+    <div class="side__foot">
+      <p class="side__user"><span id="userEmail"></span> <span class="side__role" id="userRole" hidden></span></p>
+      <a class="side__link" href="/" target="_blank" rel="noopener">Xem website ↗</a>
+      <button class="side__link" type="button" data-action="password">Đổi mật khẩu</button>
+      <button class="side__link" type="button" data-action="logout">Đăng xuất</button>
+    </div>
+  </aside>
+  <div class="scrim scrim--side" id="sideScrim" hidden></div>
+
+  <main class="main" id="main" tabindex="-1"></main>
+</div>
+
+<!-- ─── Bảng chi tiết (drawer) ───────────────────────────── -->
+<div class="scrim scrim--drawer" id="drawerScrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1" hidden></aside>
+
+<!-- ─── Hộp thoại xác nhận ───────────────────────────────── -->
+<dialog class="dlg" id="confirmDlg" aria-labelledby="confirmTitle">
+  <form method="dialog">
+    <h2 class="dlg__title" id="confirmTitle"></h2>
+    <p class="dlg__body" id="confirmBody"></p>
+    <div class="dlg__actions">
+      <button class="btn" value="cancel" autofocus>Hủy</button>
+      <button class="btn btn--primary" value="ok" id="confirmOk">Đồng ý</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ─── Đổi mật khẩu ─────────────────────────────────────── -->
+<dialog class="dlg" id="pwDlg" aria-labelledby="pwTitle">
+  <form id="pwForm" novalidate>
+    <h2 class="dlg__title" id="pwTitle">Đổi mật khẩu</h2>
+    <p class="dlg__body" id="pwForce" hidden><strong>Bạn đang dùng mật khẩu mặc định.</strong> Ai biết mật khẩu này đều vào được trang quản trị — hãy đặt mật khẩu mới để tiếp tục. Đổi xong, các máy khác đang đăng nhập sẽ phải đăng nhập lại.</p>
+    <input type="email" name="username" autocomplete="username" hidden>
+    <label class="field">
+      <span class="field__label">Mật khẩu hiện tại</span>
+      <input type="password" name="current" autocomplete="current-password" required>
+    </label>
+    <label class="field">
+      <span class="field__label">Mật khẩu mới</span>
+      <input type="password" name="next" autocomplete="new-password" minlength="8" required aria-describedby="pwHint">
+      <small class="field__hint" id="pwHint">Tối thiểu 8 ký tự, khác mật khẩu mặc định.</small>
+    </label>
+    <label class="field">
+      <span class="field__label">Nhập lại mật khẩu mới</span>
+      <input type="password" name="again" autocomplete="new-password" required>
+    </label>
+    <p class="form-msg" id="pwMsg" role="alert" hidden></p>
+    <div class="dlg__actions">
+      <button class="btn" type="button" data-dlg-cancel data-pw-cancel>Hủy</button>
+      <button class="btn" type="button" data-action="logout-now" data-pw-out hidden>Đăng xuất</button>
+      <button class="btn btn--primary" type="submit">Đổi mật khẩu</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="/assets/js/admin.js" defer></script>
+<script src="/assets/js/admin-content.js" defer></script>
+<script src="/assets/js/admin-icons.js" defer></script>
+<script src="/assets/js/admin-cms2.js" defer></script>
+<script src="/assets/js/admin-pages.js" defer></script>
+<script src="/assets/js/admin-settings.js" defer></script>
+<script src="/assets/js/admin-cats.js" defer></script>
+<script src="/assets/js/admin-confirm.js" defer></script>
+<script src="/assets/js/admin-ops.js" defer></script>
+<script src="/assets/js/admin-ai.js" defer></script>
+</body>
+</html>

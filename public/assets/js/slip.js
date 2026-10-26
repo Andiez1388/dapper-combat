@@ -1,0 +1,230 @@
+/* Phiếu xác nhận cho khách (đơn hàng / đăng ký khóa học): xem trên web, in / lưu PDF, tải ảnh PNG.
+   Dữ liệu: /api/slip/<mã>?k=<khóa> (khóa riêng của từng đơn). Chữ trên phiếu sửa ở /admin → Chữ trên trang → Chung → Phiếu xác nhận.
+   Lượt xem / tải hiện ở /admin (đơn hàng, đăng ký → Xác nhận cho khách). */
+(function () {
+  var S = window.DC.slip = {};
+  var L = function (k, vi, en, lang) { return DC.x('global.slip.' + k, lang === 'en' ? 1 : 0, lang === 'en' ? en : vi); };
+  var money = function (n, lang) { return Math.round(n || 0).toLocaleString(lang === 'en' ? 'en-US' : 'vi-VN') + 'đ'; };
+  var COL = { red: ['Đỏ', 'Red'], black: ['Đen', 'Black'], white: ['Trắng', 'White'], grey: ['Xám', 'Grey'], navy: ['Xanh navy', 'Navy'], orange: ['Cam', 'Orange'] };
+  var col = function (c, lang) { var d = COL[c] || [c, c]; return DC.x('shop.col.' + c, lang === 'en' ? 1 : 0, lang === 'en' ? d[1] : d[0]); };
+  var date = function (t, lang) { return new Date(t).toLocaleString(lang === 'en' ? 'en-GB' : 'vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }); };
+  var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, ''); };
+  // tên sản phẩm / màu trên phiếu: tiếng Việt lấy tên đã lưu trong đơn (colorName = tên màu riêng);
+  // tiếng Anh tìm sản phẩm (nameEn, tên màu tiếng Anh) nếu trang có danh sách sản phẩm, không có thì dùng tên đã lưu / tên màu chung
+  var prod = function (id) { return DC.product ? DC.product(id) : null; };
+  var itemName = function (i, lang) { var p = prod(i.id); return lang === 'en' && p && p.nameEn ? p.nameEn : i.name; };
+  var itemColor = function (i, lang) {
+    var en = lang === 'en', p = prod(i.id);
+    if (!en && i.colorName) return i.colorName;
+    if (en) { var c = p && Array.isArray(p.colors) ? p.colors.filter(function (x) { return x && x[0] === i.color; })[0] : null; if (c && c[3]) return c[3]; if (i.colorName) return i.colorName; }
+    return p ? DC.colorName(p, i.color, en) : col(i.color, lang);
+  };
+
+  S.url = function (ref) { return '/phieu/' + encodeURIComponent(ref.code) + '?k=' + encodeURIComponent(ref.k); };
+  // lỗi: err.status = mã HTTP (404 = không có phiếu / sai khóa), 0 = mất mạng
+  S.load = function (ref, view) {
+    return fetch('/api/slip/' + encodeURIComponent(ref.code) + '?k=' + encodeURIComponent(ref.k) + (view ? '&view=1' : ''))
+      .then(function (r) { if (!r.ok) { var e = new Error('HTTP ' + r.status); e.status = r.status; throw e; } return r.json(); },
+        function () { var e = new Error('network'); e.status = 0; throw e; });
+  };
+  // trạng thái đơn / đăng ký (đổi trong /admin) → chữ dễ hiểu
+  var ST = {
+    order: { new: ['Mới nhận', 'Received'], confirmed: ['Đã xác nhận', 'Confirmed'], shipping: ['Đang giao', 'Shipping'], done: ['Hoàn tất', 'Completed'], cancelled: ['Đã hủy', 'Cancelled'] },
+    registration: { new: ['Mới nhận', 'Received'], contacted: ['Đã liên hệ', 'Contacted'], paid: ['Đã thanh toán', 'Paid'], enrolled: ['Đã nhập học', 'Enrolled'], cancelled: ['Đã hủy', 'Cancelled'] },
+  };
+  S.status = function (d, lang) {
+    var t = (ST[d.type] || {})[d.status];
+    return t ? L('st.' + d.status, t[0], t[1], lang) : '';
+  };
+
+  // nội dung phiếu (dùng chung cho bản web và bản ảnh)
+  S.model = function (d, lang) {
+    var o = d.type === 'order', m = { lang: lang };
+    m.brand = plain(DC.x('global.brand', 0, 'DAPPER COMBAT'));
+    m.title = o ? L('title.order', 'Phiếu xác nhận đơn hàng', 'Order confirmation', lang) : L('title.reg', 'Phiếu xác nhận đăng ký', 'Registration confirmation', lang);
+    m.codeLab = o ? L('code.order', 'Mã đơn hàng', 'Order no.', lang) : L('code.reg', 'Mã đăng ký', 'Registration no.', lang);
+    m.code = d.code;
+    m.date = L('date', 'Thời gian', 'Date', lang) + ': ' + date(d.createdAt, lang);
+    var st = S.status(d, lang);
+    if (st) m.status = { lab: L('st', 'Trạng thái', 'Status', lang), val: st, key: d.status };
+    // đã nhận tiền (ghi ở /admin) → nhãn "Đã thanh toán"; khung mã QR (d.pay) không còn
+    if (d.paid) m.paid = L('paid', 'Đã thanh toán', 'Paid', lang);
+    m.info = [[L('customer', 'Khách hàng', 'Customer', lang), d.customer.name], [L('phone', 'Điện thoại', 'Phone', lang), d.customer.phone]];
+    if (d.customer.email) m.info.push([L('email', 'Email', 'Email', lang), d.customer.email]);
+    if (o) {
+      var addr = [d.customer.address, d.customer.ward, d.customer.city].filter(Boolean).join(', ');
+      if (addr && d.ship !== 'pickup') m.info.push([L('address', 'Giao đến', 'Deliver to', lang), addr]);
+      m.info.push([L('delivery', 'Giao hàng', 'Delivery', lang), d.ship === 'pickup' ? L('ship.pickup', 'Nhận tại phòng tập', 'Pick up at the gym', lang) : d.ship === 'exp' ? L('ship.exp', 'Hỏa tốc nội thành TP.HCM', 'Same-day in HCMC', lang) : L('ship.std', 'Giao tiêu chuẩn ({ship.eta} ngày)', 'Standard delivery ({ship.eta} days)', lang)]);
+      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { cod: L('pay.cod', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)', lang), bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang) }[d.payMethod] || d.payMethod]);
+      if (d.carrier) m.info.push([L('carrier', 'Đơn vị vận chuyển', 'Carrier', lang), d.carrier]);
+      if (d.trackingCode) m.info.push([L('tracking', 'Mã vận đơn', 'Tracking code', lang), d.trackingCode]);
+      m.itemsLab = L('items', 'Sản phẩm', 'Items', lang);
+      m.items = (d.items || []).map(function (i) { return { name: i.qty + ' × ' + itemName(i, lang), sub: [i.size, i.color ? itemColor(i, lang) : ''].filter(Boolean).join(' · '), price: money(i.price * i.qty, lang) }; });
+      m.totals = [[L('subtotal', 'Tạm tính', 'Subtotal', lang), money(d.subtotal, lang)]];
+      if (d.discount) m.totals.push([L('discount', 'Giảm giá', 'Discount', lang) + (d.promo ? ' (' + d.promo + ')' : ''), '−' + money(d.discount, lang)]);
+      m.totals.push([L('shipping', 'Phí giao hàng', 'Shipping', lang), d.shipping ? money(d.shipping, lang) : L('free', 'Miễn phí', 'Free', lang)]);
+      m.totals.push([L('total', 'Tổng cộng', 'Total', lang), money(d.total, lang), true]);
+    } else {
+      m.info.push([L('program', 'Chương trình', 'Program', lang), d.program + (d.detail ? ' — ' + d.detail : '')]);
+      if (d.date) m.info.push([L('start', 'Ngày muốn bắt đầu', 'Preferred start date', lang), d.date.split('-').reverse().join('/')]);
+      if (d.payName) m.info.push([L('payment', 'Thanh toán', 'Payment', lang), d.payName]);
+      m.totals = [];
+      if (d.total) m.totals.push([L('fee', 'Học phí', 'Tuition', lang), money(d.total, lang)]);
+      if (d.due) m.totals.push([L('due', 'Cần thanh toán', 'Amount due', lang), money(d.due, lang), true]);
+    }
+    if (d.pay) m.pay = {
+      lab: L('transfer', 'Chuyển khoản tới', 'Transfer to', lang),
+      rows: [[L('bank', 'Ngân hàng', 'Bank', lang), d.pay.bank], [L('acc', 'Số tài khoản', 'Account no.', lang), d.pay.acc]]
+        .concat(d.pay.holder ? [[L('holder', 'Chủ tài khoản', 'Account name', lang), d.pay.holder]] : [])
+        .concat([[L('amount', 'Số tiền', 'Amount', lang), money(d.pay.amount, lang)], [L('note', 'Nội dung chuyển khoản', 'Transfer note', lang), d.pay.note]])
+        .concat(d.pay.momo ? [['MoMo', d.pay.momo]] : []),
+      scan: L('scan', 'Quét mã bằng app ngân hàng hoặc MoMo để chuyển đúng số tiền và nội dung.', 'Scan with your banking or MoMo app — amount and note are filled in.', lang),
+    };
+    m.footer = L('footer', 'Vui lòng giữ phiếu này. Dapper Combat sẽ gọi xác nhận trong giờ làm việc.', 'Please keep this confirmation. Dapper Combat will call to confirm during business hours.', lang);
+    m.contact = L('contact', 'Hotline', 'Hotline', lang) + ' ' + DC.cfg('phone', '') + ' · ' + location.host;
+    return m;
+  };
+
+  // bản web (trang /phieu/…)
+  S.html = function (d, lang, ref) {
+    var m = S.model(d, lang), e = DC.esc;
+    var row = function (r) { return '<div class="sl-row' + (r[2] ? ' sl-strong' : '') + '"><span>' + e(r[0]) + '</span><b>' + e(r[1]) + '</b></div>'; };
+    return '<div class="sl-card"><div class="sl-top"><b>' + e(m.brand) + '</b><span>' + e(m.title) + '</span></div>' +
+      '<div class="sl-code"><small>' + e(m.codeLab) + '</small><strong>' + e(m.code) + '</strong><em>' + e(m.date) + '</em>' +
+      (m.status ? '<span class="sl-status sl-st-' + e(m.status.key) + '">' + e(m.status.lab) + ': <b>' + e(m.status.val) + '</b></span>' : '') +
+      (m.paid ? '<span class="sl-status sl-paid">✓ ' + e(m.paid) + '</span>' : '') + '</div>' +
+      '<div class="sl-sec">' + m.info.map(row).join('') + '</div>' +
+      (m.items ? '<div class="sl-sec"><h3>' + e(m.itemsLab) + '</h3>' + m.items.map(function (i) { return '<div class="sl-item"><span>' + e(i.name) + (i.sub ? '<small>' + e(i.sub) + '</small>' : '') + '</span><b>' + e(i.price) + '</b></div>'; }).join('') + '</div>' : '') +
+      (m.totals.length ? '<div class="sl-sec sl-totals">' + m.totals.map(row).join('') + '</div>' : '') +
+      (m.pay ? '<div class="sl-sec sl-pay"><h3>' + e(m.pay.lab) + '</h3><div class="sl-pay-in"><img src="/api/slip/' + encodeURIComponent(ref.code) + '/qr.png?v=2&k=' + encodeURIComponent(ref.k) + '" alt="VietQR" width="180" onerror="this.remove()"><div>' + m.pay.rows.map(row).join('') + '<p>' + e(m.pay.scan) + '</p></div></div></div>' : '') +
+      '<p class="sl-foot">' + e(m.footer) + '<br>' + e(m.contact) + '</p></div>';
+  };
+
+  // bản ảnh PNG (vẽ bằng canvas, chữ theo phông đang dùng trên trang)
+  S.png = function (d, lang, ref) {
+    var m = S.model(d, lang), W = 1080, P = 72, cs = getComputedStyle(document.documentElement);
+    var F = function (v, def) { return (cs.getPropertyValue(v) || '').trim() || def; };
+    var fDisp = F('--f-display', "'Barlow Condensed', sans-serif"), fBody = F('--f-body', "'Inter', sans-serif"), fMono = F('--f-mono', "'Roboto Mono', monospace");
+    var accent = cs.getPropertyValue('--accent').trim() || '#D4372E';
+    var qr = new Promise(function (res) {
+      if (!m.pay) return res(null);
+      var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); };
+      i.src = '/api/slip/' + encodeURIComponent(ref.code) + '/qr.png?v=2&k=' + encodeURIComponent(ref.k);
+    });
+    var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    return Promise.all([qr, ready]).then(function (a) {
+      var img = a[0], c = document.createElement('canvas'), x = c.getContext('2d');
+      var wrap = function (t, font, max) {
+        x.font = font; var out = [], line = '';
+        String(t).split(/\s+/).forEach(function (w) { var test = line ? line + ' ' + w : w; if (x.measureText(test).width > max && line) { out.push(line); line = w; } else line = test; });
+        if (line) out.push(line); return out.length ? out : [''];
+      };
+      // vẽ 2 lần: lần đầu chỉ đo chiều cao
+      var paint = function (draw) {
+        var y = 0;
+        var text = function (t, font, color, tx, ty, align) { if (!draw) return; x.font = font; x.fillStyle = color; x.textAlign = align || 'left'; x.fillText(t, tx, ty); };
+        if (draw) { x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, c.height); x.fillStyle = '#0b0b0b'; x.fillRect(0, 0, W, 150); x.fillStyle = accent; x.fillRect(0, 150, W, 8); }
+        text(m.brand, '900 52px ' + fDisp, '#ffffff', P, 94);
+        text(m.title.toUpperCase(), '500 22px ' + fMono, 'rgba(255,255,255,0.75)', W - P, 90, 'right');
+        y = 230;
+        text(m.codeLab.toUpperCase(), '500 22px ' + fMono, '#6b6b6b', P, y); y += 70;
+        text(m.code, '900 72px ' + fDisp, '#0b0b0b', P, y); y += 50;
+        text(m.date, '400 24px ' + fBody, '#444444', P, y); y += 50;
+        if (m.status) { text(m.status.lab.toUpperCase() + ': ' + m.status.val.toUpperCase(), '600 24px ' + fMono, m.status.key === 'cancelled' ? '#6b6b6b' : accent, P, y - 6); y += 44; }
+        if (m.paid) { text('✓ ' + m.paid.toUpperCase(), '600 24px ' + fMono, '#17703c', P, y - 6); y += 44; }
+        var line = function () { if (draw) { x.fillStyle = '#e4e4e4'; x.fillRect(P, y, W - 2 * P, 2); } y += 40; };
+        var kv = function (r, big) {
+          var lab = r[0], vals = wrap(r[1], (big ? '700 34px ' : '600 26px ') + fBody, W - 2 * P - 330);
+          text(lab, '400 24px ' + fBody, '#6b6b6b', P, y);
+          vals.forEach(function (v, i) { text(v, (big ? '700 34px ' : '600 26px ') + fBody, big ? accent : '#111111', W - P, y + i * 36, 'right'); });
+          y += Math.max(1, vals.length) * 36 + 14;
+        };
+        line();
+        m.info.forEach(function (r) { kv(r); });
+        if (m.items && m.items.length) {
+          line();
+          text(m.itemsLab.toUpperCase(), '500 22px ' + fMono, '#6b6b6b', P, y); y += 44;
+          m.items.forEach(function (i) {
+            var names = wrap(i.name, '600 28px ' + fBody, W - 2 * P - 260);
+            names.forEach(function (n, k) { text(n, '600 28px ' + fBody, '#111111', P, y + k * 36); });
+            text(i.price, '600 28px ' + fBody, '#111111', W - P, y, 'right');
+            y += names.length * 36;
+            if (i.sub) { text(i.sub, '400 23px ' + fBody, '#6b6b6b', P, y); y += 34; }
+            y += 14;
+          });
+        }
+        if (m.totals.length) { line(); m.totals.forEach(function (r) { kv(r, r[2]); }); }
+        if (m.pay) {
+          line();
+          text(m.pay.lab.toUpperCase(), '500 22px ' + fMono, '#6b6b6b', P, y); y += 30;
+          var top = y, qs = img ? 300 : 0, qh = img ? Math.round(qs * (img.height || 1) / (img.width || 1)) : 0;   // giữ tỉ lệ ảnh mã QR
+          if (img && draw) x.drawImage(img, P, y, qs, qh);
+          var lx = P + (img ? qs + 40 : 0), lw = W - P - lx;
+          y += 20;
+          m.pay.rows.forEach(function (r) {
+            text(r[0], '400 22px ' + fBody, '#6b6b6b', lx, y);
+            var v = wrap(r[1], '700 26px ' + fBody, lw);
+            v.forEach(function (s, i) { text(s, '700 26px ' + fBody, '#111111', lx, y + 32 + i * 32); });
+            y += 32 + v.length * 32 + 12;
+          });
+          y = Math.max(y, top + qh) + 16;
+          wrap(m.pay.scan, '400 23px ' + fBody, W - 2 * P).forEach(function (s) { text(s, '400 23px ' + fBody, '#444444', P, y); y += 32; });
+        }
+        y += 20; line();
+        wrap(m.footer, '400 24px ' + fBody, W - 2 * P).forEach(function (s) { text(s, '400 24px ' + fBody, '#333333', P, y); y += 34; });
+        text(m.contact, '500 22px ' + fMono, '#6b6b6b', P, y + 10); y += 70;
+        return y;
+      };
+      c.width = W; c.height = 400;
+      c.height = Math.ceil(paint(false));
+      paint(true);
+      return new Promise(function (res) { c.toBlob(function (b) { res(b); }, 'image/png'); });
+    });
+  };
+
+  // tải ảnh phiếu: lưu file + hiện ảnh (trình duyệt trong Zalo / Facebook không cho tải → nhấn giữ ảnh để lưu)
+  S.download = function (ref, lang, data) {
+    var get = data ? Promise.resolve(data) : S.load(ref);
+    return get.then(function (d) { return S.png(d, lang || d.lang, ref); }).then(function (blob) {
+      var url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'phieu-xac-nhan-' + ref.code + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      S.preview(url, lang);
+      fetch('/api/slip/' + encodeURIComponent(ref.code) + '/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k: ref.k }) }).catch(function () {});
+    });
+  };
+  // lời báo khi không tạo / tải được ảnh phiếu
+  S.dlError = function (lang) { return L('dlerr', 'Không tạo được ảnh phiếu. Vui lòng thử lại, hoặc dùng nút "Xem / in phiếu".', 'Could not create the confirmation image. Please try again, or use "View / print".', lang); };
+  S.preview = function (url, lang) {
+    var old = document.getElementById('dcSlipView'); if (old) old.remove();
+    document.body.insertAdjacentHTML('beforeend', '<div id="dcSlipView" class="dc-slipview" role="dialog"><div class="dc-slipview-in"><button type="button" class="dc-slipview-x" aria-label="close">✕</button>' +
+      '<img src="' + url + '" alt=""><p>' + DC.esc(L('saved', 'Nhấn giữ ảnh để lưu vào máy nếu trình duyệt không tự tải.', 'Press and hold the image to save it if it did not download.', lang)) + '</p></div></div>');
+    document.getElementById('dcSlipView').addEventListener('click', function (e) { if (e.target === this || e.target.closest('.dc-slipview-x')) this.remove(); });
+    var x = document.querySelector('#dcSlipView .dc-slipview-x'); if (x) x.focus({ preventScroll: true });
+  };
+  // Esc đóng ảnh phiếu (không đóng luôn màn hình phía sau)
+  document.addEventListener('keydown', function (e) {
+    var v = e.key === 'Escape' && document.getElementById('dcSlipView');
+    if (v) { e.preventDefault(); e.stopImmediatePropagation(); v.remove(); }
+  }, true);
+  // khung nút trên màn hình đặt hàng / đăng ký thành công
+  S.box = function (ref, lang) {
+    if (!ref || !ref.k) return '';
+    return '<div class="dc-slipbox"><p>' + DC.esc(L('box', 'Lưu phiếu xác nhận để đối chiếu khi cần.', 'Save your confirmation for reference.', lang)) + '</p>' +
+      '<div class="dc-slipbox-btns"><button type="button" class="dc-slip-dl" data-slip="' + DC.esc(ref.code) + '" data-k="' + DC.esc(ref.k) + '">' + DC.esc(L('btn.download', 'Tải phiếu xác nhận (ảnh)', 'Download confirmation (image)', lang)) + '</button>' +
+      '<a class="dc-slip-view" href="' + S.url(ref) + '" target="_blank" rel="noopener" data-newtab>' + DC.esc(L('btn.view', 'Xem / in phiếu', 'View / print', lang)) + '</a></div>' +
+      '<p class="dc-slip-err" role="alert" hidden></p></div>';
+  };
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.dc-slip-dl');
+    if (!b) return;
+    e.preventDefault();
+    if (b.disabled) return;
+    b.disabled = true; b.classList.add('dc-busy');
+    var box = b.closest('.dc-slipbox'), msg = box && box.querySelector('.dc-slip-err');
+    if (msg) { msg.hidden = true; msg.textContent = ''; }
+    S.download({ code: b.dataset.slip, k: b.dataset.k }, DC.lang()).catch(function () {
+      if (msg) { msg.textContent = S.dlError(DC.lang()); msg.hidden = false; }
+    }).then(function () { b.disabled = false; b.classList.remove('dc-busy'); });
+  });
+})();

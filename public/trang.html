@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{title}} — Dapper Combat</title>
+<meta name="description" content="{{desc}}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Dapper Combat">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{desc}}">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;500;600&family=Ysabeau:ital,wght@0,300..800;1,400&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{--red:#D4372E;--ink:#0B0B0B;--paper:#F7F4F0;--f-display:'Barlow Condensed','Arial Narrow',sans-serif;--f-head:'Ysabeau','Segoe UI',system-ui,sans-serif;--f-body:'Inter',system-ui,sans-serif;--f-mono:'Roboto Mono',ui-monospace,monospace;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);-webkit-font-smoothing:antialiased;}
+  a{color:inherit;}
+  .pg-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:1.5rem;padding:1rem clamp(1rem,4vw,2.5rem);background:var(--ink);color:#fff;}
+  .pg-brand{font-family:var(--f-display);font-weight:900;font-size:1.3rem;letter-spacing:0.06em;text-decoration:none;white-space:nowrap;}
+  .pg-links{display:flex;gap:1.4rem;margin:0 auto 0 1rem;padding:0;list-style:none;}
+  .pg-links a{font-family:var(--f-mono);font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;color:rgba(255,255,255,0.75);}
+  .pg-links a:hover{color:#fff;}
+  .lang-switch{display:flex;border:1px solid rgba(255,255,255,0.3);}
+  .lang-switch button{background:none;border:0;color:rgba(255,255,255,0.6);font-family:var(--f-mono);font-size:0.68rem;letter-spacing:0.1em;padding:0.45rem 0.7rem;cursor:pointer;}
+  .lang-switch button.on{background:#fff;color:var(--ink);}
+  .pg-cover{max-height:420px;overflow:hidden;}
+  .pg-cover img{display:block;width:100%;height:100%;max-height:420px;object-fit:cover;}
+  main{max-width:780px;margin:0 auto;padding:clamp(2.5rem,7vw,5rem) clamp(1rem,5vw,2rem) 5rem;}
+  .pg-eyebrow{display:flex;align-items:center;gap:0.7rem;font-family:var(--f-mono);font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:#6b6b6b;}
+  .pg-eyebrow::before{content:'';width:28px;height:1px;background:var(--red);}
+  h1{font-family:var(--f-head);font-weight:400;font-size:clamp(2.2rem,6vw,3.8rem);line-height:1.05;margin:1rem 0 2.2rem;}
+  article{font-size:1rem;line-height:1.8;color:#2a2a2a;overflow-wrap:anywhere;}
+  article h2{font-family:var(--f-head);font-weight:500;font-size:1.7rem;line-height:1.2;color:var(--ink);margin:2.6rem 0 0.8rem;}
+  article h3{font-family:var(--f-display);font-weight:700;font-size:1.15rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:2rem 0 0.6rem;}
+  article h4{font-weight:600;margin:1.6rem 0 0.4rem;}
+  article p{margin:0 0 1.1rem;}
+  article ul,article ol{padding-left:1.3rem;margin:0 0 1.2rem;}
+  article li{margin:0.3rem 0;}
+  article a{color:var(--red);text-underline-offset:3px;}
+  article img{max-width:100%;height:auto;display:block;margin:1.6rem 0;}
+  article blockquote{margin:1.6rem 0;padding:0.4rem 0 0.4rem 1.2rem;border-left:3px solid var(--red);font-family:var(--f-head);font-size:1.2rem;color:var(--ink);}
+  article hr{border:0;border-top:1px solid #dcdcdc;margin:2.4rem 0;}
+  article table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:0.9rem;}
+  article th,article td{border-bottom:1px solid #dcdcdc;padding:0.6rem 0.5rem;text-align:left;vertical-align:top;}
+  article th{font-family:var(--f-mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#6b6b6b;}
+  .pg-foot{background:var(--ink);color:rgba(255,255,255,0.55);font-family:var(--f-mono);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;padding:2rem clamp(1rem,4vw,2.5rem);display:flex;flex-wrap:wrap;gap:1rem 2rem;justify-content:space-between;}
+  .pg-foot a{text-decoration:none;}
+  .pg-foot-links{display:flex;flex-wrap:wrap;gap:0.4rem 1.3rem;list-style:none;margin:0;padding:0;}
+  .pg-foot-links[hidden]{display:none;}
+  .pg-foot .dc-biz{flex-basis:100%;margin:0;text-transform:none;letter-spacing:0.02em;line-height:1.6;}
+  .pg-foot .dc-biz[hidden]{display:none;}
+  .dc-brand-img{display:block;height:28px;width:auto;max-width:180px;object-fit:contain;}
+  .pg-foot a:hover{color:#fff;}
+  [data-lang-body][hidden]{display:none;}
+  /* menu điện thoại: nút ☰ mở khung liên kết (Esc / bấm ra ngoài để đóng) */
+  .pg-menu-btn{display:none;width:44px;height:40px;padding:0 10px;background:none;border:1px solid rgba(255,255,255,0.3);cursor:pointer;flex-direction:column;justify-content:center;gap:5px;}
+  .pg-menu-btn span{display:block;height:2px;background:#fff;transition:transform .2s,opacity .2s;}
+  .pg-menu-btn[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .pg-menu-btn[aria-expanded="true"] span:nth-child(2){opacity:0;}
+  .pg-menu-btn[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .pg-menu{position:absolute;top:100%;left:0;right:0;background:var(--ink);border-top:1px solid rgba(255,255,255,0.12);padding:0.4rem clamp(1rem,4vw,2.5rem) 1rem;box-shadow:0 12px 30px rgba(0,0,0,0.25);}
+  .pg-menu[hidden]{display:none;}
+  .pg-menu a{display:block;padding:0.95rem 0;border-bottom:1px solid rgba(255,255,255,0.1);font-family:var(--f-mono);font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;color:#fff;}
+  .pg-menu a:last-child{border-bottom:none;}
+  .pg-right{display:flex;align-items:center;gap:0.6rem;}
+  @media(max-width:720px){.pg-links{display:none;}.pg-nav{justify-content:space-between;}.pg-menu-btn{display:flex;}}
+  @media(min-width:721px){.pg-menu{display:none!important;}}
+</style>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/data/cms.js"></script>
+</head>
+<body>
+<nav class="pg-nav">
+  <a class="pg-brand" href="/" data-dc-logo><span data-cms="global.brand">DAPPER COMBAT</span></a>
+  <ul class="pg-links">
+    <li><a href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a></li>
+    <li><a href="/shop">Shop</a></li>
+    <li><a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a></li>
+    <li><a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a></li>
+  </ul>
+  <div class="pg-right">
+    <div class="lang-switch"><button type="button" data-lang="vi" class="on">VI</button><button type="button" data-lang="en">EN</button></div>
+    <button class="pg-menu-btn" type="button" aria-expanded="false" aria-controls="pgMenu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="pg-menu" id="pgMenu" hidden>
+    <a href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a>
+    <a href="/shop">Shop</a>
+    <a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a>
+    <a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a>
+  </div>
+</nav>
+{{cover}}
+<main>
+  <div class="pg-eyebrow">Dapper Combat</div>
+  <h1 data-pg-vi="{{title}}" data-pg-en="{{title_en}}">{{title}}</h1>
+  <article data-lang-body="vi">{{body_vi}}</article>
+  <article data-lang-body="en" hidden>{{body_en}}</article>
+</main>
+<footer class="pg-foot" data-cms-sec="global.pgfoot">
+  <span data-cms="global.pgfoot.copy" data-en="© Dapper Combat">© Dapper Combat</span>
+  <ul class="pg-foot-links" data-cms-list="global.pgfoot.links"><li data-cms-item="1"><a data-cms-link="global.pgfoot.l1" data-cms="global.pgfoot.l1" href="/shop" data-en="Shop">Shop</a></li><li data-cms-item="2"><a data-cms-link="global.pgfoot.l2" data-cms="global.pgfoot.l2" href="/khoa-hoc" data-en="Courses">Khóa học</a></li><li data-cms-item="3"><a data-cms-link="global.pgfoot.l3" data-cms="global.pgfoot.l3" href="/dich-vu-setup" data-en="Gym Setup">Dịch vụ Setup</a></li></ul>
+  <ul class="pg-foot-links" data-cms-list="global.pgfoot.pol" data-dc-hide-empty><li data-cms-item="1"><a data-cms-link="global.pgfoot.p1" data-cms="global.pgfoot.p1" href="/trang/chinh-sach-doi-tra" data-en="Returns &amp; warranty">Đổi trả &amp; bảo hành</a></li><li data-cms-item="2"><a data-cms-link="global.pgfoot.p2" data-cms="global.pgfoot.p2" href="/trang/chinh-sach-giao-hang-thanh-toan" data-en="Shipping &amp; payment">Giao hàng &amp; thanh toán</a></li><li data-cms-item="3"><a data-cms-link="global.pgfoot.p3" data-cms="global.pgfoot.p3" href="/trang/chinh-sach-bao-mat" data-en="Privacy policy">Chính sách bảo mật</a></li><li data-cms-item="4"><a data-cms-link="global.pgfoot.p4" data-cms="global.pgfoot.p4" href="/trang/dieu-khoan-su-dung" data-en="Terms of use">Điều khoản sử dụng</a></li></ul>
+  <p class="dc-biz" data-dc-biz hidden></p>
+</footer>
+<script>
+/* trang phụ: đổi VI / EN (lựa chọn được nhớ chung với các trang khác qua site.js) */
+document.querySelector('.lang-switch').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-lang]');
+  if (!b) return;
+  var l = b.dataset.lang;
+  document.documentElement.lang = l;
+  document.querySelectorAll('.lang-switch button').forEach(function (x) { x.classList.toggle('on', x === b); });
+  document.querySelectorAll('[data-lang-body]').forEach(function (a) { a.hidden = a.dataset.langBody !== l; });
+  document.querySelectorAll('[data-pg-vi]').forEach(function (el) { el.textContent = el.getAttribute(l === 'en' ? 'data-pg-en' : 'data-pg-vi'); });
+  document.title = document.querySelector('h1').textContent + ' — Dapper Combat';
+});
+/* menu điện thoại */
+(function () {
+  var btn = document.querySelector('.pg-menu-btn'), menu = document.getElementById('pgMenu');
+  if (!btn || !menu) return;
+  function set(open, focusBtn) {
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { var a = menu.querySelector('a'); if (a) a.focus(); } else if (focusBtn) btn.focus();
+  }
+  btn.addEventListener('click', function () { set(menu.hidden); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) set(false, true); });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target) && !btn.contains(e.target)) set(false); });
+  window.addEventListener('resize', function () { if (!menu.hidden && innerWidth > 720) set(false); });
+})();
+</script>
+</body>
+</html>

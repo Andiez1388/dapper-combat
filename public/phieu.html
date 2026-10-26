@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phiếu xác nhận — Dapper Combat</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{--accent:#D4372E;--ink:#0B0B0B;--paper:#F2F2F2;--f-display:'Barlow Condensed','Arial Narrow',sans-serif;--f-body:'Inter',system-ui,sans-serif;--f-mono:'Roboto Mono',ui-monospace,monospace;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);-webkit-font-smoothing:antialiased;}
+  .pg-nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem clamp(1rem,4vw,2.5rem);background:var(--ink);color:#fff;}
+  .pg-brand{font-family:var(--f-display);font-weight:900;font-size:1.3rem;letter-spacing:0.06em;color:#fff;text-decoration:none;}
+  .lang-switch{display:flex;border:1px solid rgba(255,255,255,0.3);}
+  .lang-switch button{background:none;border:0;color:rgba(255,255,255,0.6);font-family:var(--f-mono);font-size:0.68rem;letter-spacing:0.1em;padding:0.45rem 0.7rem;cursor:pointer;}
+  .lang-switch button.on{background:#fff;color:var(--ink);}
+  main{max-width:720px;margin:0 auto;padding:2rem 1rem 4rem;}
+  .sl-actions{display:flex;flex-wrap:wrap;gap:0.6rem;margin:0 0 1.2rem;}
+  .sl-actions button{flex:1 1 220px;min-height:48px;border:0;cursor:pointer;font-family:var(--f-mono);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.9rem 1rem;}
+  .sl-actions .dl{background:var(--accent);color:#fff;}
+  .sl-actions .pr{background:#fff;color:var(--ink);border:1px solid #cfcfcf;}
+  .sl-actions button[disabled]{opacity:0.6;cursor:wait;}
+  .sl-msg{padding:3rem 1rem;text-align:center;color:#555;}
+  .sl-msg button{margin-top:1rem;min-height:44px;padding:0.7rem 1.4rem;border:1px solid #0b0b0b;background:#fff;font-family:var(--f-mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;}
+  .sl-err{margin:0 0 1.2rem;}
+  @media print{.pg-nav,.sl-actions,.sl-err{display:none!important;}body{background:#fff;}main{padding:0;}.sl-card{box-shadow:none!important;border:1px solid #ddd;}}
+</style>
+<link rel="stylesheet" href="/assets/css/site.css">
+<script src="/assets/js/site.js"></script>
+<script src="/assets/data/cms.js"></script>
+<script src="/assets/data/products.js"></script>
+<script src="/assets/js/slip.js"></script>
+</head>
+<body>
+<nav class="pg-nav">
+  <a class="pg-brand" href="/" data-dc-logo><span data-cms="global.brand">DAPPER COMBAT</span></a>
+  <div class="lang-switch"><button data-lang="vi" class="on">VI</button><button data-lang="en">EN</button></div>
+</nav>
+<main>
+  <div class="sl-actions" id="slActions" hidden>
+    <button type="button" class="dl" id="slDl"></button>
+    <button type="button" class="pr" id="slPrint"></button>
+  </div>
+  <p class="dc-form-err sl-err" id="slErr" role="alert" hidden></p>
+  <div id="slip"><p class="sl-msg">…</p></div>
+</main>
+<script>
+/* trang phiếu xác nhận: /phieu/<mã>?k=<khóa> */
+(function () {
+  var qs = new URLSearchParams(location.search);
+  var ref = { code: decodeURIComponent(location.pathname.split('/').pop() || ''), k: qs.get('k') || '' };
+  var staff = qs.get('staff') === '1';   // /admin mở phiếu: không tính là lượt khách xem
+  var data = null, lang = 'vi', failed = null;
+  var L = function (k, vi, en) { return DC.x('global.slip.' + k, lang === 'en' ? 1 : 0, lang === 'en' ? en : vi); };
+  function render() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-switch button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
+    if (!data) return;
+    document.getElementById('slip').innerHTML = DC.slip.html(data, lang, ref);
+    document.getElementById('slDl').textContent = L('btn.download', 'Tải phiếu xác nhận (ảnh)', 'Download confirmation (image)');
+    document.getElementById('slPrint').textContent = L('btn.print', 'In / lưu PDF', 'Print / save as PDF');
+    document.getElementById('slActions').hidden = false;
+    document.title = DC.slip.model(data, lang).title + ' ' + data.code + ' — Dapper Combat';
+  }
+  // không tải được: link sai / hết hiệu lực (404) khác với mất mạng (cho thử lại)
+  function fail() {
+    var box = document.getElementById('slip');
+    if (failed === 404) box.innerHTML = '<p class="sl-msg">' + DC.esc(L('notfound', 'Không tìm thấy phiếu — link có thể đã sai hoặc hết hiệu lực.', 'Confirmation not found — the link may be wrong.')) + '</p>';
+    else box.innerHTML = '<p class="sl-msg">' + DC.esc(L('neterr', 'Không tải được phiếu — kiểm tra kết nối mạng rồi thử lại.', 'Could not load the confirmation — check your connection and try again.')) + '<br><button type="button" id="slRetry">' + DC.esc(L('retry', 'Thử lại', 'Try again')) + '</button></p>';
+    var r = document.getElementById('slRetry'); if (r) r.addEventListener('click', load);
+  }
+  function load() {
+    failed = null;
+    document.getElementById('slip').innerHTML = '<p class="sl-msg">…</p>';
+    DC.slip.load(ref, !staff).then(function (d) {
+      data = d;
+      var want; try { want = localStorage.getItem('dc_lang'); } catch (e) {}
+      lang = want === 'en' || want === 'vi' ? want : (d.lang || 'vi');
+      render();
+    }, function (err) {
+      failed = err && err.status === 404 ? 404 : (err && err.status) || 0;
+      try { var want = localStorage.getItem('dc_lang'); if (want === 'en' || want === 'vi') lang = want; } catch (e) {}
+      document.documentElement.lang = lang;
+      document.querySelectorAll('.lang-switch button').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
+      fail();
+    });
+  }
+  document.querySelector('.lang-switch').addEventListener('click', function (e) { var b = e.target.closest('[data-lang]'); if (b) { lang = b.dataset.lang; render(); if (!data && failed !== null) fail(); } });
+  document.getElementById('slPrint').addEventListener('click', function () { window.print(); });
+  document.getElementById('slDl').addEventListener('click', function () {
+    var b = this, err = document.getElementById('slErr'); b.disabled = true; err.hidden = true;
+    DC.slip.download(ref, lang, data).catch(function () { err.textContent = DC.slip.dlError(lang); err.hidden = false; }).then(function () { b.disabled = false; });
+  });
+  load();
+})();
+</script>
+</body>
+</html>

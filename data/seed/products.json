@@ -1,0 +1,298 @@
+[
+  {
+    "id": "p1",
+    "name": "DC Pro Sparring Gloves",
+    "cat": "gang",
+    "price": 1290000,
+    "img": "/assets/media/bc3dad0ad714.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 24,
+    "sizes": [
+      "12oz",
+      "14oz",
+      "16oz"
+    ],
+    "colors": [
+      [
+        "red",
+        "#D4372E"
+      ],
+      [
+        "black",
+        "#141414"
+      ],
+      [
+        "white",
+        "#E6E6E6"
+      ]
+    ],
+    "desc": {
+      "vi": "Găng tay sparring da PU cao cấp, đệm mút đa lớp bảo vệ khớp tay. Phù hợp tập bao, pad và sparring.",
+      "en": "Premium PU leather sparring gloves with multi-layer foam for joint protection. Ideal for bag work, pads and sparring."
+    },
+    "full": {
+      "vi": "Dòng găng chủ lực của Dapper Combat, thiết kế cho cả tập luyện cường độ cao lẫn sparring. Lớp mút IMF hấp thụ lực tốt, lòng bàn tay thoáng khí, khóa dán chắc chắn ôm cổ tay. Bảo hành đường may 12 tháng.",
+      "en": "Dapper Combat's flagship glove, built for high-intensity training and sparring alike. IMF foam absorbs impact, a breathable palm keeps hands cool, and a secure strap locks the wrist. 12-month stitching warranty."
+    },
+    "visible": true,
+    "badge": "best",
+    "images": []
+  },
+  {
+    "id": "p2",
+    "name": "DC Elite Fight Gloves",
+    "cat": "gang",
+    "price": 1690000,
+    "img": "/assets/media/3ce28cc822e3.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 12,
+    "sizes": [
+      "12oz",
+      "14oz",
+      "16oz"
+    ],
+    "colors": [
+      [
+        "black",
+        "#141414"
+      ],
+      [
+        "red",
+        "#D4372E"
+      ]
+    ],
+    "desc": {
+      "vi": "Dòng cao cấp cho võ sĩ thi đấu: da thật, ôm nắm đấm chắc chắn, độ bền vượt trội.",
+      "en": "Top-tier line for competitors: genuine leather, snug fist lock and outstanding durability."
+    },
+    "full": {
+      "vi": "Phiên bản Elite dùng da bò thật, form ôm nắm đấm chuẩn thi đấu, cốt mút nhiều lớp cho cảm giác chắc tay. Lựa chọn của các võ sĩ nghiêm túc.",
+      "en": "The Elite version uses genuine cowhide with a competition-grade fist form and multi-layer foam core for a solid feel. The choice of serious fighters."
+    },
+    "visible": true,
+    "badge": "",
+    "images": []
+  },
+  {
+    "id": "p3",
+    "name": "DC Fight Lifestyle Tee",
+    "cat": "ao",
+    "price": 350000,
+    "img": "/assets/media/a406800d7ac8.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 60,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      [
+        "black",
+        "#141414"
+      ],
+      [
+        "white",
+        "#E6E6E6"
+      ],
+      [
+        "grey",
+        "#8A8A8A"
+      ]
+    ],
+    "desc": {
+      "vi": "Áo thun cotton 100% form regular, in logo DC. Thoáng mát cho tập luyện lẫn đời thường.",
+      "en": "100% cotton regular-fit tee with DC print. Breathable for training and everyday wear."
+    },
+    "full": {
+      "vi": "Cotton 100% chải kỹ, co giãn nhẹ, in lụa cao cấp không bong tróc. Form regular dễ mặc cho cả nam và nữ.",
+      "en": "Combed 100% cotton with a slight stretch and premium screen print that won't peel. A regular fit that works for everyone."
+    },
+    "visible": true,
+    "badge": "best",
+    "images": []
+  },
+  {
+    "id": "p4",
+    "name": "DC Combat Hoodie",
+    "cat": "ao",
+    "price": 650000,
+    "old": 850000,
+    "img": "/assets/media/004df67b4e85.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 18,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      [
+        "grey",
+        "#8A8A8A"
+      ],
+      [
+        "black",
+        "#141414"
+      ]
+    ],
+    "desc": {
+      "vi": "Hoodie nỉ bông dày dặn, mũ 2 lớp, túi kangaroo. Giữ ấm sau buổi tập.",
+      "en": "Heavyweight fleece hoodie, double-lined hood, kangaroo pocket. Warm after training."
+    },
+    "full": {
+      "vi": "Nỉ bông 350gsm dày dặn, bên trong lông cừu mềm giữ ấm. Mũ 2 lớp, dây rút, túi kangaroo rộng. Bo tay và gấu dệt chắc.",
+      "en": "Heavyweight 350gsm fleece with a soft brushed interior for warmth. Double-lined hood, drawcord, roomy kangaroo pocket, and ribbed cuffs and hem."
+    },
+    "visible": true,
+    "badge": "",
+    "images": []
+  },
+  {
+    "id": "p5",
+    "name": "DC Performance Tank",
+    "cat": "ao",
+    "price": 390000,
+    "img": "/assets/media/5e72dec5065d.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 40,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      [
+        "white",
+        "#E6E6E6"
+      ],
+      [
+        "black",
+        "#141414"
+      ]
+    ],
+    "desc": {
+      "vi": "Áo ba lỗ thể thao vải thấm hút, co giãn 4 chiều, thoải mái khi vận động mạnh.",
+      "en": "Moisture-wicking performance tank with 4-way stretch for intense movement."
+    },
+    "full": {
+      "vi": "Vải kỹ thuật thấm hút nhanh, co giãn 4 chiều, nhẹ và khô thoáng. Lý tưởng cho conditioning và tập tạ.",
+      "en": "Quick-wicking technical fabric with 4-way stretch — light and airy. Ideal for conditioning and lifting."
+    },
+    "visible": true,
+    "badge": "",
+    "images": []
+  },
+  {
+    "id": "p6",
+    "name": "DC Trucker Cap",
+    "cat": "phukien",
+    "price": 250000,
+    "img": "/assets/media/e5a62861c4e3.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 33,
+    "sizes": [
+      "Freesize"
+    ],
+    "colors": [
+      [
+        "white",
+        "#E6E6E6"
+      ],
+      [
+        "black",
+        "#141414"
+      ]
+    ],
+    "desc": {
+      "vi": "Nón lưới trucker phối màu, logo thêu, khóa nhựa điều chỉnh.",
+      "en": "Two-tone trucker cap with embroidered logo and adjustable snap closure."
+    },
+    "full": {
+      "vi": "Phần trước cứng form, lưới sau thoáng khí, logo thêu nổi. Khóa nhựa điều chỉnh vừa mọi kích cỡ đầu.",
+      "en": "Structured front, breathable mesh back, raised embroidered logo. Adjustable snap fits all head sizes."
+    },
+    "visible": true,
+    "badge": "",
+    "images": []
+  },
+  {
+    "id": "p7",
+    "name": "DC Training Backpack",
+    "cat": "phukien",
+    "price": 790000,
+    "img": "/assets/media/54fdef235c18.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 15,
+    "sizes": [
+      "Freesize"
+    ],
+    "colors": [
+      [
+        "black",
+        "#141414"
+      ],
+      [
+        "navy",
+        "#1F2A44"
+      ]
+    ],
+    "desc": {
+      "vi": "Balo tập chống nước, ngăn để giày và đồ ướt riêng biệt, sức chứa lớn.",
+      "en": "Water-resistant training backpack with separate shoe/wet compartment and large capacity."
+    },
+    "full": {
+      "vi": "Vải chống nước, ngăn giày/đồ ướt riêng, ngăn laptop có đệm, nhiều ngăn phụ. Quai đeo êm vai, sức chứa ~28L.",
+      "en": "Water-resistant shell, separate shoe/wet compartment, padded laptop sleeve and multiple pockets. Comfortable straps, ~28L capacity."
+    },
+    "visible": true,
+    "badge": "new",
+    "images": []
+  },
+  {
+    "id": "p8",
+    "name": "DC Training Legging",
+    "cat": "dotap",
+    "price": 550000,
+    "img": "/assets/media/9beb4e3b2965.jpg",
+    "rating": 0,
+    "reviews": 0,
+    "stock": 28,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "colors": [
+      [
+        "black",
+        "#141414"
+      ],
+      [
+        "orange",
+        "#E8602C"
+      ]
+    ],
+    "desc": {
+      "vi": "Legging tập co giãn 4 chiều, cạp cao ôm dáng, lý tưởng cho conditioning.",
+      "en": "4-way stretch training legging, high-rise supportive waist, ideal for conditioning."
+    },
+    "full": {
+      "vi": "Vải co giãn 4 chiều ôm dáng, cạp cao nâng đỡ, có túi nhỏ bên hông. Không lộ khi squat, thấm hút tốt.",
+      "en": "Body-hugging 4-way stretch fabric, supportive high waist and a side pocket. Squat-proof and moisture-wicking."
+    },
+    "visible": true,
+    "badge": "new",
+    "images": []
+  }
+]

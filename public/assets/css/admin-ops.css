@@ -1,0 +1,205 @@
+/* Dapper Combat — Quản trị: vận hành hằng ngày
+   Đã nhận tiền, lọc theo thời gian, sửa đơn / tạo đơn tay, sửa đăng ký, tồn kho theo size × màu,
+   Khách hàng, Hội viên, Tài khoản & phân quyền, Sao lưu. Dùng token màu của admin.css. */
+
+/* ─── Chung ────────────────────────────────────────────── */
+.side__role {
+  display: inline-block; margin-left: 4px; padding: 0 5px;
+  border: 1px solid rgba(255, 255, 255, .3); color: rgba(255, 255, 255, .75);
+  font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; vertical-align: 1px;
+}
+.dlg__body { white-space: pre-line; }
+.linkbtn {
+  display: inline; padding: 0; margin: 0 0 0 4px; background: none; border: 0;
+  color: var(--ink); font: inherit; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.linkbtn:hover { color: var(--red); }
+input[type="date"] {
+  display: block; width: 100%; min-height: var(--tap); padding: 8px 12px;
+  background: var(--paper); border: 1px solid var(--line-2); border-radius: 0; font-size: 14px; line-height: 1.4;
+}
+input[type="date"]:focus-visible { outline: 2px solid var(--red); outline-offset: -1px; border-color: var(--ink); }
+@media (max-width: 1023.98px) { input[type="date"] { font-size: 16px; } }
+input[readonly].is-auto { background: var(--grey); color: var(--ink); }
+
+/* lọc theo thời gian (đơn hàng, đăng ký, tư vấn) */
+.datef { display: inline-flex; align-items: center; gap: 8px; flex: none; }
+.datef__label { font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.datef select { width: auto; min-width: 128px; min-height: 36px; padding-top: 4px; padding-bottom: 4px; }
+.toolbar .datef + .search { margin-left: 0; }
+@media (max-width: 1023.98px) { .datef select { min-height: 44px; } }
+@media (max-width: 759.98px) {
+  .datef { flex: 1 1 100%; }
+  .datef select { flex: 1 1 auto; }
+}
+
+/* cuối danh sách: số dòng + "Xem thêm" */
+.list-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; margin-top: 12px; }
+.list-foot .results-meta { margin: 0; }
+@media (max-width: 759.98px) { .list-foot .btn { width: 100%; } }
+
+/* nhãn tiền trong bảng */
+.paytag {
+  display: block; width: max-content; margin: 4px 0 0 auto; padding: 1px 6px;
+  border: 1px solid var(--line-2); font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+}
+.paytag--ok { border-color: var(--ink); background: var(--ink); color: #fff; }
+.paytag--wait { border-color: var(--red); color: var(--red); background: var(--paper); }
+.mini-row__meta .paytag, .ops-cust .paytag { display: inline-block; margin: 0 0 0 4px; vertical-align: 1px; }
+.src-tag {
+  display: block; width: max-content; margin-top: 4px; padding: 0 5px; border: 1px dashed var(--line-2);
+  font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+@media (max-width: 899.98px) { .src-tag { display: inline-block; margin: 0 0 0 6px; vertical-align: 1px; } }
+
+/* ─── Drawer: đã nhận tiền, lịch sử ─────────────────────── */
+.paybox { display: grid; gap: 8px; margin: 0 0 16px; padding: 12px 14px; background: var(--grey); }
+.paybox .grid2 { margin-top: 4px; row-gap: 12px; }
+.paybox .field { margin-bottom: 0; }
+.paybox > .field__hint strong { color: var(--red); }
+.timeline li { align-items: flex-start; }
+.timeline__main { display: grid; gap: 2px; min-width: 0; }
+.timeline__note { font-size: 12px; color: rgba(11, 11, 11, .75); overflow-wrap: anywhere; }
+.timeline__by { font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.timeline li.is-note::before { border-style: dashed; }
+
+/* ─── Sửa đơn / tạo đơn tay ────────────────────────────── */
+.ed-lines { margin: 0 0 4px; padding: 0; list-style: none; }
+.ed-line {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 8px 14px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.ed-line:first-child { padding-top: 0; }
+.ed-line.is-short .ed-line__main { color: var(--ink); }
+.ed-line__main { display: grid; gap: 4px; min-width: 0; }
+.ed-line__opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.ed-sel select { width: auto; min-width: 92px; max-width: 100%; min-height: 36px; padding-top: 4px; padding-bottom: 4px; font-size: 13px; }
+.ed-fixed { display: inline-flex; align-items: center; min-height: 28px; padding: 0 8px; background: var(--grey); font-size: 12px; }
+.ed-warn { padding: 4px 8px; border-left: 3px solid var(--red); background: #fff4f3; font-size: 12px; line-height: 1.45; }
+.ed-line__side { display: flex; align-items: center; gap: 10px; }
+.qty { display: inline-flex; align-items: stretch; }
+.qty .icon-btn { width: 36px; height: 36px; font-size: 18px; line-height: 1; }
+.qty .icon-btn[disabled] { opacity: .35; cursor: default; }
+.qty input { width: 56px; min-height: 36px; padding: 4px; text-align: center; border-left: 0; border-right: 0; }
+.ed-line__side .item__line { min-width: 92px; text-align: right; }
+.ed-line__side .icon-btn--line { width: 36px; height: 36px; }
+.ed-empty { padding: 4px 0 14px; }
+.ed-add { display: grid; gap: 8px; margin-top: 12px; padding: 12px 14px; background: var(--grey); }
+.ed-add__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.ed-add__prod { flex: 1 1 260px; min-width: 0; }
+.ed-add__qty input { width: 76px; }
+.ed-add .field__hint { margin: 0; }
+.ed-stock { margin: 18px 0 0; padding: 12px 14px; border: 1px solid var(--line-2); border-left: 3px solid var(--ink); }
+.ed-stock ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 2px; font-size: 13px; }
+#orderEdit .totals { margin-top: 4px; }
+@media (max-width: 1023.98px) {
+  .qty .icon-btn, .ed-line__side .icon-btn--line { width: 44px; height: 44px; }
+  .qty input, .ed-sel select { min-height: 44px; }
+}
+@media (max-width: 479.98px) {
+  .ed-line { grid-template-columns: 48px minmax(0, 1fr); }
+  .ed-line__side { grid-column: 1 / -1; justify-content: space-between; }
+  .ed-line__side .item__line { flex: 1 1 auto; }
+  .ed-add__prod { flex-basis: 100%; }
+  .ed-add__row .ed-sel { flex: 1 1 40%; }
+  .ed-add__row .ed-sel select { width: 100%; }
+  .ed-add__row .btn { flex: 1 1 auto; }
+}
+
+/* ─── Tồn kho theo size × màu (form sản phẩm) ───────────── */
+.vstock { display: grid; gap: 8px; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+.vstock .set-err { margin: 0; }
+.vgrid-wrap { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); }
+.vgrid { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+.vgrid th, .vgrid td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+.vgrid thead th { font-size: 10.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--grey); }
+.vgrid tbody th { text-align: left; font-weight: 500; }
+.vgrid tbody tr:last-child th, .vgrid tbody tr:last-child td { border-bottom: 0; }
+.vgrid input { width: 72px; min-height: 36px; padding: 4px 6px; text-align: center; margin: 0 auto; }
+.vgrid input.is-zero { border-color: var(--red); color: var(--red); }
+.vgrid__sum { font-weight: 700; background: var(--grey); }
+@media (max-width: 1023.98px) { .vgrid input { min-height: 44px; } }
+@media (max-width: 479.98px) {
+  .vgrid th, .vgrid td { padding: 6px 4px; }
+  .vgrid input { width: 56px; padding: 4px 2px; }
+}
+
+/* ─── Mã giảm giá: điều kiện dùng (Thiết lập → Bán hàng) ─── */
+.promo__rules {
+  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr); gap: 10px 12px; align-items: end;
+  padding-top: 10px; border-top: 1px dashed var(--line);
+}
+.promo__rules .field { margin: 0; }
+.promo__used { min-height: var(--tap); display: flex; align-items: center; flex-wrap: wrap; gap: 0 4px; font-size: 12px; color: var(--muted); }
+.promo__used strong { color: var(--ink); }
+.promo__flag { color: var(--red); font-weight: 700; }
+@media (max-width: 1099.98px) { .promo__rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 759.98px) { .promo__rules { grid-template-columns: minmax(0, 1fr); } .promo__used { min-height: 0; } }
+
+/* ─── Khách hàng ───────────────────────────────────────── */
+.ops-back { display: inline-flex; align-items: center; min-height: var(--tap); margin-bottom: 12px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--muted); }
+.ops-back:hover { color: var(--ink); }
+.ops-cust { margin-bottom: 16px; }
+.ops-cust__head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; padding: 18px; }
+.ops-cust__name { font-family: var(--title); font-size: 32px; font-weight: 500; line-height: 1.1; overflow-wrap: anywhere; }
+.ops-cust__meta { margin-top: 6px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.ops-quick { padding: 0; }
+.ops-quick .btn { flex: 0 0 auto; }
+.ops-stats .stat:hover { background: var(--paper); }
+.ops-stats .stat__value { font-size: clamp(28px, 3vw, 40px); }
+.tbl--cu .c-mail { overflow-wrap: anywhere; }
+.ops-cust-grid .mini-row__meta { flex-wrap: wrap; gap: 2px 12px; }
+.ops-cust-grid .mini-row__meta span:last-child { overflow: visible; margin-left: auto; }
+@media (max-width: 759.98px) {
+  .ops-cust__head { padding: 14px; }
+  .ops-cust__name { font-size: 26px; }
+  .ops-quick { width: 100%; }
+  .ops-quick .btn { flex: 1 1 0; min-width: 0; }
+}
+
+/* bảng nhiều cột vừa màn laptop 1366px (không phải cuộn ngang trong bảng) */
+@media (min-width: 900px) and (max-width: 1439.98px) {
+  .tbl th, .tbl td { padding-left: 10px; padding-right: 10px; }
+}
+
+/* hàng chip của màn Khách hàng / Hội viên nằm trong ô bọc → để .chips là phần tử trực tiếp của thanh công cụ (cuộn ngang trên điện thoại) */
+[data-cu-chips], [data-me-chips] { display: contents; }
+
+/* ─── Hội viên / Tài khoản: nút trong bảng ───────────── */
+/* chữ ẩn (.sr) trong tiêu đề bảng không được tràn ra ngoài khung cuộn của bảng */
+.table-wrap { position: relative; }
+.ops-act { display: inline-flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.tbl--me .ops-act { flex-direction: column; align-items: stretch; }
+.tbl--me .c-prog { min-width: 160px; }
+.tbl--us select { width: auto; min-width: 140px; min-height: 36px; padding-top: 4px; padding-bottom: 4px; }
+.tbl--us .c-mail { overflow-wrap: normal; }
+
+/* bảng → thẻ trên màn hẹp */
+@media (max-width: 899.98px) {
+  .tbl--cu td.c-name { grid-column: 1 / -1; grid-row: 1; }
+  .tbl--cu td.c-mail { grid-column: 1 / -1; }
+  .tbl--me td.c-prog, .tbl--me td.c-act { grid-column: 1 / -1; }
+  .tbl--me td.c-act::before { display: none; }
+  .tbl--me .ops-act { flex-direction: row; justify-content: flex-start; }
+  .tbl--me .ops-act .btn { flex: 1 1 auto; min-height: 44px; }
+  .tbl--us td.c-name { grid-column: 1; grid-row: 1; }
+  .tbl--us td.c-role { grid-column: 2; grid-row: 1; justify-self: end; }
+  .tbl--us td.c-role::before { display: none; }
+  .tbl--us td.c-mail { grid-column: 1 / -1; grid-row: 2; }
+  .tbl--us td.c-act { grid-column: 1 / -1; }
+  .tbl--us td.c-act::before { display: none; }
+  .tbl--us .ops-act { justify-content: flex-start; }
+  .tbl--us select { min-height: 44px; }
+  .paytag { margin-left: 0; }
+}
+
+/* ─── Tài khoản: mật khẩu tạm; Sao lưu ─────────────────── */
+.ops-created { display: grid; gap: 8px; margin-bottom: 16px; padding: 16px 18px; background: var(--paper); border: 1px solid var(--ink); border-left: 4px solid var(--red); }
+[data-us-root] .ops-pw code { display: inline-block; padding: 6px 12px; background: var(--grey); font-family: var(--mono); font-size: 20px; font-weight: 700; letter-spacing: .08em; user-select: all; }
+.ops-files { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 0; border: 1px solid var(--line); }
+.ops-files li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 12px; font-size: 13px; }
+.ops-files li + li { border-top: 1px solid var(--line); }
+.ops-restore { display: grid; gap: 10px; padding: 14px; background: var(--grey); }
+.ops-ack { align-items: flex-start; font-size: 13px; line-height: 1.5; }
+.ops-ack .switch__ui { margin-top: 2px; }
+[data-bk-root] code, [data-us-root] code { font-family: var(--mono); font-size: 12px; padding: 1px 4px; background: var(--grey); overflow-wrap: anywhere; }

@@ -4,3 +4,11 @@ node_modules/
 .DS_Store
 Thumbs.db
 .claude/
+
+# dữ liệu chạy thật (đơn hàng, khách, tài khoản, tồn kho) — không đưa lên git
+data/*.json
+data/*.tmp
+data/*.hong-*
+data/.jwt-secret
+public/assets/uploads/
+data/truoc-khoi-phuc-*/
