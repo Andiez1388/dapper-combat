@@ -16,8 +16,11 @@
   var KINDS = [['group', 'Group Training'], ['hssv', 'Học sinh – sinh viên'], ['found', 'Foundation'], ['other', 'Khác']];
   var PROGS = [['', 'Không mở form'], ['gt', 'Form Group Training'], ['hssv', 'Form lớp HSSV'], ['found', 'Form Foundation (BOOK I)'], ['mem', 'Form Membership'], ['pt', 'Form PT 1-1'], ['trial', 'Form học thử miễn phí']];
   var OPTS = { found: [['A', 'Lớp A'], ['B', 'Lớp B']], gt: [['am', 'Sáng'], ['pm', 'Tối']], trial: [['am', 'Sáng'], ['pm', 'Tối']] };
-  var PAYS = [['cod', 'Thanh toán khi nhận hàng (COD)'], ['bank', 'Chuyển khoản ngân hàng (VietQR)'], ['momo', 'Ví MoMo (cổng MoMo nếu đã bật ở Thanh toán online, không thì quét mã VietQR)'],
-    ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chỉ hiện khi đã bật VNPay ở Thanh toán online']];
+  // bank / momo / zalopay: khách quét cùng mã VietQR (SePay tự xác nhận); vnpay / installment: chỉ hiện khi đã cài ở Thanh toán online
+  var PAYS = [['bank', 'Chuyển khoản ngân hàng (quét mã VietQR)'], ['momo', 'Ví MoMo (quét mã VietQR bằng app MoMo)'], ['zalopay', 'ZaloPay (quét mã VietQR bằng app ZaloPay)'],
+    ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chỉ hiện khi đã bật VNPay ở Thanh toán online'],
+    ['installment', 'Trả góp bằng thẻ tín dụng (VNPay) — chỉ hiện khi đã bật trả góp ở Thanh toán online']];
+  var QR_PAYS = ['bank', 'momo', 'zalopay'];
   var FIELD_MODES = [['optional', 'Không bắt buộc'], ['required', 'Bắt buộc'], ['hidden', 'Ẩn']];
   var PDP = [['videos', 'Video trong bộ ảnh'], ['trust', 'Dòng cam kết (giao toàn quốc, đổi trả…)'], ['pay', 'Logo phương thức thanh toán'], ['fit', 'Gợi ý chọn size'],
     ['stock', 'Báo “chỉ còn N sản phẩm”'], ['ship', 'Ngày giao dự kiến'], ['feats', 'Điểm nổi bật'], ['set', 'Gợi ý “Hoàn thiện bộ trang phục”'], ['faq', 'Câu hỏi thường gặp'],
@@ -280,8 +283,8 @@
   function renderCheckout(focusSel) {
     var box = $('[data-ck-box]'); if (!box) return;
     var ck = draft('shop').checkout || {}, pay = ck.pay || {};
-    // VNPay chỉ có khi đã cài cổng → luôn phải còn ít nhất 1 trong COD / chuyển khoản / MoMo
-    var onN = PAYS.filter(function (p) { return p[0] !== 'vnpay' && pay[p[0]] !== false; }).length;
+    // thẻ / trả góp chỉ có khi đã cài cổng → luôn phải còn ít nhất 1 cách quét mã VietQR (chuyển khoản / MoMo / ZaloPay)
+    var onN = QR_PAYS.filter(function (k) { return pay[k] !== false; }).length;
     var sel = function (k, label, modes, hint) {
       return '<label class="field"><span class="field__label">' + esc(label) + '</span><select data-ck="' + k + '">' + modes.map(function (m) {
         return '<option value="' + m[0] + '"' + (ck[k] === m[0] ? ' selected' : '') + '>' + esc(m[1]) + '</option>'; }).join('') + '</select>' +
@@ -289,13 +292,13 @@
     };
     box.innerHTML = '<p class="field__label">Cách thanh toán khách được chọn</p>' +
       '<div class="ck-pay">' + PAYS.map(function (p) {
-        var on = pay[p[0]] !== false, last = on && p[0] !== 'vnpay' && onN === 1;
+        var on = pay[p[0]] !== false, last = on && QR_PAYS.indexOf(p[0]) > -1 && onN === 1;
         return '<label class="check set-switch' + (last ? ' is-locked' : '') + '"' + (last ? ' title="Cần ít nhất một cách thanh toán"' : '') + '>' +
           '<input type="checkbox" data-ck-pay="' + p[0] + '"' + (on ? ' checked' : '') + (last ? ' disabled aria-describedby="ckPayNote"' : '') + '>' +
           '<span class="switch__ui" aria-hidden="true"></span><span>' + esc(p[1]) + '</span></label>';
       }).join('') + '</div>' +
       '<p class="set-note" id="ckPayNote">' + (onN === 1 ? '<strong>Chỉ còn một cách thanh toán nên không tắt được</strong> — bật cách khác trước. ' : 'Phải còn ít nhất một cách thanh toán. ') +
-        'Số tài khoản (VietQR) và số MoMo sửa ở <a href="#/cms-payment">Nội dung website → Thanh toán</a>.</p>' +
+        'Số tài khoản nhận tiền (mã VietQR — app ngân hàng, MoMo, ZaloPay đều quét được) sửa ở <a href="#/cms-payment">Nội dung website → Thanh toán</a>; thẻ và trả góp cài ở <a href="#/set-payments">Thanh toán online</a>.</p>' +
       '<div class="set-grid3">' +
         sel('email', 'Ô Email', FIELD_MODES, 'Có email mới gửi được email xác nhận cho khách.') +
         sel('ward', 'Ô Phường / xã', FIELD_MODES) +
@@ -1079,7 +1082,7 @@
     if (g === 'shop' && t.matches('[data-ck-pay]')) {
       var pay = draft('shop').checkout.pay, key = t.getAttribute('data-ck-pay');
       pay[key] = t.checked;
-      if (!pay.cod && !pay.bank && !pay.momo) pay[key] = true; // không cho tắt cách cuối cùng
+      if (!pay.bank && !pay.momo && !pay.zalopay) pay[key] = true; // không cho tắt cách quét mã cuối cùng
       renderCheckout('[data-ck-pay="' + key + '"]'); refreshBar('shop');
     } else if (g === 'shop' && t.matches('[data-ck]')) {
       draft('shop').checkout[t.getAttribute('data-ck')] = t.value; refreshBar('shop');

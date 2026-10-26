@@ -55,7 +55,9 @@
       var addr = [d.customer.address, d.customer.ward, d.customer.city].filter(Boolean).join(', ');
       if (addr && d.ship !== 'pickup') m.info.push([L('address', 'Giao đến', 'Deliver to', lang), addr]);
       m.info.push([L('delivery', 'Giao hàng', 'Delivery', lang), d.ship === 'pickup' ? L('ship.pickup', 'Nhận tại phòng tập', 'Pick up at the gym', lang) : d.ship === 'exp' ? L('ship.exp', 'Hỏa tốc nội thành TP.HCM', 'Same-day in HCMC', lang) : L('ship.std', 'Giao tiêu chuẩn ({ship.eta} ngày)', 'Standard delivery ({ship.eta} days)', lang)]);
-      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { cod: L('pay.cod', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)', lang), bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang), vnpay: L('pay.vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', lang) }[d.payMethod] || d.payMethod]);
+      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang), zalopay: L('pay.zalopay', 'ZaloPay', 'ZaloPay', lang),
+        vnpay: L('pay.vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', lang), installment: L('pay.installment', 'Trả góp thẻ tín dụng (VNPay)', 'Credit card installments (VNPay)', lang),
+        cash: L('pay.cash', 'Tiền mặt', 'Cash', lang) }[d.payMethod] || d.payMethod]);
       if (d.carrier) m.info.push([L('carrier', 'Đơn vị vận chuyển', 'Carrier', lang), d.carrier]);
       if (d.trackingCode) m.info.push([L('tracking', 'Mã vận đơn', 'Tracking code', lang), d.trackingCode]);
       m.itemsLab = L('items', 'Sản phẩm', 'Items', lang);
@@ -81,9 +83,8 @@
       lab: L('transfer', 'Chuyển khoản tới', 'Transfer to', lang),
       rows: [[L('bank', 'Ngân hàng', 'Bank', lang), d.pay.bank], [L('acc', 'Số tài khoản', 'Account no.', lang), d.pay.acc]]
         .concat(d.pay.holder ? [[L('holder', 'Chủ tài khoản', 'Account name', lang), d.pay.holder]] : [])
-        .concat([[L('amount', 'Số tiền', 'Amount', lang), money(d.pay.amount, lang)], [L('note', 'Nội dung chuyển khoản', 'Transfer note', lang), d.pay.note]])
-        .concat(d.pay.momo ? [['MoMo', d.pay.momo]] : []),
-      scan: L('scan', 'Quét mã bằng app ngân hàng hoặc MoMo để chuyển đúng số tiền và nội dung.', 'Scan with your banking or MoMo app — amount and note are filled in.', lang),
+        .concat([[L('amount', 'Số tiền', 'Amount', lang), money(d.pay.amount, lang)], [L('note', 'Nội dung chuyển khoản', 'Transfer note', lang), d.pay.note]]),
+      scan: L('scan', 'Quét mã bằng app ngân hàng, MoMo hoặc ZaloPay để chuyển đúng số tiền và nội dung.', 'Scan with your banking app, MoMo or ZaloPay — amount and note are filled in.', lang),
     };
     m.footer = L('footer', 'Vui lòng giữ phiếu này. Dapper Combat sẽ gọi xác nhận trong giờ làm việc.', 'Please keep this confirmation. Dapper Combat will call to confirm during business hours.', lang);
     m.contact = L('contact', 'Hotline', 'Hotline', lang) + ' ' + DC.cfg('phone', '') + ' · ' + location.host;
@@ -213,16 +214,19 @@
     if (v) { e.preventDefault(); e.stopImmediatePropagation(); v.remove(); }
   }, true);
   /* ─── Thanh toán online ───────────────────────────────────────────────────
-     nút "Thanh toán bằng thẻ (VNPay)" / "Thanh toán bằng ví MoMo" → POST /api/pay/<cổng>/create {code, k, lang} → chuyển sang cổng;
+     nút "Thanh toán bằng thẻ (VNPay)" → POST /api/pay/vnpay/create {code, k, lang} → chuyển sang cổng;
+     nút "Trả góp qua thẻ tín dụng (VNPay)" → bảng chọn ngân hàng / loại thẻ / kỳ hạn (S.isp);
      theo dõi phiếu (GET /api/slip, không tính lượt xem) cho tới khi server ghi đã nhận tiền */
-  S.provider = function (p, lang) { return p === 'vnpay' ? 'VNPay' : p === 'momo' ? 'MoMo' : L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang); };
+  S.provider = function (p, lang) {
+    return p === 'vnpay' ? 'VNPay' : p === 'installment' ? L('pay.installment', 'Trả góp thẻ tín dụng (VNPay)', 'Credit card installments (VNPay)', lang) : L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang);
+  };
   S.payBtns = function (ref, online, lang) {
-    var list = (online || []).filter(function (p) { return p === 'vnpay' || p === 'momo'; });
+    var list = (online || []).filter(function (p) { return p === 'vnpay' || p === 'installment'; });
     if (!ref || !ref.k || !list.length) return '';
     return '<div class="dc-paybtns"><p class="dc-paybtns-h">' + DC.esc(L('payonline', 'Thanh toán online', 'Pay online', lang)) + '</p><div class="dc-paybtns-row">' +
       list.map(function (p) {
         return '<button type="button" class="dc-paybtn dc-paybtn-' + p + '" data-pay-go="' + p + '" data-slip="' + DC.esc(ref.code) + '" data-k="' + DC.esc(ref.k) + '" data-lang="' + (lang === 'en' ? 'en' : 'vi') + '">' +
-          DC.esc(p === 'vnpay' ? L('paybtn.vnpay', 'Thanh toán bằng thẻ (VNPay)', 'Pay by card (VNPay)', lang) : L('paybtn.momo', 'Thanh toán bằng ví MoMo', 'Pay with MoMo', lang)) + '</button>';
+          DC.esc(p === 'vnpay' ? L('paybtn.vnpay', 'Thanh toán bằng thẻ (VNPay)', 'Pay by card (VNPay)', lang) : L('paybtn.installment', 'Trả góp qua thẻ tín dụng (VNPay)', 'Pay in installments (VNPay)', lang)) + '</button>';
       }).join('') + '</div><p class="dc-pay-err" role="alert" hidden></p></div>';
   };
   // màn hình chờ chuyển sang cổng thanh toán
@@ -244,6 +248,7 @@
     var b = e.target.closest && e.target.closest('[data-pay-go]');
     if (!b || b.disabled) return;
     e.preventDefault();
+    if (b.dataset.payGo === 'installment') { S.isp({ code: b.dataset.slip, k: b.dataset.k }, b.dataset.lang || DC.lang()); return; }
     var box = b.closest('.dc-paybtns'), err = box && box.querySelector('.dc-pay-err'), btns = box ? box.querySelectorAll('[data-pay-go]') : [b];
     [].forEach.call(btns, function (x) { x.disabled = true; });
     b.classList.add('dc-busy');
@@ -254,6 +259,115 @@
       if (err) { err.textContent = x.message; err.hidden = false; }
     });
   });
+  /* ─── Trả góp (VNPay): chọn ngân hàng → loại thẻ → kỳ hạn (xem trước tiền mỗi tháng) → POST form sang trang VNPay ───
+     GET /api/pay/installment/options → { amount, banks, need }; need = thông tin VNPay cần mà đơn chưa có (email / địa chỉ / tỉnh thành) */
+  var ISP = null;
+  var NEED = { email: ['isp.email', 'Email', 'Email', 'email', 'email'], address: ['isp.address', 'Địa chỉ', 'Address', 'text', 'street-address'],
+    city: ['isp.city', 'Tỉnh / thành phố', 'City / province', 'text', 'address-level1'] };
+  S.ispClose = function () { var b = document.getElementById('dcIsp'); if (b) b.remove(); ISP = null; };
+  S.isp = function (ref, lang) {
+    if (!ref || !ref.k) return;
+    lang = lang === 'en' ? 'en' : 'vi';
+    S.ispClose();
+    var back = document.activeElement;
+    ISP = { ref: ref, lang: lang, data: null, bank: '', scheme: '', term: 0, info: {}, back: back };
+    document.body.insertAdjacentHTML('beforeend', '<div id="dcIsp" class="dc-isp" role="dialog" aria-modal="true" aria-labelledby="dcIspT"><div class="dc-isp-in">' +
+      '<button type="button" class="dc-isp-x" aria-label="' + (lang === 'en' ? 'Close' : 'Đóng') + '">✕</button>' +
+      '<h3 id="dcIspT">' + DC.esc(L('isp.title', 'Trả góp qua thẻ tín dụng', 'Pay in installments', lang)) + '</h3>' +
+      '<div class="dc-isp-body" aria-live="polite"><p class="dc-isp-wait">' + DC.esc(L('isp.loading', 'Đang tải danh sách ngân hàng…', 'Loading banks…', lang)) + '</p></div></div></div>');
+    document.querySelector('#dcIsp .dc-isp-x').focus({ preventScroll: true });
+    var mine = ISP;
+    fetch('/api/pay/installment/options?code=' + encodeURIComponent(ref.code) + '&k=' + encodeURIComponent(ref.k) + '&lang=' + lang)
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error(d.error || L('payerr', 'Chưa mở được cổng thanh toán, vui lòng thử lại.', "Couldn't open the payment gateway, please try again.", lang)); return d; }); },
+        function () { throw new Error(DC.tx('global.err.net', 'Mất kết nối mạng. Kiểm tra mạng rồi thử lại.', 'Network error. Check your connection and try again.')); })
+      .then(function (d) {
+        if (ISP !== mine) return;
+        ISP.data = { amount: d.amount || 0, banks: Array.isArray(d.banks) ? d.banks : [], need: Array.isArray(d.need) ? d.need.filter(function (k) { return NEED[k]; }) : [] };
+        if (ISP.data.banks.length === 1) ISP.bank = ISP.data.banks[0].code;
+        ispRender();
+      }, function (x) {
+        if (ISP !== mine) return;
+        var b = document.querySelector('#dcIsp .dc-isp-body');
+        if (b) b.innerHTML = '<p class="dc-isp-err">' + DC.esc(x.message) + '</p>';
+      });
+  };
+  function ispPick() {
+    var d = ISP.data, bank = d.banks.filter(function (b) { return b.code === ISP.bank; })[0] || null;
+    var scheme = bank ? (bank.schemes.length === 1 ? bank.schemes[0] : bank.schemes.filter(function (s) { return s.scheme === ISP.scheme; })[0]) || null : null;
+    var term = scheme ? scheme.terms.filter(function (t) { return t.n === ISP.term; })[0] || null : null;
+    return { bank: bank, scheme: scheme, term: term };
+  }
+  function ispRender(focusSel) {
+    var box = document.getElementById('dcIsp'), body = box && box.querySelector('.dc-isp-body');
+    if (!body || !ISP || !ISP.data) return;
+    var lang = ISP.lang, d = ISP.data, e = DC.esc, p = ispPick(), mo = function (n) { return money(n, lang); };
+    if (!d.banks.length) { body.innerHTML = '<p class="dc-isp-err">' + e(L('isp.none', 'Hiện chưa có ngân hàng nào nhận trả góp cho số tiền này.', 'No bank currently offers installments for this amount.', lang)) + '</p>'; return; }
+    var h = '<p class="dc-isp-amt"><span>' + e(L('isp.amount', 'Số tiền trả góp', 'Amount', lang)) + '</span><b>' + e(mo(d.amount)) + '</b></p>';
+    h += '<p class="dc-isp-h">' + e(L('isp.bank', '1. Ngân hàng phát hành thẻ', '1. Card issuer', lang)) + '</p><div class="dc-isp-grid">' + d.banks.map(function (b) {
+      var on = p.bank && p.bank.code === b.code;
+      return '<button type="button" class="dc-isp-opt' + (on ? ' on' : '') + '" data-isp-bank="' + e(b.code) + '" aria-pressed="' + !!on + '">' +
+        (b.logo ? '<img src="' + e(b.logo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : '') + '<span>' + e(b.name || b.code) + '</span></button>';
+    }).join('') + '</div>';
+    if (p.bank) h += '<p class="dc-isp-h">' + e(L('isp.card', '2. Loại thẻ', '2. Card type', lang)) + '</p><div class="dc-isp-grid dc-isp-grid--sm">' + p.bank.schemes.map(function (s) {
+      var on = p.scheme && p.scheme.scheme === s.scheme;
+      return '<button type="button" class="dc-isp-opt' + (on ? ' on' : '') + '" data-isp-scheme="' + e(s.scheme) + '" aria-pressed="' + !!on + '">' +
+        (s.logo ? '<img src="' + e(s.logo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : '') + '<span>' + e(s.scheme) + '</span></button>';
+    }).join('') + '</div>';
+    if (p.scheme) h += '<p class="dc-isp-h">' + e(L('isp.term', '3. Kỳ hạn', '3. Term', lang)) + '</p><div class="dc-isp-terms">' + p.scheme.terms.map(function (t) {
+      var on = p.term && p.term.n === t.n;
+      return '<button type="button" class="dc-isp-term' + (on ? ' on' : '') + '" data-isp-term="' + t.n + '" aria-pressed="' + !!on + '">' +
+        '<b>' + e(L('isp.months', '{n} tháng', '{n} months', lang).replace('{n}', t.n)) + '</b>' +
+        '<strong>' + e(mo(t.monthly)) + '<small>' + e(L('isp.monthly', '/tháng', '/month', lang)) + '</small></strong>' +
+        '<span>' + e(L('isp.total', 'Tổng trả', 'Total', lang)) + ': ' + e(mo(t.total)) + '</span>' +
+        '<span>' + e(t.fee ? L('isp.fee', 'Phí chuyển đổi', 'Conversion fee', lang) + ': ' + mo(t.fee) : L('isp.nofee', 'Không phí chuyển đổi', 'No conversion fee', lang)) + '</span></button>';
+    }).join('') + '</div>';
+    if (p.term && d.need.length) h += '<p class="dc-isp-h">' + e(L('isp.info', '4. Thông tin VNPay cần', '4. Details VNPay needs', lang)) + '</p><div class="dc-isp-info">' + d.need.map(function (k) {
+      var n = NEED[k];
+      return '<label><span>' + e(L(n[0], n[1], n[2], lang)) + '</span><input type="' + n[3] + '" data-isp-info="' + k + '" autocomplete="' + n[4] + '" value="' + e(ISP.info[k] || '') + '" required></label>';
+    }).join('') + '</div>';
+    h += '<p class="dc-isp-err" role="alert" hidden></p>' +
+      '<button type="button" class="dc-isp-go" data-isp-go' + (p.term ? '' : ' disabled') + '>' + e(L('isp.go', 'Tiếp tục sang VNPay', 'Continue to VNPay', lang)) + '</button>' +
+      '<p class="dc-isp-note">' + e(L('isp.note', 'Bạn sẽ nhập thông tin thẻ tín dụng ở trang bảo mật của VNPay.', "You'll enter your credit card details on VNPay's secure page.", lang)) + '</p>';
+    body.innerHTML = h;
+    var f = focusSel && body.querySelector(focusSel);
+    if (f) f.focus({ preventScroll: true });
+  }
+  function ispGo(btn) {
+    var box = document.getElementById('dcIsp'), err = box.querySelector('.dc-isp-err'), lang = ISP.lang, p = ispPick();
+    var fail = function (m) { err.textContent = m; err.hidden = false; };
+    if (!p.term) return fail(L('isp.pick', 'Vui lòng chọn ngân hàng, loại thẻ và kỳ hạn', 'Please choose a bank, card type and term', lang));
+    var body = { code: ISP.ref.code, k: ISP.ref.k, issuer: p.bank.code, scheme: p.scheme.scheme, term: p.term.n, lang: lang }, miss = null;
+    ISP.data.need.forEach(function (k) { var v = String(ISP.info[k] || '').trim(); body[k] = v; if (!v && !miss) miss = box.querySelector('[data-isp-info="' + k + '"]'); });
+    if (miss) { miss.focus(); return fail(L('isp.fill', 'Vui lòng điền đủ thông tin', 'Please fill in all details', lang)); }
+    err.hidden = true; btn.disabled = true; btn.classList.add('dc-busy');
+    DC.api('/pay/installment/create', body).then(function (r) {
+      if (!r || !r.action || !r.fields) throw new Error(L('payerr', 'Chưa mở được cổng thanh toán, vui lòng thử lại.', "Couldn't open the payment gateway, please try again.", lang));
+      S.goOverlay(lang);
+      var form = document.createElement('form');
+      form.method = 'POST'; form.action = r.action; form.style.display = 'none';
+      Object.keys(r.fields).forEach(function (k) { var i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = r.fields[k]; form.appendChild(i); });
+      document.body.appendChild(form);
+      form.submit();
+    }).catch(function (x) { btn.disabled = false; btn.classList.remove('dc-busy'); fail(x.message); });
+  }
+  document.addEventListener('click', function (e) {
+    var box = document.getElementById('dcIsp');
+    if (!box || !ISP || !box.contains(e.target)) return;
+    var t = e.target.closest('button'), back = ISP.back;
+    if (e.target === box || (t && t.classList.contains('dc-isp-x'))) { S.ispClose(); if (back && back.focus) back.focus({ preventScroll: true }); return; }
+    if (!t || !ISP.data) return;
+    if (t.hasAttribute('data-isp-bank')) { ISP.bank = t.getAttribute('data-isp-bank'); ISP.scheme = ''; ISP.term = 0; ispRender('[data-isp-bank="' + ISP.bank + '"]'); }
+    else if (t.hasAttribute('data-isp-scheme')) { ISP.scheme = t.getAttribute('data-isp-scheme'); ISP.term = 0; ispRender('[data-isp-scheme="' + ISP.scheme + '"]'); }
+    else if (t.hasAttribute('data-isp-term')) { ISP.term = +t.getAttribute('data-isp-term'); ispRender('[data-isp-term="' + ISP.term + '"]'); }
+    else if (t.hasAttribute('data-isp-go') && !t.disabled) ispGo(t);
+  });
+  document.addEventListener('input', function (e) { var k = ISP && e.target.getAttribute && e.target.getAttribute('data-isp-info'); if (k) ISP.info[k] = e.target.value; });
+  // Esc đóng bảng trả góp (không đóng luôn màn hình phía sau)
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !document.getElementById('dcIsp')) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    var back = ISP && ISP.back; S.ispClose(); if (back && back.focus) back.focus({ preventScroll: true });
+  }, true);
   // theo dõi phiếu tới khi đã nhận tiền: mỗi 'every' ms, tối đa 'max' ms, chỉ khi trang đang hiện; mỗi phiếu 1 vòng theo dõi
   var W = {};
   // alive (tùy chọn): khung thanh toán còn hiện không — đóng khung thì thôi theo dõi

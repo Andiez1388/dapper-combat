@@ -21,7 +21,7 @@ module.exports = async function mailTests(env, t) {
   };
   const settle = async () => { for (let i = 0; i < 100; i++) { await new Promise(r => setTimeout(r, 60)); const st = (await req('/api/translate/status')).j; if (st && !st.running && !st.queued) return; } };
   const p = (await req('/api/products', { pub: true })).j.find(x => x.stock > 5) ;
-  const order = (email, lang) => req('/api/orders', { method: 'POST', pub: true, body: { lang, customer: { name: 'Khách Email', phone: '0912000111', email, address: '1 Lê Lợi', city: 'TP. Hồ Chí Minh' }, items: [{ id: p.id, qty: 1, size: p.sizes[0], color: p.colors[0][0] }], pay: 'cod', ship: 'std' } });
+  const order = (email, lang) => req('/api/orders', { method: 'POST', pub: true, body: { lang, customer: { name: 'Khách Email', phone: '0912000111', email, address: '1 Lê Lợi', city: 'TP. Hồ Chí Minh' }, items: [{ id: p.id, qty: 1, size: p.sizes[0], color: p.colors[0][0] }], pay: 'bank', ship: 'std' } });
 
   t.section('Email xác nhận cho khách (VI / EN)');
   await t.run('email', async () => {
@@ -33,7 +33,7 @@ module.exports = async function mailTests(env, t) {
     t.ok(o.confirm.email.status === 'sent', 'đơn ghi "đã gửi email xác nhận"', o.confirm.email);
     r = await order('en@example.com', 'en');
     m = await mailTo('en@example.com');
-    t.ok(m && /^Dapper Combat received your order #DC-\d+/.test(m.subject) && /Total: [\d,]+₫/.test(m.text) && /Payment: Cash on delivery/.test(m.text), 'khách đặt tiếng Anh → email tiếng Anh (giá, cách thanh toán bằng tiếng Anh)', m && { subject: m.subject, text: m.text.slice(0, 300) });
+    t.ok(m && /^Dapper Combat received your order #DC-\d+/.test(m.subject) && /Total: [\d,]+₫/.test(m.text) && /Payment: Bank transfer/.test(m.text), 'khách đặt tiếng Anh → email tiếng Anh (giá, cách thanh toán bằng tiếng Anh)', m && { subject: m.subject, text: m.text.slice(0, 300) });
     r = await req('/api/registrations', { method: 'POST', pub: true, body: { name: 'Member EN', phone: '0912000222', email: 'reg-en@example.com', program: 'trial', programName: 'Free trial', lang: 'en' } });
     m = await mailTo('reg-en@example.com');
     t.ok(m && /received your registration #DC-REG-\d+/.test(m.subject), 'đăng ký tiếng Anh → email tiếng Anh', m && m.subject);

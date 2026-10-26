@@ -78,7 +78,7 @@
     document.title = DC.slip.model(data, lang).title + ' ' + data.code + ' — Dapper Combat';
     renderPay();
   }
-  /* thanh toán online: thông báo kết quả từ cổng + nút thanh toán (VNPay / MoMo) khi còn cần trả */
+  /* thanh toán online: thông báo kết quả từ cổng + nút thanh toán (thẻ / trả góp VNPay) khi còn cần trả */
   function renderPay() {
     var b = document.getElementById('slBanner'), p = document.getElementById('slPay');
     var msg = { ok: ['ok', L('payok', 'Thanh toán thành công — cảm ơn bạn!', 'Payment successful — thank you!')],

@@ -413,7 +413,6 @@ footer{background:var(--surface);padding:3rem 2.5rem 2rem;border-top:1px solid v
 .pay-methods{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
 .pay-label{font-weight:700;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-right:0.15rem;}
 .pay-badge{font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:0.68rem;letter-spacing:0.02em;padding:0.42rem 0.62rem;border-radius:7px;line-height:1;color:#fff;display:inline-flex;align-items:center;box-shadow:0 2px 6px rgba(16,20,25,0.12);}
-.pay-badge.cod{background:#2E7D32;}
 .pay-badge.bank{background:var(--ink);}
 .pay-badge.momo{background:#A50064;}
 .pay-badge.zalo{background:#0068FF;}
@@ -436,7 +435,6 @@ footer{background:var(--surface);padding:3rem 2.5rem 2rem;border-top:1px solid v
 .pay-label{font-weight:700;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-right:0.2rem;}
 .pay-logo{height:34px;padding:0 0.65rem;background:#fff;border:1px solid var(--line-2);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;gap:0.35rem;box-shadow:0 1px 3px rgba(16,20,25,0.08);font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:0.74rem;letter-spacing:0.02em;color:var(--ink);}
 .pay-logo .pl-ic{width:17px;height:17px;}
-.pay-logo .pl-ic.cod{color:#2E7D32;}
 .pay-logo .pl-ic.bank{color:#15181C;}
 .pl-momo{color:#A50064;font-size:0.84rem;}
 .pdp-faq{margin-top:1.75rem;padding-top:1.6rem;border-top:1px solid var(--line);}
@@ -1481,9 +1479,13 @@ footer .footer-bottom{padding-top:1.2rem;border-top:1px solid var(--line);}
 .v3ok-pay .dc-paybtns{margin:0.9rem 0 0;}
 #payOpts .pay-opt > span:not(.v3-po-logos){min-width:0;overflow-wrap:break-word;}
 /* màn hẹp: tên lựa chọn đã ghi ATM / Visa / Mastercard → bỏ logo thẻ trong ô để chữ đủ chỗ (logo vẫn ở dòng phương thức cuối tóm tắt đơn) */
-@media (max-width:520px){#payOpts [data-pay-opt="vnpay"] .v3-po-logos{display:none;}}
+@media (max-width:520px){#payOpts [data-pay-opt="vnpay"] .v3-po-logos,#payOpts [data-pay-opt="installment"] .v3-po-logos{display:none;}}
 .success .dc-paybtn{padding:0.7rem 1rem;border-radius:2px;letter-spacing:0.01em;}
 .success .dc-paybtn-vnpay,.success .dc-paybtn-vnpay:hover{background:#005BAA;}
-.success .dc-paybtn-momo,.success .dc-paybtn-momo:hover{background:#A50064;}
+.success .dc-paybtn-installment,.success .dc-paybtn-installment:hover{background:#0B3B66;}
+/* ZaloPay; trả góp chưa đủ mức tối thiểu (dòng mô tả ghi mức) */
+.pl-zalo{color:#0068FF;font-size:0.84rem;}
+.pay-logo.pl-isp{font-size:0.78rem;font-weight:700;color:#0B3B66;}
+#payOpts .pay-opt.is-off{opacity:0.55;cursor:not-allowed;}
 #v3Ok .dc-paid-ok{max-width:none;}
 .v3ok-pay .dc-paybtns{border:0;padding:0;}.v3ok-pay .dc-paybtns-h{display:none;}

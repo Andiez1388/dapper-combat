@@ -494,7 +494,11 @@ function shopRules() {
   const sh = settings.all().shop;
   return { freeShip: sh.freeShip, fee: sh.shipFee, express: sh.expressFee, expressOn: sh.expressEnabled, expressHcmOnly: sh.expressHcmOnly !== false };
 }
-const PAY = ['cod', 'bank', 'momo', 'vnpay'];
+// cách thanh toán trên web: bank / momo / zalopay = quét cùng mã VietQR (SePay tự xác nhận); vnpay = thẻ; installment = trả góp (VNPay)
+// đơn nhân viên tạo thêm: cash = tiền mặt (mua tại phòng tập / nhận hàng trả tiền mặt)
+const PAY = ['bank', 'momo', 'zalopay', 'vnpay', 'installment'];
+const QR_PAY = ['bank', 'momo', 'zalopay'];
+const STAFF_PAY = PAY.concat('cash');
 const ORDER_STATUS = ['new', 'confirmed', 'shipping', 'done', 'cancelled'];
 // giao hỏa tốc chỉ trong TP.HCM (Thiết lập → Bán hàng); trang Shop dùng đúng phép thử này (DC.isHcm)
 const isHcm = c => /ho\s*chi\s*minh|hcm|sai\s*gon/i.test(String(c || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd'));
@@ -631,17 +635,21 @@ router.post('/orders', limit('order', 10), async (req, res) => {
   if (ck.email === 'required' && !customer.email) return bad('Vui lòng nhập email', 'Please enter your email');
   if (ck.ward === 'required' && customer.ward.length < 2) return bad('Vui lòng nhập phường / xã', 'Please enter your ward');
   if (ck.note === 'required' && customer.note.length < 2) return bad('Vui lòng nhập ghi chú cho đơn hàng', 'Please add an order note');
-  // VNPay: chỉ khi cổng đã bật; MoMo: cổng bật thì chuyển sang MoMo, không thì quét mã VietQR bằng app MoMo như trước
-  const online = payments.online(), gateway = b.pay === 'vnpay' ? 'vnpay' : b.pay === 'momo' && online.momo ? 'momo' : '';
+  // thẻ (VNPay) / trả góp: chỉ khi cổng đã cài ở /admin → Thanh toán online
+  const online = payments.online();
+  if (!PAY.includes(b.pay)) return bad('Vui lòng chọn cách thanh toán', 'Please choose a payment method');
   if (b.pay === 'vnpay' && !online.vnpay) return bad('Thanh toán bằng thẻ đang tạm ngưng, vui lòng chọn cách khác', 'Card payment is unavailable, please choose another method');
+  if (b.pay === 'installment' && !online.installment) return bad('Trả góp đang tạm ngưng, vui lòng chọn cách khác', 'Installments are unavailable, please choose another method');
   if (ck.pay[b.pay] === false) return bad('Phương thức thanh toán này đang tạm ngưng, vui lòng chọn cách khác', 'This payment method is unavailable, please choose another');
   const priced = priceOrder(b, req);
   if (priced.error) return res.status(priced.code || 400).json({ error: priced.error, ...(priced.promoError ? { promoError: true } : {}) });
+  if (b.pay === 'installment' && priced.total < online.installmentMin)
+    return bad(`Trả góp áp dụng cho đơn từ ${moneyVi(online.installmentMin)}đ — vui lòng chọn cách khác`, `Installments are available for orders from ${moneyEn(online.installmentMin)}đ — please choose another method`);
 
   const orders = read('orders.json', []);
   const order = {
     id: genId('ord'), code: makeCode('#DC-', 6, orders), createdAt: Date.now(), status: 'new',
-    customer, pay: PAY.includes(b.pay) ? b.pay : 'cod', lang: b.lang === 'en' ? 'en' : 'vi',
+    customer, pay: b.pay, lang: b.lang === 'en' ? 'en' : 'vi',
     ...priced, adminNote: '', history: [{ at: Date.now(), status: 'new' }], confirm: newConfirm(), stockReturned: false,
   };
   // trừ tồn kho (theo size / màu nếu sản phẩm chia tồn kho theo biến thể) + đếm lượt dùng mã giảm giá
@@ -651,11 +659,13 @@ router.post('/orders', limit('order', 10), async (req, res) => {
   writeFile('orders.json', orders);
   notify.order(order, r => setConfirm('orders.json', order.id, { email: r }));
   const out = { id: order.id, code: order.code, total: order.total, subtotal: order.subtotal, discount: order.discount, shipping: order.shipping, slip: slipRef(order) };
-  // thanh toán qua cổng: trả link để trang chuyển khách sang VNPay / MoMo (lỗi thì khách thanh toán lại từ phiếu xác nhận)
-  if (gateway) {
-    try { out.payUrl = await startPay(req, { x: order, file: 'orders.json', type: 'order' }, gateway, order.lang); }
-    catch (e) { out.payError = e.message; console.warn('[thanh toán ' + gateway + ']', e.message); }
+  // thẻ: trả link để trang chuyển khách sang VNPay (lỗi thì khách thanh toán lại từ phiếu xác nhận)
+  // trả góp: trang mở bảng chọn ngân hàng / kỳ hạn (GET /pay/installment/options) rồi mới sang VNPay
+  if (order.pay === 'vnpay') {
+    try { out.payUrl = await startPay(req, { x: order, file: 'orders.json', type: 'order' }, 'vnpay', order.lang); }
+    catch (e) { out.payError = e.message; console.warn('[thanh toán vnpay]', e.message); }
   }
+  if (order.pay === 'installment') out.installment = true;
   res.status(201).json(out);
 });
 
@@ -718,9 +728,11 @@ function bySlip(code, k) {
 function payInfo(type, x) {
   const p = cms.data().payment || {};
   if (x.paid) return null; // đã nhận tiền → không cần mã QR chuyển khoản
-  const amount = type === 'order' ? (x.pay === 'bank' || x.pay === 'momo' ? x.total : 0) : x.due || 0;
+  const amount = type === 'order' ? (QR_PAY.includes(x.pay) ? x.total : 0) : x.due || 0;
   if (!amount || !p.bankBin || !p.bankAccount) return null;
-  return { bank: (BANKS.find(b => b[0] === p.bankBin) || [])[1] || '', bin: p.bankBin, acc: p.bankAccount, holder: p.bankHolder || '', momo: p.momoPhone || '', amount, note: String(x.code).replace(/[^A-Za-z0-9]/g, '') };
+  // wallet: khách chọn MoMo / ZaloPay → phiếu hướng dẫn quét mã bằng app ví (vẫn chuyển vào tài khoản ngân hàng)
+  return { bank: (BANKS.find(b => b[0] === p.bankBin) || [])[1] || '', bin: p.bankBin, acc: p.bankAccount, holder: p.bankHolder || '', amount, note: String(x.code).replace(/[^A-Za-z0-9]/g, ''),
+    ...(type === 'order' && (x.pay === 'momo' || x.pay === 'zalopay') ? { wallet: x.pay } : {}) };
 }
 router.get('/slip/:code', limit('slip', 60), (req, res) => {
   const f = bySlip(req.params.code, req.query.k);
@@ -764,7 +776,7 @@ router.post('/slip/:code/download', limit('slipdl', 30), (req, res) => {
   setConfirm(f.file, f.x.id, { slip: { downloads: (s.downloads || 0) + 1, firstAt: s.firstAt || now, lastAt: now } });
   res.json({ ok: true });
 });
-/* ─── Thanh toán online: SePay (tự xác nhận chuyển khoản), VNPay, MoMo — lib/payments.js ───────────────────── */
+/* ─── Thanh toán online: SePay (tự xác nhận chuyển khoản — cả khi khách quét mã bằng MoMo / ZaloPay), VNPay thẻ, VNPay trả góp — lib/payments.js ─── */
 const payments = require('../lib/payments');
 const KIND_OF = { order: 'orders', registration: 'registrations' };
 const alnum = code => String(code || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();   // #DC-871627 → DC871627 (nội dung chuyển khoản / mã giao dịch)
@@ -785,20 +797,23 @@ const refCode = ref => { const s = String(ref || ''), i = s.indexOf('T'); return
 const newRef = code => code + 'T' + Date.now();
 // còn phải trả bao nhiêu (0 = đã trả / đã hủy / không cần trả trước)
 const owed = (type, x) => (x.paid || x.status === 'cancelled' ? 0 : dueOf(KIND_OF[type], x));
-// cổng khách còn dùng được cho đơn / đăng ký này
-function onlineFor(type, x) { const o = payments.online(); return owed(type, x) > 0 ? ['vnpay', 'momo'].filter(p => o[p]) : []; }
-// tạo link thanh toán ở cổng → url (lỗi thì ném, lời nhắn theo ngôn ngữ khách)
+// cổng khách còn dùng được cho đơn / đăng ký này (thẻ VNPay; trả góp khi số tiền đủ mức tối thiểu) — theo cả bật / tắt ở Thiết lập → Bán hàng
+function onlineFor(type, x) {
+  const o = payments.online(), ck = settings.all().shop.checkout.pay, due = owed(type, x);
+  if (!due) return [];
+  return [o.vnpay && 'vnpay', o.installment && due >= o.installmentMin && 'installment'].filter(p => p && ck[p] !== false);
+}
+// tạo link thanh toán thẻ ở cổng VNPay → url (lỗi thì ném, lời nhắn theo ngôn ngữ khách)
 async function startPay(req, f, provider, lang) {
   const L = (vi, en) => (lang === 'en' ? en : vi);
-  if (!payments.online()[provider]) throw new Error(L('Cổng thanh toán này đang tắt', 'This payment method is unavailable'));
+  if (provider !== 'vnpay' || !payments.online().vnpay) throw new Error(L('Cổng thanh toán này đang tắt', 'This payment method is unavailable'));
   const amount = owed(f.type, f.x);
   if (!amount) throw new Error(f.x.paid ? L('Đơn này đã thanh toán', 'This order is already paid') : L('Không có khoản nào cần thanh toán', 'Nothing to pay'));
   const code = alnum(f.x.code), ref = newRef(code), base = siteBase(req);
   const list = read(f.file, []), x = list.find(e => e.id === f.x.id);
   x.payAttempts = (x.payAttempts || []).concat({ provider, ref, amount, at: Date.now() }).slice(-10);
   writeFile(f.file, list);
-  if (provider === 'vnpay') return payments.vnpayUrl({ ref, amount, info: 'Thanh toan ' + code, ip: req.ip, returnUrl: base + '/api/pay/vnpay/return', lang });
-  return payments.momoCreate({ ref, amount, info: 'Dapper Combat ' + code, redirectUrl: base + '/api/pay/momo/return', ipnUrl: base + '/api/pay/momo/ipn', lang });
+  return payments.vnpayUrl({ ref, amount, info: 'Thanh toan ' + code, ip: req.ip, returnUrl: base + '/api/pay/vnpay/return', lang });
 }
 // giao dịch đã xử lý (cổng / SePay gửi lại nhiều lần) — data/pay-events.json
 function seenEvent(key) {
@@ -818,7 +833,7 @@ function confirmPay({ provider, ref, code, amount, txn }) {
     if (Math.round(att.amount) !== Math.round(amount)) return 'amount';
   }
   if (txn && seenEvent(provider + ':' + txn)) return 'dup';
-  const NAME = { sepay: 'Chuyển khoản (tự xác nhận)', vnpay: 'VNPay', momo: 'MoMo' };
+  const NAME = { sepay: 'Chuyển khoản (tự xác nhận)', vnpay: 'VNPay', installment: 'VNPay trả góp' };
   x.payments = (x.payments || []).concat({ provider, amount, at: Date.now(), txn: String(txn || '').slice(0, 60) });
   let result;
   if (x.paid) {
@@ -835,46 +850,97 @@ function confirmPay({ provider, ref, code, amount, txn }) {
 }
 const slipBack = (f, state) => `/phieu/${String(f.x.code).replace(/^#/, '')}?k=${f.x.confirm ? f.x.confirm.token : ''}&pay=${state}`;
 
-// khách bấm "Thanh toán bằng thẻ / MoMo" ở phiếu xác nhận
-router.post('/pay/:provider/create', limit('paycreate', 20), async (req, res) => {
-  const b = req.body || {}, provider = req.params.provider, lang = b.lang === 'en' ? 'en' : 'vi';
-  if (!['vnpay', 'momo'].includes(provider)) return res.status(404).json({ error: 'Not found' });
+// khách bấm "Thanh toán bằng thẻ (VNPay)" ở phiếu xác nhận
+router.post('/pay/vnpay/create', limit('paycreate', 20), async (req, res) => {
+  const b = req.body || {}, lang = b.lang === 'en' ? 'en' : 'vi';
   const f = bySlip(b.code, b.k);
   if (!f) return res.status(404).json({ error: msg(req, 'Không tìm thấy phiếu', 'Confirmation not found') });
-  try { res.json({ url: await startPay(req, f, provider, lang) }); }
+  try { res.json({ url: await startPay(req, f, 'vnpay', lang) }); }
   catch (e) { res.status(400).json({ error: e.message }); }
 });
-// VNPay: khách quay về (kiểm tra chữ ký, ghi nhận nếu chưa có IPN — cùng kết quả, không ghi trùng)
-router.get('/pay/vnpay/return', (req, res) => {
-  const v = payments.vnpayVerify(req.query), f = v.ok ? byAlnum(refCode(v.ref)) : null;
-  if (!f) return res.redirect('/');
-  if (v.success) confirmPay({ provider: 'vnpay', ref: v.ref, amount: v.amount, txn: v.txn });
-  res.redirect(slipBack(f, v.success ? 'ok' : v.cancel ? 'cancel' : 'fail'));
+
+/* trả góp (VNPay): khách chọn ngân hàng → loại thẻ → kỳ hạn ở trang web, server khởi tạo giao dịch, trình duyệt POST sang VNPay.
+   VNPay cần email, địa chỉ, tỉnh / thành của khách — thiếu (khách không nhập email, đăng ký khóa học không có địa chỉ) thì hỏi thêm ở bảng chọn */
+const ispCustomer = f => (f.type === 'order'
+  ? { name: f.x.customer.name, phone: f.x.customer.phone, email: f.x.customer.email || '', address: [f.x.customer.address, f.x.customer.ward].filter(Boolean).join(', '), city: f.x.customer.city || '' }
+  : { name: f.x.name, phone: f.x.phone, email: f.x.email || '', address: f.x.ispAddress || '', city: f.x.ispCity || '' });
+const ispNeed = cu => ['email', 'address', 'city'].filter(k => !cu[k]);
+// kiểm tra trước khi hỏi VNPay → lời báo (theo ngôn ngữ khách) hoặc null
+function ispBlock(f, L) {
+  const o = payments.online(), due = owed(f.type, f.x);
+  if (!o.installment || settings.all().shop.checkout.pay.installment === false) return L('Trả góp đang tạm ngưng, vui lòng chọn cách thanh toán khác', 'Installments are unavailable, please choose another payment method');
+  if (!due) return f.x.paid ? L('Đơn này đã thanh toán', 'This order is already paid') : L('Không có khoản nào cần thanh toán', 'Nothing to pay');
+  if (due < o.installmentMin) return L(`Trả góp áp dụng cho khoản từ ${moneyVi(o.installmentMin)}đ`, `Installments are available from ${moneyEn(o.installmentMin)}đ`);
+  return null;
+}
+// GET /pay/installment/options?code=&k= → { amount, banks: [{ code, name, logo, schemes: [{ scheme, logo, terms: [{ n, monthly, total, fee }] }] }], need: ['email'…] }
+router.get('/pay/installment/options', limit('ispopt', 30), async (req, res) => {
+  const f = bySlip(req.query.code, req.query.k), L = (vi, en) => msg(req, vi, en);
+  if (!f) return res.status(404).json({ error: L('Không tìm thấy phiếu', 'Confirmation not found') });
+  const block = ispBlock(f, L);
+  if (block) return res.status(400).json({ error: block });
+  const amount = owed(f.type, f.x);
+  try { res.json({ amount, banks: await payments.installmentOptions(amount), need: ispNeed(ispCustomer(f)) }); }
+  catch (e) {
+    console.warn('[trả góp VNPay] bảng trả góp:', e.message);
+    res.status(502).json({ error: L('Chưa lấy được danh sách ngân hàng trả góp, vui lòng thử lại sau ít phút.', "Couldn't load installment options, please try again in a few minutes.") });
+  }
 });
-// VNPay IPN: máy chủ VNPay báo kết quả (nguồn chính xác nhất)
-router.get('/pay/vnpay/ipn', (req, res) => {
-  const v = payments.vnpayVerify(req.query);
-  if (!v.ok || !v.tmn) return res.json({ RspCode: '97', Message: 'Invalid signature' });
-  const f = byAlnum(refCode(v.ref)), att = f && (f.x.payAttempts || []).find(a => a.ref === v.ref);
-  if (!att) return res.json({ RspCode: '01', Message: 'Order not found' });
-  if (Math.round(att.amount) !== v.amount) return res.json({ RspCode: '04', Message: 'invalid amount' });
-  if (!v.success) return res.json({ RspCode: '00', Message: 'Confirm Success' });   // giao dịch lỗi / bị hủy: đã nhận thông báo, không đổi đơn
-  if (f.x.paid && (f.x.payments || []).some(p => p.provider === 'vnpay' && p.txn === v.txn)) return res.json({ RspCode: '02', Message: 'Order already confirmed' });
-  const r = confirmPay({ provider: 'vnpay', ref: v.ref, amount: v.amount, txn: v.txn });
-  res.json(r === 'dup' ? { RspCode: '02', Message: 'Order already confirmed' } : { RspCode: '00', Message: 'Confirm Success' });
+// POST /pay/installment/create { code, k, issuer, scheme, term, email?, address?, city?, lang } → { action, fields } (trình duyệt POST form sang VNPay)
+router.post('/pay/installment/create', limit('paycreate', 20), async (req, res) => {
+  const b = req.body || {}, lang = b.lang === 'en' ? 'en' : 'vi', L = (vi, en) => (lang === 'en' ? en : vi);
+  const f = bySlip(b.code, b.k);
+  if (!f) return res.status(404).json({ error: L('Không tìm thấy phiếu', 'Confirmation not found') });
+  const block = ispBlock(f, L);
+  if (block) return res.status(400).json({ error: block });
+  const issuer = str(b.issuer, 20).toUpperCase(), scheme = str(b.scheme, 20).toUpperCase(), term = int(b.term, 0, 99, 0);
+  if (!/^[A-Z0-9_]{2,20}$/.test(issuer) || !/^[A-Z0-9_]{2,20}$/.test(scheme) || !payments.TERMS.includes(term))
+    return res.status(400).json({ error: L('Vui lòng chọn ngân hàng, loại thẻ và kỳ hạn trả góp', 'Please choose a bank, card type and term') });
+  // thông tin VNPay cần mà đơn / đăng ký chưa có
+  const cu = ispCustomer(f), add = {};
+  for (const k of ispNeed(cu)) add[k] = str(b[k], k === 'email' ? 120 : k === 'address' ? 200 : 80);
+  if (add.email !== undefined && !EMAIL_RE.test(add.email)) return res.status(400).json({ error: L('Vui lòng nhập email đúng định dạng', 'Please enter a valid email') });
+  if (add.address !== undefined && add.address.length < 5) return res.status(400).json({ error: L('Vui lòng nhập địa chỉ', 'Please enter your address') });
+  if (add.city !== undefined && add.city.length < 2) return res.status(400).json({ error: L('Vui lòng nhập tỉnh / thành phố', 'Please enter your city / province') });
+  Object.assign(cu, add);
+  const amount = owed(f.type, f.x), code = alnum(f.x.code), ref = newRef(code), base = siteBase(req);
+  let r;
+  try {
+    r = await payments.installmentInit({ ref, amount, info: 'Thanh toan tra gop ' + code, issuer, scheme, term, customer: cu, ip: req.ip, ua: req.get('user-agent'),
+      returnUrl: base + '/api/pay/installment/return', cancelUrl: base + slipBack(f, 'cancel'), lang });
+  } catch (e) {
+    console.warn('[trả góp VNPay] khởi tạo', ref, e.message);
+    return res.status(502).json({ error: L('Chưa tạo được giao dịch trả góp, vui lòng thử lại hoặc chọn ngân hàng / kỳ hạn khác.', "Couldn't start the installment payment, please try again or choose another bank / term.") });
+  }
+  // lưu lần thanh toán (IPN đối chiếu số tiền theo mã giao dịch) + thông tin khách vừa bổ sung
+  const list = read(f.file, []), x = list.find(e => e.id === f.x.id);
+  x.payAttempts = (x.payAttempts || []).concat({ provider: 'installment', ref, amount, at: Date.now(), isp: r.txnId, issuer, scheme, term }).slice(-10);
+  if (add.email) { if (f.type === 'order') x.customer.email = add.email; else x.email = add.email; }
+  if (f.type === 'registration') { if (add.address) x.ispAddress = add.address; if (add.city) x.ispCity = add.city; }
+  writeFile(f.file, list);
+  res.json({ action: r.action, fields: r.fields });
 });
-// MoMo IPN (POST JSON) → trả 204
-router.post('/pay/momo/ipn', (req, res) => {
-  const v = payments.momoVerify(req.body || {});
-  if (v.ok && v.success) confirmPay({ provider: 'momo', ref: v.ref, amount: v.amount, txn: v.txn });
-  res.status(204).end();
-});
-router.get('/pay/momo/return', (req, res) => {
-  const v = payments.momoVerify(req.query), f = v.ok ? byAlnum(refCode(v.ref)) : null;
-  if (!f) return res.redirect('/');
-  if (v.success) confirmPay({ provider: 'momo', ref: v.ref, amount: v.amount, txn: v.txn });
-  res.redirect(slipBack(f, v.success ? 'ok' : v.cancel ? 'cancel' : 'fail'));
-});
+
+// VNPay thẻ / trả góp: khách quay về (kiểm tra chữ ký, ghi nhận nếu chưa có IPN — cùng kết quả, không ghi trùng) và IPN (máy chủ VNPay báo, nguồn chính xác nhất)
+for (const kind of ['vnpay', 'installment']) {
+  router.get(`/pay/${kind}/return`, (req, res) => {
+    const v = payments.vnpayVerify(req.query, kind), f = v.ok ? byAlnum(refCode(v.ref)) : null;
+    if (!f) return res.redirect('/');
+    if (v.success) confirmPay({ provider: kind, ref: v.ref, amount: v.amount, txn: v.txn });
+    res.redirect(slipBack(f, v.success ? 'ok' : v.cancel ? 'cancel' : 'fail'));
+  });
+  router.get(`/pay/${kind}/ipn`, (req, res) => {
+    const v = payments.vnpayVerify(req.query, kind);
+    if (!v.ok || !v.tmn) return res.json({ RspCode: '97', Message: 'Invalid signature' });
+    const f = byAlnum(refCode(v.ref)), att = f && (f.x.payAttempts || []).find(a => a.ref === v.ref && (a.provider || 'vnpay') === kind);
+    if (!att) return res.json({ RspCode: '01', Message: 'Order not found' });
+    if (Math.round(att.amount) !== v.amount) return res.json({ RspCode: '04', Message: 'invalid amount' });
+    if (!v.success) return res.json({ RspCode: '00', Message: 'Confirm Success' });   // giao dịch lỗi / bị hủy: đã nhận thông báo, không đổi đơn
+    if (f.x.paid && (f.x.payments || []).some(p => p.provider === kind && p.txn === v.txn)) return res.json({ RspCode: '02', Message: 'Order already confirmed' });
+    const r = confirmPay({ provider: kind, ref: v.ref, amount: v.amount, txn: v.txn });
+    res.json(r === 'dup' ? { RspCode: '02', Message: 'Order already confirmed' } : { RspCode: '00', Message: 'Confirm Success' });
+  });
+}
 // SePay: tài khoản ngân hàng có tiền vào → tìm mã đơn trong nội dung chuyển khoản
 router.post('/pay/sepay/webhook', (req, res) => {
   if (!payments.sepayAuth(req.headers.authorization)) return res.status(401).json({ success: false });
@@ -885,7 +951,7 @@ router.post('/pay/sepay/webhook', (req, res) => {
   }
   res.json({ success: true });   // luôn trả thành công (giao dịch không phải của web cũng vậy) để SePay không gửi lại
 });
-// /admin: thử cấu hình cổng (VNPay: link thử 10.000đ không gắn đơn; MoMo: gọi API tạo giao dịch thử)
+// /admin: thử cấu hình cổng (VNPay thẻ: link thử 10.000đ không gắn đơn; trả góp: đăng nhập + lấy bảng trả góp cho một số tiền mẫu)
 router.post('/pay/test/:provider', adminOnly, async (req, res) => {
   const p = req.params.provider, ready = payments.ready(), base = siteBase(req);
   try {
@@ -893,9 +959,10 @@ router.post('/pay/test/:provider', adminOnly, async (req, res) => {
       if (!ready.vnpay) return res.status(400).json({ error: 'Chưa bật / chưa nhập đủ mã website (TMN) và chuỗi bí mật VNPay.' });
       return res.json({ url: payments.vnpayUrl({ ref: newRef('TEST'), amount: 10000, info: 'Thu cau hinh Dapper Combat', ip: req.ip, returnUrl: base + '/api/pay/vnpay/return', lang: 'vi' }) });
     }
-    if (p === 'momo') {
-      if (!ready.momo) return res.status(400).json({ error: 'Chưa bật / chưa nhập đủ Partner code, Access key, Secret key MoMo.' });
-      return res.json({ url: await payments.momoCreate({ ref: newRef('TEST'), amount: 10000, info: 'Thu cau hinh Dapper Combat', redirectUrl: base + '/admin#/set-payments', ipnUrl: base + '/api/pay/momo/ipn', lang: 'vi' }) });
+    if (p === 'installment') {
+      if (!ready.installment) return res.status(400).json({ error: 'Chưa bật / chưa nhập đủ địa chỉ API, mã website (TMN), Client ID, tên đăng nhập, mật khẩu và Secret key trả góp.' });
+      const amount = Math.max(5000000, payments.online().installmentMin), banks = await payments.installmentOptions(amount, true);
+      return res.json({ amount, banks: banks.map(b => ({ code: b.code, name: b.name, schemes: b.schemes.map(s => s.scheme), terms: [...new Set([].concat(...b.schemes.map(s => s.terms.map(t => t.n))))].sort((a, c) => a - c) })) });
     }
     res.status(404).json({ error: 'Not found' });
   } catch (e) { res.status(400).json({ error: e.message }); }
@@ -1036,9 +1103,9 @@ function adminCollection(name, file, statuses) {
     if ((name === 'orders' || name === 'registrations') && (b.paid !== undefined || b.paidNote !== undefined || b.paidAmount !== undefined)) {
       setPaid(name, o, { paid: b.paid !== undefined ? !!b.paid : !!o.paid, paidAmount: b.paidAmount, paidNote: b.paidNote }, by);
     }
-    // tự ghi đã nhận tiền: đơn COD chuyển sang Hoàn tất; đăng ký chuyển sang "Đã thanh toán"
+    // tự ghi đã nhận tiền: đơn tiền mặt chuyển sang Hoàn tất; đăng ký chuyển sang "Đã thanh toán"
     if (moved && b.paid === undefined && !o.paid) {
-      if (name === 'orders' && o.status === 'done' && o.pay === 'cod') markPaid('orders', o, by, null, 'Tự ghi: đơn COD hoàn tất');
+      if (name === 'orders' && o.status === 'done' && o.pay === 'cash') markPaid('orders', o, by, null, 'Tự ghi: đơn tiền mặt hoàn tất');
       if (name === 'registrations' && o.status === 'paid' && dueOf('registrations', o) > 0) markPaid('registrations', o, by, null, 'Tự ghi: chuyển sang “Đã thanh toán”');
     }
     if (name === 'orders') {
@@ -1072,7 +1139,7 @@ adminCollection('subscribers', 'subscribers.json', null);
 const SOURCES = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
 const SHIPS = ['std', 'exp', 'pickup'];
 const SHIP_VI = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc', pickup: 'Nhận tại phòng tập' };
-const PAY_VI = { cod: 'COD', bank: 'Chuyển khoản', momo: 'MoMo/ZaloPay' };
+const PAY_VI = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', vnpay: 'Thẻ (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
 const vnd = n => moneyVi(n) + '₫';
 // khách do nhân viên nhập: bắt buộc tên + SĐT (khách mua tại phòng tập không cần địa chỉ)
 function staffCustomer(c, base = {}) {
@@ -1139,7 +1206,7 @@ router.put('/orders/:id/edit', staffOk, (req, res) => {
   const it = b.items !== undefined ? staffItems(b.items, o.items) : { items: o.items || [] };
   if (it.error) return res.status(400).json({ error: it.error });
   const t = staffTotals(it.items, b, o);
-  const pay = PAY.includes(b.pay) ? b.pay : o.pay, ship = SHIPS.includes(b.ship) ? b.ship : o.ship;
+  const pay = STAFF_PAY.includes(b.pay) ? b.pay : o.pay, ship = SHIPS.includes(b.ship) ? b.ship : o.ship;
   const carrier = b.carrier !== undefined ? str(b.carrier, 60) : o.carrier || '', tracking = b.trackingCode !== undefined ? str(b.trackingCode, 60) : o.trackingCode || '';
   const changes = [], oc = o.customer || {};
   const CF = { name: 'tên', phone: 'SĐT', email: 'email', address: 'địa chỉ', ward: 'phường/xã', city: 'tỉnh/TP', note: 'ghi chú của khách' };
@@ -1182,13 +1249,13 @@ router.post('/admin/orders', staffOk, async (req, res) => {
   const orders = read('orders.json', []), now = Date.now();
   const order = {
     id: genId('ord'), code: makeCode('#DC-', 6, orders), createdAt: now, status, customer: cu.customer,
-    pay: PAY.includes(b.pay) ? b.pay : 'cod', ship: SHIPS.includes(b.ship) ? b.ship : 'std', lang: 'vi',
+    pay: STAFF_PAY.includes(b.pay) ? b.pay : 'cash', ship: SHIPS.includes(b.ship) ? b.ship : 'std', lang: 'vi',
     items: it.items, ...staffTotals(it.items, b), promo: '', source, createdBy: by,
     carrier: str(b.carrier, 60), trackingCode: str(b.trackingCode, 60), adminNote: str(b.adminNote, 1000),
     history: [{ at: now, status, by, note: 'Tạo đơn thủ công · ' + SOURCES[source] }], confirm: newConfirm(), stockReturned: false,
   };
   if (b.paid) markPaid('orders', order, by, b.paidAmount !== undefined && b.paidAmount !== null && b.paidAmount !== '' ? int(b.paidAmount, 0, 1e10, order.total) : null, str(b.paidNote, 300) || undefined);
-  else if (status === 'done' && order.pay === 'cod') markPaid('orders', order, by, null, 'Tự ghi: đơn COD hoàn tất');
+  else if (status === 'done' && order.pay === 'cash') markPaid('orders', order, by, null, 'Tự ghi: đơn tiền mặt hoàn tất');
   applyNeed(need, -1, catalog);
   const send = !!b.sendEmail && !!order.customer.email;
   // không gửi email: 'skip' = đơn tạo tay, nhân viên chọn không gửi; 'none' = khách không có email
@@ -1268,10 +1335,9 @@ router.get('/stats', staffOk, (req, res) => {
   const orders = read('orders.json', []), regs = read('registrations.json', []), cons = read('consults.json', []);
   const live = orders.filter(o => o.status !== 'cancelled');
   const since = Date.now() - 30 * 864e5;
-  // tiền đã thu (theo ngày ghi nhận tiền) / chờ thu: đơn chuyển khoản – MoMo chưa nhận tiền, đăng ký còn phải trả; COD chưa giao xong tính riêng
+  // tiền đã thu (theo ngày ghi nhận tiền) / chờ thu: đơn chưa nhận tiền, đăng ký còn phải trả (đều chưa hủy)
   const paidSum = (l, from) => l.filter(x => x.paid && (!from || (Number(x.paidAt) || 0) >= from)).reduce((s, x) => s + (Number(x.paidAmount) || 0), 0);
-  const waitO = orders.filter(o => !o.paid && o.status !== 'cancelled' && (o.pay === 'bank' || o.pay === 'momo'));
-  const codO = orders.filter(o => !o.paid && o.status !== 'cancelled' && o.pay === 'cod');
+  const waitO = orders.filter(o => !o.paid && o.status !== 'cancelled');
   const waitR = regs.filter(r => !r.paid && r.status !== 'cancelled' && dueOf('registrations', r) > 0);
   const today = vnToday(), soon = addDays(today, 7), mem = regs.filter(r => r.status === 'enrolled');
   res.json({
@@ -1286,7 +1352,6 @@ router.get('/stats', staffOk, (req, res) => {
       registrations: { collected: paidSum(regs), collected30: paidSum(regs, since) },
       pending: waitO.reduce((s, o) => s + (Number(o.total) || 0), 0) + waitR.reduce((s, r) => s + dueOf('registrations', r), 0),
       pendingCount: waitO.length + waitR.length, pendingOrders: waitO.length, pendingRegs: waitR.length,
-      cod: codO.reduce((s, o) => s + (Number(o.total) || 0), 0), codCount: codO.length,
     },
     members: {
       total: mem.length, active: mem.filter(r => !r.endDate || r.endDate >= today).length,

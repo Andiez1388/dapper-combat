@@ -1421,7 +1421,6 @@
     if (c.type === 'select' && !optionsOf(c).some(function (o) { return o.v === v; })) return 'Chọn một mục trong danh sách.';
     if (c.type === 'phone' && (!/^[\d\s+().\-]+$/.test(v) || v.replace(/\D/g, '').length < 8)) return 'Số điện thoại chỉ gồm chữ số, dấu cách, + . - và có ít nhất 8 số.';
     if (c.key === 'bankAccount' && !/^[0-9A-Za-z]{4,25}$/.test(v)) return 'Số tài khoản gồm 4–25 chữ số hoặc chữ cái, không dấu cách, không dấu chấm.';
-    if (c.key === 'momoPhone' && (!/^[\d\s+.\-]+$/.test(v) || v.replace(/\D/g, '').length < 9)) return 'Số MoMo chỉ gồm chữ số (ít nhất 9 số).';
     return '';
   }
   function formMount(g, main) {
@@ -1467,7 +1466,7 @@
       input = '<input id="' + esc(id) + '" type="time" step="300" value="' + esc(v || c.def || '') + '" data-fk>';
     } else {
       var t = c.type === 'url' ? 'url' : c.type === 'phone' ? 'tel' : c.type === 'email' ? 'email' : 'text';
-      var extra = c.type === 'url' ? ' inputmode="url"' : (c.key === 'bankAccount' || c.key === 'momoPhone') ? ' inputmode="numeric"' : '';
+      var extra = c.type === 'url' ? ' inputmode="url"' : c.key === 'bankAccount' ? ' inputmode="numeric"' : '';
       if (c.key === 'bankHolder') extra += ' autocapitalize="characters"';
       input = '<input id="' + esc(id) + '" type="' + t + '"' + extra + ' value="' + esc(v) + '"' + (c.def ? ' placeholder="' + esc(c.def) + '"' : '') +
         ' maxlength="' + (c.key === 'bankAccount' ? 25 : 300) + '" spellcheck="false" autocomplete="off" data-fk>';

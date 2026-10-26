@@ -135,10 +135,11 @@
     return out;
   };
 
-  /* mã VietQR thật (tài khoản cài ở /admin → Thanh toán): quét bằng app ngân hàng hoặc MoMo, có sẵn số tiền + nội dung */
+  /* mã VietQR thật (tài khoản cài ở /admin → Thanh toán): quét bằng app ngân hàng, MoMo hoặc ZaloPay, có sẵn số tiền + nội dung */
   DC.pay = function () { return (window.__CMS && window.__CMS.p) || null; };
-  /* thanh toán online (/admin → Thiết lập → Thanh toán online): cổng VNPay / MoMo đã bật + cấu hình; auto = chuyển khoản tự xác nhận (SePay) */
-  DC.payOnline = function () { var o = DC.setting('shop.payOnline', null) || {}; return { vnpay: !!o.vnpay, momo: !!o.momo, auto: !!o.auto }; };
+  /* thanh toán online (/admin → Thanh toán online) đã bật + cấu hình: vnpay = thẻ, installment = trả góp VNPay (từ installmentMin đồng),
+     auto = chuyển khoản tự xác nhận (SePay) */
+  DC.payOnline = function () { var o = DC.setting('shop.payOnline', null) || {}; return { vnpay: !!o.vnpay, installment: !!o.installment, installmentMin: Number(o.installmentMin) || 0, auto: !!o.auto }; };
   DC.payQr = function (ref, amount) {
     var p = DC.pay();
     if (!p) return null;
@@ -153,8 +154,7 @@
     if (!p) return '';
     var row = function (k, v) { return '<div><span>' + k + '</span><b>' + DC.esc(v) + '</b></div>'; };
     return '<div class="dc-paylines">' + row(DC.tx('global.slip.bank', 'Ngân hàng', 'Bank'), p.bank) + row(DC.tx('global.slip.acc', 'Số tài khoản', 'Account no.'), p.acc) +
-      (p.holder ? row(DC.tx('global.slip.holder', 'Chủ tài khoản', 'Account name'), p.holder) : '') + (noNote ? '' : row(DC.tx('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note'), String(ref || '').replace(/[^A-Za-z0-9]/g, ''))) +
-      (p.momo ? row('MoMo', p.momo) : '') + '</div>';
+      (p.holder ? row(DC.tx('global.slip.holder', 'Chủ tài khoản', 'Account name'), p.holder) : '') + (noNote ? '' : row(DC.tx('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note'), String(ref || '').replace(/[^A-Za-z0-9]/g, ''))) + '</div>';
   };
   document.addEventListener('DOMContentLoaded', function () { if (DC.pay()) document.documentElement.classList.add('dc-pay-real'); });
 

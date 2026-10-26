@@ -5,6 +5,7 @@
  * Cần chạy sau api.test.js (dùng phiên quản trị + đơn hàng đã tạo ở đó).
  */
 const { sleep } = require('./lib/sandbox');
+const fakeIsp = require('./lib/fake-isp');
 
 const TOKEN_RE = /\{(found|gt|hssv|mem|ship|promo|hours|sched)\.[^}]*\}/;
 const WIDTHS = [375, 820, 1366];
@@ -83,6 +84,55 @@ module.exports = async function browserTests(env, t, browser) {
       const after = (await api('/api/orders')).find(x => x.id === o.id);
       t.ok(after.confirm.slip.views >= 1, 'khách mở phiếu → admin thấy "đã xem"', after.confirm.slip);
       errs('Phiếu xác nhận');
+    }
+  });
+
+  t.section('Cách thanh toán · trả góp VNPay (trên trang)');
+  await t.run('trả góp', async () => {
+    const ISP = { tmnCode: 'DCISP002', clientId: 'DCCLIENT', username: 'dapper', password: 'mat-khau-thu-123', secretKey: 'ISPSECRET-BROWSER' };
+    const isp = await fakeIsp.start(ISP), MIN = 1000000;
+    try {
+      await api('/api/settings', { method: 'PUT', body: { pay: { installment: { enabled: true, apiUrl: isp.base, ...ISP, minAmount: MIN } } } });
+      const all = await api('/api/admin/products');
+      const big = all.find(x => x.stock >= 5 && !x.stockBy && x.visible !== false && x.price * 4 >= MIN) || all[0], qty = Math.max(1, Math.ceil(MIN / big.price));
+      const cheap = all.find(x => x.stock >= 1 && !x.stockBy && x.visible !== false && x.price + 60000 < MIN);
+      const shown = `[...document.querySelectorAll('#payOpts .pay-opt')].filter(l => getComputedStyle(l).display !== 'none').map(l => l.querySelector('input').value + (l.querySelector('input').disabled ? ':off' : ''))`;
+      if (cheap) {
+        await page.eval(`localStorage.setItem('dc_lang','vi'); localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(cheap.id + '::' + cheap.sizes[0] + '::' + cheap.colors[0][0])}: 1})); 1`);
+        await page.goto(B + '/shop/checkout', { wait: 1200 });
+        const st = await page.eval(`({ opts: ${shown}, sub: document.querySelector('#payOpts [data-pay-opt="installment"] .po-sub').textContent })`);
+        t.ok(st.opts.join() === 'bank,momo,zalopay,installment:off' && /1\.000\.000/.test(st.sub), 'đơn nhỏ: trả góp hiện nhưng khóa, ghi mức tối thiểu; không còn COD', st);
+      }
+      await page.eval(`localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(big.id + '::' + big.sizes[0] + '::' + big.colors[0][0])}: ${qty}})); 1`);
+      await page.goto(B + '/shop/checkout', { wait: 1200 });
+      const opts = await page.eval(shown);
+      t.ok(opts.join() === 'bank,momo,zalopay,installment', 'trang thanh toán: chuyển khoản, MoMo, ZaloPay, trả góp (thẻ ẩn khi chưa bật VNPay)', opts);
+      await page.eval(`(() => {
+        const f = document.getElementById('checkoutForm');
+        const set = (n, v) => { const el = f.elements[n]; if (!el) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
+        set('name', 'Nguyễn Trả Góp'); set('phone', '0912345679'); set('email', ''); set('address', '45 Lê Lợi'); set('city', 'TP. Hồ Chí Minh');
+        f.querySelector('input[name=pay][value=installment]').click();
+        document.getElementById('placeOrder').click(); return 1;
+      })()`);
+      const banks = await page.until(`document.querySelectorAll('#dcIsp [data-isp-bank]').length`, 10000);
+      t.ok(banks === 2, 'đặt hàng chọn trả góp → tự mở bảng chọn ngân hàng', await page.eval(`(document.getElementById('dcIsp') || document.body).innerText.slice(0, 300)`));
+      await page.eval(`document.querySelector('#dcIsp [data-isp-bank="VIETCOMBANK"]').click(); 1`);
+      await page.eval(`document.querySelector('#dcIsp [data-isp-scheme="VISA"]').click(); 1`);
+      await page.eval(`document.querySelector('#dcIsp [data-isp-term="6"]').click(); 1`);
+      const step = await page.eval(`({ terms: document.querySelectorAll('#dcIsp [data-isp-term]').length, email: !!document.querySelector('#dcIsp [data-isp-info="email"]'), go: !document.querySelector('#dcIsp [data-isp-go]').disabled,
+        txt: document.getElementById('dcIsp').textContent.replace(/\\s+/g, ' ') })`);
+      t.ok(step.terms === 3 && step.email && step.go && /6 tháng/.test(step.txt) && /\/tháng/.test(step.txt), 'chọn ngân hàng → loại thẻ → kỳ hạn (xem tiền mỗi tháng); khách chưa có email → hỏi thêm', step);
+      await page.eval(`(() => { const i = document.querySelector('#dcIsp [data-isp-info="email"]'); i.value = 'gop@example.com'; i.dispatchEvent(new Event('input', { bubbles: true })); document.querySelector('#dcIsp [data-isp-go]').click(); return 1; })()`);
+      for (let i = 0; i < 50 && !isp.pays.length; i++) await sleep(200);
+      const init = isp.inits[isp.inits.length - 1], pay = isp.pays[0] || {};
+      t.ok(!!init && init.ok && pay.tmnCode === ISP.tmnCode && /^dk\./.test(pay.dataKey || '') && /^6668219255/.test(pay.ispTxnId || ''),
+        'bấm "Tiếp tục sang VNPay" → trình duyệt POST form sang trang trả góp VNPay', { init: init && { ok: init.ok, missing: init.missing }, pay });
+      const o = (await api('/api/orders'))[0];
+      t.ok(o.pay === 'installment' && o.customer.email === 'gop@example.com' && init.body.transaction.recurringNumberOfIsp === 6, 'đơn lưu cách trả góp + email khách vừa nhập', { pay: o.pay, email: o.customer.email });
+      errs('Trả góp');
+    } finally {
+      await api('/api/settings', { method: 'PUT', body: { pay: { installment: { enabled: false } } } });
+      await isp.stop();
     }
   });
 

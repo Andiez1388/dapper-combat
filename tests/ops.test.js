@@ -34,9 +34,12 @@ module.exports = async function opsTests(env, t) {
     const st = (await req('/api/stats')).j;
     t.ok(st.money && st.money.collected >= r.j.total, 'Tổng quan: "Đã thu" có tiền của đơn vừa nhận', st.money);
     r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'cod', ship: 'std' });
-    const cod = r.j.id;
-    r = await req('/api/orders/' + cod, { method: 'PUT', body: { status: 'done' } });
-    t.ok(r.j.paid === true, 'đơn COD chuyển "Hoàn tất" → tự ghi đã nhận tiền', r.j);
+    t.ok(r.s === 400, 'đã bỏ COD: đặt hàng trên web chọn COD → báo chọn cách thanh toán khác', r.j);
+    r = await req('/api/admin/orders', { method: 'POST', body: { customer: cust, items: [line(1)], pay: 'cash', ship: 'pickup', source: 'walkin', status: 'confirmed' } });
+    const cash = r.j.id;
+    t.ok(r.s === 201 && r.j.pay === 'cash' && !r.j.paid, 'đơn tay trả tiền mặt: chưa ghi đã nhận tiền khi mới xác nhận', r.j);
+    r = await req('/api/orders/' + cash, { method: 'PUT', body: { status: 'done' } });
+    t.ok(r.j.paid === true, 'đơn tiền mặt chuyển "Hoàn tất" → tự ghi đã nhận tiền', r.j);
     r = await req(`/api/slip/${r.j.code.replace('#', '')}?k=${r.j.confirm.token}`, { tok: false });
     t.ok(r.j.paid === true && r.j.pay === null, 'phiếu xác nhận báo đã thanh toán, ẩn mã QR', r.j);
   });
@@ -44,7 +47,7 @@ module.exports = async function opsTests(env, t) {
   t.section('Tạo đơn tay & sửa đơn');
   await t.run('đơn tay', async () => {
     const s0 = await stockOf(p.id);
-    let r = await req('/api/admin/orders', { method: 'POST', body: { customer: cust, items: [line(2)], shipping: 0, discount: 50000, pay: 'cod', ship: 'pickup', source: 'walkin', status: 'confirmed' } });
+    let r = await req('/api/admin/orders', { method: 'POST', body: { customer: cust, items: [line(2)], shipping: 0, discount: 50000, pay: 'cash', ship: 'pickup', source: 'walkin', status: 'confirmed' } });
     t.ok(r.s === 201 && /^#DC-\d{6}$/.test(r.j.code) && r.j.source === 'walkin' && r.j.ship === 'pickup' && r.j.confirm && r.j.confirm.token, 'tạo đơn tay (mua tại phòng tập) có mã đơn + phiếu xác nhận', r.j);
     t.ok(r.j.total === p.price * 2 - 50000, 'đơn tay tự tính tiền (giảm 50.000đ)', r.j.total);
     t.ok(await stockOf(p.id) === s0 - 2, 'đơn tay trừ tồn kho');
@@ -113,13 +116,13 @@ module.exports = async function opsTests(env, t) {
     await setPromo('GIAM100', { minOrder: 99000000 });
     let r = await pub('/api/promo', { code: 'GIAM100', subtotal: 500000 });
     t.ok(r.s === 422 && /tối thiểu/.test(r.j.error), 'chưa đủ đơn tối thiểu → báo "Đơn tối thiểu…"', r.j);
-    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'cod', ship: 'std', promo: 'GIAM100' });
+    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'bank', ship: 'std', promo: 'GIAM100' });
     t.ok(r.s === 422 && r.j.promoError, 'đặt hàng với mã chưa đủ điều kiện → báo lỗi mã (không tạo đơn)', r.j);
     await setPromo('GIAM100', { expires: '2020-01-01' });
     r = await pub('/api/promo', { code: 'GIAM100', subtotal: 500000, lang: 'en' });
     t.ok(r.s === 422 && /expired/.test(r.j.error), 'mã hết hạn → báo hết hạn', r.j);
     await setPromo('GIAM100', { maxUses: 1 });
-    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'cod', ship: 'std', promo: 'GIAM100' });
+    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'bank', ship: 'std', promo: 'GIAM100' });
     t.ok(r.s === 201 && r.j.discount === 100000, 'dùng mã lần 1 (tối đa 1 lượt)', r.j);
     const used1 = r.j.id;
     r = await pub('/api/promo', { code: 'GIAM100', subtotal: 500000 });
@@ -140,9 +143,9 @@ module.exports = async function opsTests(env, t) {
     t.ok(r.s === 200 && r.j.stockBy && r.j.stockBy[k0] === 1 && r.j.stock === 1, 'lưu tồn kho riêng từng size / màu (tổng tự cộng)', r.j && { stock: r.j.stock, stockBy: r.j.stockBy });
     const pubP = (await req('/api/products', { tok: false })).j.find(x => x.id === q.id);
     t.ok(pubP.stockBy && pubP.stockBy[k0] === 1, 'trang web nhận được tồn kho theo size / màu');
-    r = await pub('/api/orders', { customer: cust, items: [{ id: q.id, size: q.sizes[1], color: q.colors[0][0], qty: 1 }], pay: 'cod', ship: 'std', lang: 'en' });
+    r = await pub('/api/orders', { customer: cust, items: [{ id: q.id, size: q.sizes[1], color: q.colors[0][0], qty: 1 }], pay: 'bank', ship: 'std', lang: 'en' });
     t.ok(r.s === 409 && new RegExp(q.sizes[1]).test(r.j.error), 'size đã hết → không đặt được, báo đúng size', r.j);
-    r = await pub('/api/orders', { customer: cust, items: [{ id: q.id, size: q.sizes[0], color: q.colors[0][0], qty: 1 }], pay: 'cod', ship: 'std' });
+    r = await pub('/api/orders', { customer: cust, items: [{ id: q.id, size: q.sizes[0], color: q.colors[0][0], qty: 1 }], pay: 'bank', ship: 'std' });
     t.ok(r.s === 201, 'size còn hàng → đặt được', r.j);
     const oid = r.j.id;
     let cur = (await req('/api/admin/products')).j.find(x => x.id === q.id);

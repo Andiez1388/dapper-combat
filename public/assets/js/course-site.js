@@ -38,7 +38,7 @@ cv3Render = function () {
   if (body) body.insertAdjacentHTML('beforeend', DC.slip.box(CV3.done.slip, DC.lang()));
   if (body && CV3.done.due > 0) dcRegPay(body);
 };
-/* còn tiền cọc / học phí cần trả: nút "Thanh toán bằng thẻ (VNPay)" / "ví MoMo" (cổng đang bật) và
+/* còn tiền cọc / học phí cần trả: nút "Thanh toán bằng thẻ (VNPay)" / "Trả góp (VNPay)" (cổng đang bật) và
    tự đổi mã QR thành "Đã nhận tiền" khi chuyển khoản được xác nhận (SePay) */
 function dcRegPay(body) {
   var d = CV3.done, po = DC.payOnline();
@@ -49,12 +49,12 @@ function dcRegPay(body) {
     if (q) q.outerHTML = h; else if (sb) sb.insertAdjacentHTML('beforebegin', h);
   };
   if (d.paidLive) { recv(); return; }
-  if (!po.vnpay && !po.momo && !po.auto) return;
+  if (!po.vnpay && !po.installment && !po.auto) return;
   var q = body.querySelector('.cv3-qr'), slipBox = body.querySelector('.dc-slipbox');
   var html = '<div class="dc-paylive" id="dcRegPay"></div>';
   if (q) q.insertAdjacentHTML('afterend', html); else if (slipBox) slipBox.insertAdjacentHTML('beforebegin', html); else body.insertAdjacentHTML('beforeend', html);
   DC.slip.live(document.getElementById('dcRegPay'), d.slip, DC.lang(), {
-    buttons: po.vnpay || po.momo, poll: po.auto,
+    buttons: po.vnpay || po.installment, poll: po.auto,
     alive: function () { return CV3.open && CV3.step === 3 && CV3.done === d; },
     onPaid: function () { d.paidLive = true; if (CV3.done === d && CV3.step === 3) recv(); },
   });

@@ -37,14 +37,15 @@ function DCshopSubmit(ok, fail) {
   DC.api('/orders', {
     items: items,
     customer: { name: v('name'), phone: v('phone'), email: v('email'), address: v('address'), ward: v('ward'), city: v('city'), note: v('note') },
-    pay: (document.querySelector('input[name="pay"]:checked') || {}).value || 'cod',
+    pay: (document.querySelector('input[name="pay"]:checked') || {}).value || 'bank',
     ship: (window.V3P && V3P.ship === 'exp' && v3pExpOk()) ? 'exp' : 'std',
     promo: promo ? promoCode : '',
     lang: DC.lang(),
   }).then(function (res) {
     DCS.busy = false;
     window.DC_LAST_ORDER = res;
-    // thanh toán qua cổng (VNPay / MoMo): làm trống giỏ rồi chuyển sang cổng; cổng lỗi (payError) → màn thành công + nút thanh toán lại
+    // thẻ (VNPay): làm trống giỏ rồi chuyển sang cổng; cổng lỗi (payError) → màn thành công + nút thanh toán lại
+    // trả góp: màn thành công tự mở bảng chọn ngân hàng / kỳ hạn (v3okRender bên dưới)
     if (res.payUrl) { dcPayRedirect(res.payUrl); return; }
     ok();                       // màn "Đặt hàng thành công" chụp lại giỏ ngay trong lệnh này
     cart = {}; sync();          // rồi làm trống giỏ (cả bản lưu)
@@ -172,15 +173,16 @@ v3okRender = function () {
   // phiếu xác nhận cho khách: tải ảnh / xem & in (lượt tải hiện ở /admin)
   var act = document.querySelector('#v3Ok .v3ok-actions'), last = window.DC_LAST_ORDER;
   if (act && last && last.slip && DC.slip) act.insertAdjacentHTML('beforebegin', DC.slip.box(last.slip, DC.lang()));
-  // thanh toán online / chuyển khoản tự xác nhận
+  // thanh toán online (thẻ / trả góp) / chuyển khoản tự xác nhận (cả khi quét mã bằng MoMo / ZaloPay)
   var d = window.V3OK && V3OK.d, po = DC.payOnline();
   if (!d || !last || !last.slip || !DC.slip) return;
   if (d.paid) { var q = document.querySelector('#v3Ok .v3ok-qr'); if (q) q.outerHTML = '<p class="dc-paid-ok">' + DC.esc(DC.tx('global.slip.received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!')) + '</p>'; return; }
   var onPaid = function () { if (window.V3OK && V3OK.d === d) { d.paid = true; v3okRender(); } };
   var alive = function () { var sc = document.getElementById('success'); return !!(sc && sc.classList.contains('active') && window.V3OK && V3OK.d === d); };
-  var gw = d.pay === 'vnpay' || (d.pay === 'momo' && po.momo);
-  if (gw) DC.slip.live(document.getElementById('dcOkPay'), last.slip, DC.lang(), { onPaid: onPaid, poll: po.auto, alive: alive });
-  else if (po.auto && (d.pay === 'bank' || d.pay === 'momo')) DC.slip.live(null, last.slip, DC.lang(), { buttons: false, poll: true, onPaid: onPaid, alive: alive });
+  if (d.pay === 'vnpay' || d.pay === 'installment') DC.slip.live(document.getElementById('dcOkPay'), last.slip, DC.lang(), { onPaid: onPaid, poll: po.auto, alive: alive });
+  else if (po.auto) DC.slip.live(null, last.slip, DC.lang(), { buttons: false, poll: true, onPaid: onPaid, alive: alive });
+  // trả góp: mở luôn bảng chọn ngân hàng / kỳ hạn (1 lần — đóng rồi thì bấm nút trong khung để mở lại)
+  if (d.pay === 'installment' && last.installment && !d.ispShown) { d.ispShown = true; DC.slip.isp(last.slip, DC.lang()); }
 };
 
 /* giao hỏa tốc tắt trong /admin → Thiết lập → Bán hàng: bỏ lựa chọn này ở trang thanh toán */
@@ -202,21 +204,33 @@ if (!DC.setting('shop.expressEnabled', true)) {
   if (off.length) document.head.insertAdjacentHTML('beforeend', '<style id="dc-pdp">' + off.join(',') + '{display:none!important}</style>');
 })();
 
-/* thanh toán online (/admin → Thiết lập → Thanh toán online): lựa chọn thẻ (VNPay) + logo thẻ chỉ hiện khi cổng VNPay bật;
-   cổng MoMo bật → lựa chọn MoMo chuyển sang MoMo để trả (không quét mã) */
+/* thanh toán online (/admin → Thanh toán online): lựa chọn thẻ (VNPay) / trả góp + logo chỉ hiện khi đã cài;
+   trả góp chỉ chọn được khi tổng đơn từ mức tối thiểu (dòng mô tả ghi rõ mức) */
 (function () {
-  var po = DC.payOnline(), ck = DC.setting('shop.checkout', null) || {};
-  var vn = po.vnpay && !(ck.pay && ck.pay.vnpay === false);
-  var opt = document.querySelector('#payOpts [data-pay-opt="vnpay"]');
-  if (opt) { if (vn) opt.style.removeProperty('display'); else opt.style.setProperty('display', 'none', 'important'); var i = opt.querySelector('input'); if (i) { i.disabled = !vn; if (!vn) i.checked = false; } }
-  document.querySelectorAll('.pay-methods [data-pay="vnpay"], .pay-badges [data-pay="vnpay"]').forEach(function (el) { if (vn) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important'); });
-  if (!po.momo) return;
-  var momoSub = function () {
-    var i = document.querySelector('#payOpts input[value="momo"]'), sub = i && i.closest('.pay-opt').querySelector('.po-sub');
-    if (sub) sub.textContent = DC.tx('shop.pay.momoGo', 'Chuyển sang MoMo để thanh toán (không cần quét mã)', "You'll be taken to MoMo to pay — no QR scan");
+  var po = DC.payOnline(), ckp = (DC.setting('shop.checkout', null) || {}).pay || {};
+  var on = { vnpay: po.vnpay && ckp.vnpay !== false, installment: po.installment && ckp.installment !== false };
+  Object.keys(on).forEach(function (k) {
+    var opt = document.querySelector('#payOpts [data-pay-opt="' + k + '"]'), i = opt && opt.querySelector('input');
+    if (opt) { if (on[k]) opt.style.removeProperty('display'); else opt.style.setProperty('display', 'none', 'important'); }
+    if (i) { i.disabled = !on[k]; if (!on[k]) i.checked = false; }
+    document.querySelectorAll('.pay-methods [data-pay="' + k + '"], .pay-badges [data-pay="' + k + '"]').forEach(function (el) { if (on[k]) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important'); });
+  });
+  if (!on.installment || !po.installmentMin) return;
+  var opt = document.querySelector('#payOpts [data-pay-opt="installment"]'), inp = opt && opt.querySelector('input'), sub = opt && opt.querySelector('.po-sub');
+  if (!inp) return;
+  var check = function () {
+    var low = Math.max(0, subtotal() - discountAmt()) + shipFinal() < po.installmentMin;
+    inp.disabled = low; opt.classList.toggle('is-off', low);
+    if (low && inp.checked) {
+      inp.checked = false;
+      var first = document.querySelector('#payOpts input[name="pay"]:not(:disabled)');
+      if (first) { first.checked = true; first.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+    if (sub) sub.textContent = low ? String(DC.tx('shop.pay.installmentMin', 'Áp dụng cho đơn từ {min}', 'For orders from {min}')).replace('{min}', fmt(po.installmentMin)) : t('pay.installmentSub');
   };
-  momoSub();
-  var _al = applyLang; applyLang = function () { _al.apply(this, arguments); momoSub(); };
+  var _rs = renderSummary; renderSummary = function () { _rs.apply(this, arguments); check(); };
+  var _al = applyLang; applyLang = function () { _al.apply(this, arguments); check(); };
+  check();
 })();
 // đóng màn đặt hàng thành công → thôi theo dõi thanh toán
 document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-v3okclose]') && window.DC_LAST_ORDER && DC.slip) DC.slip.unwatch(DC_LAST_ORDER.slip); }, true);

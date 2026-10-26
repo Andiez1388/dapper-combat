@@ -33,8 +33,8 @@ npm run test:api   # chỉ phần API
 ```
 
 Bộ kiểm tra (`tests/`) tự dựng máy chủ thử với dữ liệu tạm (biến `DC_DATA_DIR`, `DC_UPLOAD_DIR`) — không đụng dữ liệu thật, không gửi Telegram / email. Gồm:
-- **API:** đăng nhập và bảo mật, tính tiền đơn hàng, mã giảm giá, tồn kho khi hủy / mở lại / xóa đơn, SEO, phiếu xác nhận, biểu mẫu.
-- **Trình duyệt:** mọi trang × tiếng Việt / tiếng Anh × 3 cỡ màn hình (không lỗi JavaScript, không tràn ngang, không còn `{biến}` chưa điền); đặt hàng có mã giảm giá; đăng ký khóa học; yêu cầu tư vấn; mọi màn hình quản trị.
+- **API:** đăng nhập và bảo mật, tính tiền đơn hàng, mã giảm giá, tồn kho khi hủy / mở lại / xóa đơn, SEO, phiếu xác nhận, biểu mẫu; thanh toán online (SePay, VNPay thẻ, VNPay trả góp với máy chủ VNPay giả `tests/lib/fake-isp.js` tự kiểm chữ ký theo đặc tả).
+- **Trình duyệt:** mọi trang × tiếng Việt / tiếng Anh × 3 cỡ màn hình (không lỗi JavaScript, không tràn ngang, không còn `{biến}` chưa điền); đặt hàng có mã giảm giá; chọn trả góp (ngân hàng → thẻ → kỳ hạn → sang VNPay); đăng ký khóa học; yêu cầu tư vấn; mọi màn hình quản trị.
 
 Không có Chrome / Edge ở chỗ mặc định thì đặt `CHROME_PATH`. Kết quả cuối ghi số kiểm tra đạt và liệt kê mục chưa đạt.
 
@@ -94,7 +94,7 @@ Dữ liệu nằm ở `/var/lib/dapper-combat` (VPS) hoặc ổ đĩa `/var/data
 - **Ngôn ngữ** VI/EN chọn ở một trang thì các trang khác cũng theo.
 - **Trang quản trị** `/admin` — vận hành hằng ngày:
   - **Đơn hàng, đăng ký, tư vấn:** đổi trạng thái, ghi chú nội bộ, gọi / nhắn Zalo; lọc theo trạng thái + ngày (hôm nay / 7 ngày / 30 ngày / tháng này) + tìm kiếm; “Xem thêm” từng 50 dòng; **Xuất CSV** (mở được bằng Excel) đúng danh sách đang lọc.
-  - **Đã nhận tiền:** bật trong từng đơn / đăng ký (số tiền, ghi chú, ai ghi). Đơn COD chuyển “Hoàn tất” tự ghi đã thu. Chip “Chờ thanh toán”; Tổng quan tách “Đã thu” và “Chờ thu”. Phiếu xác nhận của khách hiện “Đã thanh toán”.
+  - **Đã nhận tiền:** bật trong từng đơn / đăng ký (số tiền, ghi chú, ai ghi). Đơn tiền mặt (tạo tay) chuyển “Hoàn tất” tự ghi đã thu. Chip “Chờ thanh toán”; Tổng quan tách “Đã thu” và “Chờ thu”. Phiếu xác nhận của khách hiện “Đã thanh toán”.
   - **Sửa đơn:** thông tin khách, số lượng / size / màu, thêm sản phẩm, phí giao, giảm giá, cách thanh toán, đơn vị vận chuyển + mã vận đơn (hiện trên phiếu khách). Tồn kho tự cộng / trừ; trước khi lưu có bảng tóm tắt thay đổi; lịch sử ghi ai sửa gì.
   - **Tạo đơn** cho khách mua qua điện thoại / Facebook / Zalo / tại phòng tập: trừ kho, có phiếu xác nhận để gửi link, có thể chọn nhận tại phòng tập.
   - **Sửa đăng ký:** học phí (vd PT 1-1 theo thỏa thuận), số cần trả trước, gói, lớp / ca, ngày học. Chuyển “Đã nhập học” tự đặt ngày bắt đầu và ngày hết hạn theo gói.
@@ -144,10 +144,10 @@ lib/pages.js            Trang phụ (/trang/<slug>): lưu ở data/pages.json, l
 lib/settings.js         Thiết lập kinh doanh (phí giao, mã giảm giá, học phí, lịch tập, thương hiệu, thông báo) + biến giá
 lib/notify.js           Báo đơn mới qua Telegram / email + email xác nhận cho khách (theo mẫu trong Thiết lập)
 lib/maillog.js          Nhật ký gửi tin (data/maillog.json)
-lib/payments.js         Thanh toán online: SePay (webhook chuyển khoản), VNPay (HMAC-SHA512), MoMo (HMAC-SHA256)
+lib/payments.js         Thanh toán online: SePay (webhook chuyển khoản / MoMo / ZaloPay), VNPay thẻ + VNPay trả góp (HMAC-SHA512)
 lib/translate.js        Tiếng Anh tự dịch bằng Claude (hàng đợi nền, bộ nhớ dịch data/translations.json)
 lib/paths.js            Thư mục dữ liệu (DC_DATA_DIR, mặc định data/) và ảnh tải lên (DC_UPLOAD_DIR)
-public/assets/js/admin-pay.js  Màn hình Thanh toán online: khóa SePay / VNPay / MoMo, đường dẫn webhook / IPN, nút thử
+public/assets/js/admin-pay.js  Màn hình Thanh toán online: khóa SePay / VNPay / VNPay trả góp, đường dẫn webhook / IPN, nút thử
 public/assets/js/admin-ai.js   Màn hình Tiếng Anh (AI): khóa, trạng thái, dịch phần còn thiếu
 public/assets/js/admin-ops.js  Màn hình vận hành: Khách hàng, Hội viên, Tài khoản & phân quyền, Sao lưu
 tests/                  Kiểm tra tự động (npm test)
@@ -184,7 +184,7 @@ Lưu ở `data/settings.json`.
   - Mã giảm giá: giảm %, giảm số tiền hoặc miễn phí giao; bật/tắt từng mã; hạn dùng, số lượt tối đa, đơn tối thiểu; xem đã dùng bao nhiêu lượt (hủy đơn thì lượt được trả lại).
   - Sản phẩm hiện ở Trang chủ (tối đa 6, theo thứ tự chọn).
 - **Danh mục sản phẩm:** thêm, đổi tên (VI/EN), sắp xếp, ẩn khỏi thanh lọc, xóa (chỉ khi không còn sản phẩm). Mỗi danh mục có mô tả trên đầu danh sách, chất liệu, trọng lượng, số tháng bảo hành và loại bảng size (áo / đồ tập / găng / freesize) hiện ở trang chi tiết. Link dạng `/shop?cat=<mã danh mục>` mở sẵn danh mục. Kèm tối đa 4 ô ảnh dẫn tới danh mục dưới lưới sản phẩm.
-  - **Trang thanh toán:** bật / tắt từng cách thanh toán (COD, chuyển khoản, MoMo); ô email, phường / xã, ghi chú: không bắt buộc / bắt buộc / ẩn. Server kiểm tra lại khi nhận đơn.
+  - **Trang thanh toán:** bật / tắt từng cách thanh toán (chuyển khoản, MoMo, ZaloPay, thẻ, trả góp — luôn còn ít nhất một cách quét mã); ô email, phường / xã, ghi chú: không bắt buộc / bắt buộc / ẩn. Server kiểm tra lại khi nhận đơn.
   - **Trang chi tiết sản phẩm:** ẩn / hiện từng phần (video, cam kết, logo thanh toán, gợi ý size, tồn kho, ngày giao, điểm nổi bật, "hoàn thiện bộ trang phục", hỏi đáp, bài viết, đánh giá, "khách hàng cũng mua", "đã xem gần đây", đăng ký nhận tin). Phần **đánh giá** đang tắt sẵn vì 12 đánh giá trong mục Chữ trên trang chỉ là mẫu — bật lại khi đã thay bằng đánh giá thật. Sao và số đánh giá dưới tên sản phẩm chỉ hiện khi sản phẩm có số đánh giá (mục Sản phẩm).
 - **Học phí & lịch tập:**
   - Học phí Foundation, tiền cọc và **ngày khai giảng** (biến `{found.start}` trên Trang chủ / Khóa học; ngày đã qua thì Tổng quan nhắc cập nhật), lớp HSSV, Membership.
@@ -218,12 +218,12 @@ Mỗi sản phẩm (mục Sản phẩm) có:
 
 ## Thanh toán online (`/admin` → Thiết lập → Thanh toán online)
 
-Tiền về là đơn hàng / đăng ký **tự chuyển “Đã nhận tiền”**, báo Telegram / email cho chủ shop, khách thấy “Đã thanh toán” trên màn hình đặt hàng và phiếu xác nhận. Ba cách độc lập:
+Tiền về là đơn hàng / đăng ký **tự chuyển “Đã nhận tiền”**, báo Telegram / email cho chủ shop, khách thấy “Đã thanh toán” trên màn hình đặt hàng và phiếu xác nhận. Không còn thanh toán khi nhận hàng (COD); đơn nhân viên tạo tay có thêm “Tiền mặt”.
 
-- **Chuyển khoản tự xác nhận — SePay:** khách vẫn quét mã VietQR (nội dung chuyển khoản = mã đơn, vd `DC123456`). SePay theo dõi tài khoản ngân hàng và gọi `POST /api/pay/sepay/webhook` (chứng thực `Authorization: Apikey <khóa>`). Chuyển thiếu → đơn ghi “còn thiếu”; giao dịch gửi lại không ghi 2 lần. Trong lúc khách mở màn hình có mã QR, trang tự kiểm tra và báo “Đã nhận tiền”.
-- **VNPay** (thẻ ATM, Visa / Mastercard, QR ngân hàng): chuẩn 2.1.0, chữ ký HMAC-SHA512. Khách chọn “Thẻ” ở trang thanh toán → sang VNPay → quay về phiếu xác nhận. Kết quả chính thức qua IPN `GET /api/pay/vnpay/ipn` (khai báo với VNPay). Có chế độ sandbox + nút “Tạo link thử”.
-- **MoMo** (ví MoMo): API v2 `captureWallet`, chữ ký HMAC-SHA256, IPN `POST /api/pay/momo/ipn`. Bật cổng MoMo thì lựa chọn “Ví MoMo” chuyển khách sang MoMo (tắt thì vẫn quét VietQR bằng app MoMo).
-- Khách chưa trả (hoặc hủy giữa chừng) có thể **thanh toán lại từ phiếu xác nhận**; đăng ký khóa học có nút thanh toán online ở bước cuối.
+- **Chuyển khoản · MoMo · ZaloPay — SePay tự xác nhận:** cả ba cách đều là quét cùng một mã VietQR (app ngân hàng, app MoMo hay app ZaloPay đều quét được; nội dung chuyển khoản = mã đơn, vd `DC123456`), tiền vào tài khoản ngân hàng của shop. Không có cổng MoMo / ZaloPay riêng. SePay theo dõi tài khoản ngân hàng và gọi `POST /api/pay/sepay/webhook` (chứng thực `Authorization: Apikey <khóa>`). Chuyển thiếu → đơn ghi “còn thiếu”; giao dịch gửi lại không ghi 2 lần. Trong lúc khách mở màn hình có mã QR, trang tự kiểm tra và báo “Đã nhận tiền”.
+- **VNPay — thẻ** (ATM, Visa / Mastercard, QR ngân hàng): chuẩn 2.1.0, chữ ký HMAC-SHA512. Khách chọn “Thẻ” ở trang thanh toán → sang VNPay → quay về phiếu xác nhận. Kết quả chính thức qua IPN `GET /api/pay/vnpay/ipn` (khai báo với VNPay). Có chế độ sandbox + nút “Tạo link thử”.
+- **VNPay — trả góp bằng thẻ tín dụng** (hệ thống trả góp riêng của VNPay, đặc tả 2.1.1): khách chọn “Trả góp” → bảng chọn **ngân hàng → loại thẻ → kỳ hạn 3 / 6 / 9 / 12 tháng** (xem trước tiền mỗi tháng, tổng trả, phí chuyển đổi do VNPay trả về) → sang trang VNPay nhập thẻ. Server: lấy token (`/oauth/authenticate`, dùng lại tới gần hết hạn), bảng trả góp (`/category/installment-info`), khởi tạo (`/payment/init`, chữ ký nối `|` đúng thứ tự đặc tả), trình duyệt POST `ispTxnId + tmnCode + dataKey` sang `/payment/pay`. Kết quả qua IPN `GET /api/pay/installment/ipn` và Return `/api/pay/installment/return`. VNPay cần email, địa chỉ, tỉnh / thành — khách chưa có thì bảng chọn hỏi thêm. Chỉ hiện khi tổng đơn / học phí từ **mức tối thiểu** đặt ở admin. Địa chỉ API mặc định là môi trường thử; khi ký hợp đồng đổi sang địa chỉ thật VNPay gửi.
+- Khách chưa trả (hoặc hủy giữa chừng) có thể **thanh toán lại từ phiếu xác nhận** (thẻ / trả góp); đăng ký khóa học có nút thanh toán online ở bước cuối.
 - Mỗi lần thanh toán là một mã giao dịch mới `<mã đơn>T<thời gian>`; server kiểm tra chữ ký, số tiền, mã website, không xử lý trùng (`data/pay-events.json`). Khóa bí mật chỉ lưu trên máy chủ.
 - Cần **Địa chỉ website** (Thiết lập → Thông báo) để các cổng gọi về đúng tên miền; IPN cần web đã chạy trên mạng (HTTPS).
 
@@ -253,7 +253,7 @@ Chủ shop chỉ cần sửa **tiếng Việt**. Khi bấm Lưu ở Chữ trên 
 
 Vào `/admin` → Nội dung website → **Thanh toán**, chọn ngân hàng, nhập số tài khoản và tên chủ tài khoản.
 - Màn hình đặt hàng thành công và form đăng ký khóa học sẽ hiện **mã VietQR thật**, có sẵn số tiền và nội dung chuyển khoản là mã đơn (vd `DC871627`), kèm thông tin ngân hàng để khách chuyển tay.
-- App ngân hàng và MoMo đều quét được. Ảnh mã do img.vietqr.io tạo.
+- App ngân hàng, MoMo và ZaloPay đều quét được (tiền vào tài khoản ngân hàng → SePay tự xác nhận nếu đã bật). Ảnh mã do img.vietqr.io tạo.
 - Chưa cài tài khoản thì trang hiện mã minh họa.
 
 ## Báo đơn mới cho chủ shop
@@ -282,4 +282,4 @@ Các form công khai giới hạn số lượt gửi cho mỗi IP để chống 
 - **Hotline:** đang là số tạm `0909 xxx xxx`. Thay ở `/admin` → Nội dung website → Liên hệ & mạng xã hội (đổi ở mọi trang cùng lúc).
 - **Tài khoản nhận chuyển khoản:** cài ở `/admin` → Thanh toán để có mã VietQR thật.
 - **Kênh báo đơn mới:** cài Telegram hoặc email trong `.env`.
-- **Cổng thanh toán online** (VNPay / MoMo tự động xác nhận) chưa kết nối vì cần tài khoản merchant. Hiện tại khách chọn COD hoặc chuyển khoản, chủ shop đối chiếu nội dung chuyển khoản và xác nhận trong `/admin`.
+- **Thanh toán online:** đăng ký SePay (tự xác nhận chuyển khoản / MoMo / ZaloPay), VNPay (thẻ) và dịch vụ trả góp VNPay, rồi nhập khóa ở `/admin` → Thiết lập → Thanh toán online. Chưa cài thì khách vẫn quét mã VietQR, chủ shop đối chiếu sao kê và bật “Đã nhận tiền” trong `/admin`.

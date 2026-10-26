@@ -3480,19 +3480,6 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.pdp.1",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "label",
-   "vi": "COD",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 8377,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn"
-  },
-  {
    "page": "services",
    "section": "services.fit",
    "type": "text",
@@ -6169,19 +6156,6 @@
    "itemLabel": "Nhãn góc ảnh"
   },
   {
-   "key": "shop.pay.cod",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "COD",
-   "en": "COD",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 14640,
-   "label": "Thẻ 2 · Tiêu đề nhỏ"
-  },
-  {
    "page": "services",
    "section": "services.process",
    "type": "item",
@@ -6222,19 +6196,6 @@
    "order": 14706,
    "label": "Thẻ 2 · Đoạn văn",
    "itemLabel": "Mô tả"
-  },
-  {
-   "key": "shop.pay.codSub",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Thanh toán khi nhận hàng",
-   "en": "Cash on delivery",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 14720,
-   "label": "Thẻ 2 · Đoạn văn"
   },
   {
    "key": "home.courses.23",
@@ -6532,8 +6493,8 @@
    "page": "shop",
    "section": "shop.checkout",
    "type": "text",
-   "vi": "Quét mã sau khi đặt",
-   "en": "Scan QR after order",
+   "vi": "Quét mã QR bằng app MoMo sau khi đặt",
+   "en": "Scan the QR with MoMo after ordering",
    "html": false,
    "src": "html",
    "locate": true,
@@ -7687,20 +7648,6 @@
    "order": 17723,
    "label": "Thẻ 2 · Đoạn văn",
    "itemLabel": "Mô tả"
-  },
-  {
-   "key": "shop.checkout.9",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "COD",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 17725,
-   "label": "Chữ ngắn / nhãn 10",
-   "itemLabel": "Nhãn góc ảnh"
   },
   {
    "page": "course",
@@ -16457,45 +16404,6 @@
    "page": "shop",
    "section": "shop.success",
    "type": "label",
-   "label": "Chữ ngắn / nhãn 10",
-   "html": false,
-   "src": "js",
-   "locate": false,
-   "order": 80764,
-   "key": "shop.success.j20",
-   "vi": "Thanh toán khi nhận hàng",
-   "en": "Cash on delivery"
-  },
-  {
-   "page": "shop",
-   "section": "shop.success",
-   "type": "label",
-   "label": "Chữ ngắn / nhãn 11",
-   "html": false,
-   "src": "js",
-   "locate": false,
-   "order": 80883,
-   "key": "shop.success.j21",
-   "vi": "Chuẩn bị số tiền",
-   "en": "Please have ready"
-  },
-  {
-   "page": "shop",
-   "section": "shop.success",
-   "type": "text",
-   "label": "Đoạn văn 4",
-   "html": false,
-   "src": "js",
-   "locate": false,
-   "order": 80974,
-   "key": "shop.success.j22",
-   "vi": "Bạn được kiểm tra hàng trước khi thanh toán cho shipper. Đổi trả trong 7 ngày nếu sản phẩm không vừa.",
-   "en": "You can check your items before paying the courier. Free size exchanges within 7 days."
-  },
-  {
-   "page": "shop",
-   "section": "shop.success",
-   "type": "label",
    "label": "Chữ ngắn / nhãn 12",
    "html": false,
    "src": "js",
@@ -17022,8 +16930,8 @@
    "locate": true,
    "order": 10004903,
    "key": "shop.seo.order",
-   "vi": "Đặt hàng online, giao toàn quốc, thanh toán COD hoặc chuyển khoản.",
-   "en": "Order online with nationwide delivery and COD or bank transfer."
+   "vi": "Đặt hàng online, giao toàn quốc, thanh toán chuyển khoản, MoMo hoặc ZaloPay.",
+   "en": "Order online with nationwide delivery; pay by bank transfer, MoMo or ZaloPay."
   },
   {
    "page": "shop",
@@ -17881,19 +17789,6 @@
    "html": false,
    "src": "js",
    "locate": true,
-   "en": "Cash on delivery (COD)",
-   "key": "global.slip.pay.cod",
-   "section": "global.slip",
-   "type": "label",
-   "label": "Tên cách thanh toán COD",
-   "vi": "Thanh toán khi nhận hàng (COD)",
-   "order": 13
-  },
-  {
-   "page": "global",
-   "html": false,
-   "src": "js",
-   "locate": true,
    "en": "Bank transfer",
    "key": "global.slip.pay.bank",
    "section": "global.slip",
@@ -18128,12 +18023,12 @@
    "html": false,
    "src": "js",
    "locate": true,
-   "en": "Scan with your banking or MoMo app — amount and note are filled in.",
+   "en": "Scan with your banking app, MoMo or ZaloPay — amount and note are filled in.",
    "key": "global.slip.scan",
    "section": "global.slip",
    "type": "text",
    "label": "Hướng dẫn quét mã",
-   "vi": "Quét mã bằng app ngân hàng hoặc MoMo để chuyển đúng số tiền và nội dung.",
+   "vi": "Quét mã bằng app ngân hàng, MoMo hoặc ZaloPay để chuyển đúng số tiền và nội dung.",
    "order": 32
   },
   {
@@ -19409,18 +19304,6 @@
    "page": "shop",
    "html": false,
    "src": "js",
-   "locate": true,
-   "en": "You'll be taken to MoMo to pay — no QR scan",
-   "key": "shop.pay.momoGo",
-   "section": "shop.checkout",
-   "type": "text",
-   "label": "Cách thanh toán — ví MoMo: dòng mô tả khi cổng MoMo bật (thay cho \"Quét mã sau khi đặt\")",
-   "vi": "Chuyển sang MoMo để thanh toán (không cần quét mã)"
-  },
-  {
-   "page": "shop",
-   "html": false,
-   "src": "js",
    "locate": false,
    "en": "Online payment",
    "key": "shop.success.online",
@@ -19492,19 +19375,6 @@
    "label": "Nút thanh toán bằng thẻ (VNPay)",
    "vi": "Thanh toán bằng thẻ (VNPay)",
    "order": 73
-  },
-  {
-   "page": "global",
-   "html": false,
-   "src": "js",
-   "locate": true,
-   "en": "Pay with MoMo",
-   "key": "global.slip.paybtn.momo",
-   "section": "global.slip",
-   "type": "label",
-   "label": "Nút thanh toán bằng ví MoMo",
-   "vi": "Thanh toán bằng ví MoMo",
-   "order": 74
   },
   {
    "page": "global",
@@ -19596,6 +19466,452 @@
    "label": "Thay mã QR khi đã nhận tiền (tự xác nhận / cổng báo về)",
    "vi": "✓ Đã nhận tiền — cảm ơn bạn!",
    "order": 81
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "ZaloPay",
+   "key": "shop.pay.zalopay",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "label": "Cách thanh toán — ZaloPay: tên",
+   "vi": "ZaloPay"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "Scan the QR with ZaloPay after ordering",
+   "key": "shop.pay.zalopaySub",
+   "section": "shop.checkout",
+   "type": "text",
+   "label": "Cách thanh toán — ZaloPay: dòng mô tả",
+   "vi": "Quét mã QR bằng app ZaloPay sau khi đặt"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "Credit card installments (VNPay)",
+   "key": "shop.pay.installment",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "label": "Cách thanh toán — trả góp (VNPay): tên (chỉ hiện khi đã bật trả góp)",
+   "vi": "Trả góp qua thẻ tín dụng (VNPay)"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "Choose your bank and a 3–12 month term after ordering",
+   "key": "shop.pay.installmentSub",
+   "section": "shop.checkout",
+   "type": "text",
+   "label": "Cách thanh toán — trả góp (VNPay): dòng mô tả",
+   "vi": "Chọn ngân hàng và kỳ hạn 3–12 tháng sau khi đặt"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "For orders from {min}",
+   "key": "shop.pay.installmentMin",
+   "section": "shop.checkout",
+   "type": "label",
+   "label": "Trả góp — dòng mô tả khi tổng đơn chưa đủ mức tối thiểu ({min} = mức đặt ở Thanh toán online)",
+   "vi": "Áp dụng cho đơn từ {min}"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": null,
+   "key": "shop.checkout.12",
+   "section": "shop.checkout",
+   "type": "label",
+   "label": "Chữ phương thức thanh toán — ZaloPay",
+   "vi": "ZALOPAY",
+   "itemLabel": "Nhãn góc ảnh"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "INSTALLMENTS",
+   "key": "shop.checkout.13",
+   "section": "shop.checkout",
+   "type": "label",
+   "label": "Chữ phương thức thanh toán — trả góp (VNPay)",
+   "vi": "TRẢ GÓP",
+   "itemLabel": "Nhãn góc ảnh"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": null,
+   "key": "shop.pdp.zalo",
+   "section": "shop.pdp",
+   "type": "label",
+   "label": "Logo thanh toán — ZaloPay",
+   "vi": "ZaloPay"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": "Installments",
+   "key": "shop.pdp.isp",
+   "section": "shop.pdp",
+   "type": "label",
+   "label": "Logo thanh toán — trả góp (VNPay)",
+   "vi": "Trả góp"
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": "Open ZaloPay, scan the code and keep the transfer note. Dapper Combat will check the payment and confirm your order by phone or Zalo.",
+   "key": "shop.success.zalo",
+   "section": "shop.success",
+   "type": "text",
+   "label": "Hướng dẫn thanh toán — đơn chọn ZaloPay",
+   "vi": "Mở ZaloPay, quét mã và giữ nguyên nội dung chuyển khoản. Dapper Combat sẽ kiểm tra giao dịch rồi gọi hoặc nhắn Zalo để xác nhận đơn."
+  },
+  {
+   "page": "shop",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": "Choose your bank, card type and term to complete your installment payment with VNPay.",
+   "key": "shop.success.isp",
+   "section": "shop.success",
+   "type": "text",
+   "label": "Hướng dẫn thanh toán — đơn chọn trả góp",
+   "vi": "Chọn ngân hàng, loại thẻ và kỳ hạn trả góp để hoàn tất thanh toán qua VNPay."
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "ZaloPay",
+   "key": "global.slip.pay.zalopay",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Cách thanh toán — ZaloPay",
+   "vi": "ZaloPay",
+   "order": 90
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Credit card installments (VNPay)",
+   "key": "global.slip.pay.installment",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Cách thanh toán — trả góp (VNPay)",
+   "vi": "Trả góp thẻ tín dụng (VNPay)",
+   "order": 91
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Cash",
+   "key": "global.slip.pay.cash",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Cách thanh toán — tiền mặt (đơn nhân viên tạo)",
+   "vi": "Tiền mặt",
+   "order": 92
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pay in installments (VNPay)",
+   "key": "global.slip.paybtn.installment",
+   "section": "global.slip",
+   "type": "button",
+   "label": "Nút trả góp (VNPay)",
+   "vi": "Trả góp qua thẻ tín dụng (VNPay)",
+   "order": 93
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pay in installments",
+   "key": "global.slip.isp.title",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — tiêu đề bảng chọn",
+   "vi": "Trả góp qua thẻ tín dụng",
+   "order": 94
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Loading banks…",
+   "key": "global.slip.isp.loading",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — đang tải",
+   "vi": "Đang tải danh sách ngân hàng…",
+   "order": 95
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "No bank currently offers installments for this amount.",
+   "key": "global.slip.isp.none",
+   "section": "global.slip",
+   "type": "text",
+   "label": "Trả góp — khi chưa có ngân hàng nào nhận",
+   "vi": "Hiện chưa có ngân hàng nào nhận trả góp cho số tiền này.",
+   "order": 96
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Amount",
+   "key": "global.slip.isp.amount",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — nhãn số tiền",
+   "vi": "Số tiền trả góp",
+   "order": 97
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "1. Card issuer",
+   "key": "global.slip.isp.bank",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — bước chọn ngân hàng",
+   "vi": "1. Ngân hàng phát hành thẻ",
+   "order": 98
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "2. Card type",
+   "key": "global.slip.isp.card",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — bước chọn loại thẻ",
+   "vi": "2. Loại thẻ",
+   "order": 99
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "3. Term",
+   "key": "global.slip.isp.term",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — bước chọn kỳ hạn",
+   "vi": "3. Kỳ hạn",
+   "order": 100
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "{n} months",
+   "key": "global.slip.isp.months",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — số tháng ({n} = số tháng)",
+   "vi": "{n} tháng",
+   "order": 101
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "/month",
+   "key": "global.slip.isp.monthly",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — chữ sau số tiền mỗi kỳ",
+   "vi": "/tháng",
+   "order": 102
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Total",
+   "key": "global.slip.isp.total",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — nhãn tổng trả",
+   "vi": "Tổng trả",
+   "order": 103
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Conversion fee",
+   "key": "global.slip.isp.fee",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — nhãn phí chuyển đổi",
+   "vi": "Phí chuyển đổi",
+   "order": 104
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "No conversion fee",
+   "key": "global.slip.isp.nofee",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — khi không có phí chuyển đổi",
+   "vi": "Không phí chuyển đổi",
+   "order": 105
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "4. Details VNPay needs",
+   "key": "global.slip.isp.info",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — bước nhập thông tin còn thiếu",
+   "vi": "4. Thông tin VNPay cần",
+   "order": 106
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Email",
+   "key": "global.slip.isp.email",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — ô email",
+   "vi": "Email",
+   "order": 107
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Address",
+   "key": "global.slip.isp.address",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — ô địa chỉ",
+   "vi": "Địa chỉ",
+   "order": 108
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "City / province",
+   "key": "global.slip.isp.city",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — ô tỉnh / thành",
+   "vi": "Tỉnh / thành phố",
+   "order": 109
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Please fill in all details",
+   "key": "global.slip.isp.fill",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — báo khi còn ô trống",
+   "vi": "Vui lòng điền đủ thông tin",
+   "order": 110
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Please choose a bank, card type and term",
+   "key": "global.slip.isp.pick",
+   "section": "global.slip",
+   "type": "label",
+   "label": "Trả góp — báo khi chưa chọn đủ",
+   "vi": "Vui lòng chọn ngân hàng, loại thẻ và kỳ hạn",
+   "order": 111
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Continue to VNPay",
+   "key": "global.slip.isp.go",
+   "section": "global.slip",
+   "type": "button",
+   "label": "Trả góp — nút sang VNPay",
+   "vi": "Tiếp tục sang VNPay",
+   "order": 112
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "You'll enter your credit card details on VNPay's secure page.",
+   "key": "global.slip.isp.note",
+   "section": "global.slip",
+   "type": "text",
+   "label": "Trả góp — ghi chú dưới nút",
+   "vi": "Bạn sẽ nhập thông tin thẻ tín dụng ở trang bảo mật của VNPay.",
+   "order": 113
   }
  ],
  "media": [
@@ -24407,17 +24723,6 @@
     {
      "id": "1",
      "fields": [
-      "shop.checkout.9"
-     ],
-     "media": [],
-     "icons": [],
-     "links": [],
-     "lists": [],
-     "title": "shop.checkout.9"
-    },
-    {
-     "id": "2",
-     "fields": [
       "shop.checkout.10"
      ],
      "media": [],
@@ -24427,7 +24732,7 @@
      "title": "shop.checkout.10"
     },
     {
-     "id": "3",
+     "id": "2",
      "fields": [
       "shop.checkout.7"
      ],
@@ -24436,6 +24741,17 @@
      "links": [],
      "lists": [],
      "title": "shop.checkout.7"
+    },
+    {
+     "id": "3",
+     "fields": [
+      "shop.checkout.12"
+     ],
+     "media": [],
+     "icons": [],
+     "links": [],
+     "lists": [],
+     "title": "shop.checkout.12"
     },
     {
      "id": "4",
@@ -24447,6 +24763,17 @@
      "links": [],
      "lists": [],
      "title": "shop.checkout.11"
+    },
+    {
+     "id": "5",
+     "fields": [
+      "shop.checkout.13"
+     ],
+     "media": [],
+     "icons": [],
+     "links": [],
+     "lists": [],
+     "title": "shop.checkout.13"
     }
    ]
   },
@@ -28572,15 +28899,6 @@
    "count": 1
   },
   {
-   "key": "shop.pdp.ic4",
-   "page": "shop",
-   "section": "shop.pdp",
-   "label": "Icon cạnh “COD”",
-   "svg": "<svg class=\"pl-ic cod\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2.3\"/></svg>",
-   "src": "html",
-   "count": 1
-  },
-  {
    "key": "shop.pdp.ic5",
    "page": "shop",
    "section": "shop.pdp",
@@ -28676,15 +28994,6 @@
    "section": "shop.list",
    "label": "Bộ lọc — nút “Lọc & sắp xếp” (điện thoại)",
    "svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M3 6h18M6 12h12M10 18h4\"/></svg>",
-   "src": "js",
-   "count": 1
-  },
-  {
-   "key": "shop.icon.js3",
-   "page": "shop",
-   "section": "shop.checkout",
-   "label": "Logo COD — phương thức thanh toán",
-   "svg": "<svg class=\"pl-ic cod\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2.3\"/></svg>",
    "src": "js",
    "count": 1
   },
@@ -30083,7 +30392,7 @@
  "palette": [
   {
    "hex": "#FFFFFF",
-   "n": 569,
+   "n": 574,
    "pages": [
     "home",
     "course",
@@ -30105,7 +30414,7 @@
   },
   {
    "hex": "#000000",
-   "n": 50,
+   "n": 51,
    "pages": [
     "home",
     "course",
@@ -30168,6 +30477,17 @@
    "group": "neutral"
   },
   {
+   "hex": "#111111",
+   "n": 11,
+   "pages": [
+    "course",
+    "shop",
+    "services",
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
    "hex": "#101419",
    "n": 11,
    "pages": [
@@ -30205,6 +30525,15 @@
    "group": "neutral"
   },
   {
+   "hex": "#555555",
+   "n": 9,
+   "pages": [
+    "services",
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
    "hex": "#1C9B52",
    "n": 8,
    "pages": [
@@ -30238,15 +30567,13 @@
    "group": "neutral"
   },
   {
-   "hex": "#111111",
+   "hex": "#0068FF",
    "n": 7,
    "pages": [
-    "course",
-    "shop",
-    "services",
-    "global"
+    "home",
+    "shop"
    ],
-   "group": "neutral"
+   "group": "other"
   },
   {
    "hex": "#E5E5E5",
@@ -30283,15 +30610,6 @@
     "global"
    ],
    "group": "neutral"
-  },
-  {
-   "hex": "#0068FF",
-   "n": 6,
-   "pages": [
-    "home",
-    "shop"
-   ],
-   "group": "other"
   },
   {
    "hex": "#2A2A2A",
@@ -30378,7 +30696,7 @@
    "group": "neutral"
   },
   {
-   "hex": "#17703C",
+   "hex": "#005BAA",
    "n": 4,
    "pages": [
     "shop",
@@ -30387,13 +30705,13 @@
    "group": "other"
   },
   {
-   "hex": "#555555",
+   "hex": "#17703C",
    "n": 4,
    "pages": [
-    "services",
+    "shop",
     "global"
    ],
-   "group": "neutral"
+   "group": "other"
   },
   {
    "hex": "#141414",
@@ -30431,13 +30749,21 @@
    "group": "neutral"
   },
   {
-   "hex": "#A50064",
+   "hex": "#0B3B66",
    "n": 3,
    "pages": [
     "shop",
     "global"
    ],
-   "group": "warm"
+   "group": "other"
+  },
+  {
+   "hex": "#444444",
+   "n": 3,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
   },
   {
    "hex": "#19222C",
@@ -30551,12 +30877,12 @@
    "group": "neutral"
   },
   {
-   "hex": "#2E7D32",
+   "hex": "#A50064",
    "n": 2,
    "pages": [
     "shop"
    ],
-   "group": "other"
+   "group": "warm"
   },
   {
    "hex": "#1A1F71",
@@ -30593,15 +30919,6 @@
    "group": "neutral"
   },
   {
-   "hex": "#005BAA",
-   "n": 2,
-   "pages": [
-    "shop",
-    "global"
-   ],
-   "group": "other"
-  },
-  {
    "hex": "#9B261F",
    "n": 2,
    "pages": [
@@ -30609,14 +30926,6 @@
     "global"
    ],
    "group": "warm"
-  },
-  {
-   "hex": "#444444",
-   "n": 2,
-   "pages": [
-    "global"
-   ],
-   "group": "neutral"
   },
   {
    "hex": "#EDE9E3",
@@ -30801,6 +31110,38 @@
     "global"
    ],
    "group": "warm"
+  },
+  {
+   "hex": "#F4F4F2",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#D6D6D6",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#C9C9C9",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#666666",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
   },
   {
    "hex": "#7F7F7F",

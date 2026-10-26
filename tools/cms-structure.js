@@ -121,7 +121,7 @@ function fixups() {
     ['customer', 'Nhãn khách hàng', 'Khách hàng', 'Customer'], ['phone', 'Nhãn điện thoại', 'Điện thoại', 'Phone'], ['email', 'Nhãn email', 'Email', 'Email'],
     ['address', 'Nhãn địa chỉ giao', 'Giao đến', 'Deliver to'], ['delivery', 'Nhãn cách giao', 'Giao hàng', 'Delivery'],
     ['ship.std', 'Giao tiêu chuẩn', 'Giao tiêu chuẩn ({ship.eta} ngày)', 'Standard delivery ({ship.eta} days)'], ['ship.exp', 'Giao hỏa tốc', 'Hỏa tốc nội thành TP.HCM', 'Same-day in HCMC'],
-    ['payment', 'Nhãn thanh toán', 'Thanh toán', 'Payment'], ['pay.cod', 'Tên cách thanh toán COD', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)'],
+    ['payment', 'Nhãn thanh toán', 'Thanh toán', 'Payment'],
     ['pay.bank', 'Tên cách thanh toán chuyển khoản', 'Chuyển khoản ngân hàng', 'Bank transfer'], ['pay.momo', 'Tên cách thanh toán ví', 'Ví MoMo', 'MoMo e-wallet'],
     ['items', 'Nhãn danh sách sản phẩm', 'Sản phẩm', 'Items'], ['subtotal', 'Nhãn tạm tính', 'Tạm tính', 'Subtotal'], ['discount', 'Nhãn giảm giá', 'Giảm giá', 'Discount'],
     ['shipping', 'Nhãn phí giao', 'Phí giao hàng', 'Shipping'], ['free', 'Chữ khi miễn phí giao', 'Miễn phí', 'Free'], ['total', 'Nhãn tổng cộng', 'Tổng cộng', 'Total'],
@@ -160,6 +160,7 @@ function fixups() {
   audit2Fixups();
   audit3Fixups();
   audit4Fixups();
+  audit5Fixups();
 }
 /* ─── Đợt sửa 1 (rà soát trang công khai): chữ mới, chữ mặc định đổi, chữ bỏ ───────────── */
 // đổi chữ mặc định của trường đã có (giữ nguyên phần đã sửa trong /admin — nằm ở data/cms.json)
@@ -255,14 +256,12 @@ function audit4Fixups() {
   f('shop.pay.vnpay', 'shop.checkout', 'subtitle', 'Cách thanh toán — thẻ (VNPay): tên (chỉ hiện khi cổng VNPay bật)', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', 'html');
   f('shop.pay.vnpaySub', 'shop.checkout', 'text', 'Cách thanh toán — thẻ (VNPay): dòng mô tả', 'Chuyển sang cổng VNPay để thanh toán an toàn', "You'll be taken to VNPay to pay securely", 'html');
   f('shop.checkout.11', 'shop.checkout', 'label', 'Chữ phương thức thanh toán — thẻ (VNPay)', 'VISA · MASTERCARD · ATM', null, 'html');
-  f('shop.pay.momoGo', 'shop.checkout', 'text', 'Cách thanh toán — ví MoMo: dòng mô tả khi cổng MoMo bật (thay cho "Quét mã sau khi đặt")', 'Chuyển sang MoMo để thanh toán (không cần quét mã)', "You'll be taken to MoMo to pay — no QR scan");
   f('shop.success.online', 'shop.success', 'label', 'Tiêu đề khung thanh toán online (đơn trả bằng thẻ / ví MoMo)', 'Thanh toán online', 'Online payment');
   f('shop.success.payerr', 'shop.success', 'text', 'Báo khi chưa mở được cổng thanh toán', 'Chưa mở được cổng thanh toán — bạn có thể thanh toán lại từ phiếu xác nhận.', "We couldn't open the payment gateway — you can pay again from your confirmation.");
   [['pay.vnpay', 'Cách thanh toán — thẻ (VNPay)', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)'],
     ['paidvia', 'Nhãn dòng đã thanh toán qua cổng / chuyển khoản', 'Đã thanh toán qua', 'Paid via'],
     ['payonline', 'Tiêu đề khung nút thanh toán online', 'Thanh toán online', 'Pay online'],
     ['paybtn.vnpay', 'Nút thanh toán bằng thẻ (VNPay)', 'Thanh toán bằng thẻ (VNPay)', 'Pay by card (VNPay)'],
-    ['paybtn.momo', 'Nút thanh toán bằng ví MoMo', 'Thanh toán bằng ví MoMo', 'Pay with MoMo'],
     ['paygo', 'Màn chờ chuyển sang cổng thanh toán', 'Đang chuyển sang cổng thanh toán…', 'Redirecting to the payment gateway…'],
     ['payfail', 'Báo thanh toán chưa thành công (quay về từ cổng)', 'Thanh toán chưa thành công. Bạn có thể thử lại bằng các nút bên dưới.', "The payment didn't go through. You can try again with the buttons below."],
     ['payerr', 'Báo khi bấm nút thanh toán mà chưa mở được cổng', 'Chưa mở được cổng thanh toán, vui lòng thử lại.', "Couldn't open the payment gateway, please try again."],
@@ -271,6 +270,50 @@ function audit4Fixups() {
     ['paycancel', 'Báo khách đã hủy thanh toán ở cổng', 'Bạn đã hủy thanh toán.', 'You cancelled the payment.'],
     ['received', 'Thay mã QR khi đã nhận tiền (tự xác nhận / cổng báo về)', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!']]
     .forEach(([k, label, vi, en], i) => newField({ key: 'global.slip.' + k, section: 'global.slip', page: 'global', type: 'label', label, vi, en, src: 'js', locate: false, order: 70 + i }));
+}
+/* ─── Đợt sửa 5: bỏ COD; MoMo / ZaloPay quét mã VietQR (SePay tự xác nhận); trả góp thẻ tín dụng qua VNPay ─── */
+function audit5Fixups() {
+  const f = (key, section, type, label, vi, en, src) => newField({ key, section, type, label, vi, en, src: src || 'js', ...(src === 'html' ? {} : { locate: false }) });
+  f('shop.pay.zalopay', 'shop.checkout', 'subtitle', 'Cách thanh toán — ZaloPay: tên', 'ZaloPay', 'ZaloPay', 'html');
+  f('shop.pay.zalopaySub', 'shop.checkout', 'text', 'Cách thanh toán — ZaloPay: dòng mô tả', 'Quét mã QR bằng app ZaloPay sau khi đặt', 'Scan the QR with ZaloPay after ordering', 'html');
+  f('shop.pay.installment', 'shop.checkout', 'subtitle', 'Cách thanh toán — trả góp (VNPay): tên (chỉ hiện khi đã bật trả góp)', 'Trả góp qua thẻ tín dụng (VNPay)', 'Credit card installments (VNPay)', 'html');
+  f('shop.pay.installmentSub', 'shop.checkout', 'text', 'Cách thanh toán — trả góp (VNPay): dòng mô tả', 'Chọn ngân hàng và kỳ hạn 3–12 tháng sau khi đặt', 'Choose your bank and a 3–12 month term after ordering', 'html');
+  f('shop.pay.installmentMin', 'shop.checkout', 'label', 'Trả góp — dòng mô tả khi tổng đơn chưa đủ mức tối thiểu ({min} = mức đặt ở Thanh toán online)', 'Áp dụng cho đơn từ {min}', 'For orders from {min}');
+  f('shop.checkout.12', 'shop.checkout', 'label', 'Chữ phương thức thanh toán — ZaloPay', 'ZALOPAY', null, 'html');
+  f('shop.checkout.13', 'shop.checkout', 'label', 'Chữ phương thức thanh toán — trả góp (VNPay)', 'TRẢ GÓP', 'INSTALLMENTS', 'html');
+  f('shop.pdp.zalo', 'shop.pdp', 'label', 'Logo thanh toán — ZaloPay', 'ZaloPay', null, 'html');
+  f('shop.pdp.isp', 'shop.pdp', 'label', 'Logo thanh toán — trả góp (VNPay)', 'Trả góp', 'Installments', 'html');
+  f('shop.success.zalo', 'shop.success', 'text', 'Hướng dẫn thanh toán — đơn chọn ZaloPay', 'Mở ZaloPay, quét mã và giữ nguyên nội dung chuyển khoản. Dapper Combat sẽ kiểm tra giao dịch rồi gọi hoặc nhắn Zalo để xác nhận đơn.', 'Open ZaloPay, scan the code and keep the transfer note. Dapper Combat will check the payment and confirm your order by phone or Zalo.');
+  f('shop.success.isp', 'shop.success', 'text', 'Hướng dẫn thanh toán — đơn chọn trả góp', 'Chọn ngân hàng, loại thẻ và kỳ hạn trả góp để hoàn tất thanh toán qua VNPay.', 'Choose your bank, card type and term to complete your installment payment with VNPay.');
+  [['pay.zalopay', 'Cách thanh toán — ZaloPay', 'ZaloPay', 'ZaloPay'], ['pay.installment', 'Cách thanh toán — trả góp (VNPay)', 'Trả góp thẻ tín dụng (VNPay)', 'Credit card installments (VNPay)'],
+    ['pay.cash', 'Cách thanh toán — tiền mặt (đơn nhân viên tạo)', 'Tiền mặt', 'Cash'],
+    ['paybtn.installment', 'Nút trả góp (VNPay)', 'Trả góp qua thẻ tín dụng (VNPay)', 'Pay in installments (VNPay)'],
+    ['isp.title', 'Trả góp — tiêu đề bảng chọn', 'Trả góp qua thẻ tín dụng', 'Pay in installments'],
+    ['isp.loading', 'Trả góp — đang tải', 'Đang tải danh sách ngân hàng…', 'Loading banks…'],
+    ['isp.none', 'Trả góp — khi chưa có ngân hàng nào nhận', 'Hiện chưa có ngân hàng nào nhận trả góp cho số tiền này.', 'No bank currently offers installments for this amount.'],
+    ['isp.amount', 'Trả góp — nhãn số tiền', 'Số tiền trả góp', 'Amount'],
+    ['isp.bank', 'Trả góp — bước chọn ngân hàng', '1. Ngân hàng phát hành thẻ', '1. Card issuer'],
+    ['isp.card', 'Trả góp — bước chọn loại thẻ', '2. Loại thẻ', '2. Card type'],
+    ['isp.term', 'Trả góp — bước chọn kỳ hạn', '3. Kỳ hạn', '3. Term'],
+    ['isp.months', 'Trả góp — số tháng ({n} = số tháng)', '{n} tháng', '{n} months'],
+    ['isp.monthly', 'Trả góp — chữ sau số tiền mỗi kỳ', '/tháng', '/month'],
+    ['isp.total', 'Trả góp — nhãn tổng trả', 'Tổng trả', 'Total'],
+    ['isp.fee', 'Trả góp — nhãn phí chuyển đổi', 'Phí chuyển đổi', 'Conversion fee'],
+    ['isp.nofee', 'Trả góp — khi không có phí chuyển đổi', 'Không phí chuyển đổi', 'No conversion fee'],
+    ['isp.info', 'Trả góp — bước nhập thông tin còn thiếu', '4. Thông tin VNPay cần', '4. Details VNPay needs'],
+    ['isp.email', 'Trả góp — ô email', 'Email', 'Email'], ['isp.address', 'Trả góp — ô địa chỉ', 'Địa chỉ', 'Address'], ['isp.city', 'Trả góp — ô tỉnh / thành', 'Tỉnh / thành phố', 'City / province'],
+    ['isp.fill', 'Trả góp — báo khi còn ô trống', 'Vui lòng điền đủ thông tin', 'Please fill in all details'],
+    ['isp.pick', 'Trả góp — báo khi chưa chọn đủ', 'Vui lòng chọn ngân hàng, loại thẻ và kỳ hạn', 'Please choose a bank, card type and term'],
+    ['isp.go', 'Trả góp — nút sang VNPay', 'Tiếp tục sang VNPay', 'Continue to VNPay'],
+    ['isp.note', 'Trả góp — ghi chú dưới nút', 'Bạn sẽ nhập thông tin thẻ tín dụng ở trang bảo mật của VNPay.', "You'll enter your credit card details on VNPay's secure page."]]
+    .forEach(([k, label, vi, en], i) => newField({ key: 'global.slip.' + k, section: 'global.slip', page: 'global', type: /^paybtn|isp\.go/.test(k) ? 'button' : /isp\.(none|note)/.test(k) ? 'text' : 'label', label, vi, en, src: 'js', locate: false, order: 90 + i }));
+  // chữ mặc định đổi
+  setDefault('shop.pay.momoSub', 'Quét mã QR bằng app MoMo sau khi đặt', 'Scan the QR with MoMo after ordering');
+  setDefault('shop.seo.order', 'Đặt hàng online, giao toàn quốc, thanh toán chuyển khoản, MoMo hoặc ZaloPay.', 'Order online with nationwide delivery; pay by bank transfer, MoMo or ZaloPay.');
+  setDefault('global.slip.scan', 'Quét mã bằng app ngân hàng, MoMo hoặc ZaloPay để chuyển đúng số tiền và nội dung.', 'Scan with your banking app, MoMo or ZaloPay — amount and note are filled in.');
+  // chữ bỏ: COD (không còn nhận), cổng MoMo riêng (MoMo giờ quét mã VietQR)
+  ['shop.pay.cod', 'shop.pay.codSub', 'shop.checkout.9', 'shop.pdp.1', 'global.slip.pay.cod', 'shop.success.j20', 'shop.success.j21', 'shop.success.j22',
+    'shop.pay.momoGo', 'global.slip.paybtn.momo'].forEach(dropField);
 }
 /* ─── Đợt sửa 2: chân trang sửa được (danh sách, link, nhóm Chính sách), biến giờ / lịch / thời gian giao, SEO tiếng Anh ─── */
 function setField(key, props) { const x = fieldBy.get(key); if (x) Object.assign(x, props); else console.warn('  ! thiếu trường', key); }
@@ -697,7 +740,7 @@ const ICON_NAMES = {
 // icon trong chuỗi JS không có tên riêng: [khu vực, nhãn]
 const ICON_META = {
   'shop.icon.js1': ['shop.pdp', 'Kính lúp — ô tìm trong phần đánh giá'], 'shop.icon.js2': ['shop.list', 'Bộ lọc — nút “Lọc & sắp xếp” (điện thoại)'],
-  'shop.icon.js3': ['shop.checkout', 'Logo COD — phương thức thanh toán'], 'shop.icon.js4': ['shop.checkout', 'Logo chuyển khoản — phương thức thanh toán'],
+  'shop.icon.js4': ['shop.checkout', 'Logo chuyển khoản — phương thức thanh toán'],
 };
 const isCall = (n, name) => n && n.type === 'CallExpression' && n.callee.type === 'MemberExpression' && n.callee.object.name === 'DC' && n.callee.property.name === name;
 // khóa thật của DC.x/DC.m/DC.i: "k" hoặc $k("k") / $k2($k("k"))

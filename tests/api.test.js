@@ -62,7 +62,7 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.s === 200 && r.j.code === 'DAPPER10' && r.j.pct === 0.1, 'kiểm tra mã giảm giá qua server', r.j);
     r = await req('/api/promo', { method: 'POST', body: { code: 'XYZ', lang: 'en' } });
     t.ok(r.s === 404 && /Invalid/.test(r.j.error), 'mã sai → báo lỗi tiếng Anh khi khách xem EN', r.j);
-    const order = (city, ship, extra = {}) => ({ customer: { name: 'Khách Thử', phone: '0901234567', address: '12 Đường Số 1', city }, items: [{ id: p.id, qty: 2, size: p.sizes[0], color: p.colors[0][0] }], pay: 'cod', ship, ...extra });
+    const order = (city, ship, extra = {}) => ({ customer: { name: 'Khách Thử', phone: '0901234567', address: '12 Đường Số 1', city }, items: [{ id: p.id, qty: 2, size: p.sizes[0], color: p.colors[0][0] }], pay: 'bank', ship, ...extra });
     r = await req('/api/orders', { method: 'POST', body: { ...order('HCM', 'std'), customer: { name: 'K', phone: '1' }, lang: 'en' } });
     t.ok(r.s === 400 && r.j.error === 'Please enter your name', 'lỗi đặt hàng bằng tiếng Anh', r.j);
     r = await req('/api/orders', { method: 'POST', body: order('Hà Nội', 'exp') });

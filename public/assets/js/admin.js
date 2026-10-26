@@ -30,8 +30,9 @@
     consults: [['new', 'Mới'], ['contacted', 'Đã liên hệ'], ['surveyed', 'Đã khảo sát'], ['quoted', 'Đã báo giá'], ['won', 'Chốt hợp đồng'], ['lost', 'Không thành']],
   };
   var TONE = { 'new': 'new', done: 'done', enrolled: 'done', won: 'done', cancelled: 'off', lost: 'off' };
-  var PAY = { cod: 'COD (thu tiền khi nhận)', bank: 'Chuyển khoản', momo: 'MoMo', vnpay: 'Thẻ / ATM (VNPay)' };
-  var PAY_SHORT = { cod: 'COD', bank: 'Chuyển khoản', momo: 'MoMo', vnpay: 'VNPay' };
+  // bank / momo / zalopay: khách quét mã VietQR; vnpay: thẻ; installment: trả góp VNPay; cash: tiền mặt (chỉ đơn nhân viên tạo)
+  var PAY = { bank: 'Chuyển khoản', momo: 'MoMo (quét mã QR)', zalopay: 'ZaloPay (quét mã QR)', vnpay: 'Thẻ / ATM (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
+  var PAY_SHORT = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', vnpay: 'VNPay', installment: 'Trả góp', cash: 'Tiền mặt' };
   var SHIP = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc TP.HCM', pickup: 'Nhận tại phòng tập' };
   // nguồn đơn tạo tay (bán qua điện thoại / mạng xã hội / tại chỗ)
   var SOURCE = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
@@ -167,10 +168,10 @@
   // ── tiền: đã nhận / chờ thu ──
   // số cần thu: đơn = tổng đơn; đăng ký = số cần trả trước, không có thì tổng học phí
   function dueOf(kind, x) { return kind === 'orders' ? Number(x.total) || 0 : Number(x.due) || Number(x.total) || 0; }
-  // chờ thanh toán: đơn chuyển khoản / MoMo chưa nhận tiền; đăng ký còn phải trả — đều chưa hủy
+  // chờ thanh toán: đơn chưa nhận tiền; đăng ký còn phải trả — đều chưa hủy
   function awaitingPay(kind, x) {
     if (!x || x.paid || x.status === 'cancelled') return false;
-    return kind === 'orders' ? (x.pay === 'bank' || x.pay === 'momo') : kind === 'registrations' && dueOf(kind, x) > 0;
+    return kind === 'orders' || (kind === 'registrations' && dueOf(kind, x) > 0);
   }
   function payTag(kind, x) {
     if (x.paid) return '<span class="paytag paytag--ok" title="Đã nhận ' + esc(money(x.paidAmount)) + '">Đã thu</span>';
@@ -180,7 +181,7 @@
   // dòng chữ (chưa escape) cho bảng chi tiết
   function paidText(kind, x) {
     if (x.paid) return money(x.paidAmount) + ' · ' + fmtDate(x.paidAt) + (x.paidBy ? ' · ' + x.paidBy : '') + (x.paidNote ? ' · ' + x.paidNote : '');
-    return awaitingPay(kind, x) ? 'Chưa — chờ khách thanh toán ' + money(dueOf(kind, x)) : (kind === 'orders' && x.pay === 'cod' && x.status !== 'cancelled' ? 'Chưa — thu khi giao (COD)' : '');
+    return awaitingPay(kind, x) ? 'Chưa — chờ khách thanh toán ' + money(dueOf(kind, x)) : '';
   }
   function memberLeft(r) {
     var d = daysTo(r.endDate);
@@ -943,8 +944,7 @@
       { label: 'Người nhận tin', value: num(st.subscribers), sub: 'Email đăng ký bản tin', href: '#/subscribers' },
       { label: 'Đã thu · 30 ngày', value: money(m.collected30), sub: 'Đơn hàng ' + money(mo.collected30) + ' · Khóa học ' + money(mr.collected30) + ' — tính theo ngày ghi “Đã nhận tiền”', href: '#/orders', filter: 'orders:all', wide: true },
       { label: 'Chờ thu', value: money(m.pending), wide: true, alert: (m.pendingCount || 0) > 0,
-        sub: (m.pendingCount ? num(m.pendingCount) + ' khoản chuyển khoản / học phí chưa nhận tiền' : 'Không có khoản chuyển khoản / học phí nào đang chờ') +
-          (m.codCount ? ' · thêm ' + money(m.cod) + ' COD đang chờ giao (' + num(m.codCount) + ' đơn)' : ''),
+        sub: m.pendingCount ? num(m.pendingCount) + ' đơn hàng / học phí chưa nhận tiền' : 'Không có đơn hàng / học phí nào đang chờ thanh toán',
         href: (m.pendingOrders || !m.pendingRegs) ? '#/orders' : '#/registrations', filter: ((m.pendingOrders || !m.pendingRegs) ? 'orders' : 'registrations') + ':unpaid' },
       { label: 'Đã thu · từ trước tới nay', value: money(m.collected), sub: 'Đơn hàng ' + money(mo.collected) + ' · Khóa học ' + money(mr.collected), href: '#/customers', wide: true },
       { label: 'Doanh số đặt hàng · 30 ngày', value: money(o.revenue30), sub: 'Giá trị đơn đặt trong 30 ngày (kể cả đơn chưa thu tiền), không tính đơn đã hủy', href: '#/orders', filter: 'orders:all', wide: true },
@@ -1227,15 +1227,15 @@
         fld('Ghi chú nhận tiền', '<input type="text" name="paidNote" maxlength="300" value="' + esc(x.paidNote || '') + '" placeholder="VD: VCB, mã GD 123456" autocomplete="off">') +
       '</div>' +
       '<p class="field__hint">' + (on ? 'Ghi nhận lúc ' + esc(fmtDate(x.paidAt)) + (x.paidBy ? ' · bởi ' + esc(x.paidBy) : '') + (Number(x.paidAmount) !== due && due ? ' · <strong>' + (Number(x.paidAmount) < due ? 'còn thiếu ' + esc(money(due - x.paidAmount)) : 'nhận dư ' + esc(money(x.paidAmount - due))) + '</strong>' : '')
-        : awaitingPay(kind, x) ? 'Khách chưa thanh toán — bật khi đã nhận tiền (kiểm tra sao kê ngân hàng / MoMo).'
-          : kind === 'orders' && x.pay === 'cod' ? 'Đơn COD tự ghi “Đã nhận tiền” khi chuyển sang “Hoàn tất”.' : 'Bật khi đã nhận tiền của khách.') + '</p>' +
-      // tiền về tự động (SePay / VNPay / MoMo)
+        : kind === 'orders' && x.pay === 'cash' ? 'Đơn tiền mặt tự ghi “Đã nhận tiền” khi chuyển sang “Hoàn tất”.'
+          : awaitingPay(kind, x) ? 'Khách chưa thanh toán — bật khi đã nhận tiền (kiểm tra sao kê ngân hàng).' : 'Bật khi đã nhận tiền của khách.') + '</p>' +
+      // tiền về tự động (SePay / VNPay / VNPay trả góp)
       (Array.isArray(x.payments) && x.payments.length ? '<p class="field__label">Tiền về tự động</p><ul class="paylog">' + x.payments.map(function (p) {
         return '<li><strong>' + esc(PAY_SRC[p.provider] || p.provider) + '</strong> · ' + esc(money(p.amount)) + ' · ' + esc(fmtDate(p.at)) + (p.txn ? ' · mã GD ' + esc(p.txn) : '') + '</li>';
       }).join('') + '</ul>' : '') +
       '</div>';
   }
-  var PAY_SRC = { sepay: 'Chuyển khoản (SePay tự xác nhận)', vnpay: 'VNPay', momo: 'MoMo' };
+  var PAY_SRC = { sepay: 'Chuyển khoản (SePay tự xác nhận)', vnpay: 'VNPay (thẻ)', installment: 'VNPay trả góp' };
   var CARRIERS = ['GHN', 'GHTK', 'Viettel Post', 'J&T Express', 'Ninja Van', 'VNPost', 'Ahamove', 'Grab Express', 'Nhân viên giao'];
   function drawerHead(eyebrow, title, subHtml) {
     return '<header class="drawer__head"><div class="drawer__heading">' +
@@ -1489,12 +1489,12 @@
         fld('Giảm giá', moneyInput('discount', create ? 0 : Number(o.discount) || 0), !create && o.promo ? 'Khách dùng mã ' + esc(o.promo) + ' khi đặt.' : 'Số tiền giảm cho cả đơn.') + '</div>' +
         '<div data-ed-totals></div>') +
       sec('Thanh toán & giao hàng', '<div class="grid2">' +
-        fld('Thanh toán', '<select name="pay">' + optsHtml(mapPairs(PAY), create ? 'cod' : o.pay) + '</select>') +
+        fld('Thanh toán', '<select name="pay">' + optsHtml(mapPairs(PAY), create ? 'cash' : o.pay) + '</select>') +
         fld('Giao hàng', '<select name="ship">' + optsHtml(mapPairs(SHIP), create ? 'std' : (o.ship || 'std')) + '</select>') + '</div>' +
         (create ? '<div class="paybox" data-paybox><label class="check set-switch"><input type="checkbox" name="paid"><span class="switch__ui" aria-hidden="true"></span><span><strong>Khách đã trả tiền</strong></span></label>' +
           '<div class="grid2" data-pay-fields hidden>' + fld('Số tiền đã nhận', moneyInput('paidAmount', '')) +
           fld('Ghi chú nhận tiền', '<input type="text" name="paidNote" maxlength="300" placeholder="VD: tiền mặt tại quầy" autocomplete="off">') + '</div>' +
-          '<p class="field__hint">Bật nếu khách đã trả (tiền mặt, chuyển khoản…). Đơn COD tạo ở trạng thái “Hoàn tất” tự ghi đã nhận tiền.</p></div>' : '')) +
+          '<p class="field__hint">Bật nếu khách đã trả (tiền mặt, chuyển khoản…). Đơn tiền mặt tạo ở trạng thái “Hoàn tất” tự ghi đã nhận tiền.</p></div>' : '')) +
       (create ? sec('Khác', fld('Ghi chú nội bộ', '<textarea name="adminNote" rows="2" maxlength="1000" placeholder="Chỉ nhân viên thấy"></textarea>') +
         '<label class="check set-switch"><input type="checkbox" name="sendEmail" disabled><span class="switch__ui" aria-hidden="true"></span><span>Gửi email xác nhận cho khách (kèm link phiếu)</span></label>' +
         '<p class="field__hint" data-ed-mailhint>Nhập email của khách để bật. Cần cài SMTP ở Thiết lập → Thông báo. Không gửi thì vẫn chép được link phiếu để gửi qua Zalo.</p>')
