@@ -107,6 +107,54 @@
       'cmp.hint': 'Pick two fighters to compare points, skills, physicals and head-to-head.', 'cmp.stats': 'Tale of the tape', 'cmp.skills': 'Skills', 'cmp.h2h': 'Head to head', 'cmp.noH2h': 'These fighters have never met.',
     },
   };
+  // hồ sơ kiểu trang tướng: vai trò, độ khó, bộ kỹ năng, phân tích
+  var T2 = {
+    vi: {
+      'ch.skills': 'Bộ kỹ năng', 'ch.skillsSub': 'Nội tại là thế đứng, Q W E là ba kỹ năng HLV chấm cao nhất, R là cách thắng sở trường. Bấm từng biểu tượng để xem.',
+      'ch.passive': 'Nội tại', 'ch.ult': 'Tuyệt chiêu', 'ch.stats': 'Chỉ số',
+      'ch.role.technique': 'Kỹ thuật gia', 'ch.role.speed': 'Tốc độ', 'ch.role.power': 'Đấm nặng', 'ch.role.defense': 'Phản đòn', 'ch.role.stamina': 'Áp sát bền bỉ', 'ch.role.footwork': 'Đánh từ xa',
+      'ch.diff': 'Độ khó đối đầu', 'ch.diff.1': 'Thấp', 'ch.diff.2': 'Trung bình', 'ch.diff.3': 'Cao',
+      'mv.score': 'HLV chấm {v}/100', 'mv.lvl': 'Cấp {n}/{m}',
+      'mv.technique': 'Đòn chuẩn xác', 'mv.technique.d': 'Ra đòn đúng kỹ thuật, ít sơ hở, phối hợp combo mạch lạc.',
+      'mv.speed': 'Tay nhanh', 'mv.speed.d': 'Ra đòn và thu tay rất nhanh, thường chiếm thế chủ động trong các pha trao đổi.',
+      'mv.power': 'Cú đấm nặng ký', 'mv.power.d': 'Mỗi cú trúng đích đều có thể khiến đối thủ chao đảo.',
+      'mv.defense': 'Khóa chặt và phản đòn', 'mv.defense.d': 'Chặn, né, lắc tốt rồi trả đòn ngay khi đối thủ để lộ sơ hở.',
+      'mv.stamina': 'Bình xăng không đáy', 'mv.stamina.d': 'Giữ nhịp độ cao tới hiệp cuối, càng về cuối càng ép mạnh.',
+      'mv.footwork': 'Bộ pháp', 'mv.footwork.d': 'Di chuyển kiểm soát khoảng cách, cắt góc và thoát khỏi góc đài khéo léo.',
+      'ps.orthodox': 'Thế thuận', 'ps.orthodox.d': 'Tay trái dẫn đòn, tay phải là cú đấm quyết định. Lối đánh cân bằng, chắc chắn.',
+      'ps.southpaw': 'Thế tay trái', 'ps.southpaw.d': 'Tay phải dẫn đòn, tay trái ra đòn mạnh: góc đấm ngược khiến đối thủ quen đánh với người thuận tay khó chịu.',
+      'ps.switch': 'Đổi thế', 'ps.switch.d': 'Đổi qua lại giữa thế thuận và thế tay trái, khiến đối thủ khó đọc góc ra đòn.',
+      'ps.reach': 'Sải tay {r} cm, chiều cao {h} cm.', 'ps.reachAdv': 'Lợi thế sải tay +{n} cm.',
+      'ult.KO': 'Cú knock-out', 'ult.TKO': 'Dồn ép dừng trận', 'ult.RTD': 'Bẻ gãy ý chí', 'ult.DQ': 'Ép phạm luật', 'ult.UD': 'Áp đảo thẻ điểm', 'ult.SD': 'Thắng sát nút', 'ult.MD': 'Thắng điểm đa số', 'ult.PTS': 'Thắng điểm', 'ult.none': 'Chưa mở khóa',
+      'ult.d': 'Cách thắng sở trường: {m}, {n} lần. Tổng cộng {ko} trận thắng KO / TKO ({pct}% số trận thắng).', 'ult.none.d': 'Chưa có trận thắng. Tuyệt chiêu mở khóa khi có chiến thắng đầu tiên.',
+      'an.title': 'Phân tích', 'an.win': 'Tỉ lệ thắng', 'an.ko': 'Thắng KO / TKO', 'an.of': 'trên {n} trận thắng', 'an.avg': 'Điểm ± trung bình mỗi trận', 'an.rounds': 'Số hiệp đã đấu',
+      'an.mu': 'Đối đầu', 'an.good': 'Dễ thắng', 'an.bad': 'Khó thắng', 'an.noGood': 'Chưa có võ sĩ nào được dự đoán yếu hơn.', 'an.noBad': 'Chưa có võ sĩ nào được dự đoán mạnh hơn.',
+      'an.note': 'Khả năng thắng dự đoán theo điểm xếp hạng hiện tại, so với võ sĩ cùng giới tính ở hạng cân này và hạng cân kề bên. Bấm vào tên để so sánh chi tiết.',
+    },
+    en: {
+      'ch.skills': 'Abilities', 'ch.skillsSub': 'Passive is the stance, Q W E are the three skills coaches rate highest, R is the favourite way to win. Click each icon to read it.',
+      'ch.passive': 'Passive', 'ch.ult': 'Ultimate', 'ch.stats': 'Stats',
+      'ch.role.technique': 'Technician', 'ch.role.speed': 'Speedster', 'ch.role.power': 'Power puncher', 'ch.role.defense': 'Counter-puncher', 'ch.role.stamina': 'Pressure fighter', 'ch.role.footwork': 'Out-boxer',
+      'ch.diff': 'Threat level', 'ch.diff.1': 'Low', 'ch.diff.2': 'Medium', 'ch.diff.3': 'High',
+      'mv.score': 'Coach score {v}/100', 'mv.lvl': 'Level {n} of {m}',
+      'mv.technique': 'Clean technique', 'mv.technique.d': 'Lands correct, tidy punches, leaves few openings and strings combinations together.',
+      'mv.speed': 'Fast hands', 'mv.speed.d': 'Throws and retracts very fast, usually taking the initiative in exchanges.',
+      'mv.power': 'Heavy hands', 'mv.power.d': 'Any clean shot can hurt the opponent.',
+      'mv.defense': 'Shell and counter', 'mv.defense.d': 'Blocks, slips and rolls well, then fires back the moment the opponent opens up.',
+      'mv.stamina': 'Bottomless tank', 'mv.stamina.d': 'Keeps a high pace to the final round and pushes harder late.',
+      'mv.footwork': 'Footwork', 'mv.footwork.d': 'Controls distance, cuts angles and gets out of the corners with ease.',
+      'ps.orthodox': 'Orthodox stance', 'ps.orthodox.d': 'Left hand leads, the right is the finisher. A balanced, solid style.',
+      'ps.southpaw': 'Southpaw stance', 'ps.southpaw.d': 'Right hand leads, the left hits hard: the mirrored angles bother opponents used to orthodox fighters.',
+      'ps.switch': 'Switch hitter', 'ps.switch.d': 'Switches between orthodox and southpaw, so opponents struggle to read the angles.',
+      'ps.reach': 'Reach {r} cm, height {h} cm.', 'ps.reachAdv': 'Reach advantage +{n} cm.',
+      'ult.KO': 'Knockout', 'ult.TKO': 'Stoppage pressure', 'ult.RTD': 'Will breaker', 'ult.DQ': 'Forced fouls', 'ult.UD': 'Scorecard control', 'ult.SD': 'Close-call closer', 'ult.MD': 'Majority verdict', 'ult.PTS': 'Points win', 'ult.none': 'Locked',
+      'ult.d': 'Favourite way to win: {m}, {n} times. {ko} KO / TKO wins in total ({pct}% of wins).', 'ult.none.d': 'No wins yet. The ultimate unlocks with the first win.',
+      'an.title': 'Analysis', 'an.win': 'Win rate', 'an.ko': 'KO / TKO wins', 'an.of': 'of {n} wins', 'an.avg': 'Average points ± per bout', 'an.rounds': 'Rounds fought',
+      'an.mu': 'Matchups', 'an.good': 'Favourable', 'an.bad': 'Tough', 'an.noGood': 'Nobody is predicted to be weaker yet.', 'an.noBad': 'Nobody is predicted to be stronger yet.',
+      'an.note': 'Win chance predicted from current ranking points, against fighters of the same sex in this division and the ones next to it. Click a name for the full comparison.',
+    },
+  };
+  Object.keys(T2).forEach(function (l) { Object.keys(T2[l]).forEach(function (k) { T[l][k] = T2[l][k]; }); });
   var en = function () { return DC.lang() === 'en'; };
   function t(k, vars) {
     var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]) || k;
@@ -372,19 +420,19 @@
   }
 
   /* ─── Hồ sơ võ sĩ ─────────────────────────────────────────────────────── */
-  // radar kỹ năng: list = [{ f, color }] (1 võ sĩ ở hồ sơ, 2 võ sĩ ở trang so sánh)
-  function radar(list) {
+  // radar kỹ năng: list = [{ f, color }] (1 võ sĩ ở hồ sơ, 2 võ sĩ ở trang so sánh); dark = vẽ trên nền tối
+  function radar(list, dark) {
     var n = SKILL.length, cx = 120, cy = 118, R = 84, pt = function (i, r) { var a = -Math.PI / 2 + i * 2 * Math.PI / n; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; };
     var poly = function (r) { return SKILL.map(function (s, i) { return pt(i, r).map(function (v) { return v.toFixed(1); }).join(','); }).join(' '); };
-    var grid = [0.25, 0.5, 0.75, 1].map(function (k) { return '<polygon points="' + poly(R * k) + '" fill="none" stroke="#e0e3e7"/>'; }).join('');
-    var axes = SKILL.map(function (s, i) { var p = pt(i, R); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#e0e3e7"/>'; }).join('');
+    var grid = [0.25, 0.5, 0.75, 1].map(function (k) { return '<polygon points="' + poly(R * k) + '" fill="none" stroke="' + (dark ? '#2b323c' : '#e0e3e7') + '"/>'; }).join('');
+    var axes = SKILL.map(function (s, i) { var p = pt(i, R); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="' + (dark ? '#2b323c' : '#e0e3e7') + '"/>'; }).join('');
     var shapes = list.map(function (x) {
       var val = SKILL.map(function (s, i) { return pt(i, R * (x.f.skills[s.id] || 0) / 100).map(function (v) { return v.toFixed(1); }).join(','); }).join(' ');
-      return '<polygon points="' + val + '" fill="' + x.color + '" fill-opacity="0.22" stroke="' + x.color + '" stroke-width="2" stroke-linejoin="round"/>';
+      return '<polygon points="' + val + '" fill="' + x.color + '" fill-opacity="' + (dark ? 0.3 : 0.22) + '" stroke="' + x.color + '" stroke-width="2" stroke-linejoin="round"/>';
     }).join('');
     var labels = SKILL.map(function (s, i) {
       var p = pt(i, R + 18), anchor = Math.abs(p[0] - cx) < 4 ? 'middle' : p[0] > cx ? 'start' : 'end';
-      return '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11" fill="#3b434c">' + esc(pick(s)) + '</text>';
+      return '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11" fill="' + (dark ? '#c3c9d0' : '#3b434c') + '">' + esc(pick(s)) + '</text>';
     }).join('');
     return '<svg class="xh-radar" viewBox="-30 0 300 240" role="img" aria-label="' + esc(t('sk.title')) + '">' + grid + axes + shapes + labels + '</svg>';
   }
@@ -394,24 +442,26 @@
     var p = Math.round(prob(a, b) * 100);
     return '<div class="xh-prob" title="' + esc(t('prob')) + '"><span class="a" style="width:' + p + '%">' + p + '%</span><span class="b" style="width:' + (100 - p) + '%">' + (100 - p) + '%</span></div>';
   }
-  // diễn biến điểm: điểm kỹ năng → sau từng trận (màu chấm theo kết quả), vạch các mốc hạng
-  function chart(f) {
+  // diễn biến điểm: điểm kỹ năng → sau từng trận (màu chấm theo kết quả), vạch các mốc hạng; dark = nền tối
+  function chart(f, dark) {
     var pts0 = (f.bouts || []).slice().reverse();
     if (!pts0.length) return '<p class="xh-empty">' + esc(t('chart.none')) + '</p>';
     var series = [{ v: f.skillPoints, label: t('chart.start') }].concat(pts0.map(function (b) { var o = byId[b.opp]; return { v: b.after, res: b.res, label: dateOf(b.date) + ', ' + t('res.' + b.res + '.t') + (o ? ' vs ' + o.name : '') + ' (' + (b.delta > 0 ? '+' : '') + pts(b.delta) + ')' }; }));
-    var W = 640, H = 210, L = 44, Rr = 14, T = 16, Bm = 26;
+    // nền tối (hồ sơ): biểu đồ rộng theo khung đang hiển thị để chữ không quá nhỏ trên điện thoại
+    var W = dark ? Math.max(420, Math.min(1100, (root.clientWidth || 640) - 90)) : 640, H = dark ? (W < 640 ? 240 : 250) : 210, L = 44, Rr = 14, T = 16, Bm = 26;
     var vs = series.map(function (x) { return x.v; }), lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
     var pad = Math.max(15, (hi - lo) * 0.25); lo = Math.floor((lo - pad) / 10) * 10; hi = Math.ceil((hi + pad) / 10) * 10;
     var X = function (i) { return L + (series.length === 1 ? (W - L - Rr) / 2 : i * (W - L - Rr) / (series.length - 1)); }, Y = function (v) { return T + (hi - v) * (H - T - Bm) / (hi - lo); };
-    var COL = { W: '#1d8348', L: '#D4372E', D: '#5c6a7b', NC: '#9aa1a9' };
+    var COL = { W: dark ? '#3fbf72' : '#1d8348', L: dark ? '#ff5a4f' : '#D4372E', D: dark ? '#9fb0c3' : '#5c6a7b', NC: '#9aa1a9' };
+    var C = dark ? { grid: '#232932', txt: '#8d96a1', tier: '#c8a85a', tierTxt: '#e2c97f', bg: '#11151c' } : { grid: '#eef0f2', txt: '#656c76', tier: '#C9A227', tierTxt: '#8a6d12', bg: '#fff' };
     var g = '';
-    [lo, (lo + hi) / 2, hi].forEach(function (v) { g += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '" stroke="#eef0f2"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="#656c76">' + Math.round(v) + '</text>'; });
-    (D.tiers || []).forEach(function (x) { if (x.min > lo && x.min < hi) g += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(x.min).toFixed(1) + '" y2="' + Y(x.min).toFixed(1) + '" stroke="#C9A227" stroke-dasharray="4 4"/><text x="' + (W - Rr) + '" y="' + (Y(x.min) - 5).toFixed(1) + '" text-anchor="end" font-size="11" fill="#8a6d12">' + esc(pick(x)) + ' ' + x.min + '</text>'; });
+    [lo, (lo + hi) / 2, hi].forEach(function (v) { g += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '" stroke="' + C.grid + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="' + C.txt + '">' + Math.round(v) + '</text>'; });
+    (D.tiers || []).forEach(function (x) { if (x.min > lo && x.min < hi) g += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(x.min).toFixed(1) + '" y2="' + Y(x.min).toFixed(1) + '" stroke="' + C.tier + '" stroke-dasharray="4 4"/><text x="' + (W - Rr) + '" y="' + (Y(x.min) - 5).toFixed(1) + '" text-anchor="end" font-size="11" fill="' + C.tierTxt + '">' + esc(pick(x)) + ' ' + x.min + '</text>'; });
     var line = series.map(function (x, i) { return X(i).toFixed(1) + ',' + Y(x.v).toFixed(1); }).join(' ');
     var area = X(0).toFixed(1) + ',' + (H - Bm) + ' ' + line + ' ' + X(series.length - 1).toFixed(1) + ',' + (H - Bm);
-    var dots = series.map(function (x, i) { return '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(x.v).toFixed(1) + '" r="' + (i ? 5.5 : 4.5) + '" fill="' + (x.res ? COL[x.res] : '#fff') + '" stroke="' + (x.res ? '#fff' : '#D4372E') + '" stroke-width="2"><title>' + esc(x.label + ': ' + pts(x.v)) + '</title></circle>'; }).join('');
-    var xl = '<text x="' + X(0).toFixed(1) + '" y="' + (H - 6) + '" font-size="11" fill="#656c76">' + esc(t('chart.start')) + '</text><text x="' + X(series.length - 1).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="end" font-size="11" fill="#656c76">' + esc(dateOf(pts0[pts0.length - 1].date)) + '</text>';
-    return '<div class="xh-chart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('chart.title')) + '">' + g + '<polygon points="' + area + '" fill="#D4372E" fill-opacity="0.07"/>' +
+    var dots = series.map(function (x, i) { return '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(x.v).toFixed(1) + '" r="' + (i ? 5.5 : 4.5) + '" fill="' + (x.res ? COL[x.res] : C.bg) + '" stroke="' + (x.res ? C.bg : '#D4372E') + '" stroke-width="2"><title>' + esc(x.label + ': ' + pts(x.v)) + '</title></circle>'; }).join('');
+    var xl = '<text x="' + X(0).toFixed(1) + '" y="' + (H - 6) + '" font-size="11" fill="' + C.txt + '">' + esc(t('chart.start')) + '</text><text x="' + X(series.length - 1).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="end" font-size="11" fill="' + C.txt + '">' + esc(dateOf(pts0[pts0.length - 1].date)) + '</text>';
+    return '<div class="xh-chart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('chart.title')) + '">' + g + '<polygon points="' + area + '" fill="#D4372E" fill-opacity="' + (dark ? 0.14 : 0.07) + '"/>' +
       '<polyline points="' + line + '" fill="none" stroke="#D4372E" stroke-width="2.5" stroke-linejoin="round"/>' + dots + xl + '</svg></div>';
   }
   // chọn võ sĩ (nhóm Nam / Nữ, kèm hạng cân và thành tích)
@@ -423,25 +473,131 @@
       }).join('') + '</optgroup>' : '';
     }).join('');
   }
+  /* hồ sơ võ sĩ kiểu trang phân tích tướng (game MOBA): ảnh lớn, huy hiệu hạng, vai trò, độ khó đối đầu,
+     bộ kỹ năng P Q W E R (nội tại = thế đứng, Q W E = 3 kỹ năng HLV chấm cao nhất, R = cách thắng sở trường),
+     phân tích dễ thắng / khó thắng (theo điểm), lịch sử đấu tô màu thắng / thua */
+  var ICON = {
+    stance: '<path d="M12 3l7 9-7 9-7-9z"/><circle cx="12" cy="12" r="2.2"/>',
+    technique: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><path d="M12 1.5v4.5M12 18v4.5M1.5 12H6M18 12h4.5"/>',
+    speed: '<path d="M13.5 2L5 13.5h6.2L10 22l9-12.2h-6.4z"/>',
+    power: '<path d="M12 2.5l2.1 5.4 5.6-1.6-3.1 5 4.9 2.9-5.7.9.8 5.8L12 17.3 7.4 20.9l.8-5.8-5.7-.9 4.9-2.9-3.1-5 5.6 1.6z"/>',
+    defense: '<path d="M12 2.5l8 3v6c0 4.9-3.3 8.9-8 10.5-4.7-1.6-8-5.6-8-10.5v-6z"/>',
+    stamina: '<path d="M2 12h4.5l2.5-6 4 12 3-8 1.5 2H22"/>',
+    footwork: '<path d="M4 6l6 6-6 6M12 6l6 6-6 6"/>',
+    ult: '<path d="M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6z"/><circle cx="12" cy="12" r="1.6"/>',
+  };
+  var icon = function (k) { return '<svg class="xh-ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">' + (ICON[k] || ICON.ult) + '</svg>'; };
+  // huy hiệu hạng: lục giác màu theo hạng (Tinh anh có thêm cánh), số giữa = thứ hạng trong hạng cân
+  var EMB = { elite: ['#f3d77a', '#9c7a14'], a: ['#ff7b70', '#94201a'], b: ['#86aef0', '#1d4386'], c: ['#dfe4e9', '#6f7a84'], rookie: ['#ddb184', '#6e4622'] };
+  function emblem(f) {
+    var c = EMB[f.tier] || EMB.rookie, id = 'xhEm' + f.id, rk = String(ranked(f) ? f.rank.div : '–');
+    return '<svg class="xh-emb" viewBox="0 0 80 88" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c[0] + '"/><stop offset="1" stop-color="' + c[1] + '"/></linearGradient></defs>' +
+      (f.tier === 'elite' ? '<path d="M13 28L1 19l4 21 8 5zM67 28l12-9-4 21-8 5z" fill="url(#' + id + ')" opacity="0.85"/>' : '') +
+      '<path d="M40 3l29 16v41L40 85 11 60V19z" fill="url(#' + id + ')"/><path d="M40 13l20 11.5v32L40 74 20 56.5v-32z" fill="#0b0d12" opacity="0.84"/>' +
+      '<text x="40" y="' + (rk.length > 1 ? 54 : 56) + '" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="800" font-size="' + (rk.length > 1 ? 26 : 32) + '" fill="' + c[0] + '">' + esc(rk) + '</text></svg>';
+  }
+  var bySkill = function (f) { return SKILL.slice().sort(function (a, b) { return (f.skills[b.id] || 0) - (f.skills[a.id] || 0); }); };
+  // tuyệt chiêu = cách thắng nhiều nhất (bằng nhau thì ưu tiên thắng KO / TKO)
+  function ultimate(f) {
+    var n = {};
+    (f.bouts || []).forEach(function (b) { if (b.res === 'W' && b.method) n[b.method] = (n[b.method] || 0) + 1; });
+    var m = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || (STOP.indexOf(b) > -1) - (STOP.indexOf(a) > -1); })[0];
+    return m ? { name: t('ult.' + m), lvl: Math.min(3, n[m]), max: 3, desc: t('ult.d', { m: t('m.' + m), n: n[m], ko: f.record.ko, pct: f.record.koPct || 0 }) }
+      : { name: t('ult.none'), lvl: 0, max: 3, desc: t('ult.none.d'), off: true };
+  }
+  function abilities(f) {
+    var reach = f.reach && f.height ? ' ' + t('ps.reach', { r: f.reach, h: f.height }) + (f.reach > f.height ? ' ' + t('ps.reachAdv', { n: f.reach - f.height }) : '') : '';
+    return [{ key: 'P', ic: 'stance', label: t('ch.passive'), name: t('ps.' + f.stance), desc: t('ps.' + f.stance + '.d') + reach }]
+      .concat(bySkill(f).slice(0, 3).map(function (s, i) {
+        var v = f.skills[s.id] || 0;
+        return { key: 'QWE'.charAt(i), ic: s.id, label: pick(s), name: t('mv.' + s.id), sub: t('mv.score', { v: v }), lvl: Math.max(1, Math.ceil(v / 20)), max: 5, desc: t('mv.' + s.id + '.d') };
+      }))
+      .concat([Object.assign({ key: 'R', ic: 'ult', label: t('ch.ult') }, ultimate(f))]);
+  }
+  function abilityDetail(a) {
+    var pips = '';
+    for (var i = 0; i < (a.max || 0); i++) pips += '<i' + (i < a.lvl ? ' class="on"' : '') + '></i>';
+    return '<span class="xh-ab-bg">' + icon(a.ic) + '</span><p class="xh-ab-t"><span class="xh-ab-k">' + a.key + '</span>' + esc(a.label) + '</p><h3>' + esc(a.name) + '</h3>' + (a.sub ? '<p class="xh-ab-sub">' + esc(a.sub) + '</p>' : '') +
+      (a.max ? '<div class="xh-pips" role="img" aria-label="' + esc(t('mv.lvl', { n: a.lvl, m: a.max })) + '">' + pips + '</div>' : '') + '<p class="xh-ab-p">' + esc(a.desc) + '</p>';
+  }
   function pageFighter(slug) {
     var f = bySlug[slug];
     if (!f) { notFound('nf.fighter', '/xep-hang', 'back.ranking'); return; }
     document.title = f.name + (f.nickname ? ' “' + f.nickname + '”' : '') + ' · Dapper Combat Academy Ranking';
-    var r = f.record;
-    // đầu trang: ảnh lớn, biệt danh, tên, thành tích T-B-H, thứ hạng
-    var rankBlock = ranked(f)
-      ? '<div class="xh-pf-rank' + (f.rank.div === 1 ? ' gold' : '') + '"><b>#' + f.rank.div + '</b><span>' + esc(t('pf.ofDiv', { n: f.rank.divOf, div: divName(f.division) })) + '</span><small>' + esc(t('pf.inClub', { r: f.rank.overall, n: f.rank.overallOf, g: t('g' + f.gender) })) + '</small></div>'
-      : '<div class="xh-pf-rank"><span>' + esc(t('pf.unranked')) + '</span></div>';
+    var r = f.record, sk = bySkill(f), decided = r.w + r.l + r.d, winPct = decided ? Math.round(r.w / decided * 100) : 0;
+    var panel = function (title, body, sub) { return '<div class="xh-ch-p">' + (title ? '<h3>' + title + (sub ? ' <small>' + sub + '</small>' : '') + '</h3>' : '') + body + '</div>'; };
+    var sec = function (id, title, body, sub) { return '<section class="xh-ch-sec xh-in" id="' + id + '"><div class="xh-ch-h"><h2>' + esc(title) + '</h2>' + (sub ? '<p>' + esc(sub) + '</p>' : '') + '</div>' + body + '</section>'; };
+    // đầu trang
+    var lvl = f.stars >= 4 ? 3 : f.stars === 3 ? 2 : 1;
     var stat = function (k, v) { return '<div><dt>' + esc(k) + '</dt><dd>' + v + '</dd></div>'; };
-    var top = '<header class="xh-hero xh-pf-hero"><div class="xh-in">' + crumb('/vo-si', t('nav.fighters'), f.name) + '<div class="xh-pf">' +
-      '<figure class="xh-pf-photo">' + portrait(f, true) + '</figure><div class="xh-pf-main">' + (f.nickname ? '<p class="xh-pf-nick">“' + esc(f.nickname) + '”</p>' : '') + '<h1>' + esc(f.name) + '</h1>' +
-      '<p class="xh-pf-meta"><span>' + esc(divName(f.division)) + '</span><span>' + esc(t('g.' + f.gender)) + '</span><span>' + esc(stance(f.stance)) + '</span>' + (f.hometown ? '<span>' + esc(f.hometown) + '</span>' : '') + '</p>' +
+    var top = '<header class="xh-ch-hero">' + (f.photo ? '<div class="xh-ch-bg" style="background-image:url(&quot;' + esc(f.photo) + '&quot;)"></div>' : '') + '<div class="xh-in xh-ch-in">' + crumb('/vo-si', t('nav.fighters'), f.name) +
+      '<div class="xh-ch-grid"><div class="xh-ch-info"><div class="xh-ch-tier">' + emblem(f) + '<div><b>' + esc(pick(TIER[f.tier]) || '') + '</b>' +
+      (ranked(f) ? '<span>' + esc(t('pf.inDiv', { r: f.rank.div, n: f.rank.divOf, div: divName(f.division) })) + '</span><small>' + esc(t('pf.inClub', { r: f.rank.overall, n: f.rank.overallOf, g: t('g' + f.gender) })) + '</small>' : '<span>' + esc(t('pf.unranked')) + '</span>') + '</div></div>' +
+      (f.nickname ? '<p class="xh-ch-nick">' + esc(f.nickname) + '</p>' : '') + '<h1>' + esc(f.name) + '</h1>' +
+      '<div class="xh-ch-roles">' + sk.slice(0, 2).map(function (s) { return '<span class="xh-role">' + icon(s.id) + esc(t('ch.role.' + s.id)) + '</span>'; }).join('') +
+      '<span class="xh-diff"><span>' + esc(t('ch.diff')) + '</span><span class="xh-diff-bars" aria-hidden="true"><i class="on"></i><i' + (lvl > 1 ? ' class="on"' : '') + '></i><i' + (lvl > 2 ? ' class="on"' : '') + '></i></span><b>' + esc(t('ch.diff.' + lvl)) + '</b></span></div>' +
       '<div class="xh-record"><div class="w"><b>' + r.w + '</b><span>' + esc(t('pf.win')) + '</span><small>' + esc(t('pf.kos', { n: r.ko })) + '</small></div>' +
       '<div class="l"><b>' + r.l + '</b><span>' + esc(t('pf.loss')) + '</span><small>' + esc(t('pf.kos', { n: r.koLost })) + '</small></div>' +
-      '<div class="d"><b>' + r.d + '</b><span>' + esc(t('pf.draw')) + '</span><small>&nbsp;</small></div></div></div>' +
-      '<div class="xh-pf-side">' + rankBlock + '<dl class="xh-pf-stats">' + stat(t('pf.points'), '<span class="xh-pts">' + pts(f.points) + '</span>') + stat(t('pf.tier'), tier(f.tier) || '—') +
-      stat(t('col.stars'), stars(f.stars)) + stat(t('pf.ko'), r.w ? r.koPct + '%' : '—') + '</dl></div></div></div></header>';
-    // hồ sơ: bảng 2 cột
+      '<div class="d"><b>' + r.d + '</b><span>' + esc(t('pf.draw')) + '</span><small>&nbsp;</small></div></div>' +
+      '<dl class="xh-ch-stats">' + stat(t('pf.points'), pts(f.points)) + stat(t('an.win'), decided ? winPct + '%' : '—') + stat(t('col.stars'), stars(f.stars)) +
+      stat(t('pf.streak'), f.streak ? esc(t('pf.streakOf', { n: f.streak.n, r: t('res.' + f.streak.res + '.t').toLowerCase() })) : '—') + '</dl></div>' +
+      '<figure class="xh-ch-art">' + portrait(f, true) + '</figure></div></div>' +
+      '<nav class="xh-ch-tabs" aria-label="' + esc(f.name) + '"><a href="#bo-ky-nang">' + esc(t('ch.skills')) + '</a><a href="#phan-tich">' + esc(t('an.title')) + '</a><a href="#lich-su">' + esc(t('bh.title')) + '</a><a href="#ho-so">' + esc(t('pf.facts')) + '</a></nav></header>';
+
+    // bộ kỹ năng + chỉ số
+    var AB = abilities(f);
+    var abil = panel('', '<div class="xh-ab" role="group" aria-label="' + esc(t('ch.skills')) + '">' + AB.map(function (a, i) {
+      return '<button type="button" class="xh-ab-b' + (a.key === 'R' ? ' ult' : '') + (a.off ? ' off' : '') + '" data-ab="' + i + '" aria-pressed="false" aria-controls="xhAbD" title="' + esc(a.label + ': ' + a.name) + '">' +
+        '<span class="xh-ab-i">' + icon(a.ic) + '</span><span class="xh-ab-k">' + a.key + '</span></button>';
+    }).join('') + '</div><div class="xh-ab-d" id="xhAbD" aria-live="polite"></div><h4 class="xh-ch-sub">' + esc(t('ch.stats')) + '</h4><div class="xh-ch-stat">' + SKILL.map(function (s) {
+      var v = f.skills[s.id] || 0;
+      return '<div class="xh-st">' + icon(s.id) + '<span>' + esc(pick(s)) + '</span><i><b style="width:' + v + '%"></b></i><em>' + v + '</em></div>';
+    }).join('') + '</div>');
+    var hist = (f.assessments || []), prev = null;
+    var histRows = hist.map(function (a) { var ch = prev == null ? null : Math.round((a.avg - prev) * 10) / 10; prev = a.avg; return { a: a, ch: ch }; }).reverse().map(function (x) {
+      return '<tr><td>' + esc(dateOf(x.a.date)) + '</td><td class="r num">' + numFmt(x.a.avg, 1) + '</td><td class="r">' + (x.ch == null ? '<span class="xh-muted">—</span>' : delta(x.ch)) + '</td></tr>';
+    }).join('');
+    var stats = panel(esc(t('sk.title')), radar([{ f: f, color: '#D4372E' }], true) + '<div class="xh-sum"><div><small>' + esc(t('sk.skill')) + '</small><b>' + numFmt(f.skillPoints) + '</b><small>' + esc(t('sk.avg', { n: numFmt(f.skillAvg, 1) })) + '</small></div>' +
+      '<div><small>' + esc(t('sk.fight')) + '</small><b>' + delta(f.fightPoints) + '</b></div><div><small>' + esc(t('sk.total')) + '</small><b>' + pts(f.points) + '</b></div></div>' +
+      (hist.length ? '<p class="xh-sum-n">' + esc(t('sk.last', { d: dateOf(hist[hist.length - 1].date) })) + '</p>' : '') +
+      (histRows ? '<div class="xh-tw"><table class="xh-table"><thead><tr><th>' + esc(t('sk.hist')) + '</th><th class="r">' + esc(t('sk.avgCol')) + '</th><th class="r">' + esc(t('sk.change')) + '</th></tr></thead><tbody>' + histRows + '</tbody></table></div>' : ''));
+
+    // phân tích: số liệu, dễ thắng / khó thắng trong hạng cân này và hạng kề bên, trận sắp tới, so sánh
+    var dvIds = (D.divisions || []).map(function (d) { return d.id; }), di = dvIds.indexOf(f.division);
+    var deltas = (f.bouts || []).filter(function (b) { return typeof b.delta === 'number'; });
+    var avgD = deltas.length ? deltas.reduce(function (s, b) { return s + b.delta; }, 0) / deltas.length : 0;
+    var tile = function (k, v) { return '<div class="xh-tile"><small>' + esc(t(k)) + '</small><b>' + v + '</b></div>'; };
+    var tiles = '<div class="xh-tiles">' + tile('an.win', decided ? winPct + '%' : '—') + tile('an.ko', r.ko + (r.w ? ' <small>' + esc(t('an.of', { n: r.w })) + '</small>' : '')) +
+      tile('an.avg', deltas.length ? delta(Math.round(avgD * 10) / 10) : '—') + tile('an.rounds', numFmt(r.rounds)) + '</div>';
+    var pool = D.fighters.filter(function (x) { return x.id !== f.id && x.gender === f.gender && ranked(x) && Math.abs(dvIds.indexOf(x.division) - di) <= 1; })
+      .map(function (x) { return { x: x, p: Math.round(prob(f, x) * 100) }; });
+    var mu = function (o) {
+      return '<a class="xh-mu" href="' + cmpHref(f, o.x) + '">' + photo(o.x, 'md') + '<span><span class="xh-mu-n">' + esc(o.x.name) + '</span><small>' + esc(divName(o.x.division)) + ', ' + pts(o.x.points) + ' ' + esc(t('col.points').toLowerCase()) + '</small>' +
+        '<span class="xh-mu-bar"><i style="width:' + o.p + '%"></i></span></span><b>' + o.p + '%</b></a>';
+    };
+    var good = pool.filter(function (o) { return o.p >= 50; }).sort(function (a, b) { return b.p - a.p; }).slice(0, 3);
+    var bad = pool.filter(function (o) { return o.p < 50; }).sort(function (a, b) { return a.p - b.p; }).slice(0, 3);
+    var mus = panel(esc(t('an.mu')), '<div class="xh-mus"><div class="good"><h4>' + esc(t('an.good')) + '</h4>' + (good.length ? good.map(mu).join('') : '<p class="xh-ch-note">' + esc(t('an.noGood')) + '</p>') + '</div>' +
+      '<div class="bad"><h4>' + esc(t('an.bad')) + '</h4>' + (bad.length ? bad.map(mu).join('') : '<p class="xh-ch-note">' + esc(t('an.noBad')) + '</p>') + '</div></div><p class="xh-ch-note">' + esc(t('an.note')) + '</p>');
+    var up = (f.upcoming || []).map(function (u) {
+      var o = byId[u.opp], e = evById[u.event];
+      return o && e ? '<div class="xh-ch-up"><small>' + esc(dateOf(u.date)) + ', <a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' + (u.main ? ', ' + esc(t('ev.main').toLowerCase()) : '') + '</small>' + nameCell(o, rec(o.record)) + probBar(f, o) +
+        '<a class="xh-cmp-link" href="' + cmpHref(f, o) + '">' + esc(t('cmp.go')) + '</a></div>' : '';
+    }).join('');
+    var cmp = D.fighters.length > 1 ? panel(esc(t('cmp.title')), '<form class="xh-cmp-form" action="/so-sanh"><input type="hidden" name="a" value="' + esc(f.slug) + '"><label class="xh-sr" for="xhCmpB">' + esc(t('cmp.with')) + '</label>' +
+      '<select id="xhCmpB" name="b">' + fighterOpts((D.fighters.filter(function (x) { return x.id !== f.id && x.gender === f.gender && x.division === f.division; }).sort(byPoints)[0] || {}).slug, f.id) + '</select><button type="submit">' + esc(t('cmp.go')) + '</button></form>') : '';
+
+    // lịch sử thi đấu
+    var mh = (f.bouts || []).map(function (b) {
+      var o = byId[b.opp], e = evById[b.event];
+      if (!o) return '';
+      return '<li class="xh-mh ' + esc(b.res) + '"><div class="xh-mh-r">' + res(b.res) + '<b>' + esc(t('res.' + b.res + '.t')) + '</b><small>' + methodTitle(b.method) + (b.round ? ' ' + esc(t('ev.round', { n: b.round })) + (b.time ? ' ' + esc(b.time) : '') : ' ' + esc(t('ev.rounds', { n: b.rounds }))) + '</small></div>' +
+        '<div class="xh-mh-o">' + photo(o, 'md') + '<div><a href="' + href(o) + '">' + esc(o.name) + '</a><small>' + rec(o.record) + '</small></div></div>' +
+        '<div class="xh-mh-e">' + (e ? '<a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' : '') + '<small>' + esc(dateOf(b.date)) + '</small></div>' +
+        '<div class="xh-mh-p">' + delta(b.delta) + (b.after != null ? '<small>' + pts(b.after) + '</small>' : '') + '</div></li>';
+    }).join('');
+
+    // hồ sơ: bảng 2 cột, giới thiệu, cùng hạng cân
     var kv = [
       [t('pf.points'), '<span class="xh-pts">' + pts(f.points) + '</span> ' + stars(f.stars)], [t('pf.rank'), ranked(f) ? esc(t('pf.inDiv', { r: f.rank.div, n: f.rank.divOf, div: divName(f.division) })) + '<br><small>' + esc(t('pf.inClub', { r: f.rank.overall, n: f.rank.overallOf, g: t('g' + f.gender) })) + '</small>' : '<small>' + esc(t('pf.unranked')) + '</small>'],
       [t('pf.tier'), tier(f.tier)], [t('pf.div'), esc(divName(f.division))],
@@ -453,46 +609,25 @@
       [t('pf.joined'), f.joined ? esc(dateOf(f.joined)) : '—'], [t('pf.coach'), esc(f.coach || '—')], [t('pf.debut'), f.debut ? esc(dateOf(f.debut)) : '—'],
     ];
     var kvT = function (rows) { return '<table class="xh-kv">' + rows.map(function (x) { return '<tr><th>' + esc(x[0]) + '</th><td>' + x[1] + '</td></tr>'; }).join('') + '</table>'; }, half = Math.ceil(kv.length / 2);
-    var facts = box(esc(t('pf.facts')), '<div class="xh-kv2">' + kvT(kv.slice(0, half)) + kvT(kv.slice(half)) + '</div>');
-    // kỹ năng + lịch sử chấm điểm
-    var hist = (f.assessments || []).slice().reverse(), prev = null;
-    var histRows = (f.assessments || []).map(function (a) { var ch = prev == null ? null : Math.round((a.avg - prev) * 10) / 10; prev = a.avg; return { a: a, ch: ch }; }).reverse().map(function (x) {
-      return '<tr><td>' + esc(dateOf(x.a.date)) + '</td><td class="r num">' + numFmt(x.a.avg, 1) + '</td><td class="r">' + (x.ch == null ? '<span class="xh-muted">—</span>' : delta(x.ch)) + '</td></tr>';
-    }).join('');
-    var skills = box(esc(t('sk.title')), '<div class="xh-skills">' + radar([{ f: f, color: '#D4372E' }]) + '<div><div class="xh-bars">' + SKILL.map(function (s) {
-      var v = f.skills[s.id] || 0;
-      return '<div class="xh-bar"><span>' + esc(pick(s)) + '</span><i><b style="width:' + v + '%"></b></i><em>' + v + '</em></div>';
-    }).join('') + '</div><div class="xh-sum"><div><small>' + esc(t('sk.skill')) + '</small><b>' + numFmt(f.skillPoints) + '</b><small>' + esc(t('sk.avg', { n: numFmt(f.skillAvg, 1) })) + '</small></div>' +
-      '<div><small>' + esc(t('sk.fight')) + '</small><b>' + delta(f.fightPoints) + '</b></div><div><small>' + esc(t('sk.total')) + '</small><b>' + pts(f.points) + '</b></div></div>' +
-      (hist.length ? '<p class="xh-sum-n">' + esc(t('sk.last', { d: dateOf(hist[0].date) })) + '</p>' : '') + '</div></div>' +
-      (histRows ? '<div class="xh-tw"><table class="xh-table"><thead><tr><th>' + esc(t('sk.hist')) + '</th><th class="r">' + esc(t('sk.avgCol')) + '</th><th class="r">' + esc(t('sk.change')) + '</th></tr></thead><tbody>' + histRows + '</tbody></table></div>' : ''));
-    // trận sắp tới
-    var up = (f.upcoming || []).map(function (u) {
-      var o = byId[u.opp], e = evById[u.event];
-      return o && e ? '<tr><td class="num nw">' + esc(dateOf(u.date)) + '</td><td>' + nameCell(o, rec(o.record)) + '</td><td class="xh-hide-sm"><a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' + (u.main ? '<small class="xh-muted"><br>' + esc(t('ev.main')) + '</small>' : '') + '</td>' +
-        '<td class="c nw">' + esc(t('ev.rounds', { n: u.rounds })) + '</td><td>' + probBar(f, o) + '<a class="xh-cmp-link" href="' + cmpHref(f, o) + '">' + esc(t('cmp.go')) + '</a></td></tr>' : '';
-    }).join('');
-    var upBox = up ? box(esc(t('up.title')), '<div class="xh-tw"><table class="xh-table"><thead><tr><th>' + esc(t('bh.date')) + '</th><th>' + esc(t('bh.opp')) + '</th><th class="xh-hide-sm">' + esc(t('bh.event')) + '</th><th class="c">' + esc(t('bh.round')) + '</th><th>' + esc(t('prob')) + '</th></tr></thead><tbody>' + up + '</tbody></table></div>') : '';
-    // lịch sử thi đấu
-    var bh = (f.bouts || []).map(function (b) {
-      var o = byId[b.opp], e = evById[b.event];
-      if (!o) return '';
-      return '<tr><td class="num nw">' + esc(dateOf(b.date)) + '</td><td>' + nameCell(o, rec(o.record)) + '</td><td class="xh-hide-sm">' + (e ? '<a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' : '') + '</td>' +
-        '<td class="c">' + res(b.res) + '</td><td>' + methodTitle(b.method) + '</td><td class="c num">' + (b.round ? b.round + '/' + b.rounds + (b.time ? ' <small class="xh-muted">' + esc(b.time) + '</small>' : '') : b.rounds) + '</td><td class="r num">' + delta(b.delta) + '</td></tr>';
-    }).join('');
-    var bhBox = box(esc(t('bh.title')), bh ? '<div class="xh-tw"><table class="xh-table"><thead><tr><th>' + esc(t('bh.date')) + '</th><th>' + esc(t('bh.opp')) + '</th><th class="xh-hide-sm">' + esc(t('bh.event')) + '</th><th class="c">' + esc(t('bh.res')) + '</th><th>' + esc(t('bh.method')) + '</th><th class="c">' + esc(t('bh.round')) + '</th><th class="r">' + esc(t('bh.pts')) + '</th></tr></thead><tbody>' + bh + '</tbody></table></div>' : '<p class="xh-empty">' + esc(t('bh.none')) + '</p>',
-      '<span>' + rec(r) + '</span>');
-    var chartBox = box(esc(t('chart.title')), '<div class="xh-box-b">' + chart(f) + '</div>');
-    var cmpBox = D.fighters.length > 1 ? box(esc(t('cmp.title')), '<form class="xh-cmp-form" action="/so-sanh"><input type="hidden" name="a" value="' + esc(f.slug) + '"><label class="xh-sr" for="xhCmpB">' + esc(t('cmp.with')) + '</label>' +
-      '<select id="xhCmpB" name="b">' + fighterOpts((D.fighters.filter(function (x) { return x.id !== f.id && x.gender === f.gender && x.division === f.division; }).sort(byPoints)[0] || {}).slug, f.id) + '</select><button type="submit">' + esc(t('cmp.go')) + '</button></form>') : '';
-    var bio = pick(f.bio) ? box(esc(t('bio.title')), '<div class="xh-box-b"><p>' + esc(pick(f.bio)).replace(/\n/g, '<br>') + '</p></div>') : '';
-    // cùng hạng cân
     var same = D.fighters.filter(function (x) { return x.gender === f.gender && x.division === f.division && ranked(x); }).sort(byPoints);
-    var sameBox = same.length ? box(esc(t('side.sameDiv')), '<div class="xh-box-b"><ul class="xh-list">' + same.map(function (x) {
+    var sameP = same.length ? panel(esc(t('side.sameDiv')), '<ul class="xh-list">' + same.map(function (x) {
       return '<li' + (x.id === f.id ? ' class="me"' : '') + '><span class="rk">' + x.rank.div + '</span>' + photo(x, 'sm') + '<div class="grow">' + (x.id === f.id ? '<b>' + esc(x.name) + '</b>' : '<a href="' + href(x) + '">' + esc(x.name) + '</a>') + '<small>' + rec(x.record) + '</small></div><span class="xh-pts">' + pts(x.points) + '</span></li>';
-    }).join('') + '</ul></div>', '<span>' + esc(divName(f.division)) + '</span>') : '';
-    root.innerHTML = top + page('<div class="xh-grid"><div class="xh-col">' + facts + skills + chartBox + upBox + bhBox + bio + '</div>' +
-      '<aside class="xh-col xh-side">' + cmpBox + sameBox + sideTop(f.gender) + sideUpcoming() + '</aside></div>');
+    }).join('') + '</ul>', esc(divName(f.division))) : '';
+
+    root.innerHTML = top +
+      sec('bo-ky-nang', t('ch.skills'), '<div class="xh-ch-2">' + abil + stats + '</div>', t('ch.skillsSub')) +
+      sec('phan-tich', t('an.title'), tiles + '<div class="xh-ch-2">' + mus + '<div class="xh-ch-col">' + (up ? panel(esc(t('up.title')), up) : '') + cmp + '</div></div>') +
+      sec('lich-su', t('bh.title'), '<div class="xh-ch-col">' + panel(esc(t('chart.title')), chart(f, true)) + (mh ? '<ol class="xh-mhl">' + mh + '</ol>' : panel('', '<p class="xh-empty">' + esc(t('bh.none')) + '</p>')) + '</div>') +
+      sec('ho-so', t('pf.facts'), '<div class="xh-ch-2"><div class="xh-ch-col">' + panel('', '<div class="xh-kv2">' + kvT(kv.slice(0, half)) + kvT(kv.slice(half)) + '</div>') +
+        (pick(f.bio) ? panel(esc(t('bio.title')), '<p>' + esc(pick(f.bio)).replace(/\n/g, '<br>') + '</p>') : '') + '</div>' + sameP + '</div>');
+    // bấm biểu tượng kỹ năng → khung mô tả đổi theo (mặc định Q)
+    var btns = root.querySelectorAll('[data-ab]'), box2 = document.getElementById('xhAbD');
+    var show = function (i) {
+      [].forEach.call(btns, function (b, j) { b.classList.toggle('on', i === j); b.setAttribute('aria-pressed', String(i === j)); });
+      box2.innerHTML = abilityDetail(AB[i]);
+    };
+    [].forEach.call(btns, function (b, i) { b.addEventListener('click', function () { show(i); }); });
+    show(1);
   }
 
   /* ─── Sự kiện: thẻ sự kiện, mỗi trận góc đỏ | kết quả / dự đoán | góc xanh ─ */
@@ -603,6 +738,7 @@
     [].forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = t(el.getAttribute('data-t')); });
     [].forEach.call(document.querySelectorAll('[data-ph]'), function (el) { el.setAttribute('placeholder', t(el.getAttribute('data-ph'))); el.setAttribute('aria-label', t(el.getAttribute('data-ph'))); });
     [].forEach.call(document.querySelectorAll('.xh-tabs a'), function (a) { var on = a.getAttribute('data-sec') === SEC[route[0]]; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    document.body.classList.toggle('xh-dark', route[0] === 'fighter' && !!bySlug[route[1]]);
     if (TITLE[route[0]]) document.title = t(TITLE[route[0]]) + ' — Dapper Combat Academy Ranking';
     if (route[0] === 'ranking') pageRanking();
     else if (route[0] === 'fighters') pageFighters();
