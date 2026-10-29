@@ -30,7 +30,7 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
-      # địa chỉ website, vd https://dappercombat.vn (link phiếu xác nhận, ảnh chia sẻ, sitemap)
+      # địa chỉ website, vd https://dappervietnam.com (link phiếu xác nhận, ảnh chia sẻ, sitemap)
       - key: SITE_URL
         sync: false
       # tiếng Anh tự dịch (không bắt buộc — có thể nhập trong /admin → Tiếng Anh (AI))

@@ -2639,7 +2639,8 @@
   // ═══ Giao diện cho màn hình bổ sung (admin-content.js) ══════════════════════
   // def: { title, mount(main, sub), route?(main, sub), update?(main, manual), isDirty?(), dirtyText?(), discard?(), reset?() }
   window.DCAdmin = {
-    register: function (id, def) { PLUGINS[id] = def; VIEWS[id] = def.title; },
+    // def.staff: màn nhân viên cũng dùng được (máy chủ cho phép staffOk), vd Xếp hạng CLB cho HLV
+    register: function (id, def) { PLUGINS[id] = def; VIEWS[id] = def.title; if (def.staff) STAFF_VIEWS[id] = 1; },
     // opts.staff = thẻ cũng hiện cho tài khoản nhân viên
     addDashboard: function (fn, opts) { DASH_HOOKS.push({ fn: fn, staff: !!(opts && opts.staff) }); },
     api: api, apiFail: apiFail, toast: toast, confirmDialog: confirmDialog,

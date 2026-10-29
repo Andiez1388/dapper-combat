@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Cài website Dapper Combat lên VPS Ubuntu 22.04 / 24.04 (chạy bằng quyền root):
 #   curl -fsSL https://raw.githubusercontent.com/Andiez1388/dapper-combat/main/deploy/setup-vps.sh -o setup.sh
-#   sudo DOMAIN=dappercombat.vn EMAIL=ban@gmail.com ADMIN_EMAIL=ban@gmail.com ADMIN_PASSWORD='mat-khau-cua-ban' bash setup.sh
+#   sudo DOMAIN=dappervietnam.com EMAIL=ban@gmail.com ADMIN_EMAIL=ban@gmail.com ADMIN_PASSWORD='mat-khau-cua-ban' bash setup.sh
 # Trước đó: trỏ tên miền (bản ghi A cho @ và www) về IP của VPS.
 # Chạy lại script này để cập nhật code mới nhất từ GitHub (dữ liệu giữ nguyên).
 set -euo pipefail
 
-DOMAIN="${DOMAIN:?Thiếu DOMAIN, vd DOMAIN=dappercombat.vn}"
+DOMAIN="${DOMAIN:?Thiếu DOMAIN, vd DOMAIN=dappervietnam.com}"
 EMAIL="${EMAIL:?Thiếu EMAIL (để nhận thông báo chứng chỉ HTTPS)}"
 REPO="${REPO:-https://github.com/Andiez1388/dapper-combat.git}"
 BRANCH="${BRANCH:-main}"

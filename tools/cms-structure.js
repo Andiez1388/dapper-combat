@@ -161,6 +161,17 @@ function fixups() {
   audit3Fixups();
   audit4Fixups();
   audit5Fixups();
+  audit6Fixups();
+}
+/* ─── Đợt sửa 6: mục "Xếp hạng" trên menu (bảng xếp hạng CLB /xep-hang, /vo-si, /su-kien) ─── */
+function audit6Fixups() {
+  const f = (key, type, label, vi, en, extra) => newField({ key, section: 'global.mnav', page: 'global', type, label, vi, en, src: 'js', locate: false, ...(extra || {}) });
+  f('global.mnav.u5', 'link', 'Đường dẫn — Xếp hạng', '/xep-hang', null, { mono: true });
+  f('global.mnav.15', 'label', 'Thẻ 5 · Tên trang (mục “Xếp hạng” trên menu)', 'Xếp hạng', 'Rankings', { itemLabel: 'Tên trang' });
+  f('global.mnav.16', 'label', 'Thẻ 5 · Mô tả ngắn dưới tên (menu điện thoại)', 'Lịch sự kiện · ranking · võ sĩ', 'Events · rankings · fighters', { itemLabel: 'Mô tả ngắn dưới tên' });
+  f('global.mnav.17', 'label', 'Menu thả xuống “Xếp hạng” — mục 1 (/su-kien)', 'Lịch sự kiện', 'Events');
+  f('global.mnav.18', 'label', 'Menu thả xuống “Xếp hạng” — mục 2 (/xep-hang)', 'Ranking võ sĩ', 'Fighter rankings');
+  f('global.mnav.19', 'label', 'Menu thả xuống “Xếp hạng” — mục 3 (/vo-si)', 'Thông tin võ sĩ', 'Fighters');
 }
 /* ─── Đợt sửa 1 (rà soát trang công khai): chữ mới, chữ mặc định đổi, chữ bỏ ───────────── */
 // đổi chữ mặc định của trường đã có (giữ nguyên phần đã sửa trong /admin — nằm ở data/cms.json)
@@ -721,7 +732,7 @@ const JS_LISTS = [
   [['services-1.js'], 'services.contact.areas', 'services.contact.area.s', 4, 'Lựa chọn “Diện tích” trong form', 'Lựa chọn', { id: 0 }],
   [['services-1.js'], 'services.contact.svcs', 'services.contact.j23', 3, 'Lựa chọn “Dịch vụ quan tâm” trong form', 'Lựa chọn', { id: 0 }],
   [['services-1.js'], 'services.contact.budgets', 'services.contact.j30', 5, 'Lựa chọn “Ngân sách” trong form', 'Lựa chọn', { id: 0 }],
-  [['home-3.js', 'shop-1.js', 'course-1.js', 'services-1.js'], 'global.mnav.pages', 'global.mnav.1', 4, 'Các trang trong menu điện thoại', 'Trang', { id: 'k' }],
+  [['home-3.js', 'shop-1.js', 'course-1.js', 'services-1.js'], 'global.mnav.pages', 'global.mnav.1', 5, 'Các trang trong menu điện thoại', 'Trang', { id: 'k' }],
   [['shop-1.js'], 'shop.reviews.list', 'shop.reviews.n1', 12, 'Đánh giá mẫu ở trang sản phẩm', 'Đánh giá'],
   [['shop-1.js'], 'shop.sizeguide.ao', 'shop.sizeguide.j25', 4, 'Bảng size Áo — các dòng', 'Size'],
   [['shop-1.js'], 'shop.sizeguide.dotap', 'shop.sizeguide.j49', 3, 'Bảng size Đồ tập — các dòng', 'Size'],

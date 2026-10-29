@@ -27,7 +27,9 @@ module.exports = async function browserTests(env, t, browser) {
 
   t.section('Mọi trang · VI / EN · 375 / 820 / 1366 px');
   const URLS = [['/', 'Trang chủ'], ['/shop', 'Shop'], ['/shop/' + slug, 'Trang sản phẩm'], ['/khoa-hoc', 'Khóa học'], ['/dich-vu-setup', 'Dịch vụ setup'],
-    ['/trang/dieu-khoan-su-dung', 'Trang phụ'], [`/phieu/${s.code}?k=${s.k}&staff=1`, 'Phiếu xác nhận'], ['/khong-co-trang-nay', 'Trang 404']];
+    ['/trang/dieu-khoan-su-dung', 'Trang phụ'], [`/phieu/${s.code}?k=${s.k}&staff=1`, 'Phiếu xác nhận'], ['/khong-co-trang-nay', 'Trang 404'],
+    ['/xep-hang', 'Ranking võ sĩ'], ['/vo-si', 'Danh sách võ sĩ'], ['/vo-si/nguyen-hoang-long', 'Hồ sơ võ sĩ'], ['/su-kien', 'Lịch sự kiện'], ['/su-kien?tab=res', 'Kết quả sự kiện'],
+    ['/su-kien/' + (await (await fetch(B + '/api/ranking')).json()).events.find(e => e.status === 'done' && e.bouts.length).slug, 'Chi tiết sự kiện']];
   await page.goto(B + '/');
   const titles = {};
   for (const lang of ['vi', 'en']) {
@@ -91,7 +93,7 @@ module.exports = async function browserTests(env, t, browser) {
   await t.run('menu', async () => {
     const st = await api('/api/settings');
     const n = st.brand.nav || {};
-    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && Object.keys(n).length === 4, 'mặc định: ẩn "Dịch vụ Setup", 3 mục còn lại hiện', st.brand.nav);
+    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && n.ranking === true && Object.keys(n).length === 5, 'mặc định: ẩn "Dịch vụ Setup", 3 mục còn lại hiện', st.brand.nav);
     const look = async u => {
       await page.goto(B + u, { wait: 1000 });
       return page.eval(`(() => {
@@ -108,13 +110,36 @@ module.exports = async function browserTests(env, t, browser) {
     for (const u of urls) {
       const m = await look(u);
       t.ok(m.top.length >= 3 && !m.top.some(h => /dich-vu-setup/.test(h)) && !m.mob.some(s => /Dịch vụ Setup/.test(s)), u + ' — menu trên cùng + menu điện thoại không còn "Dịch vụ Setup"', m);
+      t.ok(['/su-kien', '/xep-hang', '/vo-si'].every(h => m.top.includes(h)) && m.mob.some(s => /Xếp hạng|Ranking võ sĩ/.test(s)), u + ' — có mục "Xếp hạng" (menu thả xuống: Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)', m);
     }
     let r = await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: true, shop: false, bogus: true } } } });
     t.ok(r.brand.nav.services === true && r.brand.nav.shop === false && !('bogus' in r.brand.nav), 'lưu bật / tắt từng mục (bỏ qua mục lạ)', r.brand.nav);
     const m = await look('/khoa-hoc');
-    t.ok(m.top.some(h => /dich-vu-setup/.test(h)) && !m.top.some(h => h === '/shop') && m.mob.some(s => /Dịch vụ Setup/.test(s)) && m.mob.length === 3 && !m.mob.some(s => /^0\d\s?Shop/.test(s)), 'bật "Dịch vụ Setup", tắt "Shop" → menu đổi theo ngay', m);
+    t.ok(m.top.some(h => /dich-vu-setup/.test(h)) && !m.top.some(h => h === '/shop') && m.mob.some(s => /Dịch vụ Setup/.test(s)) && m.mob.length === 4 && !m.mob.some(s => /^0\d\s?Shop/.test(s)), 'bật "Dịch vụ Setup", tắt "Shop" → menu đổi theo ngay', m);
     await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: false, shop: true } } } });
     errs('Menu bật / tắt');
+  });
+
+  t.section('Bảng xếp hạng CLB trên trang (kiểu BoxRec)');
+  await t.run('xếp hạng', async () => {
+    await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
+    await page.goto(B + '/xep-hang', { wait: 1000 });
+    let st = await page.eval(`({ rows: document.querySelectorAll('#xh .xh-table tbody tr').length, first: (document.querySelector('#xh .xh-table tbody tr .xh-name a') || {}).textContent, tab: (document.querySelector('.xh-tabs a.on') || {}).textContent })`);
+    t.ok(st.rows === 13 && st.first === 'Nguyễn Hoàng Long' && st.tab === 'Ranking võ sĩ', 'ranking nam: 13 võ sĩ đang thi đấu, số 1 đứng đầu', st);
+    await page.eval(`document.querySelector('[data-seg="g"][data-v="f"]').click(); 1`);
+    st = await page.eval(`({ rows: document.querySelectorAll('#xh .xh-table tbody tr').length, first: document.querySelector('#xh .xh-table tbody tr .xh-name a').textContent, url: location.search })`);
+    t.ok(st.rows === 6 && st.first === 'Trần Ngọc Hân' && st.url === '?g=f', 'bấm "Nữ" → bảng nữ, nhớ lựa chọn trên đường dẫn', st);
+    await page.eval(`(() => { const i = document.querySelector('.xh-search input'); i.value = 'rong den'; i.dispatchEvent(new Event('input', { bubbles: true })); return 1; })()`);
+    st = await page.eval(`[...document.querySelectorAll('#xhSugg a')].map(a => a.getAttribute('href'))`);
+    t.ok(st.length === 1 && st[0] === '/vo-si/nguyen-hoang-long', 'ô tìm: gõ biệt danh không dấu "rong den" → gợi ý đúng võ sĩ', st);
+    await page.goto(B + '/vo-si/nguyen-hoang-long', { wait: 1000 });
+    st = await page.eval(`({ h1: document.querySelector('#xh h1').textContent, radar: !!document.querySelector('.xh-radar polygon[fill^="rgba"]'), bouts: document.querySelectorAll('#xh .xh-res').length, title: document.title })`);
+    t.ok(st.h1 === 'Nguyễn Hoàng Long' && st.radar && st.bouts >= 3 && /Rồng Đen/.test(st.title), 'hồ sơ võ sĩ: tên, biểu đồ kỹ năng, lịch sử thi đấu', st);
+    await page.eval(`document.querySelector('.xh-lang [data-lang="en"]').click(); 1`);
+    st = await page.eval(`({ tab: document.querySelector('.xh-tabs a.on').textContent, th: document.querySelector('.xh-kv th').textContent, html: document.documentElement.lang })`);
+    t.ok(st.tab === 'Fighters' && st.th === 'Ranking points' && st.html === 'en', 'bấm EN → giao diện bảng xếp hạng sang tiếng Anh', st);
+    await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
+    errs('Bảng xếp hạng CLB');
   });
 
   t.section('Cách thanh toán · trả góp VNPay (trên trang)');

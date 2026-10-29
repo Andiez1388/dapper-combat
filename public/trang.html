@@ -24,6 +24,12 @@
   .pg-links{display:flex;gap:1.4rem;margin:0 auto 0 1rem;padding:0;list-style:none;}
   .pg-links a{font-family:var(--f-mono);font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;color:rgba(255,255,255,0.75);}
   .pg-links a:hover{color:#fff;}
+  .pg-links li{position:relative;}
+  .pg-dd > a::after{content:'';display:inline-block;margin-left:6px;vertical-align:2px;border:4px solid transparent;border-top-color:currentColor;border-bottom:0;}
+  .pg-dd-menu{position:absolute;top:100%;left:-14px;z-index:10;min-width:200px;margin:12px 0 0;padding:6px 0;list-style:none;background:var(--ink);border:1px solid #2a2a2a;border-top:2px solid var(--red);box-shadow:0 14px 30px rgba(0,0,0,0.35);opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;}
+  .pg-dd-menu::before{content:'';position:absolute;left:0;right:0;top:-16px;height:16px;}
+  .pg-dd:hover .pg-dd-menu,.pg-dd:focus-within .pg-dd-menu{opacity:1;visibility:visible;}
+  .pg-dd-menu a{display:block;padding:9px 16px;white-space:nowrap;}
   .lang-switch{display:flex;border:1px solid rgba(255,255,255,0.3);}
   .lang-switch button{background:none;border:0;color:rgba(255,255,255,0.6);font-family:var(--f-mono);font-size:0.68rem;letter-spacing:0.1em;padding:0.45rem 0.7rem;cursor:pointer;}
   .lang-switch button.on{background:#fff;color:var(--ink);}
@@ -81,6 +87,12 @@
     <li data-nav="shop"><a href="/shop">Shop</a></li>
     <li data-nav="course"><a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a></li>
     <li data-nav="services"><a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a></li>
+    <li data-nav="ranking" class="pg-dd"><a href="/xep-hang" aria-haspopup="true" data-pg-vi="Xếp hạng" data-pg-en="Rankings">Xếp hạng</a>
+      <ul class="pg-dd-menu">
+        <li><a href="/su-kien" data-pg-vi="Lịch sự kiện" data-pg-en="Events">Lịch sự kiện</a></li>
+        <li><a href="/xep-hang" data-pg-vi="Ranking võ sĩ" data-pg-en="Fighter rankings">Ranking võ sĩ</a></li>
+        <li><a href="/vo-si" data-pg-vi="Thông tin võ sĩ" data-pg-en="Fighters">Thông tin võ sĩ</a></li>
+      </ul></li>
   </ul>
   <div class="pg-right">
     <div class="lang-switch"><button type="button" data-lang="vi" class="on">VI</button><button type="button" data-lang="en">EN</button></div>
@@ -91,6 +103,9 @@
     <a data-nav="shop" href="/shop">Shop</a>
     <a data-nav="course" href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a>
     <a data-nav="services" href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a>
+    <a data-nav="ranking" href="/su-kien" data-pg-vi="Lịch sự kiện" data-pg-en="Events">Lịch sự kiện</a>
+    <a data-nav="ranking" href="/xep-hang" data-pg-vi="Ranking võ sĩ" data-pg-en="Fighter rankings">Ranking võ sĩ</a>
+    <a data-nav="ranking" href="/vo-si" data-pg-vi="Thông tin võ sĩ" data-pg-en="Fighters">Thông tin võ sĩ</a>
   </div>
 </nav>
 {{cover}}

@@ -206,7 +206,8 @@ var MNAV={cur:"services",home:"/",shop:"/shop",course:"/khoa-hoc",services:"#",z
     {k:$k.v("home"),url:DC.x($k("global.mnav.u1"),0,"/"),n:[DC.x($k("global.mnav.1"),0,"Trang chủ"),DC.x($k("global.mnav.1"),1,"Home")],s:[DC.x($k("global.mnav.2"),0,"Câu chuyện · HLV · cộng đồng"),DC.x($k("global.mnav.2"),1,"Story · coach · community")]},
     {k:$k.v("shop"),url:DC.x($k("global.mnav.u2"),0,"/shop"),n:[DC.x($k("global.mnav.3"),0,"Shop"),DC.x($k("global.mnav.3"),1,"Shop")],s:[DC.x($k("global.mnav.4"),0,"Găng · áo · phụ kiện · đồ tập"),DC.x($k("global.mnav.4"),1,"Gloves · apparel · gear")]},
     {k:$k.v("course"),url:DC.x($k("global.mnav.u3"),0,"/khoa-hoc"),n:[DC.x($k("global.mnav.5"),0,"Khóa học"),DC.x($k("global.mnav.5"),1,"Courses")],s:[DC.x($k("global.mnav.6"),0,"Foundation · Group Training · PT 1-1"),DC.x($k("global.mnav.6"),1,"Foundation · Group Training · PT 1-on-1")]},
-    {k:$k.v("services"),url:DC.x($k("global.mnav.u4"),0,"/dich-vu-setup"),n:[DC.x($k("global.mnav.7"),0,"Dịch vụ Setup"),DC.x($k("global.mnav.7"),1,"Gym Setup")],s:[DC.x($k("global.mnav.8"),0,"Thiết kế · thiết bị · setup phòng tập"),DC.x($k("global.mnav.8"),1,"Gym design · equipment · setup")]}
+    {k:$k.v("services"),url:DC.x($k("global.mnav.u4"),0,"/dich-vu-setup"),n:[DC.x($k("global.mnav.7"),0,"Dịch vụ Setup"),DC.x($k("global.mnav.7"),1,"Gym Setup")],s:[DC.x($k("global.mnav.8"),0,"Thiết kế · thiết bị · setup phòng tập"),DC.x($k("global.mnav.8"),1,"Gym design · equipment · setup")]},
+    {k:$k.v("ranking"),url:DC.x($k("global.mnav.u5"),0,"/xep-hang"),n:[DC.x($k("global.mnav.15"),0,"Xếp hạng"),DC.x($k("global.mnav.15"),1,"Rankings")],s:[DC.x($k("global.mnav.16"),0,"Lịch sự kiện · ranking · võ sĩ"),DC.x($k("global.mnav.16"),1,"Events · rankings · fighters")]}
   ];});
   /* nút menu */
   var right=document.querySelector(".nav .nav-right");
@@ -237,8 +238,10 @@ var MNAV={cur:"services",home:"/",shop:"/shop",course:"/khoa-hoc",services:"#",z
   /* nhãn menu desktop thống nhất (VI: Trang chủ / Shop / Khóa học) + trạng thái đang xem */
   function labels(){
     var ul=document.querySelector(".nav .nav-links");
-    if(ul&&MNAV.services&&ul.querySelectorAll("a").length<4)ul.insertAdjacentHTML("beforeend",'<li><a href="'+MNAV.services+'"></a></li>');
-    var links=document.querySelectorAll(".nav .nav-links a");
+    if(ul&&MNAV.services&&ul.querySelectorAll(":scope>li>a").length<4)ul.insertAdjacentHTML("beforeend",'<li><a href="'+MNAV.services+'"></a></li>');
+    /* mục "Xếp hạng" + menu thả xuống (Lịch sự kiện · Ranking · Võ sĩ) — dựng lại theo ngôn ngữ */
+    var dd=ul&&ul.querySelector(".dc-dd");if(dd)dd.remove();if(ul&&DC.navDrop)ul.insertAdjacentHTML("beforeend",DC.navDrop(L()));
+    var links=ul?ul.querySelectorAll(":scope>li>a"):[];
     PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);(a.closest("li")||a).style.display=DC.navOn(p.k)?"":"none";});
     var back=document.querySelector(".nav .nav-back");
     if(back&&MNAV.cur==="course"){back.textContent=T(DC.x("global.mnav.14",0,"Đăng ký"),DC.x("global.mnav.14",1,"Sign up"));back.setAttribute("href","#dang-ky");back.removeAttribute("target");back.dataset.reg="found";back.classList.add("mn-navcta");}

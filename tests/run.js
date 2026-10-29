@@ -28,6 +28,7 @@ const smtp = require('./lib/smtp');
     await require('./ai.test')(env, t);
     await require('./mail.test')(env, t);
     await require('./pay.test')(env, t);
+    await require('./ranking.test')(env, t);
     if (!process.argv.includes('--api')) {
       browser = await Browser.launch();
       if (!browser) console.log('\n(Bỏ qua kiểm tra trên trình duyệt: không tìm thấy Chrome / Edge — đặt CHROME_PATH)');

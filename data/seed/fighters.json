@@ -1,0 +1,1482 @@
+[
+  {
+    "id": "vs01",
+    "createdAt": 1793232000000,
+    "name": "Nguyễn Hoàng Long",
+    "nickname": "Rồng Đen",
+    "gender": "m",
+    "birth": "1998-04-12",
+    "weight": 63.5,
+    "division": "light",
+    "stance": "orthodox",
+    "height": 172,
+    "reach": 176,
+    "hometown": "TP. Hồ Chí Minh",
+    "joined": "2023-02-10",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-01.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Đội trưởng CLB, lối đánh toàn diện, kiểm soát khoảng cách tốt và ra đòn kết hợp nhanh. Chưa thua trận nào trong năm 2026.",
+      "en": "Club captain with a complete game, excellent distance control and fast combinations. Unbeaten in 2026."
+    },
+    "skills": {
+      "technique": 88,
+      "speed": 86,
+      "power": 82,
+      "defense": 85,
+      "stamina": 87,
+      "footwork": 88
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 82,
+          "speed": 81,
+          "power": 76,
+          "defense": 80,
+          "stamina": 81,
+          "footwork": 83
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 86,
+          "speed": 83,
+          "power": 80,
+          "defense": 82,
+          "stamina": 85,
+          "footwork": 85
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 88,
+          "speed": 86,
+          "power": 82,
+          "defense": 85,
+          "stamina": 87,
+          "footwork": 88
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "nguyen-hoang-long",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs02",
+    "createdAt": 1793232000000,
+    "name": "Trần Minh Quân",
+    "nickname": "The Hammer",
+    "gender": "m",
+    "birth": "1996-09-03",
+    "weight": 74.2,
+    "division": "middle",
+    "stance": "orthodox",
+    "height": 180,
+    "reach": 184,
+    "hometown": "Hà Nội",
+    "joined": "2022-11-05",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-02.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Tay đấm nặng ký nhất hạng Trung, thích áp sát và tung cú móc phải uy lực.",
+      "en": "The heaviest hitter at middleweight — loves to pressure and land a big right hook."
+    },
+    "skills": {
+      "technique": 80,
+      "speed": 74,
+      "power": 92,
+      "defense": 76,
+      "stamina": 82,
+      "footwork": 74
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 74,
+          "speed": 69,
+          "power": 86,
+          "defense": 71,
+          "stamina": 76,
+          "footwork": 69
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 78,
+          "speed": 71,
+          "power": 90,
+          "defense": 73,
+          "stamina": 80,
+          "footwork": 71
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 80,
+          "speed": 74,
+          "power": 92,
+          "defense": 76,
+          "stamina": 82,
+          "footwork": 74
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "tran-minh-quan",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs03",
+    "createdAt": 1793232000000,
+    "name": "Lê Đức Anh",
+    "nickname": "Tia Chớp",
+    "gender": "m",
+    "birth": "2000-01-22",
+    "weight": 59.4,
+    "division": "feather",
+    "stance": "southpaw",
+    "height": 168,
+    "reach": 170,
+    "hometown": "Đà Nẵng",
+    "joined": "2023-06-01",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-03.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Võ sĩ tay trái với tốc độ chân và tay thuộc hàng nhanh nhất CLB.",
+      "en": "A southpaw with some of the fastest hands and feet in the club."
+    },
+    "skills": {
+      "technique": 84,
+      "speed": 91,
+      "power": 70,
+      "defense": 80,
+      "stamina": 83,
+      "footwork": 89
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 78,
+          "speed": 86,
+          "power": 64,
+          "defense": 75,
+          "stamina": 77,
+          "footwork": 84
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 82,
+          "speed": 88,
+          "power": 68,
+          "defense": 77,
+          "stamina": 81,
+          "footwork": 86
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 84,
+          "speed": 91,
+          "power": 70,
+          "defense": 80,
+          "stamina": 83,
+          "footwork": 89
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "le-duc-anh",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs04",
+    "createdAt": 1793232000000,
+    "name": "Phạm Gia Huy",
+    "nickname": "Iron",
+    "gender": "m",
+    "birth": "1997-07-15",
+    "weight": 68.1,
+    "division": "welter",
+    "stance": "orthodox",
+    "height": 175,
+    "reach": 178,
+    "hometown": "Hải Phòng",
+    "joined": "2023-01-15",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-04.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Bền bỉ, phòng thủ chắc, thắng nhờ thể lực vượt trội ở hiệp cuối.",
+      "en": "Durable with a tight guard; wins the late rounds on conditioning."
+    },
+    "skills": {
+      "technique": 78,
+      "speed": 76,
+      "power": 80,
+      "defense": 82,
+      "stamina": 85,
+      "footwork": 74
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 72,
+          "speed": 71,
+          "power": 74,
+          "defense": 77,
+          "stamina": 79,
+          "footwork": 69
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 76,
+          "speed": 73,
+          "power": 78,
+          "defense": 79,
+          "stamina": 83,
+          "footwork": 71
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 78,
+          "speed": 76,
+          "power": 80,
+          "defense": 82,
+          "stamina": 85,
+          "footwork": 74
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "pham-gia-huy",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs05",
+    "createdAt": 1793232000000,
+    "name": "Võ Thành Đạt",
+    "nickname": "Núi Lửa",
+    "gender": "m",
+    "birth": "1995-03-30",
+    "weight": 92.5,
+    "division": "heavy",
+    "stance": "orthodox",
+    "height": 186,
+    "reach": 190,
+    "hometown": "Bình Định",
+    "joined": "2022-08-20",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-05.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Hạng nặng có sức đấm mạnh nhất CLB, đa số trận thắng kết thúc sớm.",
+      "en": "The hardest puncher in the gym — most of his wins end early."
+    },
+    "skills": {
+      "technique": 72,
+      "speed": 62,
+      "power": 93,
+      "defense": 70,
+      "stamina": 72,
+      "footwork": 64
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 66,
+          "speed": 57,
+          "power": 87,
+          "defense": 65,
+          "stamina": 66,
+          "footwork": 59
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 70,
+          "speed": 59,
+          "power": 91,
+          "defense": 67,
+          "stamina": 70,
+          "footwork": 61
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 72,
+          "speed": 62,
+          "power": 93,
+          "defense": 70,
+          "stamina": 72,
+          "footwork": 64
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "vo-thanh-dat",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs06",
+    "createdAt": 1793232000000,
+    "name": "Đặng Quốc Bảo",
+    "nickname": "Bulldozer",
+    "gender": "m",
+    "birth": "1999-12-02",
+    "weight": 80.2,
+    "division": "lheavy",
+    "stance": "orthodox",
+    "height": 182,
+    "reach": 186,
+    "hometown": "Cần Thơ",
+    "joined": "2024-01-08",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-06.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Áp sát liên tục, chịu đòn tốt, đang cải thiện kỹ thuật phòng thủ.",
+      "en": "Relentless pressure fighter with a strong chin, sharpening his defense."
+    },
+    "skills": {
+      "technique": 70,
+      "speed": 68,
+      "power": 84,
+      "defense": 66,
+      "stamina": 78,
+      "footwork": 66
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 64,
+          "speed": 63,
+          "power": 78,
+          "defense": 61,
+          "stamina": 72,
+          "footwork": 61
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 68,
+          "speed": 65,
+          "power": 82,
+          "defense": 63,
+          "stamina": 76,
+          "footwork": 63
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 70,
+          "speed": 68,
+          "power": 84,
+          "defense": 66,
+          "stamina": 78,
+          "footwork": 66
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "dang-quoc-bao",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs07",
+    "createdAt": 1793232000000,
+    "name": "Bùi Tuấn Kiệt",
+    "nickname": "Mắt Bão",
+    "gender": "m",
+    "birth": "2001-05-18",
+    "weight": 55.6,
+    "division": "bantam",
+    "stance": "orthodox",
+    "height": 165,
+    "reach": 167,
+    "hometown": "TP. Hồ Chí Minh",
+    "joined": "2024-03-02",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-07.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Phản đòn sắc bén, đọc trận tốt, luôn giữ bình tĩnh trong góc đài.",
+      "en": "Sharp counter-puncher who reads opponents well and stays calm on the ropes."
+    },
+    "skills": {
+      "technique": 76,
+      "speed": 82,
+      "power": 66,
+      "defense": 78,
+      "stamina": 80,
+      "footwork": 80
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 70,
+          "speed": 77,
+          "power": 60,
+          "defense": 73,
+          "stamina": 74,
+          "footwork": 75
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 74,
+          "speed": 79,
+          "power": 64,
+          "defense": 75,
+          "stamina": 78,
+          "footwork": 77
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 76,
+          "speed": 82,
+          "power": 66,
+          "defense": 78,
+          "stamina": 80,
+          "footwork": 80
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "bui-tuan-kiet",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs08",
+    "createdAt": 1793232000000,
+    "name": "Huỳnh Nhật Minh",
+    "nickname": "Kid Saigon",
+    "gender": "m",
+    "birth": "2003-08-09",
+    "weight": 63.2,
+    "division": "light",
+    "stance": "switch",
+    "height": 173,
+    "reach": 175,
+    "hometown": "TP. Hồ Chí Minh",
+    "joined": "2024-05-20",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-08.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Đổi thế đứng linh hoạt, phong cách tấn công nhiều màu sắc.",
+      "en": "A switch-hitter with a flashy, high-volume attacking style."
+    },
+    "skills": {
+      "technique": 74,
+      "speed": 80,
+      "power": 70,
+      "defense": 68,
+      "stamina": 76,
+      "footwork": 79
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 68,
+          "speed": 75,
+          "power": 64,
+          "defense": 63,
+          "stamina": 70,
+          "footwork": 74
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 72,
+          "speed": 77,
+          "power": 68,
+          "defense": 65,
+          "stamina": 74,
+          "footwork": 76
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 74,
+          "speed": 80,
+          "power": 70,
+          "defense": 68,
+          "stamina": 76,
+          "footwork": 79
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "huynh-nhat-minh",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs09",
+    "createdAt": 1793232000000,
+    "name": "Ngô Thanh Tùng",
+    "nickname": "Cobra",
+    "gender": "m",
+    "birth": "1998-10-27",
+    "weight": 67.4,
+    "division": "welter",
+    "stance": "southpaw",
+    "height": 177,
+    "reach": 182,
+    "hometown": "Nghệ An",
+    "joined": "2023-09-12",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-09.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Tay trái sải dài, ra đòn thẳng chính xác như rắn hổ mang.",
+      "en": "Long-armed southpaw with snake-quick, accurate straight punches."
+    },
+    "skills": {
+      "technique": 77,
+      "speed": 79,
+      "power": 74,
+      "defense": 72,
+      "stamina": 74,
+      "footwork": 78
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 71,
+          "speed": 74,
+          "power": 68,
+          "defense": 67,
+          "stamina": 68,
+          "footwork": 73
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 75,
+          "speed": 76,
+          "power": 72,
+          "defense": 69,
+          "stamina": 72,
+          "footwork": 75
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 77,
+          "speed": 79,
+          "power": 74,
+          "defense": 72,
+          "stamina": 74,
+          "footwork": 78
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "ngo-thanh-tung",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs10",
+    "createdAt": 1793232000000,
+    "name": "Đỗ Khánh Duy",
+    "nickname": "Silent",
+    "gender": "m",
+    "birth": "2000-06-14",
+    "weight": 73.5,
+    "division": "middle",
+    "stance": "orthodox",
+    "height": 179,
+    "reach": 181,
+    "hometown": "Lâm Đồng",
+    "joined": "2024-07-01",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-10.svg",
+    "status": "inactive",
+    "visible": true,
+    "bio": {
+      "vi": "Đang tạm nghỉ thi đấu để hồi phục chấn thương vai.",
+      "en": "Currently inactive while recovering from a shoulder injury."
+    },
+    "skills": {
+      "technique": 68,
+      "speed": 66,
+      "power": 74,
+      "defense": 70,
+      "stamina": 72,
+      "footwork": 64
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 62,
+          "speed": 61,
+          "power": 68,
+          "defense": 65,
+          "stamina": 66,
+          "footwork": 59
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 66,
+          "speed": 63,
+          "power": 72,
+          "defense": 67,
+          "stamina": 70,
+          "footwork": 61
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 68,
+          "speed": 66,
+          "power": 74,
+          "defense": 70,
+          "stamina": 72,
+          "footwork": 64
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "do-khanh-duy",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs11",
+    "createdAt": 1793232000000,
+    "name": "Phan Văn Hậu",
+    "nickname": "Ong Bắp Cày",
+    "gender": "m",
+    "birth": "2002-02-11",
+    "weight": 51.6,
+    "division": "fly",
+    "stance": "orthodox",
+    "height": 162,
+    "reach": 164,
+    "hometown": "Quảng Nam",
+    "joined": "2024-02-14",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-11.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Nhỏ con nhưng tốc độ cao, di chuyển liên tục và ra đòn từ mọi góc.",
+      "en": "Small but fast — constantly moving and punching from every angle."
+    },
+    "skills": {
+      "technique": 70,
+      "speed": 84,
+      "power": 58,
+      "defense": 70,
+      "stamina": 78,
+      "footwork": 82
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 64,
+          "speed": 79,
+          "power": 52,
+          "defense": 65,
+          "stamina": 72,
+          "footwork": 77
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 68,
+          "speed": 81,
+          "power": 56,
+          "defense": 67,
+          "stamina": 76,
+          "footwork": 79
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 70,
+          "speed": 84,
+          "power": 58,
+          "defense": 70,
+          "stamina": 78,
+          "footwork": 82
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "phan-van-hau",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs12",
+    "createdAt": 1793232000000,
+    "name": "Trịnh Bảo Nam",
+    "nickname": "Lefty",
+    "gender": "m",
+    "birth": "2002-11-30",
+    "weight": 59.8,
+    "division": "feather",
+    "stance": "southpaw",
+    "height": 170,
+    "reach": 171,
+    "hometown": "Đồng Nai",
+    "joined": "2025-01-10",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-12.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Tân binh tay trái tiến bộ nhanh sau khóa Foundation.",
+      "en": "A fast-improving southpaw rookie fresh out of the Foundation course."
+    },
+    "skills": {
+      "technique": 64,
+      "speed": 70,
+      "power": 62,
+      "defense": 60,
+      "stamina": 68,
+      "footwork": 66
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 58,
+          "speed": 65,
+          "power": 56,
+          "defense": 55,
+          "stamina": 62,
+          "footwork": 61
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 62,
+          "speed": 67,
+          "power": 60,
+          "defense": 57,
+          "stamina": 66,
+          "footwork": 63
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 64,
+          "speed": 70,
+          "power": 62,
+          "defense": 60,
+          "stamina": 68,
+          "footwork": 66
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "trinh-bao-nam",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs13",
+    "createdAt": 1793232000000,
+    "name": "Lý Hải Đăng",
+    "nickname": "Ngọn Hải Đăng",
+    "gender": "m",
+    "birth": "1997-04-04",
+    "weight": 79.6,
+    "division": "lheavy",
+    "stance": "orthodox",
+    "height": 184,
+    "reach": 189,
+    "hometown": "Vũng Tàu",
+    "joined": "2023-03-25",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-13.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Sải tay dài nhất CLB, giữ đối thủ ở xa bằng cú jab chuẩn mực.",
+      "en": "The longest reach in the club, keeping opponents away with a textbook jab."
+    },
+    "skills": {
+      "technique": 79,
+      "speed": 72,
+      "power": 83,
+      "defense": 77,
+      "stamina": 80,
+      "footwork": 73
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 73,
+          "speed": 67,
+          "power": 77,
+          "defense": 72,
+          "stamina": 74,
+          "footwork": 68
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 77,
+          "speed": 69,
+          "power": 81,
+          "defense": 74,
+          "stamina": 78,
+          "footwork": 70
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 79,
+          "speed": 72,
+          "power": 83,
+          "defense": 77,
+          "stamina": 80,
+          "footwork": 73
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "ly-hai-dang",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs14",
+    "createdAt": 1793232000000,
+    "name": "Mai Xuân Phúc",
+    "nickname": "Big Phúc",
+    "gender": "m",
+    "birth": "2003-01-19",
+    "weight": 88,
+    "division": "heavy",
+    "stance": "orthodox",
+    "height": 183,
+    "reach": 185,
+    "hometown": "Thanh Hóa",
+    "joined": "2025-03-03",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-14.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Tân binh hạng nặng, sức mạnh tốt, đang luyện thêm thể lực và di chuyển.",
+      "en": "A heavyweight rookie with real power, working on stamina and footwork."
+    },
+    "skills": {
+      "technique": 58,
+      "speed": 54,
+      "power": 72,
+      "defense": 56,
+      "stamina": 60,
+      "footwork": 52
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 52,
+          "speed": 49,
+          "power": 66,
+          "defense": 51,
+          "stamina": 54,
+          "footwork": 47
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 56,
+          "speed": 51,
+          "power": 70,
+          "defense": 53,
+          "stamina": 58,
+          "footwork": 49
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 58,
+          "speed": 54,
+          "power": 72,
+          "defense": 56,
+          "stamina": 60,
+          "footwork": 52
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "mai-xuan-phuc",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs15",
+    "createdAt": 1793232000000,
+    "name": "Nguyễn Thảo Vy",
+    "nickname": "Bé Hổ",
+    "gender": "f",
+    "birth": "2001-07-07",
+    "weight": 50.8,
+    "division": "fly",
+    "stance": "orthodox",
+    "height": 158,
+    "reach": 159,
+    "hometown": "TP. Hồ Chí Minh",
+    "joined": "2023-04-18",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-15.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Nữ võ sĩ hạng Ruồi số một, tốc độ cao và lì đòn.",
+      "en": "The top women's flyweight — fast, tough and relentless."
+    },
+    "skills": {
+      "technique": 83,
+      "speed": 86,
+      "power": 70,
+      "defense": 81,
+      "stamina": 84,
+      "footwork": 85
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 77,
+          "speed": 81,
+          "power": 64,
+          "defense": 76,
+          "stamina": 78,
+          "footwork": 80
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 81,
+          "speed": 83,
+          "power": 68,
+          "defense": 78,
+          "stamina": 82,
+          "footwork": 82
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 83,
+          "speed": 86,
+          "power": 70,
+          "defense": 81,
+          "stamina": 84,
+          "footwork": 85
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "nguyen-thao-vy",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs16",
+    "createdAt": 1793232000000,
+    "name": "Trần Ngọc Hân",
+    "nickname": "Nữ Hoàng",
+    "gender": "f",
+    "birth": "1999-02-25",
+    "weight": 54.3,
+    "division": "bantam",
+    "stance": "orthodox",
+    "height": 162,
+    "reach": 164,
+    "hometown": "Huế",
+    "joined": "2022-12-01",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-16.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Nữ võ sĩ dày dạn nhất CLB, kỹ thuật tinh tế và chưa từng thua.",
+      "en": "The club's most experienced woman fighter — technically polished and unbeaten."
+    },
+    "skills": {
+      "technique": 86,
+      "speed": 82,
+      "power": 74,
+      "defense": 84,
+      "stamina": 85,
+      "footwork": 83
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 80,
+          "speed": 77,
+          "power": 68,
+          "defense": 79,
+          "stamina": 79,
+          "footwork": 78
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 84,
+          "speed": 79,
+          "power": 72,
+          "defense": 81,
+          "stamina": 83,
+          "footwork": 80
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 86,
+          "speed": 82,
+          "power": 74,
+          "defense": 84,
+          "stamina": 85,
+          "footwork": 83
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "tran-ngoc-han",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs17",
+    "createdAt": 1793232000000,
+    "name": "Lê Khánh Linh",
+    "nickname": "Chớp Hồng",
+    "gender": "f",
+    "birth": "2000-09-16",
+    "weight": 58.7,
+    "division": "feather",
+    "stance": "southpaw",
+    "height": 165,
+    "reach": 166,
+    "hometown": "Hà Nội",
+    "joined": "2023-10-05",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-17.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Tay trái khó chịu, giỏi đánh lùi và phản công.",
+      "en": "An awkward southpaw who excels at fighting off the back foot."
+    },
+    "skills": {
+      "technique": 78,
+      "speed": 80,
+      "power": 72,
+      "defense": 74,
+      "stamina": 79,
+      "footwork": 77
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 72,
+          "speed": 75,
+          "power": 66,
+          "defense": 69,
+          "stamina": 73,
+          "footwork": 72
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 76,
+          "speed": 77,
+          "power": 70,
+          "defense": 71,
+          "stamina": 77,
+          "footwork": 74
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 78,
+          "speed": 80,
+          "power": 72,
+          "defense": 74,
+          "stamina": 79,
+          "footwork": 77
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "le-khanh-linh",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs18",
+    "createdAt": 1793232000000,
+    "name": "Phạm Thu Trang",
+    "nickname": "Thép",
+    "gender": "f",
+    "birth": "1998-05-05",
+    "weight": 62.4,
+    "division": "light",
+    "stance": "orthodox",
+    "height": 167,
+    "reach": 169,
+    "hometown": "Bắc Ninh",
+    "joined": "2023-07-22",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-18.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Sức đấm và thể lực tốt, áp đảo đối thủ bằng nhịp độ cao.",
+      "en": "Strong and well-conditioned; overwhelms opponents with a high work rate."
+    },
+    "skills": {
+      "technique": 75,
+      "speed": 72,
+      "power": 80,
+      "defense": 76,
+      "stamina": 82,
+      "footwork": 70
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 69,
+          "speed": 67,
+          "power": 74,
+          "defense": 71,
+          "stamina": 76,
+          "footwork": 65
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 73,
+          "speed": 69,
+          "power": 78,
+          "defense": 73,
+          "stamina": 80,
+          "footwork": 67
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 75,
+          "speed": 72,
+          "power": 80,
+          "defense": 76,
+          "stamina": 82,
+          "footwork": 70
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "pham-thu-trang",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs19",
+    "createdAt": 1793232000000,
+    "name": "Võ Mỹ Duyên",
+    "nickname": "Mèo Rừng",
+    "gender": "f",
+    "birth": "2003-12-12",
+    "weight": 51.2,
+    "division": "fly",
+    "stance": "orthodox",
+    "height": 156,
+    "reach": 157,
+    "hometown": "Tây Ninh",
+    "joined": "2024-09-09",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-19.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Mới gia nhập, tinh thần chiến đấu cao, đang tích lũy kinh nghiệm sparring.",
+      "en": "A newer member with plenty of fight, building sparring experience."
+    },
+    "skills": {
+      "technique": 66,
+      "speed": 74,
+      "power": 60,
+      "defense": 64,
+      "stamina": 70,
+      "footwork": 72
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 60,
+          "speed": 69,
+          "power": 54,
+          "defense": 59,
+          "stamina": 64,
+          "footwork": 67
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 64,
+          "speed": 71,
+          "power": 58,
+          "defense": 61,
+          "stamina": 68,
+          "footwork": 69
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 66,
+          "speed": 74,
+          "power": 60,
+          "defense": 64,
+          "stamina": 70,
+          "footwork": 72
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "vo-my-duyen",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "vs20",
+    "createdAt": 1793232000000,
+    "name": "Hoàng Anh Thư",
+    "nickname": "Blaze",
+    "gender": "f",
+    "birth": "2002-03-08",
+    "weight": 55.4,
+    "division": "bantam",
+    "stance": "switch",
+    "height": 163,
+    "reach": 165,
+    "hometown": "Khánh Hòa",
+    "joined": "2024-06-15",
+    "coach": "Phong Dapper",
+    "photo": "/assets/img/fighters/demo-20.svg",
+    "status": "active",
+    "visible": true,
+    "bio": {
+      "vi": "Đổi thế đứng tốt, đang dần tìm được nhịp độ thi đấu.",
+      "en": "A capable switch-hitter who is finding her rhythm in competition."
+    },
+    "skills": {
+      "technique": 70,
+      "speed": 76,
+      "power": 66,
+      "defense": 68,
+      "stamina": 74,
+      "footwork": 72
+    },
+    "assessments": [
+      {
+        "date": "2026-02-01",
+        "skills": {
+          "technique": 64,
+          "speed": 71,
+          "power": 60,
+          "defense": 63,
+          "stamina": 68,
+          "footwork": 67
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-05-01",
+        "skills": {
+          "technique": 68,
+          "speed": 73,
+          "power": 64,
+          "defense": 65,
+          "stamina": 72,
+          "footwork": 69
+        },
+        "note": "",
+        "by": "Phong Dapper"
+      },
+      {
+        "date": "2026-08-01",
+        "skills": {
+          "technique": 70,
+          "speed": 76,
+          "power": 66,
+          "defense": 68,
+          "stamina": 74,
+          "footwork": 72
+        },
+        "note": "Kỳ đánh giá kỹ năng Quý III",
+        "by": "Phong Dapper"
+      }
+    ],
+    "slug": "hoang-anh-thu",
+    "updatedAt": 1793232000000
+  }
+]

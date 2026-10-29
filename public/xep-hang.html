@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ranking võ sĩ — Dapper Combat</title>
+<meta name="description" content="Bảng xếp hạng nội bộ CLB Dapper Combat: ranking võ sĩ, lịch sự kiện, kết quả thi đấu và hồ sơ từng võ sĩ.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dapper Combat">
+<meta name="theme-color" content="#1c252e">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/xephang.css">
+</head>
+<body class="xh">
+<a class="xh-skip" href="#xh">Bỏ qua menu</a>
+<header class="xh-top">
+  <div class="xh-in xh-top-in">
+    <a class="xh-logo" href="/xep-hang" aria-label="Dapper Combat Rankings"><span class="xh-logo-word" data-dc-logo>DAPPER COMBAT</span><span class="xh-logo-tag">RANKINGS</span></a>
+    <ul class="xh-site" data-xh-site>
+      <li data-nav="home"><a href="/" data-t="site.home">Trang chủ</a></li>
+      <li data-nav="shop"><a href="/shop" data-t="site.shop">Shop</a></li>
+      <li data-nav="course"><a href="/khoa-hoc" data-t="site.course">Khóa học</a></li>
+      <li data-nav="services"><a href="/dich-vu-setup" data-t="site.services">Dịch vụ Setup</a></li>
+    </ul>
+    <div class="lang-switch xh-lang"><button type="button" data-lang="vi" class="on">VI</button><button type="button" data-lang="en">EN</button></div>
+  </div>
+</header>
+<nav class="xh-nav" aria-label="Xếp hạng">
+  <div class="xh-in xh-nav-in">
+    <div class="xh-tabs">
+      <a href="/su-kien" data-sec="events" data-t="nav.events">Lịch sự kiện</a>
+      <a href="/xep-hang" data-sec="ranking" data-t="nav.ranking">Ranking võ sĩ</a>
+      <a href="/vo-si" data-sec="fighters" data-t="nav.fighters">Thông tin võ sĩ</a>
+    </div>
+    <form class="xh-search" action="/vo-si" role="search" autocomplete="off">
+      <input type="search" name="q" data-ph="search.ph" placeholder="Tìm võ sĩ…" aria-label="Tìm võ sĩ" aria-autocomplete="list" aria-controls="xhSugg">
+      <button type="submit" data-t="search.go">Tìm</button>
+      <ul class="xh-sugg" id="xhSugg" role="listbox" hidden></ul>
+    </form>
+  </div>
+</nav>
+<main class="xh-in xh-main" id="xh" tabindex="-1"><p class="xh-loading">Đang tải…</p></main>
+<footer class="xh-foot">
+  <div class="xh-in"><p data-t="foot.note">Bảng xếp hạng nội bộ CLB Dapper Combat — chỉ tính các trận đấu, buổi sparring có chấm điểm và kỳ đánh giá kỹ năng tại CLB.</p>
+  <p><a href="/" data-t="foot.home">← Về trang chủ Dapper Combat</a></p></div>
+</footer>
+<script src="/assets/js/site.js"></script>
+<script src="/assets/data/cms.js"></script>
+<script src="/assets/data/ranking.js"></script>
+<script src="/assets/js/xephang.js"></script>
+</body>
+</html>

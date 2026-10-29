@@ -1371,10 +1371,11 @@ router.get('/backup', adminOnly, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json({ app: 'dapper-combat', version: 1, createdAt: Date.now(), createdBy: req.user.email, files });
 });
-const LIST_FILES = ['orders.json', 'registrations.json', 'consults.json', 'subscribers.json', 'products.json', 'users.json', 'pages.json', 'maillog.json'];
+const LIST_FILES = ['orders.json', 'registrations.json', 'consults.json', 'subscribers.json', 'products.json', 'users.json', 'pages.json', 'maillog.json', 'fighters.json', 'events.json'];
 const OBJ_FILES = ['settings.json', 'cms.json', 'promo-usage.json'];
 const FILE_VI = { 'orders.json': 'đơn hàng', 'registrations.json': 'đăng ký khóa học', 'consults.json': 'yêu cầu tư vấn', 'subscribers.json': 'người nhận tin', 'products.json': 'sản phẩm',
-  'users.json': 'tài khoản', 'pages.json': 'trang phụ', 'maillog.json': 'nhật ký gửi tin', 'settings.json': 'thiết lập', 'cms.json': 'nội dung website', 'promo-usage.json': 'lượt dùng mã giảm giá' };
+  'users.json': 'tài khoản', 'pages.json': 'trang phụ', 'maillog.json': 'nhật ký gửi tin', 'settings.json': 'thiết lập', 'cms.json': 'nội dung website', 'promo-usage.json': 'lượt dùng mã giảm giá',
+  'fighters.json': 'võ sĩ (xếp hạng CLB)', 'events.json': 'sự kiện (xếp hạng CLB)' };
 router.post('/backup/restore', adminOnly, express.json({ limit: '200mb' }), (req, res) => {
   const b = req.body || {}, bad = m => res.status(400).json({ error: m });
   if (b.app !== 'dapper-combat' || b.version !== 1 || !b.files || typeof b.files !== 'object' || Array.isArray(b.files)) return bad('File này không phải bản sao lưu của Dapper Combat (hoặc đã bị hỏng).');
@@ -1405,5 +1406,8 @@ router.post('/backup/restore', adminOnly, express.json({ limit: '200mb' }), (req
     restored: names.map(n => ({ file: n, label: FILE_VI[n] || n, count: Array.isArray(b.files[n]) ? b.files[n].length : null })),
   });
 });
+
+// ─── Bảng xếp hạng CLB (võ sĩ, sự kiện, kết quả) — routes/ranking.js ─────────
+require('./ranking')(router, { adminOnly, staffOk });
 
 module.exports = router;

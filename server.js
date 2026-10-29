@@ -9,6 +9,7 @@ const PUB = path.join(__dirname, 'public');
 const api = require('./routes/api');
 const cms = require('./lib/cms');
 const settings = require('./lib/settings');
+const ranking = require('./lib/ranking');
 
 app.disable('x-powered-by');
 // IP thật của khách (để chặn spam / đoán mật khẩu): chỉ tin header X-Forwarded-For do proxy trên chính máy chủ thêm vào.
@@ -28,7 +29,8 @@ app.use((req, res, next) => {
 
 // đường dẫn cũ / gõ tắt
 const moved = { '/index.html': '/', '/shop.html': '/shop', '/khoa-hoc.html': '/khoa-hoc', '/courses': '/khoa-hoc', '/course': '/khoa-hoc',
-  '/dich-vu-setup.html': '/dich-vu-setup', '/setup': '/dich-vu-setup', '/dich-vu': '/dich-vu-setup', '/admin.html': '/admin', '/checkout': '/shop/checkout' };
+  '/dich-vu-setup.html': '/dich-vu-setup', '/setup': '/dich-vu-setup', '/dich-vu': '/dich-vu-setup', '/admin.html': '/admin', '/checkout': '/shop/checkout',
+  '/xep-hang.html': '/xep-hang', '/ranking': '/xep-hang', '/rankings': '/xep-hang', '/bang-xep-hang': '/xep-hang', '/fighters': '/vo-si', '/events': '/su-kien', '/lich-su-kien': '/su-kien' };
 app.get(Object.keys(moved), (req, res) => res.redirect(301, moved[req.path]));
 app.get('/trang.html', (req, res) => sendPage(req, res, path.join(PUB, '404.html'), 404)); // khuôn trang phụ: không phục vụ trực tiếp
 
@@ -84,9 +86,11 @@ app.get('/robots.txt', (req, res) => {
 });
 app.get('/sitemap.xml', (req, res) => {
   const base = baseUrl(req), esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup']
+  const rk = ranking.publicData();
+  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup', '/xep-hang', '/vo-si', '/su-kien']
     .concat(api.publicProducts().map(p => '/shop/' + api.productSlug(p)))
-    .concat(cms.livePages().map(s => '/trang/' + s));
+    .concat(cms.livePages().map(s => '/trang/' + s))
+    .concat(rk.fighters.map(f => '/vo-si/' + f.slug), rk.events.map(e => '/su-kien/' + e.slug));
   res.type('application/xml').setHeader('Cache-Control', 'no-cache');
   res.send('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urls.map(u => `  <url><loc>${esc(base + u)}</loc></url>`).join('\n') + '\n</urlset>\n');
@@ -114,6 +118,11 @@ app.use(express.static(PUB, {
 app.get('/assets/data/products.js', (req, res) => {
   res.type('application/javascript').setHeader('Cache-Control', 'no-cache');
   res.send('window.__DC_PRODUCTS=' + JSON.stringify(api.publicProducts()).replace(/</g, '\\u003c') + ';');
+});
+// bảng xếp hạng CLB: đã tính điểm, thứ hạng, thành tích (lib/ranking.js)
+app.get('/assets/data/ranking.js', (req, res) => {
+  res.type('application/javascript').setHeader('Cache-Control', 'no-cache');
+  res.send('window.__DC_RANKING=' + JSON.stringify(ranking.publicData()).replace(/</g, '\\u003c') + ';');
 });
 app.get('/assets/data/cms.js', (req, res) => {
   res.type('application/javascript').setHeader('Cache-Control', 'no-cache');
@@ -174,6 +183,30 @@ app.get('/shop/*', page('shop.html'));
 app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc'));
 app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup'));
 app.get('/admin', page('admin/index.html'));
+// bảng xếp hạng CLB (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> — chung khuôn public/xep-hang.html
+function rankPage(req, res, canon, title, desc, status = 200) {
+  let html = fs.readFileSync(path.join(PUB, 'xep-hang.html'), 'utf8');
+  if (title) html = html.replace(/<title>[^<]*<\/title>/, `<title>${attr(title)} — Dapper Combat</title>`).replace('<meta property="og:type"', `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
+  if (desc) html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}"><meta property="og:description" content="${attr(desc)}">`);
+  html = html.replace('</head>', (status === 200 ? seoHead(req, canon) : '<meta name="robots" content="noindex">') + '</head>');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.status(status).type('html').send(html);
+}
+app.get('/xep-hang', (req, res) => rankPage(req, res, '/xep-hang', 'Ranking võ sĩ', 'Bảng xếp hạng nội bộ CLB Dapper Combat: điểm, sao, hạng và thành tích từng võ sĩ nam, nữ theo hạng cân.'));
+app.get('/vo-si', (req, res) => rankPage(req, res, '/vo-si', 'Thông tin võ sĩ', 'Danh sách võ sĩ CLB Dapper Combat: thành tích, điểm xếp hạng, hạng cân và hồ sơ chi tiết.'));
+app.get('/su-kien', (req, res) => rankPage(req, res, '/su-kien', 'Lịch sự kiện', 'Lịch fight night, sparring và kỳ đánh giá kỹ năng của CLB Dapper Combat, kèm kết quả từng trận.'));
+app.get('/vo-si/:slug', (req, res) => {
+  const f = ranking.publicData().fighters.find(x => x.slug === String(req.params.slug).toLowerCase());
+  if (!f) return rankPage(req, res, '', 'Không tìm thấy võ sĩ', '', 404);
+  const r = f.record;
+  rankPage(req, res, '/vo-si/' + f.slug, f.name + (f.nickname ? ` “${f.nickname}”` : ''),
+    `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.DIVISIONS.find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — CLB Dapper Combat.');
+});
+app.get('/su-kien/:slug', (req, res) => {
+  const e = ranking.publicData().events.find(x => x.slug === String(req.params.slug).toLowerCase());
+  if (!e) return rankPage(req, res, '', 'Không tìm thấy sự kiện', '', 404);
+  rankPage(req, res, '/su-kien/' + e.slug, e.name.vi, (e.desc.vi || e.name.vi) + ' — ' + e.date.split('-').reverse().join('/') + ', ' + [e.venue, e.city].filter(Boolean).join(', '));
+});
 // phiếu xác nhận cho khách: /phieu/<mã đơn>?k=<khóa> (dữ liệu lấy qua /api/slip, cần đúng khóa)
 app.get('/phieu/:code', page('phieu.html'));
 // trang phụ tạo trong /admin → Trang phụ

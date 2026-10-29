@@ -1417,7 +1417,7 @@
     if (/[<>"]/.test(v)) return 'Không dùng các ký tự < > "';
     if (c.type === 'url' && !/^https:\/\/[^\s"'<>`]+$/.test(v)) return 'Link phải bắt đầu bằng https:// và không có khoảng trắng.';
     if (c.type === 'time' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) return 'Giờ có dạng HH:MM, ví dụ 06:00.';
-    if (c.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return 'Email chưa đúng định dạng, ví dụ lienhe@dappercombat.com.';
+    if (c.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return 'Email chưa đúng định dạng, ví dụ lienhe@dappervietnam.com.';
     if (c.type === 'select' && !optionsOf(c).some(function (o) { return o.v === v; })) return 'Chọn một mục trong danh sách.';
     if (c.type === 'phone' && (!/^[\d\s+().\-]+$/.test(v) || v.replace(/\D/g, '').length < 8)) return 'Số điện thoại chỉ gồm chữ số, dấu cách, + . - và có ít nhất 8 số.';
     if (c.key === 'bankAccount' && !/^[0-9A-Za-z]{4,25}$/.test(v)) return 'Số tài khoản gồm 4–25 chữ số hoặc chữ cái, không dấu cách, không dấu chấm.';

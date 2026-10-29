@@ -39,7 +39,7 @@
     if (S.err) { root.innerHTML = A.errorHtml(S.err); return; }
     if (!S.cfg) { root.innerHTML = A.loadingHtml(); return; }
     var c = S.cfg, se = c.sepay || {}, vn = c.vnpay || {}, ins = c.installment || {};
-    var site = S.site ? '' : '<p class="set-err">Chưa điền <strong>Địa chỉ website</strong> ở <a href="#/set-notify">Thiết lập → Thông báo</a> — các đường dẫn dưới đây đang lấy theo địa chỉ bạn đang mở trang quản trị. Khi web chạy thật, hãy điền tên miền (vd https://dappercombat.com).</p>';
+    var site = S.site ? '' : '<p class="set-err">Chưa điền <strong>Địa chỉ website</strong> ở <a href="#/set-notify">Thiết lập → Thông báo</a> — các đường dẫn dưới đây đang lấy theo địa chỉ bạn đang mở trang quản trị. Khi web chạy thật, hãy điền tên miền (vd https://dappervietnam.com).</p>';
     root.innerHTML =
       '<div class="cms-help"><p><strong>Tiền về là đơn tự chuyển “Đã nhận tiền”</strong> (kèm báo Telegram / email cho bạn), khách thấy “Đã thanh toán” ngay trên màn hình và phiếu xác nhận. Các cách khách trả tiền:</p>' +
         '<ul><li><strong>Chuyển khoản ngân hàng, MoMo, ZaloPay — qua SePay:</strong> khách quét cùng một mã VietQR bằng app ngân hàng, app MoMo hoặc app ZaloPay; tiền vào tài khoản ngân hàng của bạn, SePay báo về. Không mất phí % mỗi giao dịch.</li>' +

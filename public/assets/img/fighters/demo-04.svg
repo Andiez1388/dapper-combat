@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+<defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2a36"/><stop offset="1" stop-color="#0b0f14"/></linearGradient>
+<radialGradient id="l" cx=".5" cy=".28" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+<rect width="400" height="500" fill="url(#b)"/><rect width="400" height="500" fill="url(#l)"/>
+<g stroke="#fff" stroke-opacity=".07" stroke-width="7"><path d="M0 128 L400 112"/><path d="M0 178 L400 166"/><path d="M0 228 L400 220"/></g>
+<text x="384" y="452" text-anchor="end" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="120" fill="#fff" fill-opacity=".04">DC</text>
+<path d="M54 500 C62 404 116 360 160 350 L240 350 C284 360 338 404 346 500 Z" fill="#d9a07a"/>
+<path d="M116 500 L126 384 C150 398 174 404 200 404 C226 404 250 398 274 384 L284 500 Z" fill="#2b3a4a"/>
+<path d="M172 246 L172 302 C186 318 214 318 228 302 L228 246 Z" fill="#bb8a69"/>
+
+<ellipse cx="139" cy="196" rx="10" ry="17" fill="#bb8a69"/><ellipse cx="261" cy="196" rx="10" ry="17" fill="#bb8a69"/>
+<ellipse cx="200" cy="190" rx="62" ry="76" fill="#d9a07a"/>
+<path d="M164 172 Q178 166 190 172 M210 172 Q222 166 236 172" stroke="#211812" stroke-width="6" fill="none" stroke-linecap="round"/>
+<ellipse cx="178" cy="190" rx="6" ry="4" fill="#1b1410"/><ellipse cx="222" cy="190" rx="6" ry="4" fill="#1b1410"/>
+<path d="M200 196 Q193 214 198 219 Q204 221 208 216" stroke="#987055" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M184 236 Q200 241 216 236" stroke="#6b3b2e" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M136 188 C128 112 172 96 208 98 C248 100 272 126 264 188 C258 150 238 132 214 134 C202 150 172 158 148 150 C142 160 138 174 136 188 Z" fill="#211812"/><path fill-rule="evenodd" fill="#1f4fa3" d="M200 98 C252 98 276 140 276 196 C276 246 252 282 220 286 L220 262 C240 254 250 230 250 202 C250 168 230 150 200 150 C170 150 150 168 150 202 C150 230 160 254 180 262 L180 286 C148 282 124 246 124 196 C124 140 148 98 200 98 Z"/><rect x="186" y="104" width="28" height="44" rx="10" fill="#000" opacity=".12"/>
+<rect x="92" y="372" width="56" height="128" fill="#d9a07a"/><rect x="252" y="372" width="56" height="128" fill="#d9a07a"/>
+<g transform="translate(148 318) rotate(-10)">
+    <rect x="-38" y="44" width="76" height="40" rx="9" fill="#d6d6d6"/><rect x="-38" y="58" width="76" height="6" fill="#000" opacity=".15"/>
+    <rect x="-46" y="-58" width="92" height="108" rx="42" fill="#f2f2f2"/><ellipse cx="34" cy="0" rx="15" ry="30" fill="#dadada"/>
+    <path d="M-30 -40 C-14 -54 14 -54 28 -42" stroke="#fff" stroke-opacity=".28" stroke-width="7" fill="none" stroke-linecap="round"/></g><g transform="translate(252 318) rotate(10) scale(-1 1)">
+    <rect x="-38" y="44" width="76" height="40" rx="9" fill="#d6d6d6"/><rect x="-38" y="58" width="76" height="6" fill="#000" opacity=".15"/>
+    <rect x="-46" y="-58" width="92" height="108" rx="42" fill="#f2f2f2"/><ellipse cx="34" cy="0" rx="15" ry="30" fill="#dadada"/>
+    <path d="M-30 -40 C-14 -54 14 -54 28 -42" stroke="#fff" stroke-opacity=".28" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+<rect y="470" width="400" height="30" fill="#D4372E"/>
+<text x="16" y="490" font-family="Arial,sans-serif" font-weight="700" font-size="13" letter-spacing="3" fill="#fff">DAPPER COMBAT</text>
+<text x="384" y="490" text-anchor="end" font-family="Arial,sans-serif" font-weight="700" font-size="13" letter-spacing="2" fill="#fff">#04</text>
+<text x="384" y="26" text-anchor="end" font-family="Arial,sans-serif" font-size="11" letter-spacing="2" fill="#fff" fill-opacity=".45">ẢNH DEMO</text>
+</svg>

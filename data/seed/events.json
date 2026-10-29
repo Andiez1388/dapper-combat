@@ -1,0 +1,718 @@
+[
+  {
+    "id": "sk01",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Dapper Fight Night #1",
+      "en": "Dapper Fight Night #1"
+    },
+    "date": "2026-03-14",
+    "time": "19:00",
+    "type": "fight",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Đêm thi đấu nội bộ đầu tiên của năm, 6 trận theo luật boxing nghiệp dư (3 hiệp × 2 phút).",
+      "en": "The first in-house fight night of the year: 6 bouts under amateur rules (3 × 2-minute rounds)."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr01-1",
+        "a": "vs01",
+        "b": "vs08",
+        "division": "light",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": true,
+        "note": ""
+      },
+      {
+        "id": "tr01-2",
+        "a": "vs02",
+        "b": "vs10",
+        "division": "middle",
+        "rounds": 3,
+        "result": "a",
+        "method": "TKO",
+        "round": 2,
+        "time": "1:48",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr01-3",
+        "a": "vs04",
+        "b": "vs09",
+        "division": "welter",
+        "rounds": 3,
+        "result": "b",
+        "method": "SD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr01-4",
+        "a": "vs16",
+        "b": "vs20",
+        "division": "bantam",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr01-5",
+        "a": "vs05",
+        "b": "vs14",
+        "division": "heavy",
+        "rounds": 3,
+        "result": "a",
+        "method": "KO",
+        "round": 1,
+        "time": "2:05",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr01-6",
+        "a": "vs03",
+        "b": "vs12",
+        "division": "feather",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "dapper-fight-night-1-2026-03",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk02",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Sparring Day — Tháng 5",
+      "en": "Sparring Day — May"
+    },
+    "date": "2026-05-16",
+    "time": "09:00",
+    "type": "sparring",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Buổi sparring có chấm điểm, mỗi cặp 2 hiệp. Kết quả được tính vào bảng xếp hạng.",
+      "en": "Scored sparring session, 2 rounds per pair. Results count towards the rankings."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr02-1",
+        "a": "vs15",
+        "b": "vs19",
+        "division": "fly",
+        "rounds": 2,
+        "result": "a",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr02-2",
+        "a": "vs07",
+        "b": "vs11",
+        "division": "bantam",
+        "rounds": 2,
+        "result": "draw",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr02-3",
+        "a": "vs06",
+        "b": "vs13",
+        "division": "lheavy",
+        "rounds": 2,
+        "result": "b",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr02-4",
+        "a": "vs17",
+        "b": "vs18",
+        "division": "light",
+        "rounds": 2,
+        "result": "b",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr02-5",
+        "a": "vs08",
+        "b": "vs12",
+        "division": "light",
+        "rounds": 2,
+        "result": "a",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "sparring-day-thang-5-2026-05",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk03",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Dapper Fight Night #2",
+      "en": "Dapper Fight Night #2"
+    },
+    "date": "2026-06-20",
+    "time": "19:00",
+    "type": "fight",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Trận chính 5 hiệp hạng Bán nặng giữa Trần Minh Quân và Lý Hải Đăng.",
+      "en": "Main event: a 5-round light heavyweight bout between Tran Minh Quan and Ly Hai Dang."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr03-1",
+        "a": "vs02",
+        "b": "vs13",
+        "division": "lheavy",
+        "rounds": 5,
+        "result": "b",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": true,
+        "note": ""
+      },
+      {
+        "id": "tr03-2",
+        "a": "vs01",
+        "b": "vs09",
+        "division": "welter",
+        "rounds": 3,
+        "result": "a",
+        "method": "KO",
+        "round": 3,
+        "time": "0:47",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr03-3",
+        "a": "vs16",
+        "b": "vs15",
+        "division": "bantam",
+        "rounds": 3,
+        "result": "a",
+        "method": "SD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr03-4",
+        "a": "vs03",
+        "b": "vs07",
+        "division": "feather",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr03-5",
+        "a": "vs05",
+        "b": "vs06",
+        "division": "heavy",
+        "rounds": 3,
+        "result": "a",
+        "method": "TKO",
+        "round": 2,
+        "time": "1:12",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr03-6",
+        "a": "vs18",
+        "b": "vs17",
+        "division": "light",
+        "rounds": 3,
+        "result": "a",
+        "method": "MD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr03-7",
+        "a": "vs11",
+        "b": "vs12",
+        "division": "feather",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "dapper-fight-night-2-2026-06",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk04",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Kỳ đánh giá kỹ năng Quý III",
+      "en": "Q3 Skills Assessment"
+    },
+    "date": "2026-08-01",
+    "time": "08:00",
+    "type": "assessment",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "HLV chấm 6 kỹ năng cho toàn bộ võ sĩ đang thi đấu: kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển.",
+      "en": "Coaches score every active fighter on 6 skills: technique, speed, power, defense, stamina and footwork."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [],
+    "slug": "ky-danh-gia-ky-nang-quy-iii-2026-08",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk05",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Dapper Fight Night #3",
+      "en": "Dapper Fight Night #3"
+    },
+    "date": "2026-08-22",
+    "time": "19:00",
+    "type": "fight",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Trận chính 5 hiệp hạng Nhẹ: Nguyễn Hoàng Long gặp Lê Đức Anh.",
+      "en": "Main event: 5 rounds at lightweight — Nguyen Hoang Long vs Le Duc Anh."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr05-1",
+        "a": "vs01",
+        "b": "vs03",
+        "division": "light",
+        "rounds": 5,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": true,
+        "note": ""
+      },
+      {
+        "id": "tr05-2",
+        "a": "vs13",
+        "b": "vs06",
+        "division": "lheavy",
+        "rounds": 3,
+        "result": "a",
+        "method": "TKO",
+        "round": 3,
+        "time": "1:30",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr05-3",
+        "a": "vs04",
+        "b": "vs08",
+        "division": "welter",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr05-4",
+        "a": "vs15",
+        "b": "vs20",
+        "division": "bantam",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr05-5",
+        "a": "vs16",
+        "b": "vs17",
+        "division": "feather",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr05-6",
+        "a": "vs02",
+        "b": "vs05",
+        "division": "heavy",
+        "rounds": 3,
+        "result": "a",
+        "method": "RTD",
+        "round": 2,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr05-7",
+        "a": "vs09",
+        "b": "vs10",
+        "division": "middle",
+        "rounds": 3,
+        "result": "a",
+        "method": "UD",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "dapper-fight-night-3-2026-08",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk06",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Sparring Day — Tháng 10",
+      "en": "Sparring Day — October"
+    },
+    "date": "2026-10-10",
+    "time": "09:00",
+    "type": "sparring",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Sparring có chấm điểm chuẩn bị cho Fight Night #4.",
+      "en": "Scored sparring ahead of Fight Night #4."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr06-1",
+        "a": "vs07",
+        "b": "vs11",
+        "division": "bantam",
+        "rounds": 2,
+        "result": "a",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr06-2",
+        "a": "vs19",
+        "b": "vs20",
+        "division": "bantam",
+        "rounds": 2,
+        "result": "b",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr06-3",
+        "a": "vs14",
+        "b": "vs05",
+        "division": "heavy",
+        "rounds": 2,
+        "result": "b",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr06-4",
+        "a": "vs08",
+        "b": "vs09",
+        "division": "welter",
+        "rounds": 2,
+        "result": "draw",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr06-5",
+        "a": "vs18",
+        "b": "vs17",
+        "division": "light",
+        "rounds": 2,
+        "result": "a",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr06-6",
+        "a": "vs12",
+        "b": "vs03",
+        "division": "feather",
+        "rounds": 2,
+        "result": "b",
+        "method": "PTS",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "sparring-day-thang-10-2026-10",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk07",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Dapper Fight Night #4",
+      "en": "Dapper Fight Night #4"
+    },
+    "date": "2026-11-21",
+    "time": "19:00",
+    "type": "fight",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Long “Rồng Đen” lên hạng Bán trung gặp Phạm Gia Huy; tái đấu Hân – Vy và Đăng – Quân.",
+      "en": "Long “Black Dragon” moves up to welterweight to face Pham Gia Huy, plus the Han – Vy and Dang – Quan rematches."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr07-1",
+        "a": "vs01",
+        "b": "vs04",
+        "division": "welter",
+        "rounds": 5,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": true,
+        "note": ""
+      },
+      {
+        "id": "tr07-2",
+        "a": "vs13",
+        "b": "vs02",
+        "division": "lheavy",
+        "rounds": 5,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr07-3",
+        "a": "vs16",
+        "b": "vs15",
+        "division": "bantam",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr07-4",
+        "a": "vs03",
+        "b": "vs07",
+        "division": "feather",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr07-5",
+        "a": "vs17",
+        "b": "vs20",
+        "division": "feather",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr07-6",
+        "a": "vs05",
+        "b": "vs14",
+        "division": "heavy",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "dapper-fight-night-4-2026-11",
+    "updatedAt": 1793232000000
+  },
+  {
+    "id": "sk08",
+    "createdAt": 1793232000000,
+    "name": {
+      "vi": "Year-End Showdown 2026",
+      "en": "Year-End Showdown 2026"
+    },
+    "date": "2026-12-19",
+    "time": "18:30",
+    "type": "fight",
+    "venue": "Dapper Combat Gym",
+    "city": "TP. Hồ Chí Minh",
+    "desc": {
+      "vi": "Đêm thi đấu tổng kết năm và trao danh hiệu Võ sĩ của năm.",
+      "en": "The year-end fight night and Fighter of the Year awards."
+    },
+    "poster": "",
+    "visible": true,
+    "bouts": [
+      {
+        "id": "tr08-1",
+        "a": "vs09",
+        "b": "vs08",
+        "division": "welter",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": true,
+        "note": ""
+      },
+      {
+        "id": "tr08-2",
+        "a": "vs11",
+        "b": "vs12",
+        "division": "feather",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr08-3",
+        "a": "vs18",
+        "b": "vs17",
+        "division": "light",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      },
+      {
+        "id": "tr08-4",
+        "a": "vs06",
+        "b": "vs14",
+        "division": "heavy",
+        "rounds": 3,
+        "result": "",
+        "method": "",
+        "round": 0,
+        "time": "",
+        "main": false,
+        "note": ""
+      }
+    ],
+    "slug": "year-end-showdown-2026-2026-12",
+    "updatedAt": 1793232000000
+  }
+]

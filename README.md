@@ -62,13 +62,13 @@ Website lưu dữ liệu trong file (thư mục `DC_DATA_DIR`) nên cần hostin
 
 **Cách 1 — Render.com** (dễ nhất, tự cập nhật mỗi khi đẩy code lên GitHub nhánh `main`):
 1. render.com → New → **Blueprint** → chọn repo này (đọc `render.yaml`: gói Starter + ổ đĩa 1GB).
-2. Nhập `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SITE_URL` (vd `https://dappercombat.vn`), tùy chọn `ANTHROPIC_API_KEY`.
+2. Nhập `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SITE_URL` (vd `https://dappervietnam.com`), tùy chọn `ANTHROPIC_API_KEY`.
 3. Settings → Custom Domains → thêm tên miền → làm theo hướng dẫn trỏ DNS (CNAME / A) ở nơi mua tên miền. HTTPS tự cấp.
 
 **Cách 2 — VPS Ubuntu** (máy chủ riêng, tốc độ tốt ở Việt Nam): trỏ tên miền (bản ghi A cho `@` và `www`) về IP VPS, rồi chạy `deploy/setup-vps.sh` (cài Node, PM2, Nginx, HTTPS Let's Encrypt; chạy lại để cập nhật code):
 
 ```bash
-sudo DOMAIN=dappercombat.vn EMAIL=ban@gmail.com ADMIN_EMAIL=ban@gmail.com ADMIN_PASSWORD='mat-khau-cua-ban' bash deploy/setup-vps.sh
+sudo DOMAIN=dappervietnam.com EMAIL=ban@gmail.com ADMIN_EMAIL=ban@gmail.com ADMIN_PASSWORD='mat-khau-cua-ban' bash deploy/setup-vps.sh
 ```
 
 Dữ liệu nằm ở `/var/lib/dapper-combat` (VPS) hoặc ổ đĩa `/var/data` (Render) — tách khỏi code nên cập nhật code không mất đơn hàng.
@@ -147,6 +147,10 @@ lib/maillog.js          Nhật ký gửi tin (data/maillog.json)
 lib/payments.js         Thanh toán online: SePay (webhook chuyển khoản / MoMo / ZaloPay), VNPay thẻ + VNPay trả góp (HMAC-SHA512)
 lib/translate.js        Tiếng Anh tự dịch bằng Claude (hàng đợi nền, bộ nhớ dịch data/translations.json)
 lib/paths.js            Thư mục dữ liệu (DC_DATA_DIR, mặc định data/) và ảnh tải lên (DC_UPLOAD_DIR)
+lib/ranking.js          Bảng xếp hạng CLB: võ sĩ, sự kiện, kết quả (data/fighters.json, data/events.json), tính điểm / thứ hạng / sao / hạng
+routes/ranking.js       API xếp hạng: /api/ranking (công khai), /api/admin/ranking, /api/fighters, /api/events
+public/xep-hang.html    Khuôn trang xếp hạng (/xep-hang, /vo-si, /su-kien); assets/js/xephang.js vẽ trang, assets/css/xephang.css
+tools/ranking-demo.js   Tạo dữ liệu mẫu 20 võ sĩ + 8 sự kiện + ảnh minh họa (public/assets/img/fighters/)
 public/assets/js/admin-pay.js  Màn hình Thanh toán online: khóa SePay / VNPay / VNPay trả góp, đường dẫn webhook / IPN, nút thử
 public/assets/js/admin-ai.js   Màn hình Tiếng Anh (AI): khóa, trạng thái, dịch phần còn thiếu
 public/assets/js/admin-ops.js  Màn hình vận hành: Khách hàng, Hội viên, Tài khoản & phân quyền, Sao lưu
@@ -226,6 +230,17 @@ Tiền về là đơn hàng / đăng ký **tự chuyển “Đã nhận tiền�
 - Khách chưa trả (hoặc hủy giữa chừng) có thể **thanh toán lại từ phiếu xác nhận** (thẻ / trả góp); đăng ký khóa học có nút thanh toán online ở bước cuối.
 - Mỗi lần thanh toán là một mã giao dịch mới `<mã đơn>T<thời gian>`; server kiểm tra chữ ký, số tiền, mã website, không xử lý trùng (`data/pay-events.json`). Khóa bí mật chỉ lưu trên máy chủ.
 - Cần **Địa chỉ website** (Thiết lập → Thông báo) để các cổng gọi về đúng tên miền; IPN cần web đã chạy trên mạng (HTTPS).
+
+## Bảng xếp hạng CLB (kiểu BoxRec)
+
+Mục **Xếp hạng** trên menu (menu thả xuống): **Lịch sự kiện** (`/su-kien`, chi tiết `/su-kien/<sự kiện>`), **Ranking võ sĩ** (`/xep-hang`), **Thông tin võ sĩ** (`/vo-si`, hồ sơ `/vo-si/<võ sĩ>`). Chỉ tính nội bộ CLB. Bật / tắt mục này ở Thiết lập → Thương hiệu & menu.
+
+- **Điểm kỹ năng:** HLV chấm 6 kỹ năng (kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển) thang 100 → trung bình × 10. Mỗi lần đổi điểm được lưu thành một lần chấm (ngày, ghi chú) — hồ sơ hiện lịch sử.
+- **Điểm thắng thua:** mỗi trận / sparring có chấm điểm tính kiểu Elo như BoxRec: `E = 1 / (1 + 10^((điểm đối thủ − điểm mình) / 400))`, cộng `40 × (kết quả − E)`; thắng KO / TKO / RTD / DQ × 1.25; hòa = 0.5; không kết quả (NC) không tính.
+- **Điểm xếp hạng** = điểm kỹ năng + điểm thắng thua. **Hạng:** Tinh anh ≥ 850, A ≥ 750, B ≥ 650, C ≥ 550, còn lại Tân binh. **Sao** 1–5 theo thứ hạng trong cùng giới tính. **Thứ hạng** theo giới tính (toàn CLB) và theo hạng cân; võ sĩ “Nghỉ thi đấu” không xếp hạng.
+- Quản trị: `/admin` → Xếp hạng CLB → **Võ sĩ** (thông tin, ảnh, chấm điểm kỹ năng) và **Sự kiện & kết quả** (danh sách trận, người thắng, cách thắng, hiệp). Nhân viên (HLV) nhập được; xóa cần admin; võ sĩ đã có trận không xóa được (chuyển “Nghỉ thi đấu” hoặc tắt “Hiện trên web”).
+- Trang công khai chỉ hiện tuổi (không ngày sinh). Giới thiệu võ sĩ, tên / mô tả sự kiện được AI dịch sang tiếng Anh.
+- Dữ liệu mẫu: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện, ảnh minh họa vẽ (không phải ảnh người thật) — `node tools/ranking-demo.js` tạo lại. Trước khi chạy thật: thay bằng võ sĩ thật hoặc xóa / ẩn võ sĩ mẫu.
 
 ## Email xác nhận tiếng Anh
 

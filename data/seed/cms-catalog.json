@@ -19912,6 +19912,82 @@
    "label": "Trả góp — ghi chú dưới nút",
    "vi": "Bạn sẽ nhập thông tin thẻ tín dụng ở trang bảo mật của VNPay.",
    "order": 113
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": null,
+   "key": "global.mnav.u5",
+   "section": "global.mnav",
+   "type": "link",
+   "label": "Đường dẫn — Xếp hạng",
+   "vi": "/xep-hang",
+   "mono": true,
+   "itemLabel": "Đường dẫn khi bấm"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Rankings",
+   "key": "global.mnav.15",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Thẻ 5 · Tên trang (mục “Xếp hạng” trên menu)",
+   "vi": "Xếp hạng",
+   "itemLabel": "Chữ"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Events · rankings · fighters",
+   "key": "global.mnav.16",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Thẻ 5 · Mô tả ngắn dưới tên (menu điện thoại)",
+   "vi": "Lịch sự kiện · ranking · võ sĩ",
+   "itemLabel": "Chữ"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Events",
+   "key": "global.mnav.17",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Menu thả xuống “Xếp hạng” — mục 1 (/su-kien)",
+   "vi": "Lịch sự kiện"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Fighter rankings",
+   "key": "global.mnav.18",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Menu thả xuống “Xếp hạng” — mục 2 (/xep-hang)",
+   "vi": "Ranking võ sĩ"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Fighters",
+   "key": "global.mnav.19",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Menu thả xuống “Xếp hạng” — mục 3 (/vo-si)",
+   "vi": "Thông tin võ sĩ"
   }
  ],
  "media": [
@@ -26980,6 +27056,19 @@
      "links": [],
      "lists": [],
      "title": "global.mnav.7"
+    },
+    {
+     "id": "5",
+     "fields": [
+      "global.mnav.u5",
+      "global.mnav.15",
+      "global.mnav.16"
+     ],
+     "media": [],
+     "icons": [],
+     "links": [],
+     "lists": [],
+     "title": "global.mnav.15"
     }
    ]
   },
@@ -30403,24 +30492,24 @@
    "group": "neutral"
   },
   {
-   "hex": "#0F1419",
-   "n": 52,
-   "pages": [
-    "home",
-    "course",
-    "shop"
-   ],
-   "group": "neutral"
-  },
-  {
    "hex": "#000000",
-   "n": 51,
+   "n": 52,
    "pages": [
     "home",
     "course",
     "shop",
     "services",
     "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#0F1419",
+   "n": 52,
+   "pages": [
+    "home",
+    "course",
+    "shop"
    ],
    "group": "neutral"
   },
@@ -30576,6 +30665,18 @@
    "group": "other"
   },
   {
+   "hex": "#2A2A2A",
+   "n": 7,
+   "pages": [
+    "home",
+    "course",
+    "shop",
+    "services",
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
    "hex": "#E5E5E5",
    "n": 7,
    "pages": [
@@ -30608,17 +30709,6 @@
    "pages": [
     "shop",
     "global"
-   ],
-   "group": "neutral"
-  },
-  {
-   "hex": "#2A2A2A",
-   "n": 6,
-   "pages": [
-    "home",
-    "course",
-    "shop",
-    "services"
    ],
    "group": "neutral"
   },
@@ -31137,6 +31227,14 @@
   },
   {
    "hex": "#666666",
+   "n": 1,
+   "pages": [
+    "global"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#1A1A1A",
    "n": 1,
    "pages": [
     "global"

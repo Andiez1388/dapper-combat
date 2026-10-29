@@ -1,0 +1,218 @@
+/* Dapper Combat — Quản trị: Xếp hạng CLB (Võ sĩ, Sự kiện & kết quả) — admin-ranking.js
+   Dùng token màu của admin.css; đen / trắng / xám, góc vuông. Đỏ cho góc đỏ, nhãn cần xử lý và nút chính;
+   xanh chỉ cho góc xanh. */
+
+/* ─── Khung trình sửa: cột chính + cột phải ─────────────── */
+.rk-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+.rk-main, .rk-side { display: grid; gap: 12px; min-width: 0; }
+.rk-main > .set-sec, .rk-side > .set-sec, .rk-side > .panel { margin: 0; }
+.rk-back { margin-top: 12px; }
+.rk-none { padding: 18px; background: var(--paper); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.rk-bouts .rk-none { border-style: dashed; }
+@media (max-width: 1199.98px) { .rk-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ─── Danh sách: thanh lọc ──────────────────────────────── */
+.rk-toolbar .datef select { min-width: 132px; }
+.rk-alert { margin-bottom: 16px; }
+.rk-alert a { font-weight: 500; text-underline-offset: 3px; }
+.rk-h2 { display: flex; align-items: baseline; gap: 10px; margin: 26px 0 10px; font-family: var(--title); font-size: 24px; font-weight: 500; line-height: 1.2; }
+.rk-h2:first-child { margin-top: 4px; }
+.rk-h2 small { font-family: var(--mono); font-size: 12px; font-weight: 400; color: var(--muted); }
+.rk-weblink { color: var(--muted); text-decoration: none; white-space: nowrap; }
+.rk-weblink:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.tbl .c-pts, .tbl .c-rec, .tbl .c-rank, .tbl .c-tier, .tbl--rkf .c-div { white-space: nowrap; }
+.tbl .c-pts strong { font-size: 15px; font-variant-numeric: tabular-nums; }
+.tbl--rke .c-venue { min-width: 140px; }
+
+/* hạng (Tinh anh / A / B / C / Tân binh) */
+.rk-tier--elite { background: var(--ink); color: #fff; }
+.rk-tier--a { border-color: var(--ink); }
+.rk-tier--b, .rk-tier--c { border-color: var(--line-2); }
+.rk-tier--rookie { background: var(--grey); border-color: var(--grey); color: var(--muted); }
+.rk-stars { letter-spacing: 1px; color: var(--ink); }
+.cell-sub.rk-stars { font-size: 11px; }
+
+/* bảng → thẻ trên màn hẹp */
+@media (max-width: 899.98px) {
+  .tbl--rkf tr { grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr); gap: 10px 12px; }
+  .tbl--rkf td, .tbl--rkf td.c-status { grid-column: auto; grid-row: auto; justify-self: stretch; white-space: normal; }
+  .tbl--rkf td.c-thumb { grid-column: 1; grid-row: 1 / span 5; width: auto; }
+  .tbl--rkf td.c-name { grid-column: 2 / -1; grid-row: 1; font-size: 15px; }
+  .tbl--rkf td.c-thumb::before, .tbl--rkf td.c-name::before { display: none; }
+  .tbl--rkf .thumb { width: 64px; height: 80px; }
+  .tbl--rkf td.c-status::before { display: block; }
+  .tbl--rkf td.c-toggle .switch { min-height: 0; }
+
+  .tbl--rke tr { grid-template-columns: minmax(0, 1fr) auto; }
+  .tbl--rke td.c-when { grid-column: 1; grid-row: 1; align-self: center; }
+  .tbl--rke td.c-status { grid-column: 2; grid-row: 1; }
+  .tbl--rke td.c-name { grid-column: 1 / -1; grid-row: 2; }
+  .tbl--rke td.c-venue { grid-column: 1; grid-row: 3; min-width: 0; }
+  .tbl--rke td.c-bouts { grid-column: 2; grid-row: 3; text-align: right; }
+  .tbl--rke td.c-act { grid-column: 1 / -1; grid-row: 4; }
+  .tbl--rke td.c-when::before, .tbl--rke td.c-act::before { display: none; }
+  .tbl--rke td.c-act .btn { padding-left: 0; }
+}
+
+/* ─── Ảnh võ sĩ / poster ────────────────────────────────── */
+.rk-img { display: grid; place-items: center; width: 100%; max-width: 220px; aspect-ratio: 4 / 5; overflow: hidden; background: var(--grey); border: 1px solid var(--line); }
+.rk-img img { width: 100%; height: 100%; object-fit: cover; }
+.rk-img--poster { max-width: 100%; aspect-ratio: auto; min-height: 140px; }
+.rk-img--poster img { height: auto; max-height: 420px; object-fit: contain; }
+
+/* ─── Chấm điểm kỹ năng ─────────────────────────────────── */
+.rk-skills { display: grid; gap: 2px; }
+.rk-skill { display: grid; grid-template-columns: 112px minmax(0, 1fr) 76px 132px; grid-template-areas: "l r n p"; align-items: center; gap: 2px 14px; }
+.rk-skill__label { grid-area: l; font-size: 13px; font-weight: 500; }
+.rk-skill .rk-range { grid-area: r; }
+.rk-skill__num { grid-area: n; text-align: right; font-variant-numeric: tabular-nums; }
+.rk-skill__prev { grid-area: p; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.rk-range {
+  -webkit-appearance: none; appearance: none; display: block; width: 100%; height: var(--tap); margin: 0;
+  background: transparent; cursor: pointer; --p: 50%;
+}
+.rk-range::-webkit-slider-runnable-track { height: 4px; background: linear-gradient(to right, var(--ink) 0, var(--ink) var(--p), var(--line-2) var(--p)); }
+.rk-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; background: var(--paper); border: 2px solid var(--ink); border-radius: 0; }
+.rk-range::-moz-range-track { height: 4px; background: var(--line-2); }
+.rk-range::-moz-range-progress { height: 4px; background: var(--ink); }
+.rk-range::-moz-range-thumb { width: 14px; height: 14px; background: var(--paper); border: 2px solid var(--ink); border-radius: 0; }
+.rk-range:focus { outline: none; }
+.rk-range:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* điểm trực tiếp */
+.rk-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.rk-sum__t { display: grid; gap: 6px; align-content: start; min-width: 0; padding: 12px 14px 14px; background: var(--paper); }
+.rk-sum__k { font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.rk-sum__v { font-family: var(--title); font-size: 30px; font-weight: 500; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+.rk-sum__s { font-size: 12px; color: var(--muted); }
+.rk-sum__t--main { background: var(--ink); color: #fff; }
+.rk-sum__t--main .rk-sum__k { color: rgba(255, 255, 255, .7); }
+.rk-sum__t--main .badge { border-color: #fff; }
+.rk-sum__note { grid-column: 1 / -1; padding: 8px 14px; background: var(--paper); font-size: 12px; color: var(--muted); }
+
+/* lịch sử chấm điểm */
+.rk-hist-wrap { display: grid; gap: 8px; }
+.rk-hist { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); }
+.rk-hist li { display: grid; grid-template-columns: 96px 76px 64px minmax(0, 1fr); align-items: baseline; gap: 2px 12px; padding: 9px 12px; font-size: 13px; }
+.rk-hist li + li { border-top: 1px solid var(--line); }
+.rk-hist__d { white-space: nowrap; }
+.rk-hist__avg { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rk-hist__avg small { font-weight: 400; color: var(--muted); }
+.rk-hist__by { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; text-align: right; }
+.rk-hist__sub { grid-column: 1 / -1; font-size: 11.5px; line-height: 1.5; color: var(--muted); }
+.rk-hist__sub em { font-style: normal; color: var(--ink); }
+.rk-hist-empty { padding: 12px 14px; background: var(--grey); font-size: 13px; color: var(--muted); }
+
+/* điểm cộng / trừ */
+.rk-d { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rk-d.is-up::before { content: '▲ '; font-size: .75em; }
+.rk-d.is-down { font-weight: 500; }
+.rk-d.is-down::before { content: '▼ '; font-size: .75em; }
+
+/* tiếng Anh tự dịch (chỉ xem) */
+.rk-en { margin: -4px 0 0; }
+.rk-en__text { margin: 8px 0; white-space: pre-wrap; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+.rk-en .field__hint + .field__hint { margin-top: 4px; }
+
+/* ─── Cột phải: điểm & thành tích, trận đấu ─────────────── */
+.rk-kv { display: grid; margin: 0; }
+.rk-kv > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.rk-kv > div:first-child { padding-top: 0; }
+.rk-kv > div:last-child { border-bottom: 0; }
+.rk-kv dt { flex: none; font-size: 12px; color: var(--muted); }
+.rk-kv dd { margin: 0; text-align: right; font-size: 13px; overflow-wrap: anywhere; }
+.rk-big { font-family: var(--title); font-size: 32px; font-weight: 500; line-height: 1; font-variant-numeric: lining-nums; }
+.rk-form { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px; }
+.rk-form b { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--ink); font-size: 10.5px; font-weight: 700; }
+.rk-form b.is-W { background: var(--ink); color: #fff; }
+.rk-form b.is-D { background: var(--grey); border-color: var(--line-2); }
+.rk-bouts-panel .mini-row__meta .rk-d { margin-left: 4px; }
+.rk-more { padding: 8px 18px 12px; }
+.rk-danger { display: grid; gap: 4px; padding: 4px 0 0; }
+.rk-danger .btn { justify-self: start; }
+
+/* điểm thay đổi sau sự kiện */
+.rk-impact__list { margin: 0; padding: 0; list-style: none; }
+.rk-impact__list li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 9px 18px; font-size: 13px; }
+.rk-impact__list li + li { border-top: 1px solid var(--line); }
+.rk-impact__list a { min-width: 0; font-weight: 500; text-decoration: none; overflow-wrap: anywhere; }
+.rk-impact__list a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.rk-impact__v { flex: none; white-space: nowrap; }
+.rk-impact__note { padding: 8px 18px 14px; border-top: 1px solid var(--line); }
+.rk-impact.is-fresh { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
+
+/* ─── Trận đấu trong sự kiện ────────────────────────────── */
+.rk-bouts { display: grid; gap: 10px; container-type: inline-size; }
+.rk-bout { min-width: 0; background: var(--paper); border: 1px solid var(--line-2); }
+.rk-bout.is-main { border-color: var(--ink); }
+.rk-bout.is-invalid { border-color: var(--red); box-shadow: inset 3px 0 0 var(--red); }
+.rk-bout__head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 6px 6px 6px 10px; background: var(--grey); }
+.rk-bout__n { display: grid; place-items: center; flex: none; width: 26px; height: 26px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; }
+.rk-bout__title { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.rk-bout__sum { flex: 1 1 180px; min-width: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.rk-bout__tools { display: flex; gap: 4px; margin-left: auto; }
+.rk-bout__tools .icon-btn { width: 36px; height: 36px; background: var(--paper); }
+.rk-bout__tools .icon-btn[disabled] { opacity: .3; cursor: default; }
+.rk-bout__tools .icon-btn svg[viewBox="0 0 24 24"] { width: 16px; height: 16px; }
+.rk-bout__body { display: grid; gap: 12px; padding: 14px; }
+.rk-bout__body .field { margin: 0; }
+.rk-bout select { min-width: 0; max-width: 100%; }
+.rk-corners { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 12px; }
+.rk-corners .field { grid-template-columns: minmax(0, 1fr); }
+.rk-corner--red select { border-left: 4px solid var(--red); }
+.rk-corner--blue select { border-left: 4px solid #1f4fbf; }
+.rk-vs { padding-bottom: 10px; font-family: var(--cond); font-size: 18px; font-weight: 900; letter-spacing: .04em; color: var(--muted); }
+.rk-dot { display: inline-block; width: 9px; height: 9px; margin-right: 6px; background: var(--ink); vertical-align: 0; }
+.rk-dot--red { background: var(--red); }
+.rk-dot--blue { background: #1f4fbf; }
+.rk-bout__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 12px; }
+.rk-bout__grid .field { grid-template-columns: minmax(0, 1fr); }
+/* hiệp + thời điểm dừng trận: nằm ngay dưới "Kết quả" / "Cách thắng" */
+.rk-bout__stop > :first-child { grid-column: 3; }
+.rk-bout__foot { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.rk-bout__main { flex: none; }
+.rk-bout__note { flex: 1 1 240px; min-width: 0; }
+.rk-delta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; padding: 8px 12px; background: var(--grey); font-size: 13px; }
+.rk-delta__k { font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.rk-delta__v { min-width: 0; overflow-wrap: anywhere; }
+.rk-delta.is-stale { background: var(--paper); border: 1px dashed var(--line-2); color: var(--muted); }
+
+/* thẻ trận co theo bề rộng cột (cột chính hẹp khi có cột phải) */
+@container (max-width: 759.98px) {
+  .rk-bout__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rk-bout__stop > :first-child { grid-column: auto; }
+}
+@container (max-width: 519.98px) {
+  .rk-corners { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .rk-vs { padding: 0; text-align: center; font-size: 14px; }
+  .rk-bout__sum { order: 5; flex-basis: 100%; }
+}
+@container (max-width: 299.98px) {
+  .rk-bout__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1023.98px) {
+  .rk-bout__tools .icon-btn { width: 40px; height: 40px; }
+  [data-rk-root] .btn--sm { min-height: var(--tap); }
+}
+@media (max-width: 759.98px) {
+  .rk-skill { grid-template-columns: minmax(0, 1fr) 76px; grid-template-areas: "l p" "r n"; gap: 0 12px; }
+  .rk-skill + .rk-skill { padding-top: 6px; border-top: 1px dashed var(--line); }
+  .rk-skill__prev { text-align: right; }
+  .rk-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rk-sum__v { font-size: 26px; }
+  .rk-hist li { grid-template-columns: auto auto minmax(0, 1fr); }
+  .rk-hist__by { grid-column: 1 / -1; text-align: left; }
+  /* dự phòng cho trình duyệt chưa hỗ trợ @container */
+  .rk-corners { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .rk-vs { padding: 0; text-align: center; font-size: 14px; }
+  .rk-bout__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rk-bout__stop > :first-child { grid-column: auto; }
+  .rk-bout__sum { order: 5; flex-basis: 100%; }
+  .rk-bout__body { padding: 12px; }
+  .rk-img { max-width: 180px; }
+}
+
+/* ─── Dữ liệu mẫu: nút xóa một lần (chỉ admin) ───────────── */
+.rk-demo { align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.rk-demo .alert__text { flex: 1 1 320px; }
+.rk-demo .btn { flex: none; }

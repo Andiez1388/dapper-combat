@@ -557,7 +557,7 @@
     var d = draft('brand');
     return '<div class="cms-help"><p>Mục trên menu, logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
       panel('Mục trên menu',
-        '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
+        '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup'], ['ranking', 'Xếp hạng (Lịch sự kiện · Ranking · Võ sĩ)']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
         '<p class="set-note">Tắt = ẩn mục đó khỏi menu trên cùng và menu điện thoại ở mọi trang. Trang vẫn còn nguyên (mở bằng đường dẫn được), bật lại là hiện ngay. Link ở chân trang sửa ở <a href="#/cms-text">Chữ trên trang</a>.</p>') +
       panel('Logo', '<div class="brand-prev"><p class="field__label">Xem trước trên thanh menu</p><div class="brand-bar" data-logo-prev>' + logoPreview(d.logo) + '</div></div>' +
         '<p class="set-spec">PNG nền trong suốt, cao ≥ 120 px, ngang tối đa ~600 px — hiển thị cao khoảng 28 px trên thanh menu.</p>' +
@@ -691,7 +691,7 @@
           '<div class="cms-notify__act"><button class="btn btn--line" type="button" data-notify-test>Gửi thử</button></div>' +
           '<div class="cms-notify__res" data-notify-result role="status" hidden></div>' +
         '</div></section>' +
-      panel('Địa chỉ website', text('siteUrl', 'Địa chỉ website (SITE_URL)', 'https://dappercombat.vn', 'Dùng để tạo link “mở đơn” trong tin nhắn. Bắt đầu bằng https://', 'url', ' inputmode="url"')) +
+      panel('Địa chỉ website', text('siteUrl', 'Địa chỉ website (SITE_URL)', 'https://dappervietnam.com', 'Dùng để tạo link “mở đơn” trong tin nhắn. Bắt đầu bằng https://', 'url', ' inputmode="url"')) +
       panel('Telegram',
         '<ol class="set-steps"><li>Tạo bot với <strong>@BotFather</strong> → lấy token.</li><li>Nhắn cho bot 1 tin bất kỳ, rồi mở ' +
         '<code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> để lấy <strong>chat id</strong> (số trong “chat”: {“id”: …}).</li></ol>' +
