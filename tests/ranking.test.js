@@ -1,5 +1,5 @@
 /*
- * Bảng xếp hạng CLB (lib/ranking.js, routes/ranking.js): dữ liệu mẫu, cách tính điểm (kỹ năng ± Elo), thứ hạng, sao, hạng,
+ * Dapper Combat Academy Ranking (lib/ranking.js, routes/ranking.js): dữ liệu mẫu, cách tính điểm (kỹ năng ± Elo), thứ hạng, sao, hạng,
  * trang công khai /xep-hang · /vo-si · /su-kien, quyền admin / nhân viên, kiểm tra dữ liệu, tự dịch tiếng Anh.
  * Chạy sau api.test.js (dùng phiên quản trị env.adminToken).
  */
@@ -18,7 +18,7 @@ module.exports = async function rankingTests(env, t) {
   const pub = url => req(url, { tok: false });
   const settle = async () => { for (let i = 0; i < 100; i++) { await new Promise(r => setTimeout(r, 60)); const st = (await req('/api/translate/status')).j; if (st && !st.running && !st.queued) return; } };
 
-  t.section('Bảng xếp hạng CLB: dữ liệu mẫu, điểm, thứ hạng');
+  t.section('Academy Ranking: dữ liệu mẫu, điểm, thứ hạng');
   await t.run('dữ liệu mẫu', async () => {
     const d = (await pub('/api/ranking')).j;
     const men = d.fighters.filter(f => f.gender === 'm'), women = d.fighters.filter(f => f.gender === 'f');
@@ -37,6 +37,9 @@ module.exports = async function rankingTests(env, t) {
     t.ok(sum, 'mỗi trận: điểm người thắng được = điểm người thua mất (Elo)');
     const up = d.events.filter(e => e.status === 'upcoming'), done = d.events.filter(e => e.status === 'done');
     t.ok(up.length === 2 && done.length === 6 && long.upcoming.length === 1, '2 sự kiện sắp tới, 6 đã có kết quả; võ sĩ có trận sắp tới', { up: up.length, done: done.length });
+    const kiet = d.fighters.find(f => f.slug === 'bui-tuan-kiet'), hau = d.fighters.find(f => f.slug === 'phan-van-hau');
+    t.ok(d.since && d.since.slug === 'sparring-day-thang-10-2026-10' && kiet.move.overall === 1 && hau.move.overall === -2 && kiet.move.points === 20 && duy.move === null,
+      'thay đổi thứ hạng so với trước sự kiện gần nhất (▲ / ▼ như BoxRec); võ sĩ nghỉ không có', { since: d.since, kiet: kiet.move, hau: hau.move });
   });
 
   await t.run('công thức', async () => {
@@ -58,19 +61,23 @@ module.exports = async function rankingTests(env, t) {
       ranking.compute({ fighters: [f('x', 50)], events: [], today: '2026-06-01' }).fighters[0].tier === 'rookie', 'hạng theo điểm: 900 → Tinh anh, 500 → Tân binh');
   });
 
-  t.section('Trang công khai /xep-hang · /vo-si · /su-kien');
+  t.section('Trang công khai /xep-hang · /vo-si · /su-kien · /so-sanh');
   await t.run('trang', async () => {
-    for (const u of ['/xep-hang', '/vo-si', '/su-kien']) {
+    for (const u of ['/xep-hang', '/vo-si', '/su-kien', '/so-sanh']) {
       const r = await pub(u);
       t.ok(r.s === 200 && r.t.includes('/assets/js/xephang.js') && new RegExp(`<link rel="canonical" href="[^"]+${u}"`).test(r.t), u + ' — mở được, có link chuẩn (canonical)');
     }
     let r = await pub('/vo-si/nguyen-hoang-long');
-    t.ok(r.s === 200 && /<title>Nguyễn Hoàng Long “Rồng Đen” — Dapper Combat<\/title>/.test(r.t) && /thành tích 3-0-0/.test(r.t), 'hồ sơ võ sĩ: tiêu đề + mô tả riêng (thành tích) cho Google', (r.t.match(/<title>[^<]*<\/title>/) || [''])[0]);
+    t.ok(r.s === 200 && /<title>Nguyễn Hoàng Long “Rồng Đen” — Dapper Combat Academy Ranking<\/title>/.test(r.t) && /thành tích 3-0-0/.test(r.t), 'hồ sơ võ sĩ: tiêu đề + mô tả riêng (thành tích) cho Google', (r.t.match(/<title>[^<]*<\/title>/) || [''])[0]);
     r = await pub('/vo-si/khong-co-vo-si-nay');
     t.ok(r.s === 404 && /noindex/.test(r.t), 'võ sĩ không có → 404, không cho Google lưu');
     const ev = (await pub('/api/ranking')).j.events[0];
     r = await pub('/su-kien/' + ev.slug);
     t.ok(r.s === 200 && r.t.includes(ev.name.vi), 'trang chi tiết sự kiện', ev.slug);
+    const ld = html => { const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s); return m ? JSON.parse(m[1]) : null; };
+    const evLd = ld(r.t), pLd = ld((await pub('/vo-si/nguyen-hoang-long')).t);
+    t.ok(evLd && evLd['@type'] === 'SportsEvent' && evLd.startDate.startsWith(ev.date) && pLd && pLd['@type'] === 'Person' && pLd.alternateName === 'Rồng Đen' && pLd.memberOf.name === 'Dapper Combat Academy',
+      'dữ liệu có cấu trúc cho Google: sự kiện (SportsEvent), võ sĩ (Person)', { evLd, pLd });
     const rd = await fetch(B + '/ranking', { redirect: 'manual' });
     t.ok(rd.status === 301 && rd.headers.get('location') === '/xep-hang', 'đường dẫn tắt /ranking → /xep-hang');
     const sm = (await pub('/sitemap.xml')).t;

@@ -207,7 +207,7 @@ var MNAV={cur:"services",home:"/",shop:"/shop",course:"/khoa-hoc",services:"#",z
     {k:$k.v("shop"),url:DC.x($k("global.mnav.u2"),0,"/shop"),n:[DC.x($k("global.mnav.3"),0,"Shop"),DC.x($k("global.mnav.3"),1,"Shop")],s:[DC.x($k("global.mnav.4"),0,"Găng · áo · phụ kiện · đồ tập"),DC.x($k("global.mnav.4"),1,"Gloves · apparel · gear")]},
     {k:$k.v("course"),url:DC.x($k("global.mnav.u3"),0,"/khoa-hoc"),n:[DC.x($k("global.mnav.5"),0,"Khóa học"),DC.x($k("global.mnav.5"),1,"Courses")],s:[DC.x($k("global.mnav.6"),0,"Foundation · Group Training · PT 1-1"),DC.x($k("global.mnav.6"),1,"Foundation · Group Training · PT 1-on-1")]},
     {k:$k.v("services"),url:DC.x($k("global.mnav.u4"),0,"/dich-vu-setup"),n:[DC.x($k("global.mnav.7"),0,"Dịch vụ Setup"),DC.x($k("global.mnav.7"),1,"Gym Setup")],s:[DC.x($k("global.mnav.8"),0,"Thiết kế · thiết bị · setup phòng tập"),DC.x($k("global.mnav.8"),1,"Gym design · equipment · setup")]},
-    {k:$k.v("ranking"),url:DC.x($k("global.mnav.u5"),0,"/xep-hang"),n:[DC.x($k("global.mnav.15"),0,"Xếp hạng"),DC.x($k("global.mnav.15"),1,"Rankings")],s:[DC.x($k("global.mnav.16"),0,"Lịch sự kiện · ranking · võ sĩ"),DC.x($k("global.mnav.16"),1,"Events · rankings · fighters")]}
+    {k:$k.v("ranking"),url:DC.x($k("global.mnav.u5"),0,"/xep-hang"),n:[DC.x($k("global.mnav.15"),0,"Academy Ranking"),DC.x($k("global.mnav.15"),1,"Academy Ranking")],s:[DC.x($k("global.mnav.16"),0,"Lịch sự kiện · ranking · võ sĩ"),DC.x($k("global.mnav.16"),1,"Events · rankings · fighters")]}
   ];});
   /* nút menu */
   var right=document.querySelector(".nav .nav-right");

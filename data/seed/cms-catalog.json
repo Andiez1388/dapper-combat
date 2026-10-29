@@ -19922,7 +19922,7 @@
    "key": "global.mnav.u5",
    "section": "global.mnav",
    "type": "link",
-   "label": "Đường dẫn — Xếp hạng",
+   "label": "Đường dẫn — Academy Ranking",
    "vi": "/xep-hang",
    "mono": true,
    "itemLabel": "Đường dẫn khi bấm"
@@ -19932,12 +19932,12 @@
    "html": false,
    "src": "js",
    "locate": true,
-   "en": "Rankings",
+   "en": "Academy Ranking",
    "key": "global.mnav.15",
    "section": "global.mnav",
    "type": "label",
-   "label": "Thẻ 5 · Tên trang (mục “Xếp hạng” trên menu)",
-   "vi": "Xếp hạng",
+   "label": "Thẻ 5 · Tên trang (mục “Academy Ranking” trên menu)",
+   "vi": "Academy Ranking",
    "itemLabel": "Chữ"
   },
   {
@@ -19962,7 +19962,7 @@
    "key": "global.mnav.17",
    "section": "global.mnav",
    "type": "label",
-   "label": "Menu thả xuống “Xếp hạng” — mục 1 (/su-kien)",
+   "label": "Menu thả xuống “Academy Ranking” — mục 1 (/su-kien)",
    "vi": "Lịch sự kiện"
   },
   {
@@ -19974,7 +19974,7 @@
    "key": "global.mnav.18",
    "section": "global.mnav",
    "type": "label",
-   "label": "Menu thả xuống “Xếp hạng” — mục 2 (/xep-hang)",
+   "label": "Menu thả xuống “Academy Ranking” — mục 2 (/xep-hang)",
    "vi": "Ranking võ sĩ"
   },
   {
@@ -19986,7 +19986,7 @@
    "key": "global.mnav.19",
    "section": "global.mnav",
    "type": "label",
-   "label": "Menu thả xuống “Xếp hạng” — mục 3 (/vo-si)",
+   "label": "Menu thả xuống “Academy Ranking” — mục 3 (/vo-si)",
    "vi": "Thông tin võ sĩ"
   }
  ],

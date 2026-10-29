@@ -18,8 +18,8 @@
     "status": "active",
     "visible": true,
     "bio": {
-      "vi": "Đội trưởng CLB, lối đánh toàn diện, kiểm soát khoảng cách tốt và ra đòn kết hợp nhanh. Chưa thua trận nào trong năm 2026.",
-      "en": "Club captain with a complete game, excellent distance control and fast combinations. Unbeaten in 2026."
+      "vi": "Đội trưởng Academy, lối đánh toàn diện, kiểm soát khoảng cách tốt và ra đòn kết hợp nhanh. Chưa thua trận nào trong năm 2026.",
+      "en": "Academy captain with a complete game, excellent distance control and fast combinations. Unbeaten in 2026."
     },
     "skills": {
       "technique": 88,
@@ -166,8 +166,8 @@
     "status": "active",
     "visible": true,
     "bio": {
-      "vi": "Võ sĩ tay trái với tốc độ chân và tay thuộc hàng nhanh nhất CLB.",
-      "en": "A southpaw with some of the fastest hands and feet in the club."
+      "vi": "Võ sĩ tay trái với tốc độ chân và tay thuộc hàng nhanh nhất Academy.",
+      "en": "A southpaw with some of the fastest hands and feet in the academy."
     },
     "skills": {
       "technique": 84,
@@ -314,8 +314,8 @@
     "status": "active",
     "visible": true,
     "bio": {
-      "vi": "Hạng nặng có sức đấm mạnh nhất CLB, đa số trận thắng kết thúc sớm.",
-      "en": "The hardest puncher in the gym — most of his wins end early."
+      "vi": "Hạng nặng có sức đấm mạnh nhất Academy, đa số trận thắng kết thúc sớm.",
+      "en": "The hardest puncher in the academy — most of his wins end early."
     },
     "skills": {
       "technique": 72,
@@ -906,8 +906,8 @@
     "status": "active",
     "visible": true,
     "bio": {
-      "vi": "Sải tay dài nhất CLB, giữ đối thủ ở xa bằng cú jab chuẩn mực.",
-      "en": "The longest reach in the club, keeping opponents away with a textbook jab."
+      "vi": "Sải tay dài nhất Academy, giữ đối thủ ở xa bằng cú jab chuẩn mực.",
+      "en": "The longest reach in the academy, keeping opponents away with a textbook jab."
     },
     "skills": {
       "technique": 79,
@@ -1128,8 +1128,8 @@
     "status": "active",
     "visible": true,
     "bio": {
-      "vi": "Nữ võ sĩ dày dạn nhất CLB, kỹ thuật tinh tế và chưa từng thua.",
-      "en": "The club's most experienced woman fighter — technically polished and unbeaten."
+      "vi": "Nữ võ sĩ dày dạn nhất Academy, kỹ thuật tinh tế và chưa từng thua.",
+      "en": "The academy's most experienced woman fighter — technically polished and unbeaten."
     },
     "skills": {
       "technique": 86,

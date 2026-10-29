@@ -141,7 +141,7 @@
   DC.navDrop = function (lang) {
     var s = lang === 'en' ? 1 : 0, cur = location.pathname;
     var item = function (k, url, vi, en) { return '<li><a href="' + url + '"' + (cur === url ? ' aria-current="page"' : '') + '>' + DC.esc(DC.x(k, s, s ? en : vi)) + '</a></li>'; };
-    return '<li class="dc-dd" data-nav-k="ranking"><a href="/xep-hang" aria-haspopup="true">' + DC.esc(DC.x('global.mnav.15', s, s ? 'Rankings' : 'Xếp hạng')) + '</a><ul class="dc-dd-menu">' +
+    return '<li class="dc-dd" data-nav-k="ranking"><a href="/xep-hang" aria-haspopup="true">' + DC.esc(DC.x('global.mnav.15', s, 'Academy Ranking')) + '</a><ul class="dc-dd-menu">' +
       item('global.mnav.17', '/su-kien', 'Lịch sự kiện', 'Events') + item('global.mnav.18', '/xep-hang', 'Ranking võ sĩ', 'Fighter rankings') + item('global.mnav.19', '/vo-si', 'Thông tin võ sĩ', 'Fighters') + '</ul></li>';
   };
   /* mã VietQR thật (tài khoản cài ở /admin → Thanh toán): quét bằng app ngân hàng, MoMo hoặc ZaloPay, có sẵn số tiền + nội dung */

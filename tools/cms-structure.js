@@ -163,15 +163,20 @@ function fixups() {
   audit5Fixups();
   audit6Fixups();
 }
-/* ─── Đợt sửa 6: mục "Xếp hạng" trên menu (bảng xếp hạng CLB /xep-hang, /vo-si, /su-kien) ─── */
+/* ─── Đợt sửa 6: mục "Academy Ranking" trên menu (Dapper Combat Academy Ranking: /xep-hang, /vo-si, /su-kien) ─── */
 function audit6Fixups() {
   const f = (key, type, label, vi, en, extra) => newField({ key, section: 'global.mnav', page: 'global', type, label, vi, en, src: 'js', locate: false, ...(extra || {}) });
-  f('global.mnav.u5', 'link', 'Đường dẫn — Xếp hạng', '/xep-hang', null, { mono: true });
-  f('global.mnav.15', 'label', 'Thẻ 5 · Tên trang (mục “Xếp hạng” trên menu)', 'Xếp hạng', 'Rankings', { itemLabel: 'Tên trang' });
+  f('global.mnav.u5', 'link', 'Đường dẫn — Academy Ranking', '/xep-hang', null, { mono: true });
+  f('global.mnav.15', 'label', 'Thẻ 5 · Tên trang (mục “Academy Ranking” trên menu)', 'Academy Ranking', 'Academy Ranking', { itemLabel: 'Tên trang' });
   f('global.mnav.16', 'label', 'Thẻ 5 · Mô tả ngắn dưới tên (menu điện thoại)', 'Lịch sự kiện · ranking · võ sĩ', 'Events · rankings · fighters', { itemLabel: 'Mô tả ngắn dưới tên' });
-  f('global.mnav.17', 'label', 'Menu thả xuống “Xếp hạng” — mục 1 (/su-kien)', 'Lịch sự kiện', 'Events');
-  f('global.mnav.18', 'label', 'Menu thả xuống “Xếp hạng” — mục 2 (/xep-hang)', 'Ranking võ sĩ', 'Fighter rankings');
-  f('global.mnav.19', 'label', 'Menu thả xuống “Xếp hạng” — mục 3 (/vo-si)', 'Thông tin võ sĩ', 'Fighters');
+  f('global.mnav.17', 'label', 'Menu thả xuống “Academy Ranking” — mục 1 (/su-kien)', 'Lịch sự kiện', 'Events');
+  f('global.mnav.18', 'label', 'Menu thả xuống “Academy Ranking” — mục 2 (/xep-hang)', 'Ranking võ sĩ', 'Fighter rankings');
+  f('global.mnav.19', 'label', 'Menu thả xuống “Academy Ranking” — mục 3 (/vo-si)', 'Thông tin võ sĩ', 'Fighters');
+  // đổi tên: "Xếp hạng" (CLB) → "Academy Ranking"
+  setDefault('global.mnav.15', 'Academy Ranking', 'Academy Ranking');
+  setField('global.mnav.15', { label: 'Thẻ 5 · Tên trang (mục “Academy Ranking” trên menu)' });
+  setField('global.mnav.u5', { label: 'Đường dẫn — Academy Ranking' });
+  for (const [k, n, u] of [['global.mnav.17', 1, '/su-kien'], ['global.mnav.18', 2, '/xep-hang'], ['global.mnav.19', 3, '/vo-si']]) setField(k, { label: `Menu thả xuống “Academy Ranking” — mục ${n} (${u})` });
 }
 /* ─── Đợt sửa 1 (rà soát trang công khai): chữ mới, chữ mặc định đổi, chữ bỏ ───────────── */
 // đổi chữ mặc định của trường đã có (giữ nguyên phần đã sửa trong /admin — nằm ở data/cms.json)

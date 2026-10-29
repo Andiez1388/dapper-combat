@@ -1,6 +1,6 @@
 /*
- * Dữ liệu mẫu cho bảng xếp hạng CLB: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện (fight night, sparring, kỳ đánh giá, 2 sự kiện sắp tới)
- * và ảnh minh họa (SVG vẽ tay, không phải ảnh người thật) — thay bằng ảnh thật ở /admin → Xếp hạng CLB.
+ * Dữ liệu mẫu cho Dapper Combat Academy Ranking: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện (fight night, sparring, kỳ đánh giá, 2 sự kiện sắp tới)
+ * và ảnh minh họa (SVG vẽ tay, không phải ảnh người thật) — thay bằng ảnh thật ở /admin → Academy Ranking.
  *   node tools/ranking-demo.js   → ghi data/seed/fighters.json, data/seed/events.json, public/assets/img/fighters/demo-XX.svg
  * Chạy lại an toàn (cùng kết quả). Dữ liệu đang chạy (data/fighters.json…) không bị đụng tới.
  */
@@ -11,7 +11,7 @@ const ROOT = path.join(__dirname, '..');
 const IMG = path.join(ROOT, 'public', 'assets', 'img', 'fighters');
 const COACH = 'Phong Dapper';
 
-// [mã, tên, biệt danh, giới tính, ngày sinh, cân nặng, hạng cân, thế đứng, cao, sải tay, quê, ngày vào CLB, kỹ năng [kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển], trạng thái, vẻ ngoài]
+// [mã, tên, biệt danh, giới tính, ngày sinh, cân nặng, hạng cân, thế đứng, cao, sải tay, quê, ngày vào Academy, kỹ năng [kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển], trạng thái, vẻ ngoài]
 // vẻ ngoài: [màu da, kiểu tóc, màu tóc, màu găng, màu áo, mũ bảo hộ]
 const SKIN = ['#f3cfae', '#e8b892', '#d9a07a', '#c4865f', '#a86b49'];
 const F = [
@@ -38,11 +38,11 @@ const F = [
 ];
 // giới thiệu ngắn (VI, EN) theo phong cách thi đấu
 const BIO = {
-  vs01: ['Đội trưởng CLB, lối đánh toàn diện, kiểm soát khoảng cách tốt và ra đòn kết hợp nhanh. Chưa thua trận nào trong năm 2026.', 'Club captain with a complete game, excellent distance control and fast combinations. Unbeaten in 2026.'],
+  vs01: ['Đội trưởng Academy, lối đánh toàn diện, kiểm soát khoảng cách tốt và ra đòn kết hợp nhanh. Chưa thua trận nào trong năm 2026.', 'Academy captain with a complete game, excellent distance control and fast combinations. Unbeaten in 2026.'],
   vs02: ['Tay đấm nặng ký nhất hạng Trung, thích áp sát và tung cú móc phải uy lực.', 'The heaviest hitter at middleweight — loves to pressure and land a big right hook.'],
-  vs03: ['Võ sĩ tay trái với tốc độ chân và tay thuộc hàng nhanh nhất CLB.', 'A southpaw with some of the fastest hands and feet in the club.'],
+  vs03: ['Võ sĩ tay trái với tốc độ chân và tay thuộc hàng nhanh nhất Academy.', 'A southpaw with some of the fastest hands and feet in the academy.'],
   vs04: ['Bền bỉ, phòng thủ chắc, thắng nhờ thể lực vượt trội ở hiệp cuối.', 'Durable with a tight guard; wins the late rounds on conditioning.'],
-  vs05: ['Hạng nặng có sức đấm mạnh nhất CLB, đa số trận thắng kết thúc sớm.', 'The hardest puncher in the gym — most of his wins end early.'],
+  vs05: ['Hạng nặng có sức đấm mạnh nhất Academy, đa số trận thắng kết thúc sớm.', 'The hardest puncher in the academy — most of his wins end early.'],
   vs06: ['Áp sát liên tục, chịu đòn tốt, đang cải thiện kỹ thuật phòng thủ.', 'Relentless pressure fighter with a strong chin, sharpening his defense.'],
   vs07: ['Phản đòn sắc bén, đọc trận tốt, luôn giữ bình tĩnh trong góc đài.', 'Sharp counter-puncher who reads opponents well and stays calm on the ropes.'],
   vs08: ['Đổi thế đứng linh hoạt, phong cách tấn công nhiều màu sắc.', 'A switch-hitter with a flashy, high-volume attacking style.'],
@@ -50,10 +50,10 @@ const BIO = {
   vs10: ['Đang tạm nghỉ thi đấu để hồi phục chấn thương vai.', 'Currently inactive while recovering from a shoulder injury.'],
   vs11: ['Nhỏ con nhưng tốc độ cao, di chuyển liên tục và ra đòn từ mọi góc.', 'Small but fast — constantly moving and punching from every angle.'],
   vs12: ['Tân binh tay trái tiến bộ nhanh sau khóa Foundation.', 'A fast-improving southpaw rookie fresh out of the Foundation course.'],
-  vs13: ['Sải tay dài nhất CLB, giữ đối thủ ở xa bằng cú jab chuẩn mực.', 'The longest reach in the club, keeping opponents away with a textbook jab.'],
+  vs13: ['Sải tay dài nhất Academy, giữ đối thủ ở xa bằng cú jab chuẩn mực.', 'The longest reach in the academy, keeping opponents away with a textbook jab.'],
   vs14: ['Tân binh hạng nặng, sức mạnh tốt, đang luyện thêm thể lực và di chuyển.', 'A heavyweight rookie with real power, working on stamina and footwork.'],
   vs15: ['Nữ võ sĩ hạng Ruồi số một, tốc độ cao và lì đòn.', 'The top women\'s flyweight — fast, tough and relentless.'],
-  vs16: ['Nữ võ sĩ dày dạn nhất CLB, kỹ thuật tinh tế và chưa từng thua.', 'The club\'s most experienced woman fighter — technically polished and unbeaten.'],
+  vs16: ['Nữ võ sĩ dày dạn nhất Academy, kỹ thuật tinh tế và chưa từng thua.', 'The academy\'s most experienced woman fighter — technically polished and unbeaten.'],
   vs17: ['Tay trái khó chịu, giỏi đánh lùi và phản công.', 'An awkward southpaw who excels at fighting off the back foot.'],
   vs18: ['Sức đấm và thể lực tốt, áp đảo đối thủ bằng nhịp độ cao.', 'Strong and well-conditioned; overwhelms opponents with a high work rate.'],
   vs19: ['Mới gia nhập, tinh thần chiến đấu cao, đang tích lũy kinh nghiệm sparring.', 'A newer member with plenty of fight, building sparring experience.'],

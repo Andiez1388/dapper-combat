@@ -1,4 +1,4 @@
-/* Dapper Combat — Quản trị: Xếp hạng CLB (kiểu BoxRec)
+/* Dapper Combat — Quản trị: Academy Ranking (kiểu BoxRec)
    Võ sĩ (#/fighters, #/fighters/<mã>) và Sự kiện & kết quả (#/rank-events, #/rank-events/<mã>).
    Dữ liệu: GET /api/admin/ranking (bản gốc + bản đã tính điểm, thứ hạng); lưu POST/PUT /api/fighters, /api/events (routes/ranking.js).
    HLV (tài khoản nhân viên) thêm / sửa võ sĩ, chấm điểm kỹ năng, nhập kết quả; xóa chỉ tài khoản admin.
@@ -14,7 +14,7 @@
   // nhãn (giống trang công khai xephang.js)
   var GENDER = { m: 'Nam', f: 'Nữ' };
   var STANCE = [['orthodox', 'Thuận'], ['southpaw', 'Tay trái'], ['switch', 'Đổi thế']];
-  var TYPE = [['fight', 'Fight night'], ['sparring', 'Sparring'], ['assessment', 'Đánh giá kỹ năng'], ['other', 'Hoạt động CLB']];
+  var TYPE = [['fight', 'Fight night'], ['sparring', 'Sparring'], ['assessment', 'Đánh giá kỹ năng'], ['other', 'Hoạt động Academy']];
   var METHOD = { KO: 'Hạ đo ván', TKO: 'Trọng tài dừng trận', RTD: 'Bỏ cuộc giữa hiệp', DQ: 'Truất quyền thi đấu',
     UD: 'Thắng điểm tuyệt đối', SD: 'Thắng điểm không tuyệt đối', MD: 'Thắng điểm đa số', PTS: 'Thắng điểm' };
   var DRAW = { UD: 'Hòa tuyệt đối', SD: 'Hòa không tuyệt đối', MD: 'Hòa đa số', PTS: 'Hòa tính điểm' };
@@ -151,7 +151,7 @@
     return '<div class="rk-danger"><button type="button" class="btn btn--quiet btn--sm" data-rk-del>' + ICON.trash + '<span>' + esc(label) + '</span></button><p class="field__hint">' + hint + '</p></div>';
   }
   function headLoading(view) {
-    return A.pageHead(view === VF ? 'Võ sĩ' : 'Sự kiện & kết quả', { eyebrow: 'Xếp hạng CLB', stamp: false, count: false });
+    return A.pageHead(view === VF ? 'Võ sĩ' : 'Sự kiện & kết quả', { eyebrow: 'Academy Ranking', stamp: false, count: false });
   }
   function notFound(view) {
     return headLoading(view) + A.emptyHtml(view === VF ? 'Không tìm thấy võ sĩ này' : 'Không tìm thấy sự kiện này', 'Có thể đã bị xóa.') +
@@ -194,10 +194,10 @@
   // ═══ Danh sách võ sĩ ═══════════════════════════════════════════════════════
   function fList() {
     var root = $('[data-rk-root]');
-    root.innerHTML = A.pageHead('Võ sĩ', { eyebrow: 'Xếp hạng CLB',
+    root.innerHTML = A.pageHead('Võ sĩ', { eyebrow: 'Academy Ranking',
         actions: '<a class="btn btn--ghost" href="/xep-hang" target="_blank" rel="noopener">Bảng xếp hạng ↗</a>' +
           '<a class="btn btn--primary" href="#/fighters/new">' + ICON.plus + '<span>Thêm võ sĩ</span></a>' }) +
-      '<div class="cms-help"><p>Hồ sơ võ sĩ trên <a href="/xep-hang" target="_blank" rel="noopener">bảng xếp hạng CLB</a>. <strong>Điểm xếp hạng</strong> = điểm kỹ năng (trung bình 6 kỹ năng HLV chấm × 10) cộng / trừ điểm thắng thua sau mỗi trận. ' +
+      '<div class="cms-help"><p>Hồ sơ võ sĩ trên <a href="/xep-hang" target="_blank" rel="noopener">Dapper Combat Academy Ranking</a>. <strong>Điểm xếp hạng</strong> = điểm kỹ năng (trung bình 6 kỹ năng HLV chấm × 10) cộng / trừ điểm thắng thua sau mỗi trận. ' +
         'Bấm vào võ sĩ để sửa hồ sơ hoặc chấm điểm kỹ năng; kết quả trận nhập ở <a href="#/rank-events">Sự kiện &amp; kết quả</a>. Chỉ võ sĩ <strong>đang thi đấu</strong> và <strong>đang hiện trên web</strong> được xếp hạng.</p></div>' +
       '<div class="toolbar rk-toolbar"><div data-rkf-chips></div>' +
         filterSel('Hạng cân', 'data-rkf-div', [['all', 'Tất cả']].concat(divs().map(function (d) { return [d.id, d.vi]; })), LF.div) +
@@ -323,7 +323,7 @@
     var last = hist[hist.length - 1];
     ED = { view: VF, id: id, src: src, d: fDraft(src), prevSk: (last && last.skills) || (src && src.skills) || null };
     var d = ED.d;
-    root.innerHTML = A.pageHead(isNew ? 'Thêm võ sĩ' : src.name, { eyebrow: isNew ? 'Xếp hạng CLB · Võ sĩ' : 'Hồ sơ võ sĩ', stamp: false, count: false,
+    root.innerHTML = A.pageHead(isNew ? 'Thêm võ sĩ' : src.name, { eyebrow: isNew ? 'Academy Ranking · Võ sĩ' : 'Hồ sơ võ sĩ', stamp: false, count: false,
         actions: '<a class="btn btn--ghost" href="#/fighters">← Danh sách</a>' +
           (!isNew && src.visible !== false ? '<a class="btn btn--ghost" href="' + esc(pubF(src)) + '" target="_blank" rel="noopener">Xem trên web ↗</a>' : '') }) +
       '<p class="form-msg" data-rk-msg role="alert" hidden></p>' +
@@ -335,7 +335,7 @@
           '</div><div class="set-grid3">' +
             field('Giới tính', '<select data-ff="gender">' + optsHtml([['m', 'Nam'], ['f', 'Nữ']], d.gender) + '</select>') +
             field('Ngày sinh', '<input type="date" data-ff="birth" value="' + esc(d.birth) + '" max="' + esc(today()) + '">', '<span data-rk-age></span>') +
-            field('Gia nhập CLB', '<input type="date" data-ff="joined" value="' + esc(d.joined) + '" max="' + esc(today()) + '">') +
+            field('Gia nhập Academy', '<input type="date" data-ff="joined" value="' + esc(d.joined) + '" max="' + esc(today()) + '">') +
           '</div><div class="set-grid2">' +
             field('Quê quán', '<input type="text" data-ff="hometown" value="' + esc(d.hometown) + '" maxlength="60" autocomplete="off" placeholder="VD: TP. Hồ Chí Minh">') +
             field('HLV phụ trách', '<input type="text" data-ff="coach" value="' + esc(d.coach) + '" maxlength="60" autocomplete="off">') +
@@ -469,7 +469,7 @@
         kv('Điểm xếp hạng', '<strong class="rk-big">' + esc(n1(c.points)) + '</strong> ' + tierBadge(c.tier)) +
         kv('Điểm kỹ năng', esc(c.skillPoints) + ' <span class="muted">(TB ' + esc(n1(c.skillAvg)) + ')</span>') +
         kv('Điểm thắng thua', deltaHtml(c.fightPoints)) +
-        kv('Thứ hạng', rk ? '#' + esc(rk.overall) + ' / ' + esc(rk.overallOf) + ' ' + g + ' toàn CLB<br>#' + esc(rk.div) + ' / ' + esc(rk.divOf) + ' ' + esc(divName(c.division))
+        kv('Thứ hạng', rk ? '#' + esc(rk.overall) + ' / ' + esc(rk.overallOf) + ' ' + g + ' toàn Academy<br>#' + esc(rk.div) + ' / ' + esc(rk.divOf) + ' ' + esc(divName(c.division))
           : '<span class="muted">Chưa xếp hạng' + (c.status === 'inactive' ? ' (nghỉ thi đấu)' : c.visible === false ? ' (đang ẩn)' : '') + '</span>') +
         (c.stars ? kv('Sao', '<span class="rk-stars" aria-label="' + esc(c.stars) + ' sao">' + stars(c.stars) + '</span>') : '') +
         kv('Thành tích (T-B-H)', '<strong>' + esc(rec(r)) + '</strong>' + (r.ko ? ' · ' + esc(r.ko) + ' KO' : '') + (r.nc ? ' · ' + esc(r.nc) + ' không KQ' : '')) +
@@ -645,10 +645,10 @@
   }
   function eList() {
     var root = $('[data-rk-root]');
-    root.innerHTML = A.pageHead('Sự kiện & kết quả', { eyebrow: 'Xếp hạng CLB',
+    root.innerHTML = A.pageHead('Sự kiện & kết quả', { eyebrow: 'Academy Ranking',
         actions: '<a class="btn btn--ghost" href="/su-kien" target="_blank" rel="noopener">Lịch sự kiện ↗</a>' +
           '<a class="btn btn--primary" href="#/rank-events/new">' + ICON.plus + '<span>Thêm sự kiện</span></a>' }) +
-      '<div class="cms-help"><p>Fight night, buổi sparring có chấm điểm, kỳ đánh giá kỹ năng và hoạt động CLB. Mỗi sự kiện có danh sách trận (góc đỏ / góc xanh). ' +
+      '<div class="cms-help"><p>Fight night, buổi sparring có chấm điểm, kỳ đánh giá kỹ năng và hoạt động Academy. Mỗi sự kiện có danh sách trận (góc đỏ / góc xanh). ' +
         '<strong>Đấu xong:</strong> mở sự kiện, nhập kết quả + cách thắng từng trận rồi bấm Lưu — điểm võ sĩ tự tính lại ngay. Sự kiện đã qua mà chưa có kết quả được đánh dấu <strong>“Chưa nhập kết quả”</strong>.</p></div>' +
       '<div data-rke-alert></div>' +
       '<div class="toolbar rk-toolbar">' + filterSel('Loại', 'data-rke-type', [['all', 'Tất cả']].concat(TYPE), LE.type) + searchHtml('data-rke-q', 'Tên sự kiện, địa điểm…', LE.q) + '</div>' +
@@ -882,7 +882,7 @@
     var box = $('[data-rk-bouts]'); if (!box || !ED || ED.view !== VE) return;
     var l = ED.d.bouts;
     box.innerHTML = l.length ? l.map(function (b, i) { return boutHtml(b, i, l.length); }).join('')
-      : '<p class="rk-none">' + (ED.d.type === 'assessment' || ED.d.type === 'other' ? 'Kỳ đánh giá kỹ năng / hoạt động CLB thường không có trận — chấm điểm kỹ năng ở hồ sơ từng võ sĩ (mục Võ sĩ).' : 'Chưa có trận nào — bấm “Thêm trận”.') + '</p>';
+      : '<p class="rk-none">' + (ED.d.type === 'assessment' || ED.d.type === 'other' ? 'Kỳ đánh giá kỹ năng / hoạt động Academy thường không có trận — chấm điểm kỹ năng ở hồ sơ từng võ sĩ (mục Võ sĩ).' : 'Chưa có trận nào — bấm “Thêm trận”.') + '</p>';
     bMeta();
     var add = $('[data-rk-badd]'); if (add) add.disabled = l.length >= MAX_BOUTS;
     if (focusSel) { var f = $(focusSel); if (f) f.focus(); }

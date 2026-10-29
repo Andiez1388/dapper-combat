@@ -181,6 +181,59 @@
 .xh-how ul{margin:0;padding-left:18px;}
 .xh-how li{margin:0 0 3px;}
 
+/* thay đổi thứ hạng (▲ ▼ MỚI), ghi chú dưới bảng, tiêu đề hạng cân */
+.xh-mv{display:inline-block;min-width:26px;font:700 11px Arial,sans-serif;white-space:nowrap;}
+.xh-mv.up{color:var(--xh-win);}
+.xh-mv.down{color:var(--xh-loss);}
+.xh-mv.same{color:#9aa3ab;}
+.xh-mv.new{padding:1px 4px;border-radius:2px;background:#e5a50a;color:#2a1f00;font-size:9.5px;letter-spacing:0.04em;}
+.xh-note{margin:0;padding:8px 12px;border-top:1px solid var(--xh-line-2);font-size:11.5px;color:var(--xh-muted);}
+.xh-day-sub{font-weight:400;text-transform:none;letter-spacing:0;opacity:0.8;margin-left:6px;}
+
+/* khả năng thắng (thanh đỏ / xanh), link so sánh */
+.xh-prob{display:flex;width:150px;max-width:100%;height:18px;margin:3px 0 2px;border-radius:2px;overflow:hidden;font:700 10.5px/18px Arial,sans-serif;color:#fff;}
+.xh-prob span{display:block;min-width:26px;text-align:center;white-space:nowrap;overflow:hidden;}
+.xh-prob .a{background:var(--xh-red);}
+.xh-prob .b{background:#1f5fa8;}
+.xh .xh-cmp-link{display:inline-block;font-size:11.5px;font-weight:700;}
+
+/* biểu đồ diễn biến điểm */
+.xh-chart svg{display:block;width:100%;height:auto;}
+
+/* ô so sánh trong hồ sơ */
+.xh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+.xh-cmp-form{display:flex;gap:6px;padding:12px;}
+.xh-cmp-form select{flex:1;min-width:0;height:32px;border:1px solid var(--xh-line);border-radius:2px;font:13px Arial,sans-serif;background:#fff;color:var(--xh-ink);}
+.xh-cmp-form button,.xh-swap{height:32px;padding:0 12px;border:0;border-radius:2px;background:var(--xh-nav);color:#fff;font:700 12px Arial,sans-serif;cursor:pointer;white-space:nowrap;}
+
+/* trang so sánh */
+.xh-cmp-pick select{max-width:260px;}
+.xh-cmp-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:center;padding:16px 12px 6px;}
+.xh-cmp-card{display:grid;justify-items:center;gap:4px;text-align:center;min-width:0;}
+.xh-cmp-card img,.xh-cmp-card .xh-ph{width:120px;aspect-ratio:4/5;object-fit:cover;border:3px solid var(--xh-red);border-radius:2px;display:block;}
+.xh-cmp-card.b img,.xh-cmp-card.b .xh-ph{border-color:#1f5fa8;}
+.xh-cmp-card b{font-size:16px;}
+.xh-cmp-card small{color:var(--xh-muted);font-style:italic;}
+.xh-cmp-vs{font:900 26px/1 'Arial Black',Arial,sans-serif;color:#c4cbd2;}
+.xh-cmp-prob{display:grid;justify-items:center;gap:2px;padding-top:4px;}
+.xh-cmp-prob .xh-prob{width:min(420px,100%);height:24px;line-height:24px;font-size:12px;}
+.xh-tape th{width:34%;text-align:center;background:#f6f7f9;color:var(--xh-muted);font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
+.xh-tape td{width:33%;font-weight:700;}
+.xh-better{color:var(--xh-win)!important;}
+.xh-legend{display:flex;justify-content:center;gap:14px;margin:6px 0 10px;font-size:12px;}
+.xh-legend span::before{content:'';display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border-radius:2px;}
+.xh-legend .a::before{background:var(--xh-red);}
+.xh-legend .b::before{background:#1f5fa8;}
+.xh-bflys{display:grid;gap:6px;}
+.xh-bfly{display:grid;grid-template-columns:26px minmax(0,1fr) 78px minmax(0,1fr) 26px;gap:6px;align-items:center;font-size:12px;}
+.xh-bfly span{text-align:center;color:#3c4752;}
+.xh-bfly em{font-style:normal;font-weight:700;text-align:center;}
+.xh-bfly i{display:flex;height:10px;background:#e6eaee;border-radius:2px;overflow:hidden;}
+.xh-bfly i.a{justify-content:flex-end;}
+.xh-bfly i.a b{background:var(--xh-red);}
+.xh-bfly i.b b{background:#1f5fa8;}
+.xh-bfly b{display:block;height:100%;}
+
 /* chân trang */
 .xh-foot{background:var(--xh-top);color:rgba(255,255,255,0.7);font-size:12px;padding:18px 0;}
 .xh-foot p{margin:0 0 6px;}
@@ -207,6 +260,13 @@
   .xh-skills{grid-template-columns:minmax(0,1fr);}
   .xh-hide-sm{display:none;}
   .xh-filters input[type=search]{width:100%;}
+  .xh-cmp-pick label{width:100%;}
+  .xh-cmp-pick select{max-width:none;flex:1;min-width:0;}
+  .xh-cmp-head{gap:8px;padding:12px 8px 4px;}
+  .xh-cmp-card img,.xh-cmp-card .xh-ph{width:92px;}
+  .xh-cmp-card b{font-size:14px;}
+  .xh-cmp-vs{font-size:18px;}
+  .xh-bfly{grid-template-columns:24px minmax(0,1fr) 64px minmax(0,1fr) 24px;font-size:11px;}
 }
 @media (max-width:420px){
   .xh-top-in{gap:10px;}

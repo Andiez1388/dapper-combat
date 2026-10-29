@@ -1,7 +1,7 @@
 /*
- * API bảng xếp hạng CLB (lib/ranking.js):
+ * API Dapper Combat Academy Ranking (lib/ranking.js):
  *   GET  /api/ranking                     dữ liệu cho trang công khai (đã tính điểm, thứ hạng, thành tích)
- *   GET  /api/admin/ranking               dữ liệu gốc + bản đã tính, cho /admin → Xếp hạng CLB
+ *   GET  /api/admin/ranking               dữ liệu gốc + bản đã tính, cho /admin → Academy Ranking
  *   POST /api/fighters · PUT/DELETE /api/fighters/:id    võ sĩ (xóa: chỉ admin, võ sĩ chưa có trận nào)
  *   POST /api/events   · PUT/DELETE /api/events/:id      sự kiện + danh sách trận, kết quả
  *   DELETE /api/admin/ranking/demo                         xóa dữ liệu mẫu (chỉ admin)

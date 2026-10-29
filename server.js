@@ -119,7 +119,7 @@ app.get('/assets/data/products.js', (req, res) => {
   res.type('application/javascript').setHeader('Cache-Control', 'no-cache');
   res.send('window.__DC_PRODUCTS=' + JSON.stringify(api.publicProducts()).replace(/</g, '\\u003c') + ';');
 });
-// bảng xếp hạng CLB: đã tính điểm, thứ hạng, thành tích (lib/ranking.js)
+// Dapper Combat Academy Ranking: đã tính điểm, thứ hạng, thành tích (lib/ranking.js)
 app.get('/assets/data/ranking.js', (req, res) => {
   res.type('application/javascript').setHeader('Cache-Control', 'no-cache');
   res.send('window.__DC_RANKING=' + JSON.stringify(ranking.publicData()).replace(/</g, '\\u003c') + ';');
@@ -183,29 +183,37 @@ app.get('/shop/*', page('shop.html'));
 app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc'));
 app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup'));
 app.get('/admin', page('admin/index.html'));
-// bảng xếp hạng CLB (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> — chung khuôn public/xep-hang.html
-function rankPage(req, res, canon, title, desc, status = 200) {
+// Dapper Combat Academy Ranking (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> · /so-sanh — chung khuôn public/xep-hang.html
+// ld = dữ liệu có cấu trúc cho Google (võ sĩ: Person, sự kiện: SportsEvent)
+function rankPage(req, res, canon, title, desc, status = 200, ld = null) {
   let html = fs.readFileSync(path.join(PUB, 'xep-hang.html'), 'utf8');
-  if (title) html = html.replace(/<title>[^<]*<\/title>/, `<title>${attr(title)} — Dapper Combat</title>`).replace('<meta property="og:type"', `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
+  if (title) html = html.replace(/<title>[^<]*<\/title>/, `<title>${attr(title)} — Dapper Combat Academy Ranking</title>`).replace('<meta property="og:type"', `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
   if (desc) html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}"><meta property="og:description" content="${attr(desc)}">`);
-  html = html.replace('</head>', (status === 200 ? seoHead(req, canon) : '<meta name="robots" content="noindex">') + '</head>');
+  html = html.replace('</head>', (status === 200 ? seoHead(req, canon, ld) : '<meta name="robots" content="noindex">') + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.status(status).type('html').send(html);
 }
-app.get('/xep-hang', (req, res) => rankPage(req, res, '/xep-hang', 'Ranking võ sĩ', 'Bảng xếp hạng nội bộ CLB Dapper Combat: điểm, sao, hạng và thành tích từng võ sĩ nam, nữ theo hạng cân.'));
-app.get('/vo-si', (req, res) => rankPage(req, res, '/vo-si', 'Thông tin võ sĩ', 'Danh sách võ sĩ CLB Dapper Combat: thành tích, điểm xếp hạng, hạng cân và hồ sơ chi tiết.'));
-app.get('/su-kien', (req, res) => rankPage(req, res, '/su-kien', 'Lịch sự kiện', 'Lịch fight night, sparring và kỳ đánh giá kỹ năng của CLB Dapper Combat, kèm kết quả từng trận.'));
+const ACADEMY = { '@type': 'SportsOrganization', name: 'Dapper Combat Academy', sport: 'Boxing' };
+app.get('/xep-hang', (req, res) => rankPage(req, res, '/xep-hang', 'Ranking võ sĩ', 'Dapper Combat Academy Ranking — bảng xếp hạng nội bộ học viện: điểm, sao, hạng và thành tích từng võ sĩ nam, nữ theo hạng cân.'));
+app.get('/vo-si', (req, res) => rankPage(req, res, '/vo-si', 'Thông tin võ sĩ', 'Danh sách võ sĩ Dapper Combat Academy: thành tích, điểm xếp hạng, hạng cân và hồ sơ chi tiết.'));
+app.get('/su-kien', (req, res) => rankPage(req, res, '/su-kien', 'Lịch sự kiện', 'Lịch fight night, sparring và kỳ đánh giá kỹ năng của Dapper Combat Academy, kèm kết quả từng trận.'));
+app.get('/so-sanh', (req, res) => rankPage(req, res, '/so-sanh', 'So sánh võ sĩ', 'So sánh 2 võ sĩ Dapper Combat Academy: điểm, kỹ năng, thông số, đối đầu trực tiếp và khả năng thắng.'));
 app.get('/vo-si/:slug', (req, res) => {
   const f = ranking.publicData().fighters.find(x => x.slug === String(req.params.slug).toLowerCase());
   if (!f) return rankPage(req, res, '', 'Không tìm thấy võ sĩ', '', 404);
   const r = f.record;
   rankPage(req, res, '/vo-si/' + f.slug, f.name + (f.nickname ? ` “${f.nickname}”` : ''),
-    `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.DIVISIONS.find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — CLB Dapper Combat.');
+    `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.DIVISIONS.find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — Dapper Combat Academy Ranking.',
+    200, { '@context': 'https://schema.org', '@type': 'Person', name: f.name, ...(f.nickname ? { alternateName: f.nickname } : {}), gender: f.gender === 'f' ? 'Female' : 'Male',
+      ...(f.height ? { height: f.height + ' cm' } : {}), ...(f.weight ? { weight: f.weight + ' kg' } : {}), ...(f.photo && !/.svg$/.test(f.photo) ? { image: abs(req, f.photo) } : {}), url: baseUrl(req) + '/vo-si/' + f.slug, memberOf: ACADEMY });
 });
 app.get('/su-kien/:slug', (req, res) => {
   const e = ranking.publicData().events.find(x => x.slug === String(req.params.slug).toLowerCase());
   if (!e) return rankPage(req, res, '', 'Không tìm thấy sự kiện', '', 404);
-  rankPage(req, res, '/su-kien/' + e.slug, e.name.vi, (e.desc.vi || e.name.vi) + ' — ' + e.date.split('-').reverse().join('/') + ', ' + [e.venue, e.city].filter(Boolean).join(', '));
+  rankPage(req, res, '/su-kien/' + e.slug, e.name.vi, (e.desc.vi || e.name.vi) + ' — ' + e.date.split('-').reverse().join('/') + ', ' + [e.venue, e.city].filter(Boolean).join(', '), 200, {
+    '@context': 'https://schema.org', '@type': 'SportsEvent', name: e.name.vi, startDate: e.date + (e.time ? 'T' + e.time + ':00+07:00' : ''), sport: 'Boxing', url: baseUrl(req) + '/su-kien/' + e.slug,
+    eventStatus: 'https://schema.org/EventScheduled', organizer: ACADEMY, ...(e.desc.vi ? { description: e.desc.vi } : {}),
+    ...(e.venue || e.city ? { location: { '@type': 'Place', name: e.venue || e.city, address: e.city || '' } } : {}) });
 });
 // phiếu xác nhận cho khách: /phieu/<mã đơn>?k=<khóa> (dữ liệu lấy qua /api/slip, cần đúng khóa)
 app.get('/phieu/:code', page('phieu.html'));

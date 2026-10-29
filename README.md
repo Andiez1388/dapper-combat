@@ -147,7 +147,7 @@ lib/maillog.js          Nhật ký gửi tin (data/maillog.json)
 lib/payments.js         Thanh toán online: SePay (webhook chuyển khoản / MoMo / ZaloPay), VNPay thẻ + VNPay trả góp (HMAC-SHA512)
 lib/translate.js        Tiếng Anh tự dịch bằng Claude (hàng đợi nền, bộ nhớ dịch data/translations.json)
 lib/paths.js            Thư mục dữ liệu (DC_DATA_DIR, mặc định data/) và ảnh tải lên (DC_UPLOAD_DIR)
-lib/ranking.js          Bảng xếp hạng CLB: võ sĩ, sự kiện, kết quả (data/fighters.json, data/events.json), tính điểm / thứ hạng / sao / hạng
+lib/ranking.js          Dapper Combat Academy Ranking: võ sĩ, sự kiện, kết quả (data/fighters.json, data/events.json), tính điểm / thứ hạng / sao / hạng
 routes/ranking.js       API xếp hạng: /api/ranking (công khai), /api/admin/ranking, /api/fighters, /api/events
 public/xep-hang.html    Khuôn trang xếp hạng (/xep-hang, /vo-si, /su-kien); assets/js/xephang.js vẽ trang, assets/css/xephang.css
 tools/ranking-demo.js   Tạo dữ liệu mẫu 20 võ sĩ + 8 sự kiện + ảnh minh họa (public/assets/img/fighters/)
@@ -231,14 +231,19 @@ Tiền về là đơn hàng / đăng ký **tự chuyển “Đã nhận tiền�
 - Mỗi lần thanh toán là một mã giao dịch mới `<mã đơn>T<thời gian>`; server kiểm tra chữ ký, số tiền, mã website, không xử lý trùng (`data/pay-events.json`). Khóa bí mật chỉ lưu trên máy chủ.
 - Cần **Địa chỉ website** (Thiết lập → Thông báo) để các cổng gọi về đúng tên miền; IPN cần web đã chạy trên mạng (HTTPS).
 
-## Bảng xếp hạng CLB (kiểu BoxRec)
+## Dapper Combat Academy Ranking (kiểu BoxRec)
 
-Mục **Xếp hạng** trên menu (menu thả xuống): **Lịch sự kiện** (`/su-kien`, chi tiết `/su-kien/<sự kiện>`), **Ranking võ sĩ** (`/xep-hang`), **Thông tin võ sĩ** (`/vo-si`, hồ sơ `/vo-si/<võ sĩ>`). Chỉ tính nội bộ CLB. Bật / tắt mục này ở Thiết lập → Thương hiệu & menu.
+Mục **Academy Ranking** trên menu (menu thả xuống): **Lịch sự kiện** (`/su-kien`, chi tiết `/su-kien/<sự kiện>`), **Ranking võ sĩ** (`/xep-hang`), **Thông tin võ sĩ** (`/vo-si`, hồ sơ `/vo-si/<võ sĩ>`); thêm trang **So sánh** (`/so-sanh?a=<võ sĩ>&b=<võ sĩ>`). Chỉ tính nội bộ học viện. Bật / tắt mục này ở Thiết lập → Thương hiệu & menu.
+
+- **Ranking:** bảng tổng hoặc **theo hạng cân**; cột **±** = thứ hạng lên / xuống so với trước sự kiện có kết quả gần nhất (như BoxRec); cột phải có thống kê Academy và kỷ lục (chuỗi thắng, nhiều thắng / KO nhất, tiến bộ kỹ năng nhất).
+- **Hồ sơ võ sĩ:** radar 6 kỹ năng, **biểu đồ diễn biến điểm** sau từng trận (vạch các mốc hạng), lịch sử chấm điểm, lịch sử thi đấu (điểm ± mỗi trận), trận sắp tới kèm **khả năng thắng** (tính bằng đúng công thức Elo dùng cho điểm).
+- **So sánh:** 2 võ sĩ cạnh nhau — thông số, radar chồng, kỹ năng từng mục, đối đầu trực tiếp, khả năng thắng.
+- Trang võ sĩ / sự kiện có dữ liệu cho Google (Person, SportsEvent).
 
 - **Điểm kỹ năng:** HLV chấm 6 kỹ năng (kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển) thang 100 → trung bình × 10. Mỗi lần đổi điểm được lưu thành một lần chấm (ngày, ghi chú) — hồ sơ hiện lịch sử.
 - **Điểm thắng thua:** mỗi trận / sparring có chấm điểm tính kiểu Elo như BoxRec: `E = 1 / (1 + 10^((điểm đối thủ − điểm mình) / 400))`, cộng `40 × (kết quả − E)`; thắng KO / TKO / RTD / DQ × 1.25; hòa = 0.5; không kết quả (NC) không tính.
-- **Điểm xếp hạng** = điểm kỹ năng + điểm thắng thua. **Hạng:** Tinh anh ≥ 850, A ≥ 750, B ≥ 650, C ≥ 550, còn lại Tân binh. **Sao** 1–5 theo thứ hạng trong cùng giới tính. **Thứ hạng** theo giới tính (toàn CLB) và theo hạng cân; võ sĩ “Nghỉ thi đấu” không xếp hạng.
-- Quản trị: `/admin` → Xếp hạng CLB → **Võ sĩ** (thông tin, ảnh, chấm điểm kỹ năng) và **Sự kiện & kết quả** (danh sách trận, người thắng, cách thắng, hiệp). Nhân viên (HLV) nhập được; xóa cần admin; võ sĩ đã có trận không xóa được (chuyển “Nghỉ thi đấu” hoặc tắt “Hiện trên web”).
+- **Điểm xếp hạng** = điểm kỹ năng + điểm thắng thua. **Hạng:** Tinh anh ≥ 850, A ≥ 750, B ≥ 650, C ≥ 550, còn lại Tân binh. **Sao** 1–5 theo thứ hạng trong cùng giới tính. **Thứ hạng** theo giới tính (toàn Academy) và theo hạng cân; võ sĩ “Nghỉ thi đấu” không xếp hạng.
+- Quản trị: `/admin` → Academy Ranking → **Võ sĩ** (thông tin, ảnh, chấm điểm kỹ năng) và **Sự kiện & kết quả** (danh sách trận, người thắng, cách thắng, hiệp). Nhân viên (HLV) nhập được; xóa cần admin; võ sĩ đã có trận không xóa được (chuyển “Nghỉ thi đấu” hoặc tắt “Hiện trên web”).
 - Trang công khai chỉ hiện tuổi (không ngày sinh). Giới thiệu võ sĩ, tên / mô tả sự kiện được AI dịch sang tiếng Anh.
 - Dữ liệu mẫu: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện, ảnh minh họa vẽ (không phải ảnh người thật) — `node tools/ranking-demo.js` tạo lại. Trước khi chạy thật: thay bằng võ sĩ thật hoặc xóa / ẩn võ sĩ mẫu.
 
