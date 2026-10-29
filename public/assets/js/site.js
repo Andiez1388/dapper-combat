@@ -135,6 +135,8 @@
     return out;
   };
 
+  /* mục menu (home / shop / course / services) có hiện không — bật / tắt ở /admin → Thiết lập → Thương hiệu; mục lạ (thêm ở Chữ trên trang) luôn hiện */
+  DC.navOn = function (k) { var n = DC.setting('brand.nav', null); return !n || n[k] !== false; };
   /* mã VietQR thật (tài khoản cài ở /admin → Thanh toán): quét bằng app ngân hàng, MoMo hoặc ZaloPay, có sẵn số tiền + nội dung */
   DC.pay = function () { return (window.__CMS && window.__CMS.p) || null; };
   /* thanh toán online (/admin → Thanh toán online) đã bật + cấu hình: vnpay = thẻ, installment = trả góp VNPay (từ installmentMin đồng),

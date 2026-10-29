@@ -77,20 +77,20 @@
 <nav class="pg-nav">
   <a class="pg-brand" href="/" data-dc-logo><span data-cms="global.brand">DAPPER COMBAT</span></a>
   <ul class="pg-links">
-    <li><a href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a></li>
-    <li><a href="/shop">Shop</a></li>
-    <li><a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a></li>
-    <li><a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a></li>
+    <li data-nav="home"><a href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a></li>
+    <li data-nav="shop"><a href="/shop">Shop</a></li>
+    <li data-nav="course"><a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a></li>
+    <li data-nav="services"><a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a></li>
   </ul>
   <div class="pg-right">
     <div class="lang-switch"><button type="button" data-lang="vi" class="on">VI</button><button type="button" data-lang="en">EN</button></div>
     <button class="pg-menu-btn" type="button" aria-expanded="false" aria-controls="pgMenu" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
   <div class="pg-menu" id="pgMenu" hidden>
-    <a href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a>
-    <a href="/shop">Shop</a>
-    <a href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a>
-    <a href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a>
+    <a data-nav="home" href="/" data-pg-vi="Trang chủ" data-pg-en="Home">Trang chủ</a>
+    <a data-nav="shop" href="/shop">Shop</a>
+    <a data-nav="course" href="/khoa-hoc" data-pg-vi="Khóa học" data-pg-en="Courses">Khóa học</a>
+    <a data-nav="services" href="/dich-vu-setup" data-pg-vi="Dịch vụ Setup" data-pg-en="Gym Setup">Dịch vụ Setup</a>
   </div>
 </nav>
 {{cover}}
@@ -118,6 +118,8 @@ document.querySelector('.lang-switch').addEventListener('click', function (e) {
   document.querySelectorAll('[data-pg-vi]').forEach(function (el) { el.textContent = el.getAttribute(l === 'en' ? 'data-pg-en' : 'data-pg-vi'); });
   document.title = document.querySelector('h1').textContent + ' — Dapper Combat';
 });
+/* mục menu đang tắt ở /admin → Thiết lập → Thương hiệu: ẩn (trang vẫn còn) */
+document.querySelectorAll('[data-nav]').forEach(function (el) { if (!DC.navOn(el.getAttribute('data-nav'))) el.style.setProperty('display', 'none', 'important'); });
 /* menu điện thoại */
 (function () {
   var btn = document.querySelector('.pg-menu-btn'), menu = document.getElementById('pgMenu');

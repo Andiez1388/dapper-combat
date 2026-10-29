@@ -87,6 +87,36 @@ module.exports = async function browserTests(env, t, browser) {
     }
   });
 
+  t.section('Mục trên menu (bật / tắt ở Thiết lập → Thương hiệu & menu)');
+  await t.run('menu', async () => {
+    const st = await api('/api/settings');
+    const n = st.brand.nav || {};
+    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && Object.keys(n).length === 4, 'mặc định: ẩn "Dịch vụ Setup", 3 mục còn lại hiện', st.brand.nav);
+    const look = async u => {
+      await page.goto(B + u, { wait: 1000 });
+      return page.eval(`(() => {
+        const vis = el => getComputedStyle(el.closest('li') || el).display !== 'none';
+        const top = [...document.querySelectorAll('.nav .nav-links a, .pg-links a')].filter(vis).map(a => a.getAttribute('href'));
+        const b = document.querySelector('.mn-btn, .hamburger-btn'); if (b) b.click();
+        const mob = [...document.querySelectorAll('#mnPanel .mn-link, #pgMenu a')].filter(a => getComputedStyle(a).display !== 'none').map(a => a.textContent.replace(/\\s+/g, ' ').trim());
+        const x = document.querySelector('#mnPanel .mn-x'); if (x) x.click();
+        return { top, mob };
+      })()`);
+    };
+    const pg = (await api('/api/pages')).find(x => x.published);
+    const urls = ['/', '/shop', '/khoa-hoc'].concat(pg ? ['/trang/' + pg.slug] : []);
+    for (const u of urls) {
+      const m = await look(u);
+      t.ok(m.top.length >= 3 && !m.top.some(h => /dich-vu-setup/.test(h)) && !m.mob.some(s => /Dịch vụ Setup/.test(s)), u + ' — menu trên cùng + menu điện thoại không còn "Dịch vụ Setup"', m);
+    }
+    let r = await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: true, shop: false, bogus: true } } } });
+    t.ok(r.brand.nav.services === true && r.brand.nav.shop === false && !('bogus' in r.brand.nav), 'lưu bật / tắt từng mục (bỏ qua mục lạ)', r.brand.nav);
+    const m = await look('/khoa-hoc');
+    t.ok(m.top.some(h => /dich-vu-setup/.test(h)) && !m.top.some(h => h === '/shop') && m.mob.some(s => /Dịch vụ Setup/.test(s)) && m.mob.length === 3 && !m.mob.some(s => /^0\d\s?Shop/.test(s)), 'bật "Dịch vụ Setup", tắt "Shop" → menu đổi theo ngay', m);
+    await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: false, shop: true } } } });
+    errs('Menu bật / tắt');
+  });
+
   t.section('Cách thanh toán · trả góp VNPay (trên trang)');
   await t.run('trả góp', async () => {
     const ISP = { tmnCode: 'DCISP002', clientId: 'DCCLIENT', username: 'dapper', password: 'mat-khau-thu-123', secretKey: 'ISPSECRET-BROWSER' };

@@ -381,7 +381,7 @@ var MNAV={cur:"course",home:"/",shop:"/shop",course:"#",services:"/dich-vu-setup
   var panel=document.getElementById("mnPanel");
   function render(){
     var h='<div class="mn-top"><span class="mn-logo">'+DC.logoHtml(DC.x("global.brand",0,"DAPPER COMBAT"))+'</span><button class="mn-x" type="button" data-mn="close" aria-label="close">✕</button></div><nav class="mn-links">';
-    PAGES.forEach(function(p,i){var cur=p.k===MNAV.cur;
+    PAGES.filter(function(p){return DC.navOn(p.k);}).forEach(function(p,i){var cur=p.k===MNAV.cur;
       h+='<a class="mn-link'+(cur?' cur':'')+'" '+(cur?'href="#" data-mn="close"':'href="'+p.url+'"')+'><em>0'+(i+1)+'</em><span><b>'+T(p.n[0],p.n[1])+'</b><small>'+(cur?T(DC.x("global.mnav.9",0,"Đang xem"),DC.x("global.mnav.9",1,"You are here")):T(p.s[0],p.s[1]))+'</small></span><i>→</i></a>';});
     h+='</nav>';
     if(MNAV.cur==="services")h+='<a class="mn-cta" href="#contact" data-go="contact">'+T(DC.x("global.mnav.10",0,"Nhận tư vấn setup miễn phí"),DC.x("global.mnav.10",1,"Get a free setup consultation"))+'</a>';
@@ -405,7 +405,7 @@ var MNAV={cur:"course",home:"/",shop:"/shop",course:"#",services:"/dich-vu-setup
     var ul=document.querySelector(".nav .nav-links");
     if(ul&&MNAV.services&&ul.querySelectorAll("a").length<4)ul.insertAdjacentHTML("beforeend",'<li><a href="'+MNAV.services+'"></a></li>');
     var links=document.querySelectorAll(".nav .nav-links a");
-    PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);});
+    PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);(a.closest("li")||a).style.display=DC.navOn(p.k)?"":"none";});
     var back=document.querySelector(".nav .nav-back");
     if(back&&MNAV.cur==="course"){back.textContent=T(DC.x("global.mnav.14",0,"Đăng ký"),DC.x("global.mnav.14",1,"Sign up"));back.setAttribute("href","#dang-ky");back.removeAttribute("target");back.dataset.reg="found";back.classList.add("mn-navcta");}
     if(panel.classList.contains("on"))render();

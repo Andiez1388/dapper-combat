@@ -1,6 +1,6 @@
 /* Dapper Combat — Quản trị: Thiết lập
    Bán hàng (phí giao, mã giảm giá, sản phẩm ở Trang chủ) · Học phí & lịch tập ·
-   Thương hiệu (logo, favicon, bản đồ) · Thông báo (Telegram / email).
+   Thương hiệu & menu (mục trên menu, logo, favicon, bản đồ) · Thông báo (Telegram / email).
    Dùng hạ tầng của admin.js qua window.DCAdmin. Mọi giá trị từ API đều qua esc() trước khi chèn HTML. */
 (function () {
   'use strict';
@@ -40,7 +40,7 @@
   var SCREENS = {
     shop: { view: 'set-shop', title: 'Bán hàng', link: '/shop', ok: 'Đã lưu thiết lập bán hàng — Shop cập nhật ngay.' },
     course: { view: 'set-course', title: 'Học phí & lịch tập', link: '/khoa-hoc', ok: 'Đã lưu học phí & lịch tập — trang Khóa học cập nhật ngay.' },
-    brand: { view: 'set-brand', title: 'Thương hiệu', link: '/', ok: 'Đã lưu thương hiệu — website cập nhật ngay.' },
+    brand: { view: 'set-brand', title: 'Thương hiệu & menu', link: '/', ok: 'Đã lưu thương hiệu — website cập nhật ngay.' },
     notify: { view: 'set-notify', title: 'Thông báo', link: '', ok: 'Đã lưu cài đặt thông báo.' },
   };
 
@@ -153,7 +153,7 @@
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows'],
-    brand: ['logo', 'favicon', 'mapQuery'],
+    brand: ['logo', 'favicon', 'mapQuery', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
   function changed(g) {
@@ -552,10 +552,13 @@
     return null;
   }
 
-  // ═══ 3. Thương hiệu ════════════════════════════════════════════════════════
+  // ═══ 3. Thương hiệu & menu ════════════════════════════════════════════════════════
   function brandHtml() {
     var d = draft('brand');
-    return '<div class="cms-help"><p>Logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
+    return '<div class="cms-help"><p>Mục trên menu, logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
+      panel('Mục trên menu',
+        '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
+        '<p class="set-note">Tắt = ẩn mục đó khỏi menu trên cùng và menu điện thoại ở mọi trang. Trang vẫn còn nguyên (mở bằng đường dẫn được), bật lại là hiện ngay. Link ở chân trang sửa ở <a href="#/cms-text">Chữ trên trang</a>.</p>') +
       panel('Logo', '<div class="brand-prev"><p class="field__label">Xem trước trên thanh menu</p><div class="brand-bar" data-logo-prev>' + logoPreview(d.logo) + '</div></div>' +
         '<p class="set-spec">PNG nền trong suốt, cao ≥ 120 px, ngang tối đa ~600 px — hiển thị cao khoảng 28 px trên thanh menu.</p>' +
         uploadRow('logo', 'Tải logo mới', d.logo) + '<div class="set-msg" data-brand-note="logo" hidden></div>') +
@@ -1221,7 +1224,8 @@
     var gtMin = ok ? pkgCalc(s.course.gtPackages || []).reduce(function (m, c) { return c.mo && c.mo < m ? c.mo : m; }, Infinity) : 0;
     if (gtMin === Infinity) gtMin = 0;
     var courseTxt = ok ? 'Foundation ' + money(s.course.foundPrice) + ' · GT từ ' + money(gtMin) + '/tháng' : '…';
-    var brandTxt = ok ? (s.brand.logo ? 'Logo riêng' : 'Logo mặc định') + ' · ' + (s.brand.mapQuery ? 'bản đồ theo địa chỉ' : 'bản đồ có sẵn') : '…';
+    var navOff = ok && s.brand.nav ? Object.keys(s.brand.nav).filter(function (k) { return !s.brand.nav[k]; }).length : 0;
+    var brandTxt = ok ? (navOff ? navOff + ' mục menu đang ẩn' : 'Menu đủ mục') + ' · ' + (s.brand.logo ? 'logo riêng' : 'logo mặc định') + ' · ' + (s.brand.mapQuery ? 'bản đồ theo địa chỉ' : 'bản đồ có sẵn') : '…';
     var cats = ok && Array.isArray(s.shop.categories) ? s.shop.categories : [];
     var hid = cats.filter(function (c) { return c.hidden; }).length;
     var catTxt = ok ? cats.length + ' danh mục' + (hid ? ' · ' + hid + ' đang ẩn' : '') : '…';
@@ -1233,7 +1237,7 @@
       (startOld ? '<p class="set-err"><a href="#/set-course">Ngày khai giảng Foundation (' + esc(String(s.course.foundStart).split('-').reverse().join('.')) + ') đã qua — cập nhật ngày mới →</a></p>' : '') +
       '<div class="cms-dash__grid">' +
         tile('#/set-shop', 'Bán hàng', shopTxt) + tile('#/set-course', 'Học phí & lịch tập', courseTxt) +
-        tile('#/set-brand', 'Thương hiệu', brandTxt) + tile('#/set-notify', 'Thông báo', notifyTxt) + tile('#/categories', 'Danh mục sản phẩm', catTxt) +
+        tile('#/set-brand', 'Thương hiệu & menu', brandTxt) + tile('#/set-notify', 'Thông báo', notifyTxt) + tile('#/categories', 'Danh mục sản phẩm', catTxt) +
       '</div></section>';
   });
 })();

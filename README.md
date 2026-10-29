@@ -191,7 +191,7 @@ Lưu ở `data/settings.json`.
   - **Gói Group Training:** thêm / bớt / sắp xếp gói (số tháng, giá, ghi chú, tên riêng, nhãn "Hời nhất"). Giá mỗi tháng và tiền tiết kiệm tự tính; thẻ giá trên trang, nút chọn gói trong form đăng ký và số tiền server lưu đều theo đây.
   - Giá hiển thị trên trang, form đăng ký, mã QR và số tiền server lưu đều lấy theo mục này.
   - **Lịch tập:** thêm / bớt / sắp xếp hàng (giờ, tên lớp, mô tả, màu, ngày có lớp T2–CN, bấm vào hàng mở form đăng ký chương trình nào / lớp nào).
-- **Thương hiệu:** logo trên thanh menu, favicon, địa chỉ để hiện Google Maps ở Trang chủ.
+- **Thương hiệu & menu:** bật / tắt từng mục trên menu (Trang chủ, Shop, Khóa học, Dịch vụ Setup — mặc định ẩn Dịch vụ Setup; tắt chỉ ẩn khỏi menu trên cùng + menu điện thoại, trang vẫn còn); logo trên thanh menu, favicon, địa chỉ để hiện Google Maps ở Trang chủ.
 - **Thông báo:** Telegram / email báo đơn mới (ưu tiên hơn `.env`).
   - **Mẫu tin** cho đơn hàng, đăng ký khóa học, yêu cầu tư vấn: tiêu đề và nội dung với biến `{code}`, `{name}`, `{total}`, `{items}`…; dòng có biến trống tự bỏ; xem trước và gửi thử.
   - **Email xác nhận cho khách** (đơn hàng, đăng ký khóa học): tắt sẵn; khi bật, gửi tới email khách nhập (cần cài SMTP). Biến `{slip}` = link phiếu xác nhận (cần điền địa chỉ website).
