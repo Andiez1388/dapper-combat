@@ -255,6 +255,8 @@ module.exports = async function browserTests(env, t, browser) {
       skills: document.querySelectorAll('.tn-skills li').length, pains: document.querySelectorAll('.tn-pain-row').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
     let st = await look();
     t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '85.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
+    const tr = await page.eval(`({ special: document.querySelector('.tn-special').textContent, cases: [...document.querySelectorAll('.tn-trial-cases b')].map(b => b.textContent).join(), note: document.querySelector('.tn-trial-note').textContent, faq: [...document.querySelectorAll('.tn-faq summary')].map(x => x.textContent).includes('Học tháng đầu mà thấy không hợp thì sao?'), form: (document.querySelector('.tn-form-guar small') || {}).textContent })`);
+    t.ok(tr.special === 'Khóa truyền nghề boxing số 1 · 2027' && tr.cases === 'Hoàn 100%,Hoàn 50%' && /không hoàn lại/.test(tr.note) && tr.faq && /hoàn 50%/.test(tr.form), 'khóa số 1; tháng học đầu tiên: không phù hợp hoàn 100%, tự dừng hoàn 50% (khu học phí, form, hỏi đáp)', tr);
     t.ok(st.cells === 10 && st.skills === 12 && st.pains === 5 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 2 bộ × 6 kỹ năng, 5 nỗi lo theo khóa đang xem, menu có "Cửa hàng" + "Truyền Nghề"', st);
     const coachCell = st.cell1;
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);

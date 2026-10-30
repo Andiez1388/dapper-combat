@@ -40,10 +40,10 @@
   var T = {
     vi: {
       'site.home': 'Trang chủ', 'site.shop': 'Cửa hàng', 'site.course': 'Khóa học', 'site.services': 'Dịch vụ Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Truyền Nghề',
-      'foot.h1': 'Độc quyền tại Dapper Combat.', 'foot.h2': 'Không dạy cho biết, truyền nghề để sống.',
+      'foot.h1': 'Khóa truyền nghề boxing số 1, độc quyền tại Dapper Combat.', 'foot.h2': 'Không dạy cho biết, truyền nghề để sống.',
       'foot.note': 'Truyền Nghề là chương trình đào tạo nghề boxing chuyên sâu do Dapper Combat xây dựng và trực tiếp giảng dạy: 12 tháng, 520 ca, 4 lần sát hạch, bắt đầu từ con số 0. Đầu ra cam kết bằng con số: 100% cơ hội làm việc tại HVP Academy cho khóa Coach, 100% thi đấu dưới màu cờ The Corner cho khóa Võ sĩ, và hoàn 100% học phí nếu bạn đạt chuẩn mà không có đầu ra.', 'foot.home': 'Về trang chủ Dapper Combat',
       'title': 'Truyền Nghề — Học boxing thành nghề trong 1 năm | Dapper Combat',
-      'h1': 'Truyền Nghề', 'special': 'Chương trình đặc biệt · Khóa {y}', 'claim': 'Một năm. Từ con số 0 thành nghề boxing.',
+      'h1': 'Truyền Nghề', 'special': 'Khóa truyền nghề boxing số 1 · {y}', 'claim': 'Một năm. Từ con số 0 thành nghề boxing.',
       'side.coach': 'Góc xanh · Coach', 'side.fighter': 'Góc đỏ · Võ sĩ', 'bao.coach': 'Bao việc làm', 'bao.fighter': 'Bao thi đấu',
       'baosub.coach': '100% cơ hội làm việc tại HVP Academy, hoặc tự do chọn phòng tập khác', 'baosub.fighter': '100% thi đấu dưới màu cờ The Corner',
       'badge.coach': 'Hoàn 100% học phí nếu đạt chuẩn mà không có việc', 'badge.fighter': 'Hoàn 100% học phí nếu đạt chuẩn mà không được thi đấu', 'guar.link': 'Hoàn 100% học phí nếu đạt chuẩn mà không có đầu ra',
@@ -56,7 +56,7 @@
       'seal.ring': 'CAM KẾT · HOÀN HỌC PHÍ · TRUYỀN NGHỀ · ', 'seal.mid': 'HOÀN PHÍ',
       'refund.short.coach': 'Đạt chuẩn mà không có việc: hoàn 100% học phí', 'refund.short.fighter': 'Đạt chuẩn mà không được thi đấu: hoàn 100% học phí',
       'cmp.refund': 'Hoàn học phí', 'cmp.r.coach': '100% nếu đạt chuẩn mà không có việc', 'cmp.r.fighter': '100% nếu đạt chuẩn mà không được thi đấu',
-      'cert.guar': 'Cam kết', 'form.guar': 'Cam kết của Dapper Combat',
+      'cert.guar': 'Cam kết', 'form.guar': 'Cam kết của Dapper Combat', 'form.trial': 'Tháng học đầu tiên: không phù hợp với chúng tôi, hoàn 100% học phí đã đóng; không thể tiếp tục vì bất kỳ lý do gì, hoàn 50%.',
       'pick.coach': 'Tôi muốn đứng lớp', 'pick.fighter': 'Tôi muốn lên sàn',
       'start': 'Khai giảng {d}', 'clock.d': 'ngày', 'clock.h': 'giờ', 'clock.m': 'phút', 'clock.s': 'giây', 'clock.done': 'Khóa {y} đã khai giảng',
       'fee.from': 'Học phí trọn khóa từ', 'fee.both': 'Võ sĩ {f} · Coach {c}', 'seats': 'Mỗi khóa nhận tối đa {n} học viên',
@@ -86,6 +86,10 @@
       'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày, mỗi ca 2–3 tiếng',
       'fee.h': 'Bạn nhận về một nghề', 'fee.sub': 'Hai khóa, hai mức học phí. Mỗi khóa là một nghề trọn vẹn trong 12 tháng, kèm cam kết đầu ra.',
       'w.get': 'Bạn nhận về', 'w.pay': 'Học phí trọn khóa', 'plan.go': 'Giữ chỗ khóa {n}', 'plan.go.dep': 'Đặt cọc {d}, giữ chỗ khóa {n}',
+      'trial.h': 'Tháng đầu tiên, hai bên cùng thử', 'trial.p': 'Một năm là quyết định lớn. Tháng học đầu tiên để cả bạn và Dapper Combat chắc chắn đây là con đường đúng.', 'trial.cal': 'Tháng',
+      'trial.us.k': 'Nếu bạn không phù hợp với chúng tôi', 'trial.us.b': 'Hoàn 100%', 'trial.us.s': 'học phí đã đóng, và bạn kết thúc việc học.',
+      'trial.you.k': 'Nếu bạn không thể tiếp tục, vì bất kỳ lý do gì', 'trial.you.b': 'Hoàn 50%', 'trial.you.s': 'học phí đã đóng, phần còn lại không hoàn.',
+      'trial.note': 'Áp dụng trong tháng học đầu tiên. Ngoài các trường hợp này và cam kết đầu ra, học phí không hoàn lại.',
       'faq.g1': 'Trước khi vào học', 'faq.g2': 'Lịch học và học phí', 'faq.g3': 'Đầu ra và cam kết',
       'help.visit': 'Ghé xem phòng tập', 'help.hours': 'Mở cửa {o} – {c}', 'help.map': 'Chỉ đường',
       'w.sess': 'ca học trong 12 tháng', 'w.sess.d': '52 tuần, 5 buổi mỗi tuần, 2 ca mỗi ngày, mỗi ca 2–3 tiếng',
@@ -125,16 +129,17 @@
       'q5': 'Học xong thì sao?', 'a5': 'Coach có 100% cơ hội làm việc tại HVP Academy, hoặc tự do tìm việc ở các phòng tập khác. Võ sĩ ở lại tập luyện và 100% được thi đấu dưới màu cờ The Corner.',
       'q7': 'Nếu học xong mà không có việc, hoặc không được thi đấu?', 'a7': 'Bạn được hoàn 100% học phí khi đã đạt tiêu chuẩn mà: với khóa Coach, HVP Academy không sắp xếp được công việc và bạn không tìm được việc ở nơi khác; với khóa Võ sĩ, bạn không được thi đấu dưới màu cờ The Corner.',
       'q8': 'Học Coach xong có bắt buộc làm tại HVP Academy không?', 'a8': 'Không. Bạn có 100% cơ hội làm việc tại HVP Academy, hoặc tự do tìm việc ở các phòng tập khác.',
+      'q10': 'Học tháng đầu mà thấy không hợp thì sao?', 'a10': 'Trong tháng học đầu tiên: nếu bạn không phù hợp với chúng tôi, Dapper Combat hoàn 100% học phí đã đóng và bạn kết thúc việc học. Nếu bạn không thể tiếp tục vì bất kỳ lý do gì, bạn được hoàn 50% học phí đã đóng. Ngoài các trường hợp này và cam kết đầu ra, học phí không hoàn lại.',
       'q6': 'Giữ chỗ có mất phí không?', 'a6.free': 'Không. Đăng ký tư vấn trước không mất phí, Dapper Combat gọi lại trước khi bạn đóng học phí.',
       'a6.dep': 'Bạn chọn được: đăng ký tư vấn trước không mất phí, hoặc đặt cọc {d} để giữ chỗ ngay.',
       'how.dep': 'Có thể đặt cọc {d} để giữ chỗ.', 'how.list': 'Đóng bằng: {l}.',
     },
     en: {
       'site.home': 'Home', 'site.shop': 'Shop', 'site.course': 'Courses', 'site.services': 'Gym Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Pro Pathways',
-      'foot.h1': 'Only at Dapper Combat.', 'foot.h2': 'Not a class to try, a trade to live from.',
+      'foot.h1': 'The No. 1 boxing career course, only at Dapper Combat.', 'foot.h2': 'Not a class to try, a trade to live from.',
       'foot.note': 'Pro Pathways is an in-depth boxing career program built and taught by Dapper Combat: 12 months, 520 sessions, 4 assessments, starting from zero. The outcomes are promised in numbers: a 100% job opportunity at HVP Academy on the Coach course, 100% fighting in The Corner colours on the Fighter course, and a 100% refund if you meet the standard without that outcome.', 'foot.home': 'Back to Dapper Combat',
       'title': 'Pro Pathways — A boxing career in one year | Dapper Combat',
-      'h1': 'Pro Pathways', 'special': 'Special program · Class of {y}', 'claim': 'One year. From zero to a boxing career.',
+      'h1': 'Pro Pathways', 'special': 'The No. 1 boxing career course · {y}', 'claim': 'One year. From zero to a boxing career.',
       'side.coach': 'Blue corner · Coach', 'side.fighter': 'Red corner · Fighter', 'bao.coach': 'Job guaranteed', 'bao.fighter': 'Fights guaranteed',
       'baosub.coach': 'A 100% job opportunity at HVP Academy, or free to pick another gym', 'baosub.fighter': '100% fighting in The Corner colours',
       'badge.coach': '100% refund if you meet the standard but get no job', 'badge.fighter': '100% refund if you meet the standard but get no fight', 'guar.link': '100% refund if you meet the standard and miss the outcome',
@@ -147,7 +152,7 @@
       'seal.ring': 'GUARANTEE · FEE REFUND · PRO PATHWAYS · ', 'seal.mid': 'REFUND',
       'refund.short.coach': 'Meet the standard, no job: 100% refund', 'refund.short.fighter': 'Meet the standard, no fight: 100% refund',
       'cmp.refund': 'Fee refund', 'cmp.r.coach': '100% if you meet the standard but get no job', 'cmp.r.fighter': '100% if you meet the standard but get no fight',
-      'cert.guar': 'Guarantee', 'form.guar': 'The Dapper Combat guarantee',
+      'cert.guar': 'Guarantee', 'form.guar': 'The Dapper Combat guarantee', 'form.trial': 'First month of study: not a fit for us, 100% of the fee you paid back; cannot continue for any reason, 50% back.',
       'pick.coach': 'I want to coach', 'pick.fighter': 'I want to fight',
       'start': 'Starts {d}', 'clock.d': 'days', 'clock.h': 'hrs', 'clock.m': 'min', 'clock.s': 'sec', 'clock.done': 'The class of {y} has started',
       'fee.from': 'Full course from', 'fee.both': 'Fighter {f} · Coach {c}', 'seats': 'Each course takes at most {n} students',
@@ -177,6 +182,10 @@
       'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day, 2–3 hours each',
       'fee.h': 'You walk away with a trade', 'fee.sub': 'Two courses, two fees. Each is a complete trade in 12 months, backed by an outcome guarantee.',
       'w.get': 'What you get', 'w.pay': 'Full course fee', 'plan.go': 'Reserve a {n} place', 'plan.go.dep': 'Pay {d}, hold my {n} place',
+      'trial.h': 'The first month, both sides try it out', 'trial.p': 'A year is a big decision. The first month of study is for you and Dapper Combat to be sure this is the right path.', 'trial.cal': 'Month',
+      'trial.us.k': 'If you are not a fit for us', 'trial.us.b': '100% back', 'trial.us.s': 'of the fee you paid, and your course ends.',
+      'trial.you.k': 'If you cannot continue, for any reason', 'trial.you.b': '50% back', 'trial.you.s': 'of the fee you paid; the rest is not refunded.',
+      'trial.note': 'Applies during the first month of study. Outside these cases and the outcome guarantee, fees are not refunded.',
       'faq.g1': 'Before you join', 'faq.g2': 'Schedule and fees', 'faq.g3': 'Outcome and guarantee',
       'help.visit': 'Come and see the gym', 'help.hours': 'Open {o} – {c}', 'help.map': 'Directions',
       'w.sess': 'sessions over 12 months', 'w.sess.d': '52 weeks, 5 days a week, 2 shifts a day, 2–3 hours each',
@@ -216,6 +225,7 @@
       'q5': 'What happens when I finish?', 'a5': 'Coaches have a 100% job opportunity at HVP Academy, or can find work at any other gym. Fighters stay on to train and are 100% fighting in The Corner colours.',
       'q7': 'What if I finish and get no job, or no fight?', 'a7': 'You get 100% of the fee back if you met the standard and: on the Coach course, HVP Academy cannot place you and you cannot find work elsewhere; on the Fighter course, you do not get to fight in The Corner colours.',
       'q8': 'After the Coach course, do I have to work at HVP Academy?', 'a8': 'No. You have a 100% job opportunity at HVP Academy, or you are free to find work at other gyms.',
+      'q10': 'What if the first month shows it is not for me?', 'a10': 'During the first month of study: if you are not a fit for us, Dapper Combat refunds 100% of the fee you paid and your course ends. If you cannot continue for any reason, you get 50% of the fee you paid back. Outside these cases and the outcome guarantee, fees are not refunded.',
       'q6': 'Does reserving a place cost anything?', 'a6.free': 'No. Applying for advice is free; Dapper Combat calls you before you pay any fee.',
       'a6.dep': 'Your choice: apply for advice for free, or pay a {d} deposit to hold your place straight away.',
       'how.dep': 'A {d} deposit holds your place.', 'how.list': 'Pay by: {l}.',
@@ -628,7 +638,13 @@
     return (DEP_ON ? '<div class="tn-dep-band"><p><small>' + esc(t('dep.only')) + '</small><b>' + esc(money(DEPOSIT)) + '</b></p><span>' + esc(t('dep.how')) + '</span>' +
         (SEATS ? '<em>' + esc(t('seats', { n: SEATS })) + '</em>' : '') + '</div>' : '') +
       '<div class="tn-plans">' + ORDER.map(plan).join('') + '</div>' +
-      '<ul class="tn-plans-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '<li class="free">' + esc(t('pay.free')) + '</li></ul>';
+      '<ul class="tn-plans-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '<li class="free">' + esc(t('pay.free')) + '</li></ul>' + trial();
+  }
+  // tháng học đầu tiên: 2 trường hợp hoàn học phí (chủ chốt 2026-10-30), tờ lịch "Tháng 1" bên trái
+  function trial() {
+    var c = function (k) { return '<div class="' + k + '"><small>' + esc(t('trial.' + k + '.k')) + '</small><b>' + esc(t('trial.' + k + '.b')) + '</b><span>' + esc(t('trial.' + k + '.s')) + '</span></div>'; };
+    return '<div class="tn-trial"><p class="tn-trial-cal" aria-hidden="true"><small>' + esc(t('trial.cal')) + '</small><b>1</b></p><div class="tn-trial-in"><h3>' + esc(t('trial.h')) + '</h3><p>' + esc(t('trial.p')) + '</p>' +
+      '<div class="tn-trial-cases">' + c('us') + c('you') + '</div><p class="tn-trial-note">' + esc(t('trial.note')) + '</p></div></div>';
   }
   // giấy nhập môn (kiểu tờ đăng ký boxing Mỹ thập niên 70–80): tên / năm sinh cập nhật khi gõ, đóng dấu đỏ ở cuống khi ghi danh xong
   function seal(done) {
@@ -667,7 +683,7 @@
       (opts.length > 1 ? '<fieldset class="tn-payopt"><legend>' + esc(t('form.pay')) + '</legend>' + opts.map(function (o) {
         return '<label><input type="radio" name="pay" value="' + o[0] + '"' + (o[0] === pay ? ' checked' : '') + '><span><b>' + esc(o[1]) + '</b><small>' + esc(o[2]) + '</small></span></label>';
       }).join('') + '</fieldset>' : '') +
-      '<div class="tn-form-guar"><span class="tn-mini-seal" aria-hidden="true">100%</span><p><b>' + esc(t('form.guar')) + '</b>' + esc(L(P[path].out)) + '. ' + esc(t('refund.short.' + path)) + '.</p></div>' +
+      '<div class="tn-form-guar"><span class="tn-mini-seal" aria-hidden="true">100%</span><p><b>' + esc(t('form.guar')) + '</b>' + esc(L(P[path].out)) + '. ' + esc(t('refund.short.' + path)) + '.<small>' + esc(t('form.trial')) + '</small></p></div>' +
       '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit" data-send>' + esc(t('send.' + pay)) + '</button></form>';
   }
   function okHtml(r) {
@@ -685,7 +701,7 @@
       return i === 6 ? (DEP_ON ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free'))
         : t('a' + i, { d: startText(true), f: money(PRICES.fighter), c: money(PRICES.coach), how: how, ca: AGES.coach[0], cb: AGES.coach[1], fa: AGES.fighter[0], fb: AGES.fighter[1], y: YEAR });
     };
-    var groups = [['faq.g1', [1, 9, 2]], ['faq.g2', [3, 4, 6]], ['faq.g3', [5, 7, 8]]];
+    var groups = [['faq.g1', [1, 9, 2]], ['faq.g2', [3, 4, 6]], ['faq.g3', [5, 7, 10, 8]]];
     var qa = groups.map(function (g, gi) {
       return '<div class="tn-faq-g"><h3>' + esc(t(g[0])) + '</h3>' + g[1].map(function (i, n) {
         return '<details' + (gi === 0 && n === 0 ? ' open' : '') + '><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(ans(i)) + '</p></details>';
