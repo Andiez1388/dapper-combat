@@ -191,11 +191,12 @@ Lưu ở `data/settings.json`.
   - **Trang thanh toán:** bật / tắt từng cách thanh toán (chuyển khoản, MoMo, ZaloPay, thẻ, trả góp — luôn còn ít nhất một cách quét mã); ô email, phường / xã, ghi chú: không bắt buộc / bắt buộc / ẩn. Server kiểm tra lại khi nhận đơn.
   - **Trang chi tiết sản phẩm:** ẩn / hiện từng phần (video, cam kết, logo thanh toán, gợi ý size, tồn kho, ngày giao, điểm nổi bật, "hoàn thiện bộ trang phục", hỏi đáp, bài viết, đánh giá, "khách hàng cũng mua", "đã xem gần đây", đăng ký nhận tin). Phần **đánh giá** đang tắt sẵn vì 12 đánh giá trong mục Chữ trên trang chỉ là mẫu — bật lại khi đã thay bằng đánh giá thật. Sao và số đánh giá dưới tên sản phẩm chỉ hiện khi sản phẩm có số đánh giá (mục Sản phẩm).
 - **Học phí & lịch tập:**
+  - **Truyền Nghề:** học phí mỗi khóa 1 năm (Coach và Võ sĩ cùng giá, mặc định 50.000.000₫) và ngày khai giảng (mặc định 20/02/2027) — hiện ở trang /truyen-nghe kèm đếm ngược.
   - Học phí Foundation, tiền cọc và **ngày khai giảng** (biến `{found.start}` trên Trang chủ / Khóa học; ngày đã qua thì Tổng quan nhắc cập nhật), lớp HSSV, Membership.
   - **Gói Group Training:** thêm / bớt / sắp xếp gói (số tháng, giá, ghi chú, tên riêng, nhãn "Hời nhất"). Giá mỗi tháng và tiền tiết kiệm tự tính; thẻ giá trên trang, nút chọn gói trong form đăng ký và số tiền server lưu đều theo đây.
   - Giá hiển thị trên trang, form đăng ký, mã QR và số tiền server lưu đều lấy theo mục này.
   - **Lịch tập:** thêm / bớt / sắp xếp hàng (giờ, tên lớp, mô tả, màu, ngày có lớp T2–CN, bấm vào hàng mở form đăng ký chương trình nào / lớp nào).
-- **Thương hiệu & menu:** bật / tắt từng mục trên menu (Trang chủ, Shop, Khóa học, Dịch vụ Setup — mặc định ẩn Dịch vụ Setup; tắt chỉ ẩn khỏi menu trên cùng + menu điện thoại, trang vẫn còn); logo trên thanh menu, favicon, địa chỉ để hiện Google Maps ở Trang chủ.
+- **Thương hiệu & menu:** bật / tắt từng mục trên menu (Trang chủ, Cửa hàng, Khóa học, Dịch vụ Setup, Academy Ranking, Truyền Nghề — mặc định ẩn Dịch vụ Setup; tắt chỉ ẩn khỏi menu trên cùng + menu điện thoại, trang vẫn còn); logo trên thanh menu, favicon, địa chỉ để hiện Google Maps ở Trang chủ.
 - **Thông báo:** Telegram / email báo đơn mới (ưu tiên hơn `.env`).
   - **Mẫu tin** cho đơn hàng, đăng ký khóa học, yêu cầu tư vấn: tiêu đề và nội dung với biến `{code}`, `{name}`, `{total}`, `{items}`…; dòng có biến trống tự bỏ; xem trước và gửi thử.
   - **Email xác nhận cho khách** (đơn hàng, đăng ký khóa học): tắt sẵn; khi bật, gửi tới email khách nhập (cần cài SMTP). Biến `{slip}` = link phiếu xác nhận (cần điền địa chỉ website).
@@ -248,6 +249,16 @@ Mục **Academy Ranking** trên menu (menu thả xuống): **Lịch sự kiện*
 - Quản trị: `/admin` → Academy Ranking → **Võ sĩ** (thông tin, ảnh, chấm điểm kỹ năng) và **Sự kiện & kết quả** (danh sách trận, người thắng, cách thắng, hiệp). Nhân viên (HLV) nhập được; xóa cần admin; võ sĩ đã có trận không xóa được (chuyển “Nghỉ thi đấu” hoặc tắt “Hiện trên web”).
 - Trang công khai chỉ hiện tuổi (không ngày sinh). Giới thiệu võ sĩ, tên / mô tả sự kiện được AI dịch sang tiếng Anh.
 - Dữ liệu mẫu: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện, ảnh minh họa vẽ (không phải ảnh người thật) — `node tools/ranking-demo.js` tạo lại. Trước khi chạy thật: thay bằng võ sĩ thật hoặc xóa / ẩn võ sĩ mẫu.
+
+## Truyền Nghề (`/truyen-nghe`)
+
+Chương trình đặc biệt: học boxing từ con số 0 để thành nghề trong 1 năm. Mục **Truyền Nghề** trên menu (sau Academy Ranking; tiếng Anh: Pro Pathways). Bật / tắt ở Thiết lập → Thương hiệu & menu.
+
+- **2 khóa, 2 con đường** như 2 góc đài: **Coach** (góc xanh) — học xong có việc làm tại HVP Academy; **Võ sĩ** (góc đỏ) — học xong ở lại thi đấu dưới tên The Corner.
+- Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần (Thứ 2–Thứ 6), 2 ca mỗi ngày; khác nội dung giảng dạy và mục tiêu. Trang có: so sánh 2 khóa, lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, cam kết, đăng ký giữ chỗ, hỏi đáp.
+- Bấm góc đài / thanh "Con đường" để đổi khóa; mở thẳng một khóa: `/truyen-nghe#coach`, `/truyen-nghe#vo-si`. Đường dẫn tắt `/dao-tao`, `/day-nghe`, `/pro`.
+- **Đăng ký giữ chỗ** lưu vào /admin → Đăng ký khóa học (chương trình `coach` / `fighter`, tên "Truyền Nghề · Coach" / "Truyền Nghề · Võ sĩ", kèm năm sinh + kinh nghiệm). Học phí server tự ghi theo Thiết lập; **chưa thu tiền khi đăng ký** (số cần trả = 0) — tư vấn hình thức đóng học phí sau.
+- Học phí + ngày khai giảng: Thiết lập → Học phí & lịch tập → Truyền Nghề. Nội dung lộ trình, lịch tuần, kỹ năng, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
 
 ## Email xác nhận tiếng Anh
 

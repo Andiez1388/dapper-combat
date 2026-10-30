@@ -11,7 +11,7 @@
 
   var T = {
     vi: {
-      'site.home': 'Trang chủ', 'site.shop': 'Shop', 'site.course': 'Khóa học', 'site.services': 'Dịch vụ Setup',
+      'site.home': 'Trang chủ', 'site.shop': 'Cửa hàng', 'site.career': 'Truyền Nghề', 'site.course': 'Khóa học', 'site.services': 'Dịch vụ Setup',
       'nav.events': 'Lịch sự kiện', 'nav.ranking': 'Ranking võ sĩ', 'nav.fighters': 'Thông tin võ sĩ', 'search.ph': 'Tìm võ sĩ…', 'search.go': 'Tìm',
       'foot.note': 'Dapper Combat Academy Ranking là bảng xếp hạng nội bộ học viện, chỉ tính các trận đấu, buổi sparring có chấm điểm và kỳ đánh giá kỹ năng tại Dapper Combat Academy.', 'foot.home': 'Về trang chủ Dapper Combat',
       'rank.title': 'Ranking võ sĩ', 'rank.h.m': 'Ranking võ sĩ nam', 'rank.h.f': 'Ranking võ sĩ nữ', 'rank.hd.m': '{div} nam', 'rank.hd.f': '{div} nữ',
@@ -59,7 +59,7 @@
       'cmp.hint': 'Chọn 2 võ sĩ để so điểm, kỹ năng, thông số và đối đầu.', 'cmp.stats': 'Thông số', 'cmp.skills': 'Kỹ năng', 'cmp.h2h': 'Đối đầu trực tiếp', 'cmp.noH2h': 'Hai võ sĩ chưa từng gặp nhau.',
     },
     en: {
-      'site.home': 'Home', 'site.shop': 'Shop', 'site.course': 'Courses', 'site.services': 'Gym Setup',
+      'site.home': 'Home', 'site.shop': 'Shop', 'site.career': 'Pro Pathways', 'site.course': 'Courses', 'site.services': 'Gym Setup',
       'nav.events': 'Events', 'nav.ranking': 'Rankings', 'nav.fighters': 'Fighters', 'search.ph': 'Search fighters…', 'search.go': 'Search',
       'foot.note': 'Dapper Combat Academy Ranking is the academy’s in-house ranking: only bouts, scored sparring and skills assessments held at Dapper Combat Academy count.', 'foot.home': 'Back to Dapper Combat',
       'rank.title': 'Fighter rankings', 'rank.h.m': 'Men’s rankings', 'rank.h.f': 'Women’s rankings', 'rank.hd.m': 'Men’s {div}', 'rank.hd.f': 'Women’s {div}',

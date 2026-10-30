@@ -142,6 +142,13 @@ module.exports = async function apiTests(env, t) {
     env.reg = r.j;
     const regs = (await req('/api/registrations', { tok: T })).j;
     t.ok(regs[0].total > 0 && regs[0].due === regs[0].total, 'server tự tính học phí + số cần trả', regs[0]);
+    // Truyền Nghề: Coach và Võ sĩ cùng học phí (thiết lập course.careerPrice), chưa thu tiền khi đăng ký
+    for (const [program, name] of [['coach', 'Học Viên Coach'], ['fighter', 'Học Viên Võ Sĩ']]) {
+      r = await req('/api/registrations', { method: 'POST', body: { name, phone: '0907654321', program, programName: 'Truyền Nghề · ' + program, detail: 'Khai giảng 20.02.2027', lang: 'vi' } });
+      t.ok(r.s === 201 && /^#DC-REG-/.test(r.j.code), 'đăng ký Truyền Nghề · ' + program, r.j);
+    }
+    const tn = (await req('/api/registrations', { tok: T })).j.filter(x => x.program === 'coach' || x.program === 'fighter');
+    t.ok(tn.length === 2 && tn.every(x => x.total === 50000000 && x.due === 0), 'Truyền Nghề: học phí 50.000.000đ cho cả 2 khóa, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
     r = await req('/api/consults', { method: 'POST', body: { name: 'Khách Setup', phone: '0901234567', city: 'Đà Nẵng', lang: 'vi' } });
     t.ok(r.s === 201 && /^#DC-SVC-/.test(r.j.code), 'gửi yêu cầu tư vấn setup', r.j);
     r = await req('/api/subscribe', { method: 'POST', body: { email: 'x', lang: 'en' } });
@@ -165,6 +172,16 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.s === 200 && r.j.course.foundStart === '2030-05-06' && r.j.shop.lowStock === 25 && r.j.shop.eta.stdMax === 3, 'lưu ngày khai giảng, ngưỡng sắp hết, thời gian giao', r.j && r.j.shop);
     r = await req('/khoa-hoc');
     t.ok(r.t.includes('06.05.2030'), 'ngày khai giảng mới hiện trên trang Khóa học');
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPrice: 45000000, careerStart: '2027-13-40' } } });
+    t.ok(r.s === 200 && r.j.course.careerPrice === 45000000 && r.j.course.careerStart === '2027-02-20', 'Truyền Nghề: lưu học phí, bỏ qua ngày khai giảng sai', r.j && r.j.course);
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPrice: 50000000, careerStart: '2027-02-20' } } });
+    t.ok(r.s === 200 && r.j.course.careerPrice === 50000000, 'Truyền Nghề: trả lại học phí mặc định');
+    r = await req('/truyen-nghe');
+    t.ok(r.s === 200 && /Truyền Nghề/.test(r.t) && /HVP Academy/.test(r.t) && /The Corner/.test(r.t), 'trang /truyen-nghe mở được');
+    r = await req('/dao-tao');
+    t.ok(r.s === 301 && r.h.get('location') === '/truyen-nghe', '/dao-tao chuyển về /truyen-nghe', r.s);
+    r = await req('/sitemap.xml');
+    t.ok(r.t.includes('/truyen-nghe</loc>'), 'sitemap có /truyen-nghe');
     fs.writeFileSync(path.join(env.data, 'consults.json'), '[{"hong":');
     r = await req('/api/consults', { tok: T });
     const moved = fs.readdirSync(env.data).filter(f => f.startsWith('consults.json.hong-'));

@@ -1257,7 +1257,7 @@
    "locate": true,
    "order": 703,
    "key": "global.mnav.3",
-   "vi": "Shop",
+   "vi": "Cửa hàng",
    "en": "Shop",
    "itemLabel": "Tên trang"
   },
@@ -1494,7 +1494,7 @@
    "page": "shop",
    "section": "shop.nav",
    "type": "button",
-   "vi": "Shop",
+   "vi": "Cửa hàng",
    "en": "Shop",
    "html": false,
    "src": "html",
@@ -2171,7 +2171,7 @@
    "page": "shop",
    "section": "shop.pdp",
    "type": "button",
-   "vi": "Shop",
+   "vi": "Cửa hàng",
    "en": "Shop",
    "html": false,
    "src": "html",
@@ -19988,6 +19988,46 @@
    "type": "label",
    "label": "Menu thả xuống “Academy Ranking” — mục 3 (/vo-si)",
    "vi": "Thông tin võ sĩ"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": false,
+   "en": null,
+   "key": "global.mnav.u6",
+   "section": "global.mnav",
+   "type": "link",
+   "label": "Đường dẫn — Truyền Nghề",
+   "vi": "/truyen-nghe",
+   "mono": true,
+   "itemLabel": "Đường dẫn khi bấm"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Pro Pathways",
+   "key": "global.mnav.20",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Thẻ 6 · Tên trang (mục “Truyền Nghề” trên menu)",
+   "vi": "Truyền Nghề",
+   "itemLabel": "Chữ"
+  },
+  {
+   "page": "global",
+   "html": false,
+   "src": "js",
+   "locate": true,
+   "en": "Coach & fighter training from zero",
+   "key": "global.mnav.21",
+   "section": "global.mnav",
+   "type": "label",
+   "label": "Thẻ 6 · Mô tả ngắn dưới tên (menu điện thoại)",
+   "vi": "Đào tạo coach · võ sĩ từ con số 0",
+   "itemLabel": "Chữ"
   }
  ],
  "media": [
@@ -27069,6 +27109,19 @@
      "links": [],
      "lists": [],
      "title": "global.mnav.15"
+    },
+    {
+     "id": "6",
+     "fields": [
+      "global.mnav.u6",
+      "global.mnav.20",
+      "global.mnav.21"
+     ],
+     "media": [],
+     "icons": [],
+     "links": [],
+     "lists": [],
+     "title": "global.mnav.20"
     }
    ]
   },
@@ -29657,7 +29710,7 @@
    "key": "shop.nav.shop",
    "page": "shop",
    "section": "shop.nav",
-   "label": "Shop",
+   "label": "Cửa hàng",
    "href": "/shop",
    "field": "shop.nav.shop",
    "src": "html"

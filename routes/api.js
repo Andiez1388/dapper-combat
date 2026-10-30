@@ -701,10 +701,10 @@ router.post('/registrations', limit('reg', 10), (req, res) => {
   if (!reg.program) return bad('Chưa chọn chương trình', 'Please choose a program');
   const fee = settings.all().course;
   const gt = (fee.gtPackages || []).find(k => String(k.months) === reg.pkg);   // gói Group Training theo số tháng
-  const totals = { found: fee.foundPrice, gt: gt ? gt.price : 0, hssv: fee.hssvMonth * fee.hssvMonths, mem: fee.memMonth, pt: 0, trial: 0 };
+  const totals = { found: fee.foundPrice, gt: gt ? gt.price : 0, hssv: fee.hssvMonth * fee.hssvMonths, mem: fee.memMonth, pt: 0, trial: 0, coach: fee.careerPrice, fighter: fee.careerPrice };
   if (totals[reg.program] !== undefined) {
     reg.total = totals[reg.program];
-    reg.due = !reg.total ? 0 : reg.pay === 'deposit' && reg.program === 'found' ? fee.foundDeposit : reg.pay === 'full' ? reg.total : 0;
+    reg.due = !reg.total || reg.program === 'coach' || reg.program === 'fighter' ? 0 : reg.pay === 'deposit' && reg.program === 'found' ? fee.foundDeposit : reg.pay === 'full' ? reg.total : 0;
   }
   const list = read('registrations.json', []);
   const entry = { id: genId('reg'), code: makeCode('#DC-REG-', 5, list), createdAt: Date.now(), status: 'new', ...reg, adminNote: '', confirm: newConfirm() };

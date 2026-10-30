@@ -162,6 +162,17 @@ function fixups() {
   audit4Fixups();
   audit5Fixups();
   audit6Fixups();
+  audit7Fixups();
+}
+/* ─── Đợt sửa 7: mục "Truyền Nghề" trên menu (/truyen-nghe), menu tiếng Việt "Shop" → "Cửa hàng" ─── */
+function audit7Fixups() {
+  const f = (key, type, label, vi, en, extra) => newField({ key, section: 'global.mnav', page: 'global', type, label, vi, en, src: 'js', locate: false, ...(extra || {}) });
+  f('global.mnav.u6', 'link', 'Đường dẫn — Truyền Nghề', '/truyen-nghe', null, { mono: true });
+  f('global.mnav.20', 'label', 'Thẻ 6 · Tên trang (mục “Truyền Nghề” trên menu)', 'Truyền Nghề', 'Pro Pathways', { itemLabel: 'Tên trang' });
+  f('global.mnav.21', 'label', 'Thẻ 6 · Mô tả ngắn dưới tên (menu điện thoại)', 'Đào tạo coach · võ sĩ từ con số 0', 'Coach & fighter training from zero', { itemLabel: 'Mô tả ngắn dưới tên' });
+  setDefault('global.mnav.3', 'Cửa hàng', 'Shop');
+  setDefault('shop.nav.shop', 'Cửa hàng', 'Shop');
+  setDefault('shop.crumb.shop', 'Cửa hàng', 'Shop');
 }
 /* ─── Đợt sửa 6: mục "Academy Ranking" trên menu (Dapper Combat Academy Ranking: /xep-hang, /vo-si, /su-kien) ─── */
 function audit6Fixups() {
@@ -737,7 +748,7 @@ const JS_LISTS = [
   [['services-1.js'], 'services.contact.areas', 'services.contact.area.s', 4, 'Lựa chọn “Diện tích” trong form', 'Lựa chọn', { id: 0 }],
   [['services-1.js'], 'services.contact.svcs', 'services.contact.j23', 3, 'Lựa chọn “Dịch vụ quan tâm” trong form', 'Lựa chọn', { id: 0 }],
   [['services-1.js'], 'services.contact.budgets', 'services.contact.j30', 5, 'Lựa chọn “Ngân sách” trong form', 'Lựa chọn', { id: 0 }],
-  [['home-3.js', 'shop-1.js', 'course-1.js', 'services-1.js'], 'global.mnav.pages', 'global.mnav.1', 5, 'Các trang trong menu điện thoại', 'Trang', { id: 'k' }],
+  [['home-3.js', 'shop-1.js', 'course-1.js', 'services-1.js'], 'global.mnav.pages', 'global.mnav.1', 6, 'Các trang trong menu điện thoại', 'Trang', { id: 'k' }],
   [['shop-1.js'], 'shop.reviews.list', 'shop.reviews.n1', 12, 'Đánh giá mẫu ở trang sản phẩm', 'Đánh giá'],
   [['shop-1.js'], 'shop.sizeguide.ao', 'shop.sizeguide.j25', 4, 'Bảng size Áo — các dòng', 'Size'],
   [['shop-1.js'], 'shop.sizeguide.dotap', 'shop.sizeguide.j49', 3, 'Bảng size Đồ tập — các dòng', 'Size'],

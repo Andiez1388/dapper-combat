@@ -1,0 +1,388 @@
+/* Dapper Combat — Truyền Nghề (/truyen-nghe). "Hai góc đài, một sàn tập".
+   Góc xanh = Coach, góc đỏ = Võ sĩ: body[data-path] đổi màu nhấn (--acc) cho mọi phần theo con đường đang xem.
+   Mô-típ chung: tam giác góc đài (đệm góc) ở các khối thuộc một con đường; sàn đấu nhìn từ trên xuống ở đầu trang.
+   Tiêu đề Ysabeau (dòng cao ≥ 1.08 cho dấu tiếng Việt), số và nhãn Barlow Condensed, chữ thường Inter. */
+.tn{
+  --bg:#0a0b0d;--bg-2:#0f1114;--panel:#14171c;--panel-2:#191d23;--field:#0b0d10;--line:#262b33;--line-2:#1d2127;
+  --ink:#f1f1ee;--ink-2:#c8ccd1;--muted:#8b929b;
+  --blue:#2f6fd6;--blue-hi:#8fb3ef;--blue-soft:rgba(47,111,214,0.16);
+  --red:#D4372E;--red-hi:#ff6a5f;--red-soft:rgba(212,55,46,0.16);
+  --gold:#c8a85a;--canvas:#dcd8cf;
+  --acc:var(--blue);--acc-hi:var(--blue-hi);--acc-soft:var(--blue-soft);
+  --serif:'Ysabeau','Georgia',serif;--cond:'Barlow Condensed','Arial Narrow',Arial,sans-serif;--sans:'Inter',Arial,Helvetica,sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;color-scheme:dark;
+}
+.tn[data-path="fighter"]{--acc:var(--red);--acc-hi:var(--red-hi);--acc-soft:var(--red-soft);}
+.tn *,.tn *::before,.tn *::after{box-sizing:border-box;}
+.tn a{color:inherit;}
+.tn :focus-visible{outline:2px solid var(--acc-hi);outline-offset:3px;}
+.tn-in{width:100%;max-width:1200px;margin:0 auto;padding:0 24px;}
+.tn-skip{position:absolute;left:-999px;top:0;background:#fff;color:#000;padding:8px 12px;z-index:60;}
+.tn-skip:focus{left:8px;}
+.tn-main{display:block;min-height:70vh;}
+.tn-main:focus{outline:none;}
+.tn-loading{padding:80px 24px;color:var(--muted);}
+.tn h1,.tn h2,.tn h3{font-family:var(--serif);margin:0;font-weight:800;}
+
+/* ─── đầu trang ───────────────────────────────────────────────────────── */
+.tn-top{background:#050607;border-bottom:1px solid var(--line-2);}
+.tn-top-in{display:flex;align-items:center;gap:24px;min-height:60px;}
+.tn .tn-logo{color:#fff;text-decoration:none;font:800 22px/1 var(--cond);letter-spacing:0.03em;white-space:nowrap;}
+.tn-logo .dc-brand-img{height:28px;display:block;}
+.tn-site{display:flex;gap:22px;margin:0 0 0 auto;padding:0;list-style:none;}
+.tn .tn-site a{color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;padding:6px 0;border-bottom:2px solid transparent;}
+.tn .tn-site a:hover{color:#fff;}
+.tn .tn-site a.on{color:#fff;border-bottom-color:var(--acc);}
+.tn .tn-lang{display:flex;gap:2px;padding:3px;border:0;border-radius:999px;background:#1b1f25;}
+.tn .tn-lang button{background:none;border:0;border-radius:999px;color:var(--muted);font:600 12px/1 var(--sans);padding:6px 11px;min-height:28px;cursor:pointer;}
+.tn .tn-lang button.on{background:#fff;color:#0a0b0d;}
+
+/* ─── nút: góc cắt như đệm góc đài ───────────────────────────────────── */
+.tn-btn{--cut:10px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:0;cursor:pointer;
+  background:var(--acc);color:#fff;font:700 19px/1 var(--cond);letter-spacing:0.02em;text-decoration:none;
+  clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut));transition:background-color .15s,filter .15s;}
+.tn .tn-btn{color:#fff;}
+.tn-btn:hover{filter:brightness(1.12);}
+.tn-btn:focus-visible{outline:0;box-shadow:inset 0 0 0 3px #fff;}
+.tn-btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.38);clip-path:none;}
+.tn-btn.ghost:hover{background:rgba(255,255,255,0.06);filter:none;}
+.tn-btn.ghost:focus-visible{box-shadow:inset 0 0 0 3px #fff;}
+.tn-btn.sm{min-height:38px;padding:0 16px;font-size:16px;--cut:7px;}
+.tn-btn:disabled{opacity:0.6;cursor:progress;}
+
+/* ─── hero: chữ bên trái, sàn đấu bên phải ───────────────────────────── */
+.tn-hero{position:relative;overflow:hidden;padding:72px 0 64px;
+  background:radial-gradient(900px 520px at 78% 40%,var(--acc-soft),transparent 70%),radial-gradient(700px 380px at 10% 0%,rgba(255,255,255,0.05),transparent 70%),var(--bg);}
+.tn-hero-in{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center;}
+.tn-special{margin:0 0 18px;}
+.tn-special span{display:inline-block;padding:6px 14px 5px;border:1px solid var(--gold);border-radius:999px;color:#efdcaa;font:600 16px/1 var(--cond);letter-spacing:0.04em;}
+.tn-hero h1{font-size:clamp(64px,9.4vw,128px);line-height:1.12;letter-spacing:-0.01em;padding-top:0.04em;}
+.tn-lead{margin:18px 0 0;max-width:34em;font-size:clamp(17px,1.6vw,19px);line-height:1.6;color:var(--ink-2);}
+.tn-start{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin:26px 0 0;}
+.tn-start b{font:800 clamp(24px,2.6vw,30px)/1.1 var(--cond);letter-spacing:0.01em;}
+.tn-start span{display:inline-flex;align-items:center;gap:8px;color:var(--acc-hi);font:600 18px/1 var(--cond);}
+.tn-start span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc);}
+.tn-facts{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;gap:0;margin:26px 0 0;padding:0;list-style:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.tn-facts li{padding:14px 26px 12px 0;margin-right:26px;border-right:1px solid var(--line);}
+.tn-facts li:last-child{border-right:0;margin-right:0;padding-right:0;}
+.tn-facts b{display:block;font:800 40px/1 var(--cond);}
+.tn-facts span{display:block;margin-top:4px;color:var(--muted);font-size:13px;}
+.tn-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+
+/* sàn đấu nhìn từ trên xuống: góc trái đỏ (Võ sĩ), góc phải xanh (Coach) */
+.tn-ring{position:relative;width:100%;max-width:470px;margin-left:auto;padding-bottom:30px;}
+.tn-ring-svg{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 50px rgba(0,0,0,0.55));}
+.tn-ring-svg .apron{fill:#1b1f25;stroke:#2a2f37;stroke-width:1;}
+.tn-ring-svg .canvas{fill:var(--canvas);}
+.tn-ring-svg .glow{transition:opacity .35s;}
+.tn[data-path="coach"] .tn-ring-svg .glow.r,.tn[data-path="fighter"] .tn-ring-svg .glow.b{opacity:0.3;}
+.tn-ring-svg .rope{fill:none;stroke:#101216;stroke-linejoin:round;}
+.tn-ring-svg .r1{stroke-width:3.2;}
+.tn-ring-svg .r2{stroke-width:2.6;opacity:0.85;}
+.tn-ring-svg .r3{stroke-width:2;opacity:0.7;}
+.tn-ring-svg .post{stroke:#0a0b0d;stroke-width:3;}
+.tn-ring-svg .post.n{fill:#9aa1aa;}
+.tn-ring-svg .post.r{fill:var(--red);}
+.tn-ring-svg .post.b{fill:var(--blue);}
+.tn-ring-svg .k{font:600 19px var(--cond);fill:#4b5058;}
+.tn-ring-svg .d{font:800 60px var(--cond);fill:#0a0b0d;letter-spacing:0.01em;}
+.tn-ring-svg .y{font:700 21px var(--cond);fill:#4b5058;letter-spacing:0.12em;}
+.tn-corner{position:absolute;top:69%;display:grid;gap:2px;min-width:150px;padding:11px 16px 12px;border:1px solid var(--line);border-top:3px solid var(--c);
+  background:rgba(20,23,28,0.94);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:border-color .2s,background-color .2s,transform .2s;}
+.tn-corner.fighter{--c:var(--red);--c-hi:var(--red-hi);--c-soft:var(--red-soft);left:-14px;}
+.tn-corner.coach{--c:var(--blue);--c-hi:var(--blue-hi);--c-soft:var(--blue-soft);right:-14px;text-align:right;}
+.tn-corner small{color:var(--c-hi);font:600 15px/1.1 var(--cond);}
+.tn-corner b{font:800 26px/1.15 var(--serif);}
+.tn-corner span{color:var(--muted);font-size:12.5px;line-height:1.35;}
+.tn-corner:hover{background:#1b1f26;}
+.tn-corner[aria-pressed="true"]{border-color:var(--c);background:linear-gradient(180deg,var(--c-soft),rgba(20,23,28,0.96) 70%);box-shadow:0 18px 40px -18px var(--c);}
+.tn-corner[aria-pressed="true"] span{color:var(--ink-2);}
+.tn-ring-hint{position:absolute;left:0;right:0;bottom:0;margin:0;text-align:center;color:var(--muted);font-size:13px;}
+
+/* lần đầu mở trang: dây đài kéo căng, cột góc hiện lên (một lần, không lặp khi đổi con đường) */
+.tn-ring.intro .rope{stroke-dasharray:1000;stroke-dashoffset:1000;animation:tnRope 1.1s cubic-bezier(.6,.05,.3,1) forwards;}
+.tn-ring.intro .r2{animation-delay:.12s;}
+.tn-ring.intro .r3{animation-delay:.24s;}
+.tn-ring.intro .post{transform-box:fill-box;transform-origin:center;animation:tnPost .4s ease-out both;animation-delay:.9s;}
+.tn-ring.intro .post.r,.tn-ring.intro .post.b{animation-delay:1.05s;}
+.tn-ring.intro .tn-corner{animation:tnFade .5s ease-out both;animation-delay:1.15s;}
+@keyframes tnRope{to{stroke-dashoffset:0;}}
+@keyframes tnPost{from{transform:scale(0);}to{transform:scale(1);}}
+@keyframes tnFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ─── thanh chọn con đường (dính đầu màn hình) ───────────────────────── */
+.tn-bar{position:sticky;top:0;z-index:20;background:rgba(10,11,13,0.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line);}
+.tn-bar-in{display:flex;align-items:center;gap:16px;min-height:62px;}
+.tn-bar-l{color:var(--muted);font:600 16px/1 var(--cond);}
+.tn-seg{display:inline-flex;padding:4px;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;}
+.tn-seg button{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 18px;border:0;border-radius:999px;background:none;color:var(--muted);font:700 18px/1 var(--cond);cursor:pointer;transition:background-color .2s,color .2s;}
+.tn-seg button i{width:9px;height:9px;border-radius:50%;background:currentColor;}
+.tn-seg button.coach i{background:var(--blue);}
+.tn-seg button.fighter i{background:var(--red);}
+.tn-seg button:hover{color:#fff;}
+.tn-seg button.on{color:#fff;}
+.tn-seg button.coach.on{background:var(--blue);}
+.tn-seg button.fighter.on{background:var(--red);}
+.tn-seg button.on i{background:#fff;}
+.tn-bar-out{color:var(--ink-2);font-size:14px;}
+.tn-bar .tn-btn{margin-left:auto;}
+
+/* ─── khu vực ─────────────────────────────────────────────────────────── */
+.tn-sec{padding:96px 0;scroll-margin-top:64px;}
+.tn-sec.alt{background:var(--bg-2);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);}
+.tn-sec-h{max-width:760px;margin-bottom:44px;}
+.tn-sec-h h2{font-size:clamp(34px,4.6vw,56px);line-height:1.1;letter-spacing:-0.005em;}
+.tn-sec-h p{margin:14px 0 0;color:var(--ink-2);font-size:18px;max-width:40em;}
+.tn-note{margin:18px 0 0;color:var(--muted);font-size:14px;}
+
+/* tam giác góc đài: khối thuộc một con đường */
+.tn-card::before,.tn-skills li::before,.tn-pick span::before{content:"";position:absolute;left:-1px;top:-1px;width:26px;height:26px;background:var(--c,var(--acc));clip-path:polygon(0 0,100% 0,0 100%);}
+
+/* hai con đường */
+.tn-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.tn-card{position:relative;display:flex;flex-direction:column;padding:34px 32px 30px;background:var(--panel);border:1px solid var(--line);transition:border-color .2s,box-shadow .2s;}
+.tn-card.coach{--c:var(--blue);--c-hi:var(--blue-hi);}
+.tn-card.fighter{--c:var(--red);--c-hi:var(--red-hi);}
+.tn-card.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 34px 70px -40px var(--c);}
+.tn-card header{position:relative;margin-bottom:20px;}
+.tn-card header small{color:var(--c-hi);font:600 17px/1 var(--cond);}
+.tn-card h3{margin-top:6px;font-size:clamp(40px,4.4vw,54px);line-height:1.1;}
+.tn-on{position:absolute;right:0;top:0;padding:5px 10px 4px;background:var(--c);color:#fff;font:700 14px/1 var(--cond);border-radius:999px;}
+.tn-card dl{margin:0 0 22px;}
+.tn-card dl div{padding:14px 0;border-top:1px solid var(--line);}
+.tn-card dt{color:var(--muted);font:600 16px/1.2 var(--cond);margin-bottom:4px;}
+.tn-card dd{margin:0;color:var(--ink-2);}
+.tn-card .out dd{color:var(--c-hi);font:700 24px/1.25 var(--serif);}
+.tn-card-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px;}
+.tn-card-meta span{padding:5px 10px;border:1px solid var(--line);color:var(--ink-2);font-size:13px;}
+.tn-card .tn-btn{margin-top:auto;align-self:flex-start;}
+.tn-card .tn-btn:not(.ghost){background:var(--c);}
+
+/* so sánh: = giống nhau, ≠ khác nhau */
+.tn-cmp{border-top:1px solid var(--line);}
+.tn-cmp-row{display:grid;grid-template-columns:1fr 200px 1fr;align-items:center;gap:20px;padding:18px 0;border-bottom:1px solid var(--line);}
+.tn-cmp-row .c.coach{text-align:right;}
+.tn-cmp-row .k{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+.tn-cmp-row .k span{color:var(--muted);font:600 16px/1.1 var(--cond);}
+.tn-cmp-row .k i{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;font:700 22px/1 var(--sans);font-style:normal;}
+.tn-cmp-row.same .k i{border:1px solid var(--line);color:var(--muted);}
+.tn-cmp-row.diff .k i{background:linear-gradient(90deg,var(--blue),var(--red));color:#fff;}
+.tn-cmp-row.same .c{color:var(--ink-2);}
+.tn-cmp-row.diff .c{font:700 clamp(19px,2vw,23px)/1.3 var(--serif);}
+.tn-cmp-row.diff .c.coach{color:var(--blue-hi);}
+.tn-cmp-row.diff .c.fighter{color:var(--red-hi);}
+.tn-cmp-row.head{padding:0 0 16px;border-bottom:2px solid var(--line);}
+.tn-cmp-row.head .c{font:800 clamp(30px,3.4vw,42px)/1.1 var(--serif);}
+.tn-cmp-row.head .c.coach{color:var(--blue-hi);}
+.tn-cmp-row.head .c.fighter{color:var(--red-hi);}
+
+/* lộ trình 4 hiệp */
+.tn-road{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin:0;padding:0;list-style:none;}
+.tn-road::before{content:"";position:absolute;left:28px;right:28px;top:27px;height:2px;background:linear-gradient(90deg,var(--acc),var(--acc-hi));opacity:0.6;}
+.tn-road>li{position:relative;display:flex;flex-direction:column;}
+.tn-rd-n{display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr 1fr;column-gap:12px;row-gap:10px;margin:0 0 18px;}
+.tn-rd-n span{align-self:end;}
+.tn-rd-n small{align-self:start;}
+.tn-rd-n b{grid-row:1/3;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;border:2px solid var(--acc);background:var(--bg);font:800 28px/1 var(--cond);}
+.tn-sec.alt .tn-rd-n b{background:var(--bg-2);}
+.tn-road>li:last-child .tn-rd-n b{background:var(--acc);}
+.tn-rd-n span{font:700 21px/1.1 var(--cond);}
+.tn-rd-n small{color:var(--muted);font-size:13px;}
+.tn-road h3{font-size:23px;line-height:1.25;font-weight:700;margin-bottom:12px;}
+.tn-road ul{margin:0 0 18px;padding:0;list-style:none;}
+.tn-road ul li{position:relative;padding-left:18px;margin:7px 0;color:var(--ink-2);font-size:15px;line-height:1.5;}
+.tn-road ul li::before{content:"";position:absolute;left:2px;top:0.62em;width:7px;height:7px;background:var(--acc);transform:rotate(45deg);}
+.tn-rd-mile{margin:auto 0 0;padding:12px 0 0;border-top:1px dashed var(--line);font-weight:600;font-size:15px;}
+.tn-rd-mile small{display:block;color:var(--muted);font:600 14px/1.3 var(--cond);margin-bottom:2px;}
+.tn-bell{display:flex;align-items:center;gap:22px;margin-top:40px;padding:24px 28px;background:linear-gradient(90deg,var(--acc-soft),transparent 80%);border-left:4px solid var(--acc);}
+.tn-bell p{margin:0;}
+.tn-bell small{display:block;color:var(--muted);font:600 17px/1.2 var(--cond);}
+.tn-bell b{display:block;font:800 clamp(26px,3.4vw,40px)/1.15 var(--serif);}
+.tn-bell-ic{flex:none;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle,#f4d27a 0 16%,#a8853a 17% 21%,#e8c264 22% 54%,#93722e 55% 60%,#d9b25a 61% 100%);box-shadow:0 6px 18px rgba(0,0,0,0.45),inset 0 -4px 8px rgba(0,0,0,0.25);}
+
+/* tuần học mẫu: 5 ngày × 2 ca */
+.tn-wk{display:grid;grid-template-columns:110px repeat(5,1fr);gap:8px;}
+.tn-wk-h{padding:0 4px 4px;color:var(--ink-2);font:700 19px/1 var(--cond);}
+.tn-wk-s{display:flex;flex-direction:column;justify-content:center;padding:0 4px;}
+.tn-wk-s b{font:800 22px/1.1 var(--cond);}
+.tn-wk-s small{color:var(--muted);font-size:13px;}
+.tn-wk-c{--t:var(--ink-2);display:flex;flex-direction:column;gap:10px;min-height:118px;padding:14px 14px 12px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--t);}
+.tn-wk-c b{font-weight:600;font-size:15.5px;line-height:1.35;}
+.tn-wk-c span{margin-top:auto;color:var(--t);font:600 15px/1 var(--cond);}
+.tn-wk-d{display:none;color:var(--muted);font:600 14px/1 var(--cond);}
+.tn-wk-c.tech{--t:#e6e1d4;}
+.tn-wk-c.fit{--t:#e0a43a;}
+.tn-wk-c.theory{--t:#57b8ad;}
+.tn-wk-c.teach{--t:var(--blue-hi);}
+.tn-wk-c.spar{--t:var(--red-hi);}
+.tn-wk-c.tactic{--t:#b39cf2;}
+
+/* bộ kỹ năng */
+.tn-skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0;padding:0;list-style:none;}
+.tn-skills li{position:relative;padding:28px 24px 24px;background:var(--panel);border:1px solid var(--line);}
+.tn-skills h3{font-size:22px;line-height:1.25;font-weight:700;}
+.tn-skills p{margin:10px 0 0;color:var(--ink-2);font-size:15px;line-height:1.55;}
+
+/* cam kết + con dấu */
+.tn-promise{display:grid;grid-template-columns:1fr auto;align-items:center;gap:56px;}
+.tn-promise-q{margin:0;font:500 clamp(28px,3.6vw,46px)/1.25 var(--serif);font-style:italic;max-width:22em;}
+.tn-promise-s{margin:18px 0 0;color:var(--ink-2);font-size:18px;max-width:34em;}
+.tn-seal{width:230px;height:230px;display:block;transform:rotate(-8deg);}
+.tn-seal .o{fill:none;stroke:var(--acc);stroke-width:3;}
+.tn-seal .i{fill:var(--acc-soft);stroke:var(--acc);stroke-width:1.5;stroke-dasharray:3 4;}
+.tn-seal .ring-t{font:700 15.5px var(--cond);letter-spacing:0.22em;fill:var(--acc-hi);}
+.tn-seal .big{font:800 27px var(--cond);letter-spacing:0.03em;fill:var(--ink);}
+.tn-seal .big:lang(en){font-size:38px;}
+.tn-seal .sm{font:700 17px var(--cond);letter-spacing:0.2em;fill:var(--muted);}
+
+/* học phí + đăng ký */
+.tn-apply{display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;}
+.tn-fee{position:sticky;top:84px;padding:28px;background:linear-gradient(165deg,var(--acc-soft),var(--panel) 60%);border:1px solid var(--line);border-top:4px solid var(--acc);}
+.tn-fee p{margin:0;}
+.tn-fee-k{color:var(--muted);font:600 17px/1 var(--cond);}
+.tn-fee-v{margin-top:8px!important;font:800 clamp(42px,4.6vw,56px)/1 var(--cond);letter-spacing:0.005em;}
+.tn-fee-per{margin-top:6px!important;color:var(--ink-2);font-size:15px;}
+.tn-fee ul{margin:22px 0 0;padding:18px 0 0;list-style:none;border-top:1px solid var(--line);}
+.tn-fee li{position:relative;padding-left:22px;margin:9px 0;color:var(--ink-2);font-size:15px;line-height:1.5;}
+.tn-fee li::before{content:"";position:absolute;left:2px;top:0.5em;width:10px;height:5px;border-left:2px solid var(--acc-hi);border-bottom:2px solid var(--acc-hi);transform:rotate(-45deg);}
+.tn-form-box{padding:30px;background:var(--panel);border:1px solid var(--line);}
+.tn-form{display:block;}
+.tn-pick{margin:0 0 22px;padding:0;border:0;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tn-pick legend{padding:0;margin-bottom:12px;font:700 20px/1.2 var(--cond);}
+.tn-pick label{position:relative;display:block;cursor:pointer;}
+.tn-pick label.coach{--c:var(--blue);--c-hi:var(--blue-hi);--c-soft:var(--blue-soft);}
+.tn-pick label.fighter{--c:var(--red);--c-hi:var(--red-hi);--c-soft:var(--red-soft);}
+.tn-pick input{position:absolute;opacity:0;width:1px;height:1px;}
+.tn-pick span{position:relative;display:grid;gap:2px;height:100%;padding:18px 18px 16px;border:1px solid var(--line);background:var(--field);transition:border-color .2s,background-color .2s;}
+.tn-pick span::before{width:18px;height:18px;opacity:0.5;}
+.tn-pick small{color:var(--c-hi);font:600 15px/1.1 var(--cond);}
+.tn-pick b{font:800 26px/1.15 var(--serif);}
+.tn-pick em{font-style:normal;color:var(--muted);font-size:13.5px;line-height:1.4;}
+.tn-pick input:checked+span{border-color:var(--c);background:linear-gradient(180deg,var(--c-soft),var(--field) 80%);box-shadow:0 0 0 1px var(--c);}
+.tn-pick input:checked+span::before{opacity:1;}
+.tn-pick input:checked+span em{color:var(--ink-2);}
+.tn-pick input:focus-visible+span{outline:2px solid #fff;outline-offset:2px;}
+.tn-fg{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+.tn-f{display:flex;flex-direction:column;gap:6px;}
+.tn-f.wide{grid-column:1/-1;}
+.tn-f span{color:var(--ink-2);font-size:14px;font-weight:600;}
+.tn-f input,.tn-f select,.tn-f textarea{width:100%;min-height:48px;padding:0 14px;background:var(--field);border:1px solid #2c323b;border-radius:0;color:var(--ink);font:16px/1.4 var(--sans);}
+.tn-f textarea{padding:12px 14px;resize:vertical;min-height:96px;}
+.tn-f select{appearance:none;-webkit-appearance:none;padding-right:36px;
+  background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238b929b' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center;}
+.tn-f input::placeholder{color:#5c636c;}
+.tn-f input:focus,.tn-f select:focus,.tn-f textarea:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft);}
+.tn-err{margin:16px 0 0;padding:10px 14px;background:rgba(212,55,46,0.12);border-left:3px solid var(--red);color:#ffb3ad;font-size:14.5px;}
+.tn-form>.tn-btn{margin-top:22px;width:100%;}
+.tn-ok{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 10px;}
+.tn-ok-ic{position:relative;width:68px;height:68px;border-radius:50%;background:var(--acc);margin-bottom:18px;}
+.tn-ok-ic::after{content:"";position:absolute;left:23px;top:20px;width:22px;height:12px;border-left:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-45deg);}
+.tn-ok h3{font-size:32px;line-height:1.15;}
+.tn-ok p{margin:10px 0 22px;color:var(--ink-2);max-width:30em;}
+
+/* hỏi đáp */
+.tn-faq{max-width:860px;border-top:1px solid var(--line);}
+.tn-faq details{border-bottom:1px solid var(--line);}
+.tn-faq summary{position:relative;list-style:none;cursor:pointer;padding:22px 48px 22px 0;font:700 clamp(19px,2vw,22px)/1.35 var(--serif);}
+.tn-faq summary::-webkit-details-marker{display:none;}
+.tn-faq summary::before,.tn-faq summary::after{content:"";position:absolute;right:8px;top:50%;width:16px;height:2px;background:var(--acc-hi);transition:transform .2s;}
+.tn-faq summary::after{transform:rotate(90deg);}
+.tn-faq details[open] summary::after{transform:rotate(0);}
+.tn-faq summary:hover{color:var(--acc-hi);}
+.tn-faq details p{margin:0 0 22px;color:var(--ink-2);max-width:62ch;}
+
+/* đổi con đường: phần thay đổi lật vào để thấy rõ cái gì vừa đổi */
+.tn-main.sw .tn-road>li,.tn-main.sw .tn-skills li,.tn-main.sw .tn-bell,.tn-main.sw .tn-promise{animation:tnFade .4s ease-out both;}
+.tn-main.sw .tn-road>li:nth-child(2),.tn-main.sw .tn-skills li:nth-child(2){animation-delay:.05s;}
+.tn-main.sw .tn-road>li:nth-child(3),.tn-main.sw .tn-skills li:nth-child(3){animation-delay:.1s;}
+.tn-main.sw .tn-road>li:nth-child(4),.tn-main.sw .tn-skills li:nth-child(4){animation-delay:.15s;}
+.tn-main.sw .tn-skills li:nth-child(n+5){animation-delay:.2s;}
+.tn-main.sw .tn-wk-c{animation:tnFlip .45s ease-out both;}
+.tn-main.sw .tn-wk-c:nth-child(5n+1){animation-delay:.04s;}
+.tn-main.sw .tn-wk-c:nth-child(5n+2){animation-delay:.08s;}
+.tn-main.sw .tn-wk-c:nth-child(5n+3){animation-delay:.12s;}
+.tn-main.sw .tn-wk-c:nth-child(5n+4){animation-delay:.16s;}
+@keyframes tnFlip{from{opacity:0;transform:perspective(600px) rotateX(70deg);}to{opacity:1;transform:none;}}
+
+/* ─── cuối trang ─────────────────────────────────────────────────────── */
+.tn-foot{padding:40px 0 56px;border-top:1px solid var(--line-2);color:var(--muted);font-size:14px;}
+.tn-foot p{margin:0 0 6px;}
+.tn-foot a{color:var(--ink-2);}
+.tn-foot a:hover{color:#fff;}
+
+/* ─── màn hình nhỏ ───────────────────────────────────────────────────── */
+@media (max-width:1100px){
+  .tn-site{gap:16px;}
+  .tn-road{grid-template-columns:1fr 1fr;row-gap:40px;}
+  .tn-road::before{display:none;}
+  .tn-skills{grid-template-columns:1fr 1fr;}
+  .tn-apply{grid-template-columns:1fr;}
+  .tn-fee{position:static;}
+}
+@media (max-width:900px){
+  .tn-top-in{flex-wrap:wrap;gap:0 16px;padding-top:10px;}
+  .tn-top .tn-lang{margin-left:auto;}
+  .tn-site{order:3;width:100%;margin:6px 0 0;gap:18px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;}
+  .tn-site::-webkit-scrollbar{display:none;}
+  .tn .tn-site a{white-space:nowrap;}
+  .tn-hero{padding:44px 0 48px;}
+  .tn-hero-in{grid-template-columns:1fr;gap:28px;}
+  .tn-ring{margin:0 auto;max-width:420px;}
+  .tn-cards{grid-template-columns:1fr;}
+  .tn-wk{grid-template-columns:1fr 1fr;}
+  .tn-wk-h,.tn-wk-s{display:none;}
+  .tn-wk-d{display:block;}
+  .tn-wk-c{min-height:0;}
+  /* xếp theo ngày: cột trái ca 1, cột phải ca 2 */
+  .tn-wk>:nth-child(8){order:1;}.tn-wk>:nth-child(14){order:2;}
+  .tn-wk>:nth-child(9){order:3;}.tn-wk>:nth-child(15){order:4;}
+  .tn-wk>:nth-child(10){order:5;}.tn-wk>:nth-child(16){order:6;}
+  .tn-wk>:nth-child(11){order:7;}.tn-wk>:nth-child(17){order:8;}
+  .tn-wk>:nth-child(12){order:9;}.tn-wk>:nth-child(18){order:10;}
+  .tn-promise{grid-template-columns:1fr;gap:28px;}
+  .tn-seal{width:170px;height:170px;}
+}
+@media (max-width:640px){
+  .tn-in{padding:0 16px;}
+  .tn-sec{padding:64px 0;}
+  .tn-sec-h{margin-bottom:30px;}
+  .tn-sec-h p{font-size:16px;}
+  .tn-hero h1{font-size:clamp(54px,16vw,72px);}
+  .tn-facts{grid-template-columns:repeat(2,1fr);}
+  .tn-facts li{margin-right:0;padding:12px 0;border-right:0;}
+  .tn-facts li:nth-child(odd){padding-right:16px;margin-right:16px;border-right:1px solid var(--line);}
+  .tn-facts li:nth-child(-n+2){border-bottom:1px solid var(--line);}
+  .tn-facts b{font-size:34px;}
+  .tn-cta .tn-btn{flex:1 1 auto;}
+  .tn-ring{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-bottom:0;}
+  .tn-ring-svg,.tn-ring-hint{grid-column:1/-1;}
+  .tn-corner{position:static;min-width:0;}
+  .tn-ring-hint{position:static;margin-top:2px;}
+  .tn-bar-l,.tn-bar-out{display:none;}
+  .tn-bar-in{gap:10px;min-height:56px;}
+  .tn-seg button{padding:0 14px;font-size:17px;}
+  .tn-card{padding:28px 20px 24px;}
+  .tn-cmp-row{grid-template-columns:1fr 1fr;gap:6px 14px;padding:14px 0;}
+  .tn-cmp-row .k{grid-column:1/-1;order:-1;flex-direction:row;justify-content:center;}
+  .tn-cmp-row .k i{width:26px;height:26px;font-size:16px;}
+  .tn-cmp-row .c.coach{text-align:left;}
+  .tn-cmp-row.head .k{display:none;}
+  .tn-road{grid-template-columns:1fr;}
+  .tn-bell{padding:20px;gap:16px;}
+  .tn-bell-ic{width:48px;height:48px;}
+  .tn-wk{gap:6px;}
+  .tn-wk-c{padding:12px 10px 10px;gap:8px;}
+  .tn-wk-c b{font-size:14.5px;}
+  .tn-skills{grid-template-columns:1fr;}
+  .tn-form-box{padding:22px 16px;}
+  .tn-pick{grid-template-columns:1fr 1fr;gap:8px;}
+  .tn-pick span{padding:16px 12px 14px;}
+  .tn-pick b{font-size:22px;}
+  .tn-fg{grid-template-columns:1fr;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .tn *,.tn *::before,.tn *::after{animation:none!important;transition:none!important;}
+  .tn-ring.intro .rope{stroke-dashoffset:0;}
+}

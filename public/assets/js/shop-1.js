@@ -4,10 +4,10 @@ const AV=["/assets/media/d23e3c2d57c6.jpg","/assets/media/0d7b90964d2f.jpg","/as
 const VIDS=[DC.m("shop.js.m1","/assets/media/7393f9263e64.mp4"),DC.m("shop.js.m2","/assets/media/b160f97b50f7.mp4")];
 
 const T={
- vi:{"nav.home":DC.x("shop.nav.home",0,"Trang chủ"),"nav.shop":DC.x("shop.nav.shop",0,"Shop"),"nav.courses":DC.x("shop.nav.courses",0,"Khóa học"),"nav.cart":DC.x("shop.nav.cart",0,"Giỏ"),
+ vi:{"nav.home":DC.x("shop.nav.home",0,"Trang chủ"),"nav.shop":DC.x("shop.nav.shop",0,"Cửa hàng"),"nav.courses":DC.x("shop.nav.courses",0,"Khóa học"),"nav.cart":DC.x("shop.nav.cart",0,"Giỏ"),
   "shop.h1":DC.x("shop.shop.h1",0,"TRANG BỊ CHO"),"shop.h2":DC.x("shop.shop.h2",0,"CHIẾN BINH"),
   "cat.all":DC.x("shop.cat.all",0,"Tất cả"),
-  "card.add":DC.x("shop.card.add",0,"Thêm vào giỏ"),"card.view":DC.x("shop.card.view",0,"Xem chi tiết"),"crumb.shop":DC.x("shop.crumb.shop",0,"Shop"),
+  "card.add":DC.x("shop.card.add",0,"Thêm vào giỏ"),"card.view":DC.x("shop.card.view",0,"Xem chi tiết"),"crumb.shop":DC.x("shop.crumb.shop",0,"Cửa hàng"),
   "detail.color":DC.x("shop.detail.color",0,"Màu sắc"),"detail.size":DC.x("shop.detail.size",0,"Kích cỡ"),"detail.qty":DC.x("shop.detail.qty",0,"Số lượng"),"detail.sizeGuide":DC.x("shop.detail.sizeGuide",0,"Hướng dẫn chọn size"),
   "detail.addToCart":DC.x("shop.detail.addToCart",0,"Thêm vào giỏ"),"detail.buyNow":DC.x("shop.detail.buyNow",0,"Mua ngay"),"detail.stock":DC.x("shop.detail.stock",0,"Còn hàng"),
   "detail.save":DC.x("shop.detail.save",0,"Tiết kiệm"),"detail.sku":DC.x("shop.detail.sku",0,"Mã SP"),"detail.instock":DC.x("shop.detail.instock",0,"Còn"),"items":DC.x("shop.items",0,"sản phẩm"),"detail.delivery":DC.x("shop.detail.delivery",0,"Giao dự kiến {ship.eta} ngày"),
@@ -920,10 +920,11 @@ var MNAV={cur:"shop",home:"/",shop:"/shop",course:"/khoa-hoc",services:"/dich-vu
   function T(vi,en){return L()==="en"?en:vi;}
   var PAGES=DC.list("global.mnav.pages",function($k){return [
     {k:$k.v("home"),url:DC.x($k("global.mnav.u1"),0,"/"),n:[DC.x($k("global.mnav.1"),0,"Trang chủ"),DC.x($k("global.mnav.1"),1,"Home")],s:[DC.x($k("global.mnav.2"),0,"Câu chuyện · HLV · cộng đồng"),DC.x($k("global.mnav.2"),1,"Story · coach · community")]},
-    {k:$k.v("shop"),url:DC.x($k("global.mnav.u2"),0,"/shop"),n:[DC.x($k("global.mnav.3"),0,"Shop"),DC.x($k("global.mnav.3"),1,"Shop")],s:[DC.x($k("global.mnav.4"),0,"Găng · áo · phụ kiện · đồ tập"),DC.x($k("global.mnav.4"),1,"Gloves · apparel · gear")]},
+    {k:$k.v("shop"),url:DC.x($k("global.mnav.u2"),0,"/shop"),n:[DC.x($k("global.mnav.3"),0,"Cửa hàng"),DC.x($k("global.mnav.3"),1,"Shop")],s:[DC.x($k("global.mnav.4"),0,"Găng · áo · phụ kiện · đồ tập"),DC.x($k("global.mnav.4"),1,"Gloves · apparel · gear")]},
     {k:$k.v("course"),url:DC.x($k("global.mnav.u3"),0,"/khoa-hoc"),n:[DC.x($k("global.mnav.5"),0,"Khóa học"),DC.x($k("global.mnav.5"),1,"Courses")],s:[DC.x($k("global.mnav.6"),0,"Foundation · Group Training · PT 1-1"),DC.x($k("global.mnav.6"),1,"Foundation · Group Training · PT 1-on-1")]},
     {k:$k.v("services"),url:DC.x($k("global.mnav.u4"),0,"/dich-vu-setup"),n:[DC.x($k("global.mnav.7"),0,"Dịch vụ Setup"),DC.x($k("global.mnav.7"),1,"Gym Setup")],s:[DC.x($k("global.mnav.8"),0,"Thiết kế · thiết bị · setup phòng tập"),DC.x($k("global.mnav.8"),1,"Gym design · equipment · setup")]},
-    {k:$k.v("ranking"),url:DC.x($k("global.mnav.u5"),0,"/xep-hang"),n:[DC.x($k("global.mnav.15"),0,"Academy Ranking"),DC.x($k("global.mnav.15"),1,"Academy Ranking")],s:[DC.x($k("global.mnav.16"),0,"Lịch sự kiện · ranking · võ sĩ"),DC.x($k("global.mnav.16"),1,"Events · rankings · fighters")]}
+    {k:$k.v("ranking"),url:DC.x($k("global.mnav.u5"),0,"/xep-hang"),n:[DC.x($k("global.mnav.15"),0,"Academy Ranking"),DC.x($k("global.mnav.15"),1,"Academy Ranking")],s:[DC.x($k("global.mnav.16"),0,"Lịch sự kiện · ranking · võ sĩ"),DC.x($k("global.mnav.16"),1,"Events · rankings · fighters")]},
+    {k:$k.v("career"),url:DC.x($k("global.mnav.u6"),0,"/truyen-nghe"),n:[DC.x($k("global.mnav.20"),0,"Truyền Nghề"),DC.x($k("global.mnav.20"),1,"Pro Pathways")],s:[DC.x($k("global.mnav.21"),0,"Đào tạo coach · võ sĩ từ con số 0"),DC.x($k("global.mnav.21"),1,"Coach & fighter training from zero")]}
   ];});
   /* nút menu */
   var right=document.querySelector(".nav .nav-right");
@@ -958,8 +959,11 @@ var MNAV={cur:"shop",home:"/",shop:"/shop",course:"/khoa-hoc",services:"/dich-vu
     if(ul&&MNAV.services&&ul.querySelectorAll(":scope>li>a").length<4)ul.insertAdjacentHTML("beforeend",'<li><a href="'+MNAV.services+'"></a></li>');
     /* mục "Xếp hạng" + menu thả xuống (Lịch sự kiện · Ranking · Võ sĩ) — dựng lại theo ngôn ngữ */
     var dd=ul&&ul.querySelector(".dc-dd");if(dd)dd.remove();if(ul&&DC.navDrop)ul.insertAdjacentHTML("beforeend",DC.navDrop(L()));
+    /* mục "Truyền Nghề" (đào tạo coach · võ sĩ) đứng sau Academy Ranking */
+    var cr=ul&&ul.querySelector('[data-nav-k="career"]');if(cr)cr.remove();var cp=PAGES.filter(function(p){return p.k==="career";})[0];if(ul)ul.insertAdjacentHTML("beforeend",'<li data-nav-k="career"><a href="'+(cp?cp.url:"/truyen-nghe")+'"></a></li>');
     var links=ul?ul.querySelectorAll(":scope>li>a"):[];
     PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);(a.closest("li")||a).style.display=DC.navOn(p.k)?"":"none";});
+    var ca=ul&&ul.querySelector('[data-nav-k="career"]>a');if(ca&&!ca.textContent){ca.textContent=T("Truyền Nghề","Pro Pathways");ca.parentNode.style.display=DC.navOn("career")?"":"none";}
     var back=document.querySelector(".nav .nav-back");
     if(back&&MNAV.cur==="course"){back.textContent=T(DC.x("global.mnav.14",0,"Đăng ký"),DC.x("global.mnav.14",1,"Sign up"));back.setAttribute("href","#dang-ky");back.removeAttribute("target");back.dataset.reg="found";back.classList.add("mn-navcta");}
     if(panel.classList.contains("on"))render();

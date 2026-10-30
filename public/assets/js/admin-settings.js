@@ -152,7 +152,7 @@
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
-    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows'],
+    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPrice', 'careerStart'],
     brand: ['logo', 'favicon', 'mapQuery', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
@@ -407,6 +407,10 @@
         numberField('course', 'hssvMonths', 'Số tháng mỗi khóa', 1, 24, 'tháng') +
         '<div class="field"><span class="field__label">Tổng mỗi khóa</span><p class="set-total" data-calc="hssv"></p></div></div>') +
       panel('Membership', '<div class="set-grid3">' + moneyField('course', 'memMonth', 'Phí mỗi tháng', defHint('course', 'memMonth', money)) + '</div>') +
+      panel('Truyền Nghề (khóa Coach + khóa Võ sĩ)', '<div class="set-grid3">' +
+        moneyField('course', 'careerPrice', 'Học phí mỗi khóa 1 năm', defHint('course', 'careerPrice', money) + ' Coach và Võ sĩ cùng giá.') +
+        '<label class="field"><span class="field__label">Ngày khai giảng</span><input type="date" data-text data-g="course" data-k="careerStart" value="' + esc(draft('course').careerStart || '') + '">' +
+          '<small class="field__hint">Hiện ở trang Truyền Nghề (/truyen-nghe), kèm đếm ngược tới ngày khai giảng.</small></label></div>') +
       panel('Lịch tập',
         '<p class="set-note">Mỗi hàng là một lớp trong bảng lịch tập ở trang Khóa học. Màu của hàng theo “Loại lớp”. Nếu chọn “Khi bấm vào hàng”, khách bấm vào hàng sẽ mở đúng form đăng ký, chọn sẵn lớp / khung giờ.</p>' +
         '<div class="sr-list" data-sr-list></div><p class="set-err" data-sr-err hidden></p>' +
@@ -557,7 +561,7 @@
     var d = draft('brand');
     return '<div class="cms-help"><p>Mục trên menu, logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
       panel('Mục trên menu',
-        '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup'], ['ranking', 'Academy Ranking (Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
+        '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup'], ['ranking', 'Academy Ranking (Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)'], ['career', 'Truyền Nghề (đào tạo coach · võ sĩ từ con số 0)']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
         '<p class="set-note">Tắt = ẩn mục đó khỏi menu trên cùng và menu điện thoại ở mọi trang. Trang vẫn còn nguyên (mở bằng đường dẫn được), bật lại là hiện ngay. Link ở chân trang sửa ở <a href="#/cms-text">Chữ trên trang</a>.</p>') +
       panel('Logo', '<div class="brand-prev"><p class="field__label">Xem trước trên thanh menu</p><div class="brand-bar" data-logo-prev>' + logoPreview(d.logo) + '</div></div>' +
         '<p class="set-spec">PNG nền trong suốt, cao ≥ 120 px, ngang tối đa ~600 px — hiển thị cao khoảng 28 px trên thanh menu.</p>' +

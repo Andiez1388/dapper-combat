@@ -30,7 +30,8 @@ app.use((req, res, next) => {
 // đường dẫn cũ / gõ tắt
 const moved = { '/index.html': '/', '/shop.html': '/shop', '/khoa-hoc.html': '/khoa-hoc', '/courses': '/khoa-hoc', '/course': '/khoa-hoc',
   '/dich-vu-setup.html': '/dich-vu-setup', '/setup': '/dich-vu-setup', '/dich-vu': '/dich-vu-setup', '/admin.html': '/admin', '/checkout': '/shop/checkout',
-  '/xep-hang.html': '/xep-hang', '/ranking': '/xep-hang', '/rankings': '/xep-hang', '/bang-xep-hang': '/xep-hang', '/fighters': '/vo-si', '/events': '/su-kien', '/lich-su-kien': '/su-kien' };
+  '/xep-hang.html': '/xep-hang', '/ranking': '/xep-hang', '/rankings': '/xep-hang', '/bang-xep-hang': '/xep-hang', '/fighters': '/vo-si', '/events': '/su-kien', '/lich-su-kien': '/su-kien',
+  '/truyen-nghe.html': '/truyen-nghe', '/dao-tao': '/truyen-nghe', '/day-nghe': '/truyen-nghe', '/pro': '/truyen-nghe' };
 app.get(Object.keys(moved), (req, res) => res.redirect(301, moved[req.path]));
 app.get('/trang.html', (req, res) => sendPage(req, res, path.join(PUB, '404.html'), 404)); // khuôn trang phụ: không phục vụ trực tiếp
 
@@ -87,7 +88,7 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
   const base = baseUrl(req), esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const rk = ranking.publicData();
-  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup', '/xep-hang', '/vo-si', '/su-kien']
+  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup', '/truyen-nghe', '/xep-hang', '/vo-si', '/su-kien']
     .concat(api.publicProducts().map(p => '/shop/' + api.productSlug(p)))
     .concat(cms.livePages().map(s => '/trang/' + s))
     .concat(rk.fighters.map(f => '/vo-si/' + f.slug), rk.events.map(e => '/su-kien/' + e.slug));
@@ -182,6 +183,8 @@ app.get('/shop', page('shop.html', '/shop'));
 app.get('/shop/*', page('shop.html'));
 app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc'));
 app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup'));
+// Truyền Nghề: đào tạo coach / võ sĩ từ con số 0 (khóa 1 năm, học phí + ngày khai giảng ở /admin → Thiết lập → Học phí & lịch tập)
+app.get('/truyen-nghe', page('truyen-nghe.html', '/truyen-nghe'));
 app.get('/admin', page('admin/index.html'));
 // Dapper Combat Academy Ranking (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> · /so-sanh — chung khuôn public/xep-hang.html
 // ld = dữ liệu có cấu trúc cho Google (võ sĩ: Person, sự kiện: SportsEvent)

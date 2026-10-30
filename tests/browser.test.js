@@ -28,7 +28,7 @@ module.exports = async function browserTests(env, t, browser) {
   t.section('Mọi trang · VI / EN · 375 / 820 / 1366 px');
   const URLS = [['/', 'Trang chủ'], ['/shop', 'Shop'], ['/shop/' + slug, 'Trang sản phẩm'], ['/khoa-hoc', 'Khóa học'], ['/dich-vu-setup', 'Dịch vụ setup'],
     ['/trang/dieu-khoan-su-dung', 'Trang phụ'], [`/phieu/${s.code}?k=${s.k}&staff=1`, 'Phiếu xác nhận'], ['/khong-co-trang-nay', 'Trang 404'],
-    ['/xep-hang', 'Ranking võ sĩ'], ['/vo-si', 'Danh sách võ sĩ'], ['/vo-si/nguyen-hoang-long', 'Hồ sơ võ sĩ'], ['/su-kien', 'Lịch sự kiện'], ['/su-kien?tab=res', 'Kết quả sự kiện'], ['/xep-hang?view=div', 'Ranking theo hạng cân'], ['/so-sanh?a=nguyen-hoang-long&b=le-duc-anh', 'So sánh võ sĩ'],
+    ['/xep-hang', 'Ranking võ sĩ'], ['/vo-si', 'Danh sách võ sĩ'], ['/vo-si/nguyen-hoang-long', 'Hồ sơ võ sĩ'], ['/su-kien', 'Lịch sự kiện'], ['/su-kien?tab=res', 'Kết quả sự kiện'], ['/xep-hang?view=div', 'Ranking theo hạng cân'], ['/so-sanh?a=nguyen-hoang-long&b=le-duc-anh', 'So sánh võ sĩ'], ['/truyen-nghe', 'Truyền Nghề'],
     ['/su-kien/' + (await (await fetch(B + '/api/ranking')).json()).events.find(e => e.status === 'done' && e.bouts.length).slug, 'Chi tiết sự kiện']];
   await page.goto(B + '/');
   const titles = {};
@@ -93,7 +93,7 @@ module.exports = async function browserTests(env, t, browser) {
   await t.run('menu', async () => {
     const st = await api('/api/settings');
     const n = st.brand.nav || {};
-    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && n.ranking === true && Object.keys(n).length === 5, 'mặc định: ẩn "Dịch vụ Setup", 3 mục còn lại hiện', st.brand.nav);
+    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && n.ranking === true && n.career === true && Object.keys(n).length === 6, 'mặc định: ẩn "Dịch vụ Setup", các mục còn lại hiện', st.brand.nav);
     const look = async u => {
       await page.goto(B + u, { wait: 1000 });
       return page.eval(`(() => {
@@ -111,11 +111,12 @@ module.exports = async function browserTests(env, t, browser) {
       const m = await look(u);
       t.ok(m.top.length >= 3 && !m.top.some(h => /dich-vu-setup/.test(h)) && !m.mob.some(s => /Dịch vụ Setup/.test(s)), u + ' — menu trên cùng + menu điện thoại không còn "Dịch vụ Setup"', m);
       t.ok(['/su-kien', '/xep-hang', '/vo-si'].every(h => m.top.includes(h)) && m.mob.some(s => /Academy Ranking|Ranking võ sĩ/.test(s)), u + ' — có mục "Academy Ranking" (menu thả xuống: Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)', m);
+      t.ok(m.top.includes('/truyen-nghe') && m.mob.some(s => /Truyền Nghề/.test(s)) && m.mob.some(s => /Cửa hàng/.test(s)) && !m.mob.some(s => /\bShop\b/.test(s)), u + ' — có mục "Truyền Nghề", tiếng Việt ghi "Cửa hàng"', m);
     }
     let r = await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: true, shop: false, bogus: true } } } });
     t.ok(r.brand.nav.services === true && r.brand.nav.shop === false && !('bogus' in r.brand.nav), 'lưu bật / tắt từng mục (bỏ qua mục lạ)', r.brand.nav);
     const m = await look('/khoa-hoc');
-    t.ok(m.top.some(h => /dich-vu-setup/.test(h)) && !m.top.some(h => h === '/shop') && m.mob.some(s => /Dịch vụ Setup/.test(s)) && m.mob.length === 4 && !m.mob.some(s => /^0\d\s?Shop/.test(s)), 'bật "Dịch vụ Setup", tắt "Shop" → menu đổi theo ngay', m);
+    t.ok(m.top.some(h => /dich-vu-setup/.test(h)) && !m.top.some(h => h === '/shop') && m.mob.some(s => /Dịch vụ Setup/.test(s)) && m.mob.length === 5 && !m.mob.some(s => /Cửa hàng/.test(s)), 'bật "Dịch vụ Setup", tắt "Cửa hàng" → menu đổi theo ngay', m);
     await api('/api/settings', { method: 'PUT', body: { brand: { nav: { services: false, shop: true } } } });
     errs('Menu bật / tắt');
   });
@@ -243,6 +244,48 @@ module.exports = async function browserTests(env, t, browser) {
     const regs = await api('/api/registrations');
     t.ok(regs.length === before + 1 && regs[0].name === 'Học Viên Trình Duyệt', 'đăng ký lưu trên server', regs[0]);
     errs('Đăng ký khóa học');
+  });
+
+  t.section('Truyền Nghề (/truyen-nghe): 2 con đường Coach / Võ sĩ, đăng ký giữ chỗ');
+  await t.run('truyền nghề', async () => {
+    await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
+    await page.goto(B + '/truyen-nghe', { wait: 1200 });
+    const look = () => page.eval(`({ path: document.body.dataset.path, h1: document.querySelector('.tn-hero h1').textContent, round1: document.querySelector('.tn-road h3').textContent, cells: document.querySelectorAll('.tn-wk-c').length,
+      cell1: document.querySelector('.tn-wk-c b').textContent, out: document.querySelector('.tn-bell b').textContent, fee: document.querySelector('.tn-fee-v').textContent, start: document.querySelector('.tn-start b').textContent,
+      skills: document.querySelectorAll('.tn-skills li').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
+    let st = await look();
+    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === 'Có việc làm tại HVP Academy' && st.fee === '50.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
+    t.ok(st.cells === 10 && st.skills === 6 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 6 kỹ năng, menu có "Cửa hàng" + "Truyền Nghề"', st);
+    const coachCell = st.cell1;
+    await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
+    st = await look();
+    t.ok(st.path === 'fighter' && st.hash === '#vo-si' && st.round1 === 'Nền tảng và thể lực' && st.out === 'Thi đấu dưới tên The Corner' && st.cells === 10 && st.cell1 !== coachCell, 'đổi sang Võ sĩ: cùng khung 10 ca, nội dung + đích đến đổi theo', st);
+    await page.goto(B + '/', { wait: 300 });
+    await page.goto(B + '/truyen-nghe#vo-si', { wait: 1000 });
+    st = await look();
+    t.ok(st.path === 'fighter', 'mở thẳng /truyen-nghe#vo-si → con đường Võ sĩ', st);
+    // gửi thiếu tên → báo lỗi; gõ dở rồi đổi ngôn ngữ → chữ vẫn còn
+    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.phone.value = '0912 345 678'; f.querySelector('[type=submit]').click(); return 1; })()`);
+    const err = await page.eval(`document.querySelector('.tn-err').hidden ? '' : document.querySelector('.tn-err').textContent`);
+    t.ok(err === 'Nhập họ và tên', 'thiếu tên → báo lỗi rõ ràng', err);
+    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Võ Sĩ Trình Duyệt'; f.elements.year.value = '2003'; document.querySelector('.tn-lang [data-lang="en"]').click(); return 1; })()`);
+    st = await page.eval(`({ h1: document.querySelector('.tn-hero h1').textContent, name: document.querySelector('.tn-form').elements.name.value, phone: document.querySelector('.tn-form').elements.phone.value, out: document.querySelector('.tn-bell b').textContent })`);
+    t.ok(st.h1 === 'Pro Pathways' && st.out === 'Fight under the name The Corner' && st.name === 'Võ Sĩ Trình Duyệt' && st.phone === '0912 345 678', 'tiếng Anh: đổi chữ, giữ thông tin đã gõ', st);
+    const before = (await api('/api/registrations')).length;
+    await page.eval(`document.querySelector('.tn-form [type=submit]').click(); 1`);
+    const ok = await page.until(`!!document.querySelector('.tn-ok')`, 8000);
+    t.ok(ok && /DC-REG-/.test(await page.eval(`document.querySelector('.tn-ok').textContent`)), 'gửi đăng ký → hiện mã đăng ký');
+    const regs = await api('/api/registrations');
+    const r0 = regs[0];
+    t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 50000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 50 triệu, chưa thu tiền', r0);
+    await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
+    // tắt mục "Truyền Nghề" trong /admin → menu các trang ẩn theo
+    await api('/api/settings', { method: 'PUT', body: { brand: { nav: { career: false } } } });
+    await page.goto(B + '/khoa-hoc', { wait: 1000 });
+    const shown = await page.eval(`[...document.querySelectorAll('.nav .nav-links a')].some(a => a.getAttribute('href') === '/truyen-nghe' && getComputedStyle(a.closest('li')).display !== 'none')`);
+    t.ok(!shown, 'tắt "Truyền Nghề" ở Thiết lập → menu trang Khóa học ẩn mục này');
+    await api('/api/settings', { method: 'PUT', body: { brand: { nav: { career: true } } } });
+    errs('Truyền Nghề');
   });
 
   t.section('Yêu cầu tư vấn setup trên trang');
