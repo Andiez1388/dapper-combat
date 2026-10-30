@@ -36,11 +36,12 @@ app.get(Object.keys(moved), (req, res) => res.redirect(301, moved[req.path]));
 app.get('/trang.html', (req, res) => sendPage(req, res, path.join(PUB, '404.html'), 404)); // khuôn trang phụ: không phục vụ trực tiếp
 
 // Trang + CSS/JS của trang: áp nội dung tùy chỉnh từ /admin (chữ, ảnh/video, màu, liên hệ) trước khi gửi
-// head = thẻ thêm vào <head> (link chuẩn cho Google, dữ liệu có cấu trúc)
-function sendPage(req, res, file, status = 200, head = '') {
+// head = thẻ thêm vào <head> (link chuẩn cho Google, dữ liệu có cấu trúc) · edit = sửa thêm trên HTML (vd tiêu đề tab)
+function sendPage(req, res, file, status = 200, head = '', edit = null) {
   const rel = path.relative(PUB, file).split(path.sep).join('/');
   const raw = fs.readFileSync(file, 'utf8');
   let body = cms.transformable(rel) ? cms.transform(rel, raw) : raw;
+  if (edit) body = edit(body);
   if (head) body = body.replace('</head>', head + '</head>');
   const etag = '"' + crypto.createHash('sha1').update(body).digest('base64').slice(0, 22) + '"';
   res.setHeader('Cache-Control', 'no-cache');
@@ -184,7 +185,11 @@ app.get('/shop/*', page('shop.html'));
 app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc'));
 app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup'));
 // Truyền Nghề: đào tạo coach / võ sĩ từ con số 0 (khóa 1 năm, học phí + ngày khai giảng ở /admin → Thiết lập → Học phí & lịch tập)
-app.get('/truyen-nghe', page('truyen-nghe.html', '/truyen-nghe'));
+// tiêu đề tab + mô tả Google: /admin → Nội dung website → Truyền Nghề → SEO
+const seoText = (html, title, desc) => html.replace(/<title>[^<]*<\/title>/, m => (title ? `<title>${attr(title)}</title>` : m))
+  .replace(/(<meta name="description" content=")[^"]*/, (m, a) => (desc ? a + attr(desc) : m));
+app.get('/truyen-nghe', (req, res) => sendPage(req, res, path.join(PUB, 'truyen-nghe.html'), 200, seoHead(req, '/truyen-nghe'),
+  html => seoText(html, cms.textVi('career.title'), cms.textVi('career.seo.desc'))));
 app.get('/admin', page('admin/index.html'));
 // Dapper Combat Academy Ranking (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> · /so-sanh — chung khuôn public/xep-hang.html
 // ld = dữ liệu có cấu trúc cho Google (võ sĩ: Person, sự kiện: SportsEvent)
@@ -197,16 +202,18 @@ function rankPage(req, res, canon, title, desc, status = 200, ld = null) {
   res.status(status).type('html').send(html);
 }
 const ACADEMY = { '@type': 'SportsOrganization', name: 'Dapper Combat Academy', sport: 'Boxing' };
-app.get('/xep-hang', (req, res) => rankPage(req, res, '/xep-hang', 'Ranking võ sĩ', 'Dapper Combat Academy Ranking — bảng xếp hạng nội bộ học viện: điểm, sao, hạng và thành tích từng võ sĩ nam, nữ theo hạng cân.'));
-app.get('/vo-si', (req, res) => rankPage(req, res, '/vo-si', 'Thông tin võ sĩ', 'Danh sách võ sĩ Dapper Combat Academy: thành tích, điểm xếp hạng, hạng cân và hồ sơ chi tiết.'));
-app.get('/su-kien', (req, res) => rankPage(req, res, '/su-kien', 'Lịch sự kiện', 'Lịch fight night, sparring và kỳ đánh giá kỹ năng của Dapper Combat Academy, kèm kết quả từng trận.'));
-app.get('/so-sanh', (req, res) => rankPage(req, res, '/so-sanh', 'So sánh võ sĩ', 'So sánh 2 võ sĩ Dapper Combat Academy: điểm, kỹ năng, thông số, đối đầu trực tiếp và khả năng thắng.'));
+// tiêu đề tab + mô tả Google sửa ở /admin → Nội dung website → Academy Ranking (mặc định trong lib/rank-seo.js)
+for (const p of require('./lib/rank-seo').PAGES) app.get(p.path, (req, res) => rankPage(req, res, p.path, cms.textVi('ranking.' + p.id + '.title', p.title), cms.textVi('ranking.seo.' + p.id + '.desc', p.desc)));
 // phiếu thông tin võ sĩ in ra giấy (A4, 2 trang): mục A1–A6 / B1–B3 khớp form /admin → Academy Ranking → Võ sĩ
 app.get('/phieu-vo-si', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('X-Robots-Tag', 'noindex');
   res.sendFile(path.join(PUB, 'phieu-vo-si.html'));
 });
+// /vo-si/_ · /su-kien/_ = võ sĩ / sự kiện đầu tiên đang có ("Xem trên trang" trong /admin → Nội dung website)
+const firstOf = (req, res, base, x) => res.redirect(302, x ? base + x.slug + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '') : base.slice(0, -1));
+app.get('/vo-si/_', (req, res) => firstOf(req, res, '/vo-si/', ranking.publicData().fighters[0]));
+app.get('/su-kien/_', (req, res) => { const ev = ranking.publicData().events; firstOf(req, res, '/su-kien/', ev.find(e => (e.bouts || []).length) || ev[0]); });
 app.get('/vo-si/:slug', (req, res) => {
   const f = ranking.publicData().fighters.find(x => x.slug === String(req.params.slug).toLowerCase());
   if (!f) return rankPage(req, res, '', 'Không tìm thấy võ sĩ', '', 404);

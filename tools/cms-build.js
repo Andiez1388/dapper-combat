@@ -614,6 +614,10 @@ for (const f of catalog.fields) {
 // số lượng trong danh sách thiết bị: trang dùng 1 giá trị cho cả 2 ngôn ngữ
 catalog.fields.forEach(f => { if (/.n$/.test(f.key) && f.type === 'stat') f.mono = true; });
 catalog.fields.forEach(f => { delete f._n; delete f._k; delete f.joined; delete f.grp; delete f.gi; if (!process.env.CMS_DEBUG) { delete f.fn; delete f.dict; } });
+// trang do tools/cms-js-pages.js dựng (Truyền Nghề, Academy Ranking): giữ nguyên từ danh mục đang có
+const OWN = new Set(['career', 'ranking']);
+const CUR = fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, 'utf8')) : null;
+if (CUR) for (const k of ['pages', 'sections', 'fields', 'media']) catalog[k] = catalog[k].filter(x => !OWN.has(k === 'pages' ? x.id : x.page)).concat((CUR[k] || []).filter(x => OWN.has(k === 'pages' ? x.id : x.page)));
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(catalog, null, 1));
 const pageCount = {}; catalog.fields.forEach(f => pageCount[f.page] = (pageCount[f.page] || 0) + 1);

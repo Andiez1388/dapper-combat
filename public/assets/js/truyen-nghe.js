@@ -13,6 +13,15 @@
   var en = function () { return DC.lang() === 'en'; };
   var L = function (o) { return o ? (en() ? o.en || o.vi : o.vi) || '' : ''; };
   var p = function (vi, e) { return { vi: vi, en: e }; };
+  /* nội dung sửa ở /admin → Nội dung website → Truyền Nghề: chữ t('…') = khóa "career.<khóa>", chữ trong dữ liệu p(vi, en) = khóa theo vị trí
+     "career.data.<khối>.<…>" (vd career.data.path.coach.rounds.0.t). Danh mục /admin dựng bằng tools/cms-js-pages.js (đọc ?cmsdump). */
+  var SEEN = [];
+  var cmsWalk = function (o, k) {
+    if (!o || typeof o !== 'object') return o;
+    if (typeof o.vi === 'string' && Object.keys(o).length === 2 && 'en' in o) { SEEN.push([k, o.vi, o.en]); return { vi: DC.x(k, 0, o.vi), en: DC.x(k, 1, o.en) }; }
+    Object.keys(o).forEach(function (x) { o[x] = cmsWalk(o[x], k + '.' + x); });
+    return o;
+  };
   var START = String(DC.setting('course.careerStart', '2027-02-20') || '2027-02-20');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(START)) START = '2027-02-20';
   // học phí mỗi khóa (Coach, Võ sĩ khác giá)
@@ -29,6 +38,8 @@
   var COHORT = String(DC.setting('course.careerCohort', 'K01') || '').trim() || 'K01';   // tên khóa: K01, K02…
   var media = function (k, def) { return DC.m ? DC.m(k, def) : def; };
   var IMG = { coach: media('career.hero.coach', '/assets/media/bc3dad0ad714.jpg'), fighter: media('career.hero.fighter', '/assets/media/bd656e3427a9.jpg') };
+  var PLAN_IMG = { coach: media('career.plan.coach', IMG.coach), fighter: media('career.plan.fighter', IMG.fighter) };   // ảnh đầu thẻ học phí
+  var HELP_IMG = media('career.help.img', IMG.coach);                                                                    // ảnh khung "Còn băn khoăn?"
   // cách trả tiền đang mở trên web (/admin → Thanh toán, Thanh toán online)
   var PO = DC.payOnline ? DC.payOnline() : {};
   var BANK = DC.pay ? DC.pay() : null;
@@ -235,9 +246,10 @@
       'how.dep': 'A {d} deposit holds your place.', 'how.list': 'Pay by: {l}.',
     },
   };
+  Object.keys(T.vi).forEach(function (k) { SEEN.push(['career.' + k, T.vi[k], T.en[k]]); });
   function t(k, v) {
     var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]);
-    if (s == null) s = k;
+    s = s == null ? k : DC.x('career.' + k, en() ? 1 : 0, s);
     if (v) Object.keys(v).forEach(function (x) { s = s.split('{' + x + '}').join(v[x]); });
     return s;
   }
@@ -451,8 +463,11 @@
           [p('Một giai đoạn cháy hết mình khi còn trẻ', 'A few years of giving everything while young'), 0, 2],
           [p('Thi đấu trước, rồi đứng lớp sau', 'Fight first, coach later'), 1, 1]]]] }
   ];
+  cmsWalk(P, 'career.data.path'); cmsWalk(PAINS, 'career.data.pain'); cmsWalk(QUIZ, 'career.data.quiz');
+  if (/[?&]cmsdump\b/.test(location.search)) window.__cmsDump = SEEN;
   var QN = QUIZ.reduce(function (s, g) { return s + g.q.length; }, 0);
-  var path = location.hash === '#vo-si' || location.hash === '#fighter' ? 'fighter' : 'coach';
+  // "Xem trên trang" từ /admin (?cms=<khóa>) với chữ riêng của khóa Võ sĩ → mở sẵn góc Võ sĩ
+  var path = location.hash === '#vo-si' || location.hash === '#fighter' || /[?&]cms=career.[^&]*fighter/.test(location.search) ? 'fighter' : 'coach';
   var quiz = { i: 0, ans: [] };
 
   /* ─── Số, ngày ───────────────────────────────────────────────────────── */
@@ -629,7 +644,7 @@
         ['100%', t('pr.big.' + k), t('pr.free.' + k), 'out'],
         ['100%', t('w.refund'), cap(t('pr.if.' + k)), 'ref'],
       ];
-      return '<article class="tn-plan ' + k + (path === k ? ' on' : '') + '"><header class="tn-plan-top"><img src="' + esc(IMG[k]) + '" alt="" loading="lazy" decoding="async">' +
+      return '<article class="tn-plan ' + k + (path === k ? ' on' : '') + '"><header class="tn-plan-top"><img src="' + esc(PLAN_IMG[k]) + '" alt="" loading="lazy" decoding="async">' +
         '<p><small>' + esc(L(x.corner) + ' · ' + ageText(k)) + '</small><b>' + esc(L(x.name)) + '</b><span>' + esc(L(x.out)) + '</span></p></header>' +
         '<p class="tn-worth-k">' + esc(t('w.get')) + '</p><ul class="tn-plan-get">' + rows.map(function (r) {
           return '<li' + (r[3] ? ' class="' + r[3] + '"' : '') + '><b>' + esc(r[0]) + '</b><p><strong>' + esc(r[1]) + '</strong><span>' + esc(r[2]) + '</span></p></li>';
@@ -717,7 +732,7 @@
       (C.maps ? '<a href="' + esc(C.maps) + '" target="_blank" rel="noopener">' + esc(t('help.map')) + '</a>' : '') + '</div>' : '';
     var tel = DIAL ? 'tel:' + DIAL : '';
     var link = function (cls, inner) { return tel ? '<a class="' + cls + '" href="' + esc(tel) + '">' + inner + '</a>' : '<span class="' + cls + '">' + inner + '</span>'; };
-    var help = '<aside class="tn-help"><div class="tn-help-img"><img src="' + esc(IMG.coach) + '" alt="" loading="lazy" decoding="async"></div><div class="tn-help-in"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t(PHONE ? 'help.p' : 'help.p0')) + '</p>' +
+    var help = '<aside class="tn-help"><div class="tn-help-img"><img src="' + esc(HELP_IMG) + '" alt="" loading="lazy" decoding="async"></div><div class="tn-help-in"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t(PHONE ? 'help.p' : 'help.p0')) + '</p>' +
       (PHONE ? link('tn-help-tel', '<small>' + esc(t('help.hot')) + '</small><b>' + esc(PHONE) + '</b>') : '') +
       '<div class="tn-help-b' + (C.zalo && PHONE ? ' two' : '') + '">' +
       (C.zalo ? '<a class="tn-btn" href="' + esc(C.zalo) + '" target="_blank" rel="noopener">' + esc(t('help.zalo')) + '</a>' : '') +

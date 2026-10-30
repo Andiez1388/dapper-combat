@@ -160,6 +160,7 @@ data/seed/cms-catalog.json  Danh mục nội dung: mọi chữ / ảnh / video (
 data/cms.json           Phần đã sửa trong /admin (dữ liệu chạy thật — sao lưu cùng data/)
 tools/cms-build.js      Gắn khóa nội dung vào trang (data-cms, DC.x, DC.m) và dựng lại danh mục
 tools/cms-structure.js  Đánh dấu cấu trúc: khối trang, danh sách, icon, link, số thứ tự; bảng màu; nhãn dễ hiểu (chạy sau cms-build)
+tools/cms-js-pages.js   Danh mục chữ / ảnh / SEO của Truyền Nghề và Academy Ranking (2 trang dựng hoàn toàn bằng JS) — đọc ?cmsdump trên máy chủ thử
 tools/cms-capture.browser.js  Đo trên trang thật: chữ đang hiển thị, chữ bị ẩn, khung ảnh/video → kích thước gợi ý
 tools/export-pages.js   Công cụ đã dùng để chuyển 4 trang thiết kế (file HTML nhúng base64) thành website này
 ```
@@ -176,6 +177,8 @@ tools/export-pages.js   Công cụ đã dùng để chuyển 4 trang thiết k�
 
 1. Chạy `node tools/cms-build.js` rồi `node tools/cms-structure.js` (hoặc `npm run cms:structure`). Khóa cũ và phần đã sửa trong admin được giữ nguyên; chỗ mới được gắn khóa mới. Muốn thêm danh sách mới cho admin: khai báo trong `HTML_LISTS` / `JS_LISTS` ở đầu `tools/cms-structure.js`.
 2. Mở `/admin`, đăng nhập, dán `tools/cms-capture.browser.js` vào Console của trình duyệt để đo lại chữ hiển thị và kích thước ảnh. Lúc chạy bước này, `data/cms.json` cần đang trống.
+
+**Truyền Nghề và Academy Ranking** (dựng hoàn toàn bằng JS: `truyen-nghe.js`, `xephang.js`) cũng sửa được ở Nội dung website → tab **Truyền Nghề** / **Academy Ranking**: mọi chữ (khóa `career.<khóa>` / `ranking.<khóa>`; chữ trong dữ liệu lộ trình, tuần học, kỹ năng, nỗi lo, trắc nghiệm là `career.data.<khối>.<vị trí>`), 5 ảnh của Truyền Nghề (2 thẻ góc đầu trang, 2 thẻ học phí, khung "Còn băn khoăn?"), tiêu đề tab + mô tả Google (server ghi vào `<title>` / mô tả; mặc định của Ranking ở `lib/rank-seo.js`). Chỗ `{k}`, `{n}`, `{d}`… trong chữ là số liệu tự điền (tên khóa, ngày, tiền…), giữ nguyên khi sửa. "Xem trên trang" của hồ sơ võ sĩ mở `/vo-si/_` (= võ sĩ đầu tiên), chữ riêng của khóa Võ sĩ mở sẵn góc Võ sĩ. Thêm / đổi chữ trong 2 file JS này → chạy `node tools/cms-js-pages.js` (cms-build giữ nguyên phần của 2 trang này). Ảnh võ sĩ, poster sự kiện sửa ở Academy Ranking → Võ sĩ / Sự kiện.
 
 Ảnh và thông tin sản phẩm sửa ở mục **Sản phẩm**, không nằm trong mục Nội dung.
 
@@ -275,7 +278,7 @@ Chương trình đặc biệt: học boxing từ con số 0 để thành nghề 
   - **Đóng đủ**: hiện khi có cách nhận tiền. Số cần trả = cả học phí (có nút trả góp nếu đang bật trả góp VNPay).
   - Chọn cọc / đóng đủ → màn hình xong hiện mã VietQR đúng số tiền + nội dung chuyển khoản, nút thẻ / trả góp, tự báo "Đã nhận tiền" khi SePay xác nhận; có phiếu xác nhận để tải.
 - Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí khóa Coach và khóa Võ sĩ (2 mức riêng), ngày khai giảng, **tiền cọc giữ chỗ** (mặc định 2.000.000₫; 0 = không nhận cọc), **độ tuổi tuyển** (mặc định Coach 18–35, Võ sĩ 18–26, tính theo năm khai giảng; form ghi danh bắt buộc năm sinh và báo khi ngoài độ tuổi, gợi ý khóa còn lại nếu vừa tuổi), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
-- Ảnh đầu trang dùng ảnh có sẵn của web (HLV cầm đích: `bc3dad0ad714.jpg`, võ sĩ ra sàn: `bd656e3427a9.jpg`); chưa đổi được trong /admin. Nội dung lộ trình, lịch tuần, kỹ năng, trắc nghiệm, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
+- Ảnh mặc định dùng ảnh có sẵn của web (HLV cầm đích: `bc3dad0ad714.jpg`, võ sĩ ra sàn: `bd656e3427a9.jpg`). Mọi chữ (lộ trình, lịch tuần, kỹ năng, trắc nghiệm, hỏi đáp…) và 5 ảnh thay ở /admin → Nội dung website → Truyền Nghề; mặc định nằm trong `public/assets/js/truyen-nghe.js`.
 
 ## Email xác nhận tiếng Anh
 

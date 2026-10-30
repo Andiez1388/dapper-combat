@@ -342,6 +342,33 @@ module.exports = async function browserTests(env, t, browser) {
     errs('Truyền Nghề');
   });
 
+  t.section('Truyền Nghề + Academy Ranking: chữ, ảnh, SEO sửa ở /admin → Nội dung website');
+  await t.run('nội dung trang JS', async () => {
+    const cat = await api('/api/cms/catalog');
+    const n = pg => cat.fields.filter(f => f.page === pg).length;
+    t.ok(n('career') > 400 && n('ranking') > 250 && cat.media.filter(m => m.page === 'career').length === 5 && cat.pages.some(x => x.id === 'career') && cat.pages.some(x => x.id === 'ranking'),
+      'danh mục có trang Truyền Nghề (' + n('career') + ' chữ, 5 ảnh) và Academy Ranking (' + n('ranking') + ' chữ)');
+    const text = { 'career.h1': { vi: 'Truyền Nghề Thử' }, 'career.data.path.fighter.rounds.0.t': { vi: 'Hiệp nền thử' }, 'career.title': { vi: 'Tab Truyền Nghề thử' }, 'career.seo.desc': { vi: 'Mô tả Google thử' },
+      'ranking.col.points': { vi: 'Điểm thử' }, 'ranking.rank.title': { vi: 'Bảng xếp hạng thử' }, 'ranking.seo.rank.desc': { vi: 'Mô tả ranking thử' } };
+    await api('/api/cms', { method: 'PUT', body: { text, media: { 'career.help.img': '/assets/media/bd656e3427a9.jpg' } } });
+    const tn = await fetch(B + '/truyen-nghe').then(r => r.text()), rk = await fetch(B + '/xep-hang').then(r => r.text());
+    t.ok(tn.includes('<title>Tab Truyền Nghề thử</title>') && tn.includes('content="Mô tả Google thử"') && rk.includes('<title>Bảng xếp hạng thử — Dapper Combat Academy Ranking</title>') && rk.includes('content="Mô tả ranking thử"'),
+      'tiêu đề tab + mô tả Google của 2 trang lấy từ /admin');
+    await page.goto(B + '/truyen-nghe?cms=career.data.path.fighter.rounds.0.t', { wait: 1500 });
+    let st = await page.eval(`({ h1: document.querySelector('h1').textContent, path: document.querySelector('.tn-side.fighter.on, .tn-side.on.fighter') ? 'fighter' : document.querySelector('.tn-plan.fighter.on') ? 'fighter' : 'coach',
+      round: document.body.textContent.includes('Hiệp nền thử'), hl: (document.querySelector('.dc-cms-hl') || {}).textContent || '', help: document.querySelector('.tn-help-img img').getAttribute('src'), title: document.title })`);
+    t.ok(st.h1 === 'Truyền Nghề Thử' && st.round && st.help === '/assets/media/bd656e3427a9.jpg' && st.title === 'Tab Truyền Nghề thử' && /Hiệp nền thử/.test(st.hl) && st.path === 'fighter',
+      'Truyền Nghề: chữ, chữ trong lộ trình, ảnh đã sửa hiện trên trang; "Xem trên trang" mở góc Võ sĩ và viền đúng chữ', st);
+    await page.goto(B + '/vo-si/_?cms=ranking.col.points', { wait: 300 });
+    const fUrl = await page.eval('location.pathname + location.search');
+    await page.goto(B + '/xep-hang', { wait: 1200 });
+    st = await page.eval(`({ th: [...document.querySelectorAll('th')].some(e => e.textContent === 'Điểm thử'), title: document.title })`);
+    t.ok(st.th && st.title === 'Bảng xếp hạng thử — Dapper Combat Academy Ranking' && /^\/vo-si\/[a-z0-9-]+\?cms=ranking\.col\.points$/.test(fUrl) && fUrl !== '/vo-si/_?cms=ranking.col.points',
+      'Academy Ranking: chữ đã sửa hiện trên trang; /vo-si/_ mở võ sĩ đầu tiên (giữ ?cms=)', { st, fUrl });
+    await api('/api/cms', { method: 'PUT', body: { text: Object.fromEntries(Object.keys(text).map(k => [k, null])), media: { 'career.help.img': null } } });
+    errs('Truyền Nghề + Ranking sửa ở /admin');
+  });
+
   t.section('Yêu cầu tư vấn setup trên trang');
   await t.run('tư vấn', async () => {
     const before = (await api('/api/consults')).length;

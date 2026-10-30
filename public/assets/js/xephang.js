@@ -194,8 +194,11 @@
   };
   Object.keys(T4).forEach(function (l) { Object.keys(T4[l]).forEach(function (k) { T[l][k] = T4[l][k]; }); });
   var en = function () { return DC.lang() === 'en'; };
+  // chữ sửa ở /admin → Nội dung website → Academy Ranking: khóa "ranking.<khóa>" (danh mục dựng bằng tools/cms-js-pages.js, đọc ?cmsdump)
+  if (/[?&]cmsdump\b/.test(location.search)) window.__cmsDump = Object.keys(T.vi).map(function (k) { return ['ranking.' + k, T.vi[k], T.en[k]]; });
   function t(k, vars) {
-    var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]) || k;
+    var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]);
+    s = s == null ? k : DC.x('ranking.' + k, en() ? 1 : 0, s) || '';
     if (vars) Object.keys(vars).forEach(function (v) { s = s.split('{' + v + '}').join(vars[v]); });
     return s;
   }
@@ -860,7 +863,7 @@
   var route = (m = /^\/vo-si\/([^/]+)$/.exec(path)) ? ['fighter', decodeURIComponent(m[1])] : (m = /^\/su-kien\/([^/]+)$/.exec(path)) ? ['event', decodeURIComponent(m[1])]
     : path === '/vo-si' ? ['fighters'] : path === '/su-kien' ? ['events'] : path === '/so-sanh' ? ['compare'] : ['ranking'];
   var SEC = { ranking: 'ranking', fighters: 'fighters', fighter: 'fighters', events: 'events', event: 'events', compare: 'compare' };
-  var TITLE = { ranking: 'nav.ranking', fighters: 'nav.fighters', events: 'nav.events' };
+  var TITLE = { ranking: 'rank.title', fighters: 'dir.title', events: 'ev.title', compare: 'cmp.title' };   // cùng khóa server dùng cho <title> (lib/rank-seo.js)
   function render() {
     [].forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = t(el.getAttribute('data-t')); });
     [].forEach.call(document.querySelectorAll('[data-ph]'), function (el) { el.setAttribute('placeholder', t(el.getAttribute('data-ph'))); el.setAttribute('aria-label', t(el.getAttribute('data-ph'))); });
