@@ -172,4 +172,28 @@ module.exports = async function opsTests(env, t) {
     r = await req('/api/backup/restore', { method: 'POST', body: { ...bk, files: { 'users.json': bk.files['users.json'].map(u => ({ ...u, role: 'staff' })) } } });
     t.ok(r.s === 400 && /admin/.test(r.j.error), 'bản sao lưu không có admin → từ chối (tránh bị khóa ngoài)', r.j);
   });
+
+  t.section('Nén dữ liệu (gzip)');
+  await t.run('gzip', async () => {
+    const zlib = require('zlib'), http = require('http'), path = require('path');
+    const get = (url, h = {}) => new Promise((ok, no) => http.get(B + url, { headers: h }, r => {
+      const c = []; r.on('data', d => c.push(d)); r.on('end', () => ok({ s: r.statusCode, h: r.headers, b: Buffer.concat(c) }));
+    }).on('error', no));
+    const GZ = { 'Accept-Encoding': 'gzip, deflate, br' };
+    let r = await get('/', GZ);
+    const html = r.h['content-encoding'] === 'gzip' ? zlib.gunzipSync(r.b).toString() : '';
+    t.ok(r.s === 200 && /<\/html>/i.test(html) && +r.h['content-length'] === r.b.length && /Accept-Encoding/.test(r.h.vary || ''), 'Trang chủ gửi nén gzip, giải nén ra đủ HTML', r.h);
+    t.ok(r.b.length * 2 < html.length, `nén còn ${r.b.length} / ${html.length} byte`);
+    r = await get('/');
+    t.ok(r.s === 200 && !r.h['content-encoding'] && /<\/html>/i.test(r.b.toString()), 'trình duyệt không nhận gzip → gửi bản thường');
+    r = await get('/api/products', GZ);
+    t.ok(r.h['content-encoding'] === 'gzip' && Array.isArray(JSON.parse(zlib.gunzipSync(r.b))), 'API (JSON) cũng nén');
+    r = await get('/assets/js/site.js', GZ);
+    t.ok(r.h['content-encoding'] === 'gzip' && r.h.etag, 'JS nén, giữ ETag', r.h);
+    r = await get('/assets/js/site.js', { ...GZ, 'If-None-Match': r.h.etag });
+    t.ok(r.s === 304 && !r.b.length, 'tải lại khi file chưa đổi → 304, không gửi lại', r.s);
+    const jpg = fs.readdirSync(path.join(__dirname, '..', 'public', 'assets', 'media')).find(f => /\.jpe?g$/.test(f));
+    r = await get('/assets/media/' + jpg, GZ);
+    t.ok(r.s === 200 && !r.h['content-encoding'] && /image\//.test(r.h['content-type']), 'ảnh không nén lại (đã nén sẵn)', r.h);
+  });
 };

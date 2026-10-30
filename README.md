@@ -40,7 +40,7 @@ Không có Chrome / Edge ở chỗ mặc định thì đặt `CHROME_PATH`. Kế
 
 ### Đưa lên mạng
 
-Website lưu dữ liệu trong file (thư mục `DC_DATA_DIR`) nên cần hosting có **ổ đĩa giữ dữ liệu** — không dùng được Vercel / Netlify. Hai cách có sẵn cấu hình:
+Website là một server Node.js chạy liên tục và lưu dữ liệu trong file (thư mục `DC_DATA_DIR`) nên cần hosting **chạy được Node.js + có ổ đĩa giữ dữ liệu** — không dùng được Vercel / Netlify / Supabase (Supabase là cơ sở dữ liệu + hàm chạy ngắn, không có server Node và ổ đĩa riêng). Tên miền mua ở đâu cũng được (Mắt Bão, PA Vietnam, Namecheap, Hostinger…), sau đó trỏ DNS về hosting. Các cách có sẵn cấu hình:
 
 **Hostinger** (gói **Business Web Hosting** hoặc **Cloud** — có mục Node.js web app; gói Single / Premium không chạy được):
 1. hPanel → **Websites → Add Website → Node.js web app** → **Connect with GitHub** → chọn repo này, nhánh `main` → Deploy.
@@ -125,7 +125,7 @@ Dữ liệu nằm ở `/var/lib/dapper-combat` (VPS) hoặc ổ đĩa `/var/data
 ## Cấu trúc
 
 ```
-server.js               Express: trang, file tĩnh (ảnh/video cache 1 năm), /assets/data/products.js
+server.js               Express: trang, file tĩnh (ảnh/video cache 1 năm; HTML/JS/CSS/JSON nén gzip), /assets/data/products.js
 routes/api.js           API: orders, registrations, consults, subscribe, products, uploads, auth, stats
 data/seed/products.json Danh mục sản phẩm ban đầu (lần chạy đầu sẽ chép sang data/products.json)
 data/*.json             Dữ liệu chạy thật (đơn hàng, khách, tài khoản) — không đưa lên git, cần sao lưu
@@ -304,6 +304,7 @@ Chủ shop chỉ cần sửa **tiếng Việt**. Khi bấm Lưu ở Chữ trên 
 - Mô tả Google của sản phẩm: "Mô tả SEO" của sản phẩm, không có thì mô tả sản phẩm (dưới 110 ký tự thì thêm giá).
 - Link Google đi theo được: chip danh mục Shop và breadcrumb sản phẩm là link `/shop?cat=<mã>` (mở sẵn danh mục đó), không còn `<a>` không có `href`.
 - Chọn tiếng Anh thì tiêu đề tab và mô tả cũng đổi sang tiếng Anh.
+- Tốc độ: server tự nén gzip HTML / JS / CSS / JSON (trang chủ 65 KB → 13 KB, không cần cài thêm gói); ảnh / video không nén lại (đã nén sẵn, cache 1 năm). Video nằm dưới màn hình đầu (`<video data-autoplay preload="none">`, vd 2 băng video Trang chủ, video Khóa học) chỉ tải và chạy khi khách sắp cuộn tới. Video đầu Trang chủ nên giữ dưới ~1,5 MB.
 - Cần điền **địa chỉ website** (Thiết lập → Thông báo) khi đưa lên mạng để link chuẩn và ảnh chia sẻ dùng đúng tên miền.
 
 ## Thanh toán chuyển khoản (VietQR)
@@ -340,3 +341,8 @@ Các form công khai giới hạn số lượt gửi cho mỗi IP để chống 
 - **Tài khoản nhận chuyển khoản:** cài ở `/admin` → Thanh toán để có mã VietQR thật.
 - **Kênh báo đơn mới:** cài Telegram hoặc email trong `.env`.
 - **Thanh toán online:** đăng ký SePay (tự xác nhận chuyển khoản / MoMo / ZaloPay), VNPay (thẻ) và dịch vụ trả góp VNPay, rồi nhập khóa ở `/admin` → Thiết lập → Thanh toán online. Chưa cài thì khách vẫn quét mã VietQR, chủ shop đối chiếu sao kê và bật “Đã nhận tiền” trong `/admin`.
+- **Trang chính sách** (đổi trả & bảo hành, bảo mật thông tin, giao hàng & thanh toán, điều khoản sử dụng): đang là bản nháp, chưa bật. Đọc lại, sửa đúng thông tin doanh nghiệp rồi bật ở `/admin` → Trang phụ.
+- **Dữ liệu mẫu:** 20 võ sĩ (ảnh minh họa) + 8 sự kiện ở Academy Ranking và 8 sản phẩm ở Shop là dữ liệu mẫu — thay bằng thật, ẩn hoặc xóa trong `/admin`. Đánh giá mẫu của sản phẩm đang tắt; chỉ bật khi có đánh giá thật.
+- **Biến môi trường trên hosting:** `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SITE_URL`, `DC_DATA_DIR`, `DC_UPLOAD_DIR`, `TRUST_PROXY` (xem mục Đưa lên mạng).
+- **Sau khi có tên miền:** điền địa chỉ website ở `/admin` → Thiết lập → Thông báo; khai báo `https://<tên-miền>/sitemap.xml` trong Google Search Console; dán ID Facebook Pixel ở `/admin` → Thiết lập → Thương hiệu & menu (nếu chạy quảng cáo).
+- **Sao lưu định kỳ:** `/admin` → Sao lưu dữ liệu + thư mục ảnh đã tải lên.

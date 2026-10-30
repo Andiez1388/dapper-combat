@@ -403,6 +403,18 @@
   function vw() { document.documentElement.style.setProperty('--dc-vw', document.documentElement.clientWidth + 'px'); }
   vw(); window.addEventListener('resize', vw); document.addEventListener('DOMContentLoaded', vw);
 
+  /* video nằm dưới màn hình đầu (<video data-autoplay preload="none">): chỉ tải và chạy khi sắp cuộn tới, ra khỏi màn hình thì dừng — trang mở nhanh hơn trên 4G */
+  document.addEventListener('DOMContentLoaded', function () {
+    var vs = [].slice.call(document.querySelectorAll('video[data-autoplay]'));
+    var play = function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+    if (!vs.length) return;
+    if (!('IntersectionObserver' in window)) return vs.forEach(play);
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) play(e.target); else e.target.pause(); });
+    }, { rootMargin: '400px 0px' });
+    vs.forEach(function (v) { io.observe(v); });
+  });
+
   /* "Xem trên trang" từ /admin: ?cms=<khóa>[&sec=<khu vực>][&item=<mã mục>] → mở đúng phần (giỏ hàng, form…), cuộn tới và viền đỏ
      khóa có thể là chữ, ảnh, icon, link, khối trang hoặc danh sách */
   var click = function (sel) { var b = document.querySelector(sel); if (b) b.click(); };

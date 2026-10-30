@@ -27,6 +27,34 @@ app.use((req, res, next) => {
   next();
 });
 
+// nén gzip cho chữ (HTML, CSS, JS, JSON, SVG, XML): nhẹ hơn ~70%, mở nhanh hơn trên điện thoại (điểm tốc độ Google)
+// ảnh / video đã nén sẵn → bỏ qua; bản nén của file tĩnh giữ trong bộ nhớ theo ETag
+const zlib = require('zlib');
+const ZIP_TYPE = /^(text\/|application\/(javascript|json|xml|ld\+json|manifest\+json)|image\/svg\+xml)/;
+const zipCache = new Map();
+app.use((req, res, next) => {
+  if (req.method === 'HEAD' || !/\bgzip\b/.test(req.headers['accept-encoding'] || '') || /^\/assets\/(media|uploads)\//.test(req.path)) return next();
+  const end = res.end.bind(res), chunks = [];
+  const buf = (c, enc) => (c == null || typeof c === 'function' ? null : Buffer.isBuffer(c) ? c : Buffer.from(c, typeof enc === 'string' ? enc : 'utf8'));
+  res.write = (c, enc) => { const b = buf(c, enc); if (b) chunks.push(b); return true; };
+  res.end = (c, enc) => {
+    const b = buf(c, enc); if (b) chunks.push(b);
+    let body = Buffer.concat(chunks);
+    if (res.headersSent) return end(body);
+    const vary = String(res.getHeader('Vary') || '');
+    if (!/accept-encoding|\*/i.test(vary)) res.setHeader('Vary', vary ? vary + ', Accept-Encoding' : 'Accept-Encoding');
+    if (body.length > 1024 && ZIP_TYPE.test(String(res.getHeader('Content-Type') || '')) && !res.getHeader('Content-Encoding') && res.statusCode !== 206) {
+      const tag = res.getHeader('ETag'), key = tag && req.path + '|' + tag;
+      body = (key && zipCache.get(key)) || zlib.gzipSync(body, { level: 6 });
+      if (key) { if (zipCache.size > 300) zipCache.clear(); zipCache.set(key, body); }
+      res.setHeader('Content-Encoding', 'gzip');
+    }
+    if (res.statusCode !== 304) res.setHeader('Content-Length', body.length);
+    return end(body);
+  };
+  next();
+});
+
 // đường dẫn cũ / gõ tắt
 const moved = { '/index.html': '/', '/shop.html': '/shop', '/khoa-hoc.html': '/khoa-hoc', '/courses': '/khoa-hoc', '/course': '/khoa-hoc',
   '/dich-vu-setup.html': '/dich-vu-setup', '/setup': '/dich-vu-setup', '/dich-vu': '/dich-vu-setup', '/admin.html': '/admin', '/checkout': '/shop/checkout',
