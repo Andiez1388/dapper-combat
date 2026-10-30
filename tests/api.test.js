@@ -149,6 +149,17 @@ module.exports = async function apiTests(env, t) {
     }
     const tn = (await req('/api/registrations', { tok: T })).j.filter(x => x.program === 'coach' || x.program === 'fighter');
     t.ok(tn.length === 2 && tn.every(x => x.total === 50000000 && x.due === 0), 'Truyền Nghề: học phí 50.000.000đ cho cả 2 khóa, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
+    // chọn đặt cọc / đóng đủ: số cần trả theo tiền cọc trong Thiết lập (0 = không nhận cọc)
+    const dueOf = async (pay, program = 'coach') => {
+      const x = await req('/api/registrations', { method: 'POST', body: { name: 'Học Viên Cọc', phone: '0907654322', program, pay, lang: 'vi' } });
+      return (await req('/api/registrations', { tok: T })).j.find(e => e.code === x.j.code).due;
+    };
+    t.ok(await dueOf('deposit') === 0 && await dueOf('full') === 50000000, 'Truyền Nghề: chưa đặt tiền cọc → chọn cọc vẫn chưa thu; đóng đủ = cả học phí');
+    await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 5000000, careerSeats: 2000 } } });
+    t.ok(await dueOf('deposit', 'fighter') === 5000000 && await dueOf('') === 0, 'Truyền Nghề: tiền cọc 5.000.000đ → chọn đặt cọc cần trả 5.000.000đ, tư vấn trước vẫn 0đ');
+    r = await req('/api/settings', { tok: T });
+    t.ok(r.j.course.careerSeats === 999, 'Truyền Nghề: số chỗ mỗi khóa tối đa 999', r.j.course.careerSeats);
+    await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 0, careerSeats: 0 } } });
     r = await req('/api/consults', { method: 'POST', body: { name: 'Khách Setup', phone: '0901234567', city: 'Đà Nẵng', lang: 'vi' } });
     t.ok(r.s === 201 && /^#DC-SVC-/.test(r.j.code), 'gửi yêu cầu tư vấn setup', r.j);
     r = await req('/api/subscribe', { method: 'POST', body: { email: 'x', lang: 'en' } });

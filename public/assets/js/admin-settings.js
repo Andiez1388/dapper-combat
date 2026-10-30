@@ -152,7 +152,7 @@
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
-    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPrice', 'careerStart'],
+    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPrice', 'careerStart', 'careerDeposit', 'careerSeats'],
     brand: ['logo', 'favicon', 'mapQuery', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
@@ -410,7 +410,10 @@
       panel('Truyền Nghề (khóa Coach + khóa Võ sĩ)', '<div class="set-grid3">' +
         moneyField('course', 'careerPrice', 'Học phí mỗi khóa 1 năm', defHint('course', 'careerPrice', money) + ' Coach và Võ sĩ cùng giá.') +
         '<label class="field"><span class="field__label">Ngày khai giảng</span><input type="date" data-text data-g="course" data-k="careerStart" value="' + esc(draft('course').careerStart || '') + '">' +
-          '<small class="field__hint">Hiện ở trang Truyền Nghề (/truyen-nghe), kèm đếm ngược tới ngày khai giảng.</small></label></div>') +
+          '<small class="field__hint">Hiện ở trang Truyền Nghề (/truyen-nghe), kèm đếm ngược tới ngày khai giảng.</small></label>' +
+        moneyField('course', 'careerDeposit', 'Tiền cọc giữ chỗ', 'Để 0 = không nhận cọc. Có số tiền → form đăng ký thêm lựa chọn “Đặt cọc giữ chỗ”, khách quét mã QR trả ngay.') +
+        numberField('course', 'careerSeats', 'Số chỗ mỗi khóa', 0, 999, 'chỗ', 'Để 0 = không hiện. Có số → trang ghi “Mỗi khóa nhận tối đa … học viên”.') +
+        '<p class="set-err" data-warn="career" hidden></p></div>') +
       panel('Lịch tập',
         '<p class="set-note">Mỗi hàng là một lớp trong bảng lịch tập ở trang Khóa học. Màu của hàng theo “Loại lớp”. Nếu chọn “Khi bấm vào hàng”, khách bấm vào hàng sẽ mở đúng form đăng ký, chọn sẵn lớp / khung giờ.</p>' +
         '<div class="sr-list" data-sr-list></div><p class="set-err" data-sr-err hidden></p>' +
@@ -423,6 +426,8 @@
     var h = $('[data-calc="hssv"]'); if (h) h.textContent = money((d.hssvMonth || 0) * (d.hssvMonths || 0)) + ' (' + (d.hssvMonths || 0) + ' tháng × ' + money(d.hssvMonth) + ')';
     var fw = $('[data-found-warn]');
     if (fw) { var bad = d.foundDeposit > d.foundPrice; fw.textContent = bad ? 'Tiền đặt cọc đang lớn hơn học phí trọn khóa.' : ''; fw.hidden = !bad; }
+    var cw = $('[data-warn="career"]');
+    if (cw) { var cb = d.careerDeposit > d.careerPrice; cw.textContent = cb ? 'Tiền cọc Truyền Nghề đang lớn hơn học phí — khách chỉ phải cọc tối đa bằng học phí.' : ''; cw.hidden = !cb; }
     var sw = $('[data-start-warn]');
     if (sw) { var past = startPast(d.foundStart); sw.textContent = past ? 'Ngày khai giảng đã qua — trang web đang hiện ngày cũ. Chọn ngày khai giảng kế tiếp.' : ''; sw.hidden = !past; }
   }

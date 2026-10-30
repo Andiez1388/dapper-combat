@@ -1,8 +1,10 @@
-/* Dapper Combat — Truyền Nghề (/truyen-nghe): đào tạo coach / võ sĩ từ con số 0, khóa 1 năm.
-   Hai con đường như hai góc đài: góc xanh = Coach (học xong có việc làm tại HVP Academy), góc đỏ = Võ sĩ (thi đấu dưới tên The Corner).
+/* Dapper Combat — Truyền Nghề (/truyen-nghe): đào tạo coach / võ sĩ từ con số 0, khóa 1 năm. Trang bán khóa học.
+   Hai con đường như hai góc đài: góc xanh = Coach (bao việc làm tại HVP Academy), góc đỏ = Võ sĩ (bao thi đấu dưới tên The Corner).
    Cùng khối lượng (12 tháng, 5 buổi / tuần, 2 ca / ngày), khác nội dung giảng dạy và mục tiêu.
-   Học phí + ngày khai giảng: /admin → Thiết lập → Học phí & lịch tập. Đăng ký gửi về /admin → Đăng ký khóa học (chương trình coach / fighter).
-   Mở thẳng một con đường: /truyen-nghe#coach hoặc /truyen-nghe#vo-si. */
+   Thứ tự trang theo đường đi của người mua: đầu trang chọn góc + đếm ngược → trắc nghiệm "hợp góc nào" → lộ trình / tuần học / kỹ năng
+   → học phí chia nhỏ → ghi danh (giấy nhập môn hiện tên người đăng ký, đóng dấu khi gửi xong, có thể đặt cọc / trả ngay) → hỏi đáp + Zalo.
+   Học phí, ngày khai giảng, tiền cọc, số chỗ: /admin → Thiết lập → Học phí & lịch tập → Truyền Nghề.
+   Đăng ký gửi về /admin → Đăng ký khóa học (chương trình coach / fighter). Mở thẳng một con đường: /truyen-nghe#coach hoặc #vo-si. */
 (function () {
   'use strict';
   var root = document.getElementById('tn');
@@ -14,83 +16,147 @@
   var START = String(DC.setting('course.careerStart', '2027-02-20') || '2027-02-20');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(START)) START = '2027-02-20';
   var PRICE = Number(DC.setting('course.careerPrice', 50000000)) || 50000000;
+  var DEPOSIT = Math.min(Number(DC.setting('course.careerDeposit', 0)) || 0, PRICE);
+  var SEATS = Number(DC.setting('course.careerSeats', 0)) || 0;
+  var SESS = 52 * 10;   // ≈ số ca cả khóa: 52 tuần × 5 buổi × 2 ca
+  var YEAR = START.slice(0, 4);
+  var media = function (k, def) { return DC.m ? DC.m(k, def) : def; };
+  var IMG = { coach: media('career.hero.coach', '/assets/media/bc3dad0ad714.jpg'), fighter: media('career.hero.fighter', '/assets/media/bd656e3427a9.jpg') };
+  // cách trả tiền đang mở trên web (/admin → Thanh toán, Thanh toán online)
+  var PO = DC.payOnline ? DC.payOnline() : {};
+  var BANK = DC.pay ? DC.pay() : null;
+  var CAN_PAY = !!(BANK || PO.vnpay || PO.installment);
+  var ISP = !!(PO.installment && PRICE >= (PO.installmentMin || 0));
+  var C = (window.__CMS && window.__CMS.c) || {};
+  var PHONE = C.phone && !/x/i.test(C.phone) ? String(C.phone) : '';
 
   var T = {
     vi: {
       'site.home': 'Trang chủ', 'site.shop': 'Cửa hàng', 'site.course': 'Khóa học', 'site.services': 'Dịch vụ Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Truyền Nghề',
       'foot.note': 'Truyền Nghề là chương trình đào tạo nghề boxing của Dapper Combat.', 'foot.home': 'Về trang chủ Dapper Combat',
-      'h1': 'Truyền Nghề', 'special': 'Chương trình đặc biệt',
-      'lead': 'Học boxing từ con số 0 để thành nghề trong 1 năm. Hai con đường, hai bộ kỹ năng, hai đích đến: đứng lớp làm coach, hoặc lên sàn làm võ sĩ.',
-      'start': 'Khai giảng {d}', 'left': 'còn {n} ngày', 'today': 'khai giảng hôm nay', 'started': 'đã khai giảng',
-      'f.months': 'tháng học', 'f.sess': 'buổi mỗi tuần', 'f.shifts': 'ca mỗi ngày', 'f.fee': 'học phí mỗi khóa',
-      'cta.apply': 'Đăng ký giữ chỗ', 'cta.paths': 'Xem 2 con đường', 'ring.hint': 'Bấm vào một góc đài để xem con đường đó.', 'ring.label': 'Sàn đấu: góc đỏ Võ sĩ, góc xanh Coach',
-      'paths.h': 'Hai góc đài, một sàn tập', 'paths.sub': 'Cùng giờ tập, cùng mồ hôi, nhưng mỗi góc đài đi về một hướng. Chọn góc của bạn.',
-      'card.who': 'Dành cho', 'card.goal': 'Mục tiêu', 'card.out': 'Học xong', 'card.pick': 'Xem lộ trình {n}', 'card.on': 'Đang xem',
-      'bar.label': 'Con đường', 'bar.apply': 'Đăng ký',
-      'cmp.h': 'Cùng khối lượng, khác đích đến', 'cmp.sub': 'Hai khóa học cùng số tháng, cùng số buổi, cùng số ca. Khác nhau ở nội dung giảng dạy và mục tiêu cuối cùng.',
+      'title': 'Truyền Nghề — Học boxing thành nghề trong 1 năm | Dapper Combat',
+      'h1': 'Truyền Nghề', 'special': 'Chương trình đặc biệt · Khóa {y}', 'claim': 'Một năm. Từ con số 0 thành nghề boxing.',
+      'side.coach': 'Góc xanh · Coach', 'side.fighter': 'Góc đỏ · Võ sĩ', 'bao.coach': 'Bao việc làm', 'bao.fighter': 'Bao thi đấu',
+      'baosub.coach': 'tại HVP Academy khi học xong', 'baosub.fighter': 'dưới tên The Corner khi học xong',
+      'pick.coach': 'Tôi muốn đứng lớp', 'pick.fighter': 'Tôi muốn lên sàn',
+      'start': 'Khai giảng {d}', 'clock.d': 'ngày', 'clock.h': 'giờ', 'clock.m': 'phút', 'clock.s': 'giây', 'clock.done': 'Khóa {y} đã khai giảng',
+      'per.course': 'trọn khóa · {c} mỗi ca tập', 'seats': 'Mỗi khóa nhận tối đa {n} học viên',
+      'cta.apply': 'Giữ chỗ khóa {y}', 'cta.quiz': 'Bạn hợp góc nào?',
+      'quiz.h': 'Bạn hợp góc nào?', 'quiz.sub': '4 câu hỏi, chưa tới 30 giây. Không có câu trả lời sai, chỉ có góc hợp với bạn hơn.',
+      'quiz.n': 'Câu {i} / {n}', 'quiz.back': 'Câu trước', 'quiz.res': 'Kết quả của bạn', 'quiz.again': 'Làm lại',
+      'quiz.r.coach': 'Bạn thuộc góc xanh: Coach', 'quiz.r.fighter': 'Bạn thuộc góc đỏ: Võ sĩ', 'quiz.r.tie': 'Bạn hợp cả hai góc',
+      'quiz.rs.coach': 'Bạn thích làm người khác giỏi lên. Học xong 1 năm, bạn có việc làm tại HVP Academy.',
+      'quiz.rs.fighter': 'Bạn muốn tự mình lên sàn. Học xong 1 năm, bạn thi đấu dưới tên The Corner.',
+      'quiz.rs.tie': 'Chọn theo đích đến bạn muốn sau 12 tháng: đứng lớp hay lên sàn.',
+      'quiz.see': 'Xem lộ trình {n}', 'quiz.go': 'Giữ chỗ khóa {n}',
+      'bar.label': 'Con đường', 'bar.apply': 'Giữ chỗ',
+      'road.h': 'Lộ trình 12 tháng, 4 hiệp', 'road.sub': 'Mỗi hiệp 3 tháng, kết thúc bằng một mốc kiểm tra. Hết hiệp 4 là tiếng chuông đầu tiên của nghề.',
+      'road.round': 'Hiệp {n}', 'road.mile': 'Mốc kết thúc hiệp', 'road.bell': 'Sau 12 tháng',
+      'week.h': 'Một tuần học mẫu', 'week.sub': 'Thứ 2 đến Thứ 6, mỗi ngày 2 ca. Khung lịch giống nhau ở cả 2 khóa, chỉ nội dung từng ca là khác.',
+      'week.s1': 'Ca 1', 'week.s1d': 'buổi sáng', 'week.s2': 'Ca 2', 'week.s2d': 'buổi chiều', 'week.note': '10 ca mỗi tuần ở cả 2 khóa. Đổi con đường ở thanh phía trên để thấy nội dung từng ca thay đổi.',
+      'd1': 'Thứ 2', 'd2': 'Thứ 3', 'd3': 'Thứ 4', 'd4': 'Thứ 5', 'd5': 'Thứ 6',
+      'tag.tech': 'Kỹ thuật', 'tag.fit': 'Thể lực', 'tag.theory': 'Lý thuyết', 'tag.teach': 'Thực hành dạy', 'tag.spar': 'Sparring', 'tag.tactic': 'Chiến thuật',
+      'skills.h': 'Bộ kỹ năng {n}',
+      'cmp.h': 'Cùng khối lượng, khác đích đến', 'cmp.sub': 'Hai khóa cùng số tháng, cùng số buổi, cùng số ca. Khác nhau ở nội dung giảng dạy và mục tiêu cuối cùng.',
       'cmp.same': 'Giống nhau', 'cmp.diff': 'Khác nhau',
       'cmp.time': 'Thời gian', 'cmp.sched': 'Lịch học', 'cmp.fee': 'Học phí', 'cmp.content': 'Nội dung chính', 'cmp.goal': 'Mục tiêu', 'cmp.out': 'Học xong',
       'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày',
-      'road.h': 'Lộ trình 12 tháng, 4 hiệp', 'road.sub': 'Mỗi hiệp 3 tháng, kết thúc bằng một mốc kiểm tra. Hết hiệp 4 là tiếng chuông đầu tiên của nghề.',
-      'road.round': 'Hiệp {n}', 'road.mile': 'Mốc kết thúc hiệp', 'road.bell': 'Sau 12 tháng',
-      'week.h': 'Một tuần học mẫu', 'week.sub': 'Thứ 2 đến Thứ 6, mỗi ngày 2 ca. Khung lịch giống hệt nhau ở cả 2 khóa, chỉ nội dung từng ca là khác.',
-      'week.s1': 'Ca 1', 'week.s1d': 'buổi sáng', 'week.s2': 'Ca 2', 'week.s2d': 'buổi chiều', 'week.note': '10 ca mỗi tuần ở cả 2 khóa. Bấm đổi con đường để thấy nội dung từng ca thay đổi.',
-      'd1': 'Thứ 2', 'd2': 'Thứ 3', 'd3': 'Thứ 4', 'd4': 'Thứ 5', 'd5': 'Thứ 6',
-      'tag.tech': 'Kỹ thuật', 'tag.fit': 'Thể lực', 'tag.theory': 'Lý thuyết', 'tag.teach': 'Thực hành dạy', 'tag.spar': 'Sparring', 'tag.tactic': 'Chiến thuật',
-      'skills.h': 'Bộ kỹ năng {n}', 'promise.h': 'Cam kết khi học xong', 'seal.coach': 'VIỆC LÀM', 'seal.fighter': 'THI ĐẤU',
-      'fee.h': 'Học phí', 'fee.per': 'mỗi khóa 1 năm', 'fee.same': 'Coach và Võ sĩ cùng mức học phí.', 'fee.how': 'Hình thức đóng học phí được tư vấn khi bạn đăng ký.',
-      'form.h': 'Đăng ký giữ chỗ', 'form.sub': 'Để lại thông tin, Dapper Combat sẽ gọi lại để tư vấn và giữ chỗ cho bạn.',
-      'form.path': 'Bạn muốn theo con đường nào?', 'form.name': 'Họ và tên', 'form.phone': 'Số điện thoại', 'form.email': 'Email (không bắt buộc)', 'form.year': 'Năm sinh',
+      'fee.h': '{p}, chia nhỏ ra', 'fee.sub': 'Học phí trọn khóa 12 tháng. Coach và Võ sĩ cùng một mức.',
+      'fee.whole': 'trọn khóa 12 tháng', 'fee.mo': 'mỗi tháng', 'fee.wk': 'mỗi tuần · 10 ca', 'fee.ca': 'mỗi ca tập', 'fee.ca.n': '≈ {n} ca cả khóa',
+      'gets.h': 'Khóa {n} gồm', 'pay.h': 'Cách đóng học phí',
+      'pay.dep': 'Đặt cọc {d} để giữ chỗ', 'pay.bank': 'Chuyển khoản, quét mã QR', 'pay.card': 'Thẻ ngân hàng, Visa / Mastercard (VNPay)', 'pay.isp': 'Trả góp qua thẻ tín dụng',
+      'pay.ask': 'Hình thức đóng học phí được tư vấn khi bạn đăng ký.', 'pay.free': 'Đăng ký tư vấn không mất phí',
+      'form.h': 'Ghi danh khóa {y}', 'form.sub': 'Điền thông tin, giấy nhập môn của bạn hiện ngay bên cạnh. Dapper Combat gọi lại để tư vấn và giữ chỗ cho bạn.',
+      'form.path': 'Bạn chọn góc nào?', 'form.name': 'Họ và tên', 'form.phone': 'Số điện thoại', 'form.email': 'Email (không bắt buộc)', 'form.year': 'Năm sinh',
       'form.exp': 'Kinh nghiệm boxing', 'exp.0': 'Chưa tập bao giờ', 'exp.1': 'Dưới 1 năm', 'exp.2': 'Từ 1 năm trở lên', 'form.note': 'Bạn muốn hỏi thêm gì? (không bắt buộc)',
-      'form.send': 'Gửi đăng ký', 'form.sending': 'Đang gửi…',
-      'ok.h': 'Đã nhận đăng ký', 'ok.p': 'Mã đăng ký của bạn: {c}. Dapper Combat sẽ gọi lại số {ph} để tư vấn khóa {n}.', 'ok.again': 'Đăng ký cho người khác',
+      'form.pay': 'Bạn muốn', 'opt.consult': 'Tư vấn trước, chưa đóng tiền', 'opt.consult.s': 'Dapper Combat gọi lại, bạn quyết định sau',
+      'opt.deposit': 'Đặt cọc {d} giữ chỗ ngay', 'opt.deposit.s': 'Quét mã QR trả ngay sau khi gửi', 'opt.full': 'Đóng đủ {p}', 'opt.full.s': 'Quét mã QR hoặc trả bằng thẻ sau khi gửi', 'opt.full.isp': 'Có thể trả góp qua thẻ tín dụng',
+      'send.consult': 'Gửi đăng ký giữ chỗ', 'send.deposit': 'Ghi danh và đặt cọc', 'send.full': 'Ghi danh và thanh toán', 'form.sending': 'Đang gửi…',
+      'payname.consult': 'Tư vấn trước', 'payname.deposit': 'Đặt cọc giữ chỗ', 'payname.full': 'Đóng đủ học phí',
+      'ok.h': 'Đã ghi danh', 'ok.p': 'Mã đăng ký của bạn: {c}. Dapper Combat sẽ gọi lại số {ph} để tư vấn khóa {n}.',
+      'ok.pay': 'Còn một bước: {what} {d} để giữ chỗ. Nội dung chuyển khoản: {note}.', 'ok.what.deposit': 'đặt cọc', 'ok.what.full': 'thanh toán',
+      'ok.again': 'Ghi danh cho người khác',
       'err.name': 'Nhập họ và tên', 'err.phone': 'Số điện thoại chưa đúng', 'err.year': 'Năm sinh chưa đúng',
-      'faq.h': 'Câu hỏi thường gặp',
+      'cert.label': 'Bản xem trước giấy nhập môn', 'cert.title': 'Giấy nhập môn', 'cert.sub': 'Truyền Nghề · Khóa {y} · Khai giảng {d}', 'cert.no': 'Số',
+      'cert.student': 'Học viên', 'cert.ph': 'Tên của bạn', 'cert.path': 'Con đường', 'cert.out': 'Đầu ra', 'cert.time': 'Thời gian', 'cert.time.v': '12 tháng · 10 ca mỗi tuần',
+      'cert.born': 'Năm sinh', 'cert.date': 'Ngày ghi danh', 'cert.wait': 'CHỜ GHI DANH', 'cert.done1': 'ĐÃ', 'cert.done2': 'GHI DANH', 'cert.ring': 'TRUYỀN NGHỀ · KHÓA {y} · DAPPER COMBAT · ',
+      'faq.h': 'Câu hỏi thường gặp', 'help.h': 'Còn băn khoăn?', 'help.p': 'Hỏi thẳng Dapper Combat về lịch học, học phí và đầu ra trước khi quyết định.',
+      'help.zalo': 'Nhắn Zalo', 'help.call': 'Gọi {p}',
+      'dock.t': 'Khóa {y} · {p}', 'dock.left': 'còn {n} ngày tới khai giảng',
       'q1': 'Chưa từng tập boxing có học được không?', 'a1': 'Được. Cả 2 khóa đều bắt đầu từ con số 0. Hiệp đầu tiên (3 tháng đầu) dành cho nền tảng: tư thế, bộ pháp, đòn cơ bản và thể lực.',
       'q2': 'Hai khóa khác nhau ở đâu?', 'a2': 'Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần, 2 ca mỗi ngày. Khác nội dung và mục tiêu: Coach học phương pháp dạy và có việc làm tại HVP Academy; Võ sĩ học kỹ thuật, chiến thuật thi đấu và ở lại thi đấu dưới tên The Corner.',
       'q3': 'Lịch học cụ thể thế nào?', 'a3': 'Học từ Thứ 2 đến Thứ 6, mỗi ngày 2 ca (sáng và chiều), liên tục 12 tháng kể từ ngày khai giảng {d}.',
-      'q4': 'Học phí bao nhiêu, đóng thế nào?', 'a4': '{fee} cho cả khóa 1 năm, Coach và Võ sĩ cùng giá. Hình thức đóng học phí được tư vấn khi bạn đăng ký.',
+      'q4': 'Học phí bao nhiêu, đóng thế nào?', 'a4': '{fee} cho cả khóa 1 năm, Coach và Võ sĩ cùng giá. {how}',
       'q5': 'Học xong thì sao?', 'a5': 'Coach được nhận làm việc tại HVP Academy. Võ sĩ ở lại tập luyện và được dẫn đi thi đấu dưới tên The Corner.',
+      'q6': 'Giữ chỗ có mất phí không?', 'a6.free': 'Không. Đăng ký tư vấn trước không mất phí, Dapper Combat gọi lại trước khi bạn đóng học phí.',
+      'a6.dep': 'Bạn chọn được: đăng ký tư vấn trước không mất phí, hoặc đặt cọc {d} để giữ chỗ ngay.',
+      'how.dep': 'Có thể đặt cọc {d} để giữ chỗ.', 'how.list': 'Đóng bằng: {l}.',
     },
     en: {
       'site.home': 'Home', 'site.shop': 'Shop', 'site.course': 'Courses', 'site.services': 'Gym Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Pro Pathways',
       'foot.note': 'Pro Pathways is the boxing career program of Dapper Combat.', 'foot.home': 'Back to Dapper Combat',
-      'h1': 'Pro Pathways', 'special': 'Special program',
-      'lead': 'Go from zero to a boxing career in one year. Two paths, two skill sets, two destinations: coach in the gym, or fighter in the ring.',
-      'start': 'Starts {d}', 'left': 'in {n} days', 'today': 'starts today', 'started': 'now running',
-      'f.months': 'months', 'f.sess': 'sessions a week', 'f.shifts': 'shifts a day', 'f.fee': 'per course',
-      'cta.apply': 'Reserve a place', 'cta.paths': 'See both paths', 'ring.hint': 'Tap a corner of the ring to see that path.', 'ring.label': 'The ring: red corner Fighter, blue corner Coach',
-      'paths.h': 'Two corners, one gym', 'paths.sub': 'Same hours, same sweat, but each corner heads somewhere different. Pick yours.',
-      'card.who': 'For', 'card.goal': 'Goal', 'card.out': 'When you finish', 'card.pick': 'See the {n} path', 'card.on': 'Viewing',
-      'bar.label': 'Path', 'bar.apply': 'Apply',
+      'title': 'Pro Pathways — A boxing career in one year | Dapper Combat',
+      'h1': 'Pro Pathways', 'special': 'Special program · Class of {y}', 'claim': 'One year. From zero to a boxing career.',
+      'side.coach': 'Blue corner · Coach', 'side.fighter': 'Red corner · Fighter', 'bao.coach': 'Job guaranteed', 'bao.fighter': 'Fights guaranteed',
+      'baosub.coach': 'at HVP Academy when you finish', 'baosub.fighter': 'under the name The Corner when you finish',
+      'pick.coach': 'I want to coach', 'pick.fighter': 'I want to fight',
+      'start': 'Starts {d}', 'clock.d': 'days', 'clock.h': 'hrs', 'clock.m': 'min', 'clock.s': 'sec', 'clock.done': 'The class of {y} has started',
+      'per.course': 'full course · {c} per session', 'seats': 'Each course takes at most {n} students',
+      'cta.apply': 'Reserve a place for {y}', 'cta.quiz': 'Which corner fits you?',
+      'quiz.h': 'Which corner fits you?', 'quiz.sub': '4 questions, under 30 seconds. No wrong answers, just the corner that suits you better.',
+      'quiz.n': 'Question {i} / {n}', 'quiz.back': 'Previous', 'quiz.res': 'Your result', 'quiz.again': 'Start over',
+      'quiz.r.coach': 'You belong in the blue corner: Coach', 'quiz.r.fighter': 'You belong in the red corner: Fighter', 'quiz.r.tie': 'Both corners fit you',
+      'quiz.rs.coach': 'You like making other people better. Finish the year and you have a job at HVP Academy.',
+      'quiz.rs.fighter': 'You want to step into the ring yourself. Finish the year and you fight under The Corner.',
+      'quiz.rs.tie': 'Pick by where you want to be in 12 months: in front of a class, or in the ring.',
+      'quiz.see': 'See the {n} path', 'quiz.go': 'Reserve a {n} place',
+      'bar.label': 'Path', 'bar.apply': 'Reserve',
+      'road.h': '12 months, 4 rounds', 'road.sub': 'Each round lasts 3 months and ends with a checkpoint. After round 4 comes the first bell of your career.',
+      'road.round': 'Round {n}', 'road.mile': 'End-of-round checkpoint', 'road.bell': 'After 12 months',
+      'week.h': 'A sample week', 'week.sub': 'Monday to Friday, 2 shifts a day. The timetable is the same for both courses; only what happens in each shift differs.',
+      'week.s1': 'Shift 1', 'week.s1d': 'morning', 'week.s2': 'Shift 2', 'week.s2d': 'afternoon', 'week.note': '10 shifts a week on both courses. Switch paths in the bar above to see each shift change.',
+      'd1': 'Mon', 'd2': 'Tue', 'd3': 'Wed', 'd4': 'Thu', 'd5': 'Fri',
+      'tag.tech': 'Technique', 'tag.fit': 'Conditioning', 'tag.theory': 'Theory', 'tag.teach': 'Teaching practice', 'tag.spar': 'Sparring', 'tag.tactic': 'Tactics',
+      'skills.h': '{n} skill set',
       'cmp.h': 'Same workload, different destination', 'cmp.sub': 'Both courses run the same months, sessions and shifts. They differ in what is taught and where it leads.',
       'cmp.same': 'Same', 'cmp.diff': 'Different',
       'cmp.time': 'Length', 'cmp.sched': 'Schedule', 'cmp.fee': 'Fee', 'cmp.content': 'Core content', 'cmp.goal': 'Goal', 'cmp.out': 'When you finish',
       'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day',
-      'road.h': '12 months, 4 rounds', 'road.sub': 'Each round lasts 3 months and ends with a checkpoint. After round 4 comes the first bell of your career.',
-      'road.round': 'Round {n}', 'road.mile': 'End-of-round checkpoint', 'road.bell': 'After 12 months',
-      'week.h': 'A sample week', 'week.sub': 'Monday to Friday, 2 shifts a day. The timetable is identical for both courses; only what happens in each shift differs.',
-      'week.s1': 'Shift 1', 'week.s1d': 'morning', 'week.s2': 'Shift 2', 'week.s2d': 'afternoon', 'week.note': '10 shifts a week on both courses. Switch paths to see each shift change.',
-      'd1': 'Mon', 'd2': 'Tue', 'd3': 'Wed', 'd4': 'Thu', 'd5': 'Fri',
-      'tag.tech': 'Technique', 'tag.fit': 'Conditioning', 'tag.theory': 'Theory', 'tag.teach': 'Teaching practice', 'tag.spar': 'Sparring', 'tag.tactic': 'Tactics',
-      'skills.h': '{n} skill set', 'promise.h': 'What we commit to', 'seal.coach': 'JOB', 'seal.fighter': 'FIGHT',
-      'fee.h': 'Fee', 'fee.per': 'per one-year course', 'fee.same': 'Coach and Fighter cost the same.', 'fee.how': 'Payment options are explained when you apply.',
-      'form.h': 'Reserve a place', 'form.sub': 'Leave your details and Dapper Combat will call you back to advise and hold your place.',
-      'form.path': 'Which path do you want?', 'form.name': 'Full name', 'form.phone': 'Phone number', 'form.email': 'Email (optional)', 'form.year': 'Year of birth',
+      'fee.h': '{p}, broken down', 'fee.sub': 'One fee for the full 12-month course. Coach and Fighter cost the same.',
+      'fee.whole': 'full 12-month course', 'fee.mo': 'per month', 'fee.wk': 'per week · 10 sessions', 'fee.ca': 'per session', 'fee.ca.n': '≈ {n} sessions in total',
+      'gets.h': 'The {n} course includes', 'pay.h': 'How to pay',
+      'pay.dep': 'A {d} deposit holds your place', 'pay.bank': 'Bank transfer by QR code', 'pay.card': 'Bank card, Visa / Mastercard (VNPay)', 'pay.isp': 'Instalments on a credit card',
+      'pay.ask': 'Payment options are explained when you apply.', 'pay.free': 'Applying for advice is free',
+      'form.h': 'Enrol for {y}', 'form.sub': 'Fill in your details and your enrolment paper appears alongside. Dapper Combat will call you back to advise and hold your place.',
+      'form.path': 'Which corner?', 'form.name': 'Full name', 'form.phone': 'Phone number', 'form.email': 'Email (optional)', 'form.year': 'Year of birth',
       'form.exp': 'Boxing experience', 'exp.0': 'Never trained', 'exp.1': 'Under 1 year', 'exp.2': '1 year or more', 'form.note': 'Anything you want to ask? (optional)',
-      'form.send': 'Send application', 'form.sending': 'Sending…',
-      'ok.h': 'Application received', 'ok.p': 'Your reference: {c}. Dapper Combat will call {ph} to talk about the {n} course.', 'ok.again': 'Apply for someone else',
+      'form.pay': 'You want to', 'opt.consult': 'Get advice first, pay nothing yet', 'opt.consult.s': 'Dapper Combat calls you, you decide later',
+      'opt.deposit': 'Pay a {d} deposit now', 'opt.deposit.s': 'Scan the QR code right after sending', 'opt.full': 'Pay the full {p}', 'opt.full.s': 'Scan the QR code or pay by card after sending', 'opt.full.isp': 'Credit card instalments available',
+      'send.consult': 'Send my application', 'send.deposit': 'Enrol and pay deposit', 'send.full': 'Enrol and pay', 'form.sending': 'Sending…',
+      'payname.consult': 'Advice first', 'payname.deposit': 'Deposit to hold a place', 'payname.full': 'Full fee',
+      'ok.h': 'You are enrolled', 'ok.p': 'Your reference: {c}. Dapper Combat will call {ph} to talk about the {n} course.',
+      'ok.pay': 'One more step: {what} {d} to hold your place. Transfer note: {note}.', 'ok.what.deposit': 'pay the deposit of', 'ok.what.full': 'pay',
+      'ok.again': 'Enrol someone else',
       'err.name': 'Please enter your name', 'err.phone': 'Please enter a valid phone number', 'err.year': 'Please check the year of birth',
-      'faq.h': 'Questions',
+      'cert.label': 'Enrolment paper preview', 'cert.title': 'Enrolment paper', 'cert.sub': 'Pro Pathways · Class of {y} · Starts {d}', 'cert.no': 'No.',
+      'cert.student': 'Student', 'cert.ph': 'Your name', 'cert.path': 'Path', 'cert.out': 'Outcome', 'cert.time': 'Length', 'cert.time.v': '12 months · 10 sessions a week',
+      'cert.born': 'Born', 'cert.date': 'Enrolled on', 'cert.wait': 'AWAITING', 'cert.done1': 'ENROLLED', 'cert.done2': YEAR, 'cert.ring': 'PRO PATHWAYS · CLASS OF {y} · DAPPER COMBAT · ',
+      'faq.h': 'Questions', 'help.h': 'Still unsure?', 'help.p': 'Ask Dapper Combat directly before you decide: schedule, fees and what happens after.',
+      'help.zalo': 'Message on Zalo', 'help.call': 'Call {p}',
+      'dock.t': 'Class of {y} · {p}', 'dock.left': '{n} days until the start',
       'q1': 'Can I join if I have never boxed?', 'a1': 'Yes. Both courses start from zero. The first round (the first 3 months) covers the foundations: stance, footwork, basic punches and conditioning.',
       'q2': 'How do the two courses differ?', 'a2': 'Same workload: 12 months, 5 sessions a week, 2 shifts a day. Different content and goal: Coach learns how to teach and gets a job at HVP Academy; Fighter learns competition technique and tactics and stays on to fight under The Corner.',
       'q3': 'What does the timetable look like?', 'a3': 'Monday to Friday, 2 shifts a day (morning and afternoon), for 12 months from the start date, {d}.',
-      'q4': 'How much is it and how do I pay?', 'a4': '{fee} for the full one-year course, the same for Coach and Fighter. Payment options are explained when you apply.',
+      'q4': 'How much is it and how do I pay?', 'a4': '{fee} for the full one-year course, the same for Coach and Fighter. {how}',
       'q5': 'What happens when I finish?', 'a5': 'Coaches are hired to work at HVP Academy. Fighters stay on to train and are taken to compete under the name The Corner.',
+      'q6': 'Does reserving a place cost anything?', 'a6.free': 'No. Applying for advice is free; Dapper Combat calls you before you pay any fee.',
+      'a6.dep': 'Your choice: apply for advice for free, or pay a {d} deposit to hold your place straight away.',
+      'how.dep': 'A {d} deposit holds your place.', 'how.list': 'Pay by: {l}.',
     },
   };
   function t(k, v) {
-    var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]) || k;
+    var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]);
+    if (s == null) s = k;
     if (v) Object.keys(v).forEach(function (x) { s = s.split('{' + x + '}').join(v[x]); });
     return s;
   }
@@ -98,13 +164,12 @@
   /* ─── Hai con đường ─────────────────────────────────────────────────────── */
   var P = {
     coach: {
-      hash: 'coach', corner: p('Góc xanh', 'Blue corner'), name: p('Coach', 'Coach'), title: p('Huấn luyện viên', 'Coach'), seal: 'HVP ACADEMY',
-      who: p('Người muốn sống bằng nghề dạy boxing. Chưa biết đấm cũng được: bạn học như một võ sĩ trước khi học cách dạy.', 'People who want to make a living teaching boxing. No experience needed: you train like a fighter before you learn to teach.'),
-      goal: p('Đứng lớp dạy boxing chuyên nghiệp, lớp nhóm và 1-1.', 'Teach boxing professionally, group classes and 1-on-1.'),
+      hash: 'coach', corner: p('Góc xanh', 'Blue corner'), name: p('Coach', 'Coach'),
       out: p('Có việc làm tại HVP Academy', 'A job at HVP Academy'),
       content: p('Phương pháp dạy, cầm đích, soạn giáo án', 'Teaching method, pad work, lesson planning'), goalShort: p('Đứng lớp dạy người khác', 'Teach other people'),
-      promise: p('Học xong 1 năm, bạn được nhận làm việc tại HVP Academy.', 'Finish the year and you are hired to work at HVP Academy.'),
-      promiseSub: p('Bạn bước ra khỏi khóa học với một công việc, không chỉ một tấm chứng nhận.', 'You leave the course with a job, not just a certificate.'),
+      gets: [p('12 tháng đào tạo, khoảng {n} ca học', '12 months of training, about {n} sessions'), p('Học như một võ sĩ trước, rồi mới học nghề dạy', 'Train like a fighter first, then learn to teach'),
+        p('Cầm đích, đọc lỗi, soạn giáo án, quản lý lớp', 'Pad work, fault-fixing, lesson plans, running a class'), p('Trợ giảng lớp thật trước khi tự đứng lớp', 'Assist real classes before you lead your own'),
+        p('4 mốc sát hạch, mỗi hiệp 3 tháng', '4 checkpoints, one every 3 months'), p('Bao việc làm tại HVP Academy khi học xong', 'A guaranteed job at HVP Academy when you finish')],
       rounds: [
         { t: p('Nền tảng như một võ sĩ', 'Foundations, like a fighter'), items: [p('Tư thế, bộ pháp, 6 đòn cơ bản', 'Stance, footwork, the 6 basic punches'), p('Thể lực nền, khởi động và giãn cơ đúng', 'Base conditioning, proper warm-up and cool-down'), p('Tự tập đúng trước khi dạy người khác', 'Do it right yourself before you teach it')], mile: p('Sát hạch kỹ thuật cơ bản', 'Basic technique assessment') },
         { t: p('Nghề cầm đích', 'The craft of the pads'), items: [p('Cầm đích (pad work) và ra bài tập', 'Holding pads and calling drills'), p('Đọc lỗi kỹ thuật và cách sửa', 'Spotting and fixing technical faults'), p('Nguyên lý soạn giáo án một buổi tập', 'Planning a single session')], mile: p('Tự soạn và dạy thử một buổi', 'Plan and teach a trial session') },
@@ -128,13 +193,12 @@
       ],
     },
     fighter: {
-      hash: 'vo-si', corner: p('Góc đỏ', 'Red corner'), name: p('Võ sĩ', 'Fighter'), title: p('Võ sĩ thi đấu', 'Competitive fighter'), seal: 'THE CORNER',
-      who: p('Người muốn lên sàn thi đấu thật. Chưa từng tập cũng được: bạn được xây từ nền tảng.', 'People who want to fight for real. Never trained? You get built from the ground up.'),
-      goal: p('Thi đấu boxing, từ sparring nội bộ tới trận đấu thật.', 'Compete in boxing, from in-house sparring to real bouts.'),
+      hash: 'vo-si', corner: p('Góc đỏ', 'Red corner'), name: p('Võ sĩ', 'Fighter'),
       out: p('Thi đấu dưới tên The Corner', 'Fight under the name The Corner'),
       content: p('Kỹ thuật, thể lực, chiến thuật thi đấu', 'Technique, conditioning, fight tactics'), goalShort: p('Lên sàn thi đấu', 'Step into the ring'),
-      promise: p('Học xong, bạn ở lại thi đấu dưới tên The Corner và được đội ngũ dẫn đi thi đấu.', 'When you finish you stay on to fight under the name The Corner, and the team takes you to compete.'),
-      promiseSub: p('Không chỉ học đánh: bạn có một đội, một góc đài và lịch thi đấu.', 'More than lessons: a team, a corner and fights on the calendar.'),
+      gets: [p('12 tháng đào tạo, khoảng {n} ca học', '12 months of training, about {n} sessions'), p('Xây từ nền tảng, chưa từng tập cũng được', 'Built from the ground up, no experience needed'),
+        p('Sparring có chấm điểm, fight night nội bộ', 'Scored sparring and in-house fight nights'), p('Chấm kỹ năng trên Dapper Combat Academy Ranking', 'Skill scores on the Dapper Combat Academy Ranking'),
+        p('4 mốc kiểm tra, mỗi hiệp 3 tháng', '4 checkpoints, one every 3 months'), p('Bao đi thi đấu dưới tên The Corner khi học xong', 'Guaranteed fights under The Corner when you finish')],
       rounds: [
         { t: p('Nền tảng và thể lực', 'Foundations and conditioning'), items: [p('Tư thế, bộ pháp, đòn cơ bản', 'Stance, footwork, basic punches'), p('Thể lực nền cho người mới', 'Base conditioning for beginners'), p('Sparring kỹ thuật nhẹ', 'Light technical sparring')], mile: p('Lần chấm kỹ năng đầu tiên trên Academy Ranking', 'First skills score on the Academy Ranking') },
         { t: p('Xây lối đánh', 'Building your style'), items: [p('Combo, phòng thủ và phản đòn', 'Combinations, defense and counters'), p('Sparring có chấm điểm', 'Scored sparring'), p('Chiến thuật theo từng kiểu đối thủ', 'Tactics for each kind of opponent')], mile: p('Sparring Day có chấm điểm', 'A scored Sparring Day') },
@@ -159,66 +223,96 @@
     },
   };
   var ORDER = ['coach', 'fighter'];
+  // trắc nghiệm: mỗi câu 2 lựa chọn, [Coach, Võ sĩ]
+  var QUIZ = [
+    [p('Sau 1 năm, bạn muốn mình đang ở đâu?', 'A year from now, where do you want to be?'), p('Đứng lớp, dạy người khác đấm đúng', 'In front of a class, teaching people to punch right'), p('Đứng trên sàn, chờ tiếng chuông', 'In the ring, waiting for the bell')],
+    [p('Trong phòng tập, bạn thích vai nào hơn?', 'In the gym, which role do you prefer?'), p('Người cầm đích, hô combo', 'The one holding pads and calling combos'), p('Người đánh vào đích', 'The one hitting the pads')],
+    [p('Điều gì làm bạn thấy đáng nhất?', 'What feels most worth it to you?'), p('Thấy học viên tiến bộ nhờ mình', 'Seeing a student improve because of you'), p('Thắng một đối thủ mạnh hơn mình', 'Beating an opponent stronger than you')],
+    [p('Áp lực nào bạn sẵn sàng đối mặt?', 'Which pressure are you ready for?'), p('Một lớp 20 người chờ bạn ra bài', 'A class of 20 waiting for your next drill'), p('Một đối thủ chờ bạn ở góc bên kia', 'An opponent waiting in the other corner')],
+  ];
   var path = location.hash === '#vo-si' || location.hash === '#fighter' ? 'fighter' : 'coach';
+  var quiz = { i: 0, ans: [] };
 
-  /* ─── Mảnh giao diện ──────────────────────────────────────────────────── */
+  /* ─── Số, ngày ───────────────────────────────────────────────────────── */
   var money = function (n) { return Math.round(n).toLocaleString(en() ? 'en-US' : 'vi-VN') + (en() ? ' VND' : 'đ'); };
-  var moneyShort = function (n) { return n % 1000000 === 0 ? (n / 1000000) + (en() ? 'm' : 'tr') : money(n); };
+  var approx = function (n) {   // ≈ 4,17 triệu / ≈ 96.000đ
+    if (n >= 1e6) { var m = (Math.round(n / 1e4) / 100).toLocaleString(en() ? 'en-US' : 'vi-VN'); return '≈ ' + m + (en() ? 'm VND' : ' triệu'); }
+    return '≈ ' + money(Math.round(n / 1000) * 1000);
+  };
+  var moneyShort = function (n) { return n % 1000000 === 0 ? (n / 1000000) + (en() ? 'm VND' : ' triệu') : money(n); };
   function startText(long) {
     var d = new Date(START + 'T00:00:00Z');
     return long ? d.toLocaleDateString(en() ? 'en-GB' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
       : START.slice(8) + '.' + START.slice(5, 7) + '.' + START.slice(0, 4);
   }
-  // số ngày tới khai giảng theo lịch Việt Nam
-  var daysLeft = function () { return Math.round((Date.parse(START) - Date.parse(new Date(Date.now() + 7 * 3600000).toISOString().slice(0, 10))) / 86400000); };
-  function leftText() { var n = daysLeft(); return n > 0 ? t('left', { n: n }) : n === 0 ? t('today') : t('started'); }
-  // tháng của từng hiệp (mỗi hiệp 3 tháng kể từ tháng khai giảng)
+  var target = Date.parse(START + 'T00:00:00+07:00');   // 0 giờ ngày khai giảng, giờ Việt Nam
+  var daysLeft = function () { return Math.max(0, Math.ceil((target - Date.now()) / 86400000)); };
   function roundMonths(i) {
     var y = +START.slice(0, 4), m = +START.slice(5, 7) - 1 + i * 3;
     var f = function (k) { var d = new Date(Date.UTC(y, m + k, 1)); return en() ? d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'T' + (d.getUTCMonth() + 1) + '/' + d.getUTCFullYear(); };
     return f(0) + ' – ' + f(2);
   }
-  var other = function (k) { return k === 'coach' ? 'fighter' : 'coach'; };
+  var today = function () { var d = new Date(Date.now() + 7 * 3600000); return String(d.getUTCDate()).padStart(2, '0') + '.' + String(d.getUTCMonth() + 1).padStart(2, '0') + '.' + d.getUTCFullYear(); };
+  function payWays() {
+    var w = [];
+    if (DEPOSIT) w.push(t('pay.dep', { d: money(DEPOSIT) }));
+    if (BANK) w.push(t('pay.bank'));
+    if (PO.vnpay) w.push(t('pay.card'));
+    if (ISP) w.push(t('pay.isp'));
+    return w;
+  }
 
-  // sàn đấu nhìn từ trên xuống (xoay 45°): góc trái đỏ = Võ sĩ, góc phải xanh = Coach
-  function ring() {
-    var d = function (o) { return 'M200 ' + (30 + o) + ' L' + (370 - o) + ' 200 L200 ' + (370 - o) + ' L' + (30 + o) + ' 200 Z'; };
-    return '<svg class="tn-ring-svg" viewBox="0 0 400 400" aria-hidden="true">' +
-      '<defs><radialGradient id="tnGr" cx="0.12" cy="0.5" r="0.62"><stop offset="0" stop-color="#D4372E" stop-opacity="0.55"/><stop offset="1" stop-color="#D4372E" stop-opacity="0"/></radialGradient>' +
-      '<radialGradient id="tnGb" cx="0.88" cy="0.5" r="0.62"><stop offset="0" stop-color="#2f6fd6" stop-opacity="0.55"/><stop offset="1" stop-color="#2f6fd6" stop-opacity="0"/></radialGradient></defs>' +
-      '<path d="' + d(-14) + '" class="apron"/><path d="' + d(8) + '" class="canvas"/>' +
-      '<path d="' + d(8) + '" fill="url(#tnGr)" class="glow r"/><path d="' + d(8) + '" fill="url(#tnGb)" class="glow b"/>' +
-      '<path d="' + d(2) + '" class="rope r1"/><path d="' + d(12) + '" class="rope r2"/><path d="' + d(22) + '" class="rope r3"/>' +
-      '<g class="logo"><text x="200" y="158" text-anchor="middle" class="k">' + esc(t('start', { d: '' }).trim()) + '</text><text x="200" y="222" text-anchor="middle" class="d">' + esc(START.slice(8) + '.' + START.slice(5, 7)) + '</text><text x="200" y="254" text-anchor="middle" class="y">' + esc(START.slice(0, 4)) + '</text></g>' +
-      '<circle cx="200" cy="30" r="11" class="post n"/><circle cx="200" cy="370" r="11" class="post n"/>' +
-      '<circle cx="30" cy="200" r="15" class="post r"/><circle cx="370" cy="200" r="15" class="post b"/></svg>';
+  /* ─── Mảnh giao diện ──────────────────────────────────────────────────── */
+  // 2 góc ở đầu trang luôn ngang nhau (không đánh dấu góc đang xem), bấm vào → chọn góc + cuộn tới lộ trình
+  function side(k) {
+    return '<button type="button" class="tn-side ' + k + '" data-path="' + k + '" data-go="lo-trinh">' +
+      '<img src="' + esc(IMG[k]) + '" alt="" ' + (k === 'coach' ? 'fetchpriority="high"' : 'loading="eager"') + ' decoding="async">' +
+      '<span class="tn-side-txt"><small>' + esc(t('side.' + k)) + '</small><strong>' + esc(t('bao.' + k)) + '</strong><span>' + esc(t('baosub.' + k)) + '</span>' +
+      '<em class="tn-side-cta">' + esc(t('pick.' + k)) + '</em></span></button>';
   }
-  function cornerBtn(k) {
-    var x = P[k];
-    return '<button type="button" class="tn-corner ' + k + '" data-path="' + k + '" aria-pressed="' + (path === k) + '"><small>' + esc(L(x.corner)) + '</small><b>' + esc(L(x.name)) + '</b><span>' + esc(L(x.out)) + '</span></button>';
+  function clock() {
+    return '<div class="tn-clock" data-clock aria-live="off">' + ['d', 'h', 'm', 's'].map(function (u) {
+      return '<span><b data-u="' + u + '">00</b><small>' + esc(t('clock.' + u)) + '</small></span>';
+    }).join('') + '</div>';
   }
-  function card(k) {
-    var x = P[k];
-    return '<article class="tn-card ' + k + (path === k ? ' on' : '') + '"><header><small>' + esc(L(x.corner)) + '</small><h3>' + esc(L(x.name)) + '</h3>' + (path === k ? '<span class="tn-on">' + esc(t('card.on')) + '</span>' : '') + '</header>' +
-      '<dl><div><dt>' + esc(t('card.who')) + '</dt><dd>' + esc(L(x.who)) + '</dd></div><div><dt>' + esc(t('card.goal')) + '</dt><dd>' + esc(L(x.goal)) + '</dd></div>' +
-      '<div class="out"><dt>' + esc(t('card.out')) + '</dt><dd>' + esc(L(x.out)) + '</dd></div></dl>' +
-      '<p class="tn-card-meta"><span>' + esc(t('v.time')) + '</span><span>' + esc(t('v.sched')) + '</span><span>' + esc(money(PRICE)) + '</span></p>' +
-      '<button type="button" class="tn-btn ' + (path === k ? '' : 'ghost') + '" data-path="' + k + '" data-go="lo-trinh">' + esc(t('card.pick', { n: L(x.name) })) + '</button></article>';
+  function hero() {
+    return '<section class="tn-hero" id="top"><div class="tn-split">' + side('coach') + side('fighter') +
+      '<div class="tn-hero-mid"><p class="tn-special"><span>' + esc(t('special', { y: YEAR })) + '</span></p><h1>' + esc(t('h1')) + '</h1><p class="tn-claim">' + esc(t('claim')) + '</p></div></div>' +
+      '<div class="tn-strip"><div class="tn-in tn-strip-in">' +
+        '<div class="tn-start"><b>' + esc(t('start', { d: startText() })) + '</b>' + clock() + '</div>' +
+        '<div class="tn-strip-price"><b>' + esc(money(PRICE)) + '</b><span>' + esc(t('per.course', { c: approx(PRICE / SESS) })) + '</span>' + (SEATS ? '<span class="tn-seats">' + esc(t('seats', { n: SEATS })) + '</span>' : '') + '</div>' +
+        '<div class="tn-strip-cta"><a class="tn-btn" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a><a class="tn-link" href="#trac-nghiem">' + esc(t('cta.quiz')) + '</a></div>' +
+      '</div></div></section>';
   }
-  function compare() {
-    var row = function (key, a, b, same) {
-      return '<div class="tn-cmp-row' + (same ? ' same' : ' diff') + '"><div class="c coach">' + esc(a) + '</div><div class="k"><span>' + esc(t(key)) + '</span><i title="' + esc(t(same ? 'cmp.same' : 'cmp.diff')) + '" aria-label="' + esc(t(same ? 'cmp.same' : 'cmp.diff')) + '">' + (same ? '=' : '≠') + '</i></div><div class="c fighter">' + esc(b) + '</div></div>';
-    };
-    return '<div class="tn-cmp"><div class="tn-cmp-row head"><div class="c coach">' + esc(L(P.coach.name)) + '</div><div class="k"></div><div class="c fighter">' + esc(L(P.fighter.name)) + '</div></div>' +
-      row('cmp.time', t('v.time'), t('v.time'), true) + row('cmp.sched', t('v.sched'), t('v.sched'), true) + row('cmp.fee', money(PRICE), money(PRICE), true) +
-      row('cmp.content', L(P.coach.content), L(P.fighter.content)) + row('cmp.goal', L(P.coach.goalShort), L(P.fighter.goalShort)) + row('cmp.out', L(P.coach.out), L(P.fighter.out)) + '</div>';
+  function quizHtml() {
+    if (quiz.i >= QUIZ.length) {
+      var c = quiz.ans.filter(function (a) { return a === 'coach'; }).length, f = quiz.ans.length - c;
+      var r = c > f ? 'coach' : f > c ? 'fighter' : 'tie';
+      var btns = (r === 'tie' ? ORDER : [r]).map(function (k) {
+        return '<button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="dang-ky">' + esc(t('quiz.go', { n: L(P[k].name) })) + '</button>' +
+          (r === 'tie' ? '' : '<button type="button" class="tn-btn ghost" data-path="' + k + '" data-go="lo-trinh">' + esc(t('quiz.see', { n: L(P[k].name) })) + '</button>');
+      }).join('');
+      return '<div class="tn-q tn-q-res ' + r + '" role="status"><p class="tn-q-n">' + esc(t('quiz.res')) + '</p><h3>' + esc(t('quiz.r.' + r)) + '</h3><p class="tn-q-rs">' + esc(t('quiz.rs.' + r)) + '</p>' +
+        '<div class="tn-q-go">' + btns + '</div><button type="button" class="tn-q-back" data-quiz="again">' + esc(t('quiz.again')) + '</button></div>';
+    }
+    var q = QUIZ[quiz.i];
+    return '<div class="tn-q"><ol class="tn-q-dots" aria-hidden="true">' + QUIZ.map(function (x, i) { return '<li class="' + (i < quiz.i ? 'done ' + quiz.ans[i] : i === quiz.i ? 'cur' : '') + '"></li>'; }).join('') + '</ol>' +
+      '<p class="tn-q-n">' + esc(t('quiz.n', { i: quiz.i + 1, n: QUIZ.length })) + '</p><h3>' + esc(L(q[0])) + '</h3>' +
+      '<div class="tn-q-a"><button type="button" class="coach" data-ans="coach">' + esc(L(q[1])) + '</button><button type="button" class="fighter" data-ans="fighter">' + esc(L(q[2])) + '</button></div>' +
+      (quiz.i ? '<button type="button" class="tn-q-back" data-quiz="back">' + esc(t('quiz.back')) + '</button>' : '') + '</div>';
+  }
+  function bar() {
+    return '<div class="tn-bar"><div class="tn-in tn-bar-in"><span class="tn-bar-l">' + esc(t('bar.label')) + '</span><div class="tn-seg" role="group">' + ORDER.map(function (k) {
+      return '<button type="button" class="' + k + (path === k ? ' on' : '') + '" data-path="' + k + '" aria-pressed="' + (path === k) + '"><i></i>' + esc(L(P[k].name)) + '</button>';
+    }).join('') + '</div><span class="tn-bar-out">' + esc(L(P[path].out)) + '</span><a class="tn-btn sm" href="#dang-ky">' + esc(t('bar.apply')) + '</a></div></div>';
   }
   function road() {
     var x = P[path];
     return '<ol class="tn-road">' + x.rounds.map(function (r, i) {
       return '<li><p class="tn-rd-n"><b>' + (i + 1) + '</b><span>' + esc(t('road.round', { n: i + 1 })) + '</span><small>' + esc(roundMonths(i)) + '</small></p><h3>' + esc(L(r.t)) + '</h3>' +
         '<ul>' + r.items.map(function (it) { return '<li>' + esc(L(it)) + '</li>'; }).join('') + '</ul><p class="tn-rd-mile"><small>' + esc(t('road.mile')) + '</small>' + esc(L(r.mile)) + '</p></li>';
-    }).join('') + '</ol><div class="tn-bell"><span class="tn-bell-ic" aria-hidden="true"></span><p><small>' + esc(t('road.bell')) + '</small><b>' + esc(L(x.out)) + '</b></p></div>';
+    }).join('') + '</ol><div class="tn-bell"><span class="tn-bell-ic" aria-hidden="true"></span><p><small>' + esc(t('road.bell')) + '</small><b>' + esc(L(x.out)) + '</b></p>' +
+      '<a class="tn-btn" href="#dang-ky">' + esc(t('quiz.go', { n: L(x.name) })) + '</a></div>';
   }
   function week() {
     var x = P[path], head = '<div class="tn-wk-h"></div>' + [1, 2, 3, 4, 5].map(function (d) { return '<div class="tn-wk-h">' + esc(t('d' + d)) + '</div>'; }).join('');
@@ -233,82 +327,120 @@
   function skills() {
     return '<ul class="tn-skills">' + P[path].skills.map(function (s) { return '<li><h3>' + esc(L(s[0])) + '</h3><p>' + esc(L(s[1])) + '</p></li>'; }).join('') + '</ul>';
   }
-  // con dấu tròn: tên nơi làm việc / đội thi đấu chạy quanh vòng tròn
-  function seal(name) {
-    var txt = (name + ' · ').repeat(3);
-    return '<svg class="tn-seal" viewBox="0 0 200 200" aria-hidden="true"><defs><path id="tnSealP" d="M100 100 m-74 0 a74 74 0 1 1 148 0 a74 74 0 1 1 -148 0"/></defs>' +
-      '<circle cx="100" cy="100" r="92" class="o"/><circle cx="100" cy="100" r="56" class="i"/>' +
-      '<text class="ring-t" textLength="460" lengthAdjust="spacing"><textPath href="#tnSealP">' + esc(txt) + '</textPath></text>' +
-      '<text x="100" y="98" text-anchor="middle" class="big">' + esc(t(path === 'coach' ? 'seal.coach' : 'seal.fighter')) + '</text>' +
-      '<text x="100" y="122" text-anchor="middle" class="sm">' + esc(startText().slice(-4)) + '</text></svg>';
+  function compare() {
+    var row = function (key, a, b, same) {
+      return '<div class="tn-cmp-row' + (same ? ' same' : ' diff') + '"><div class="c coach">' + esc(a) + '</div><div class="k"><span>' + esc(t(key)) + '</span><i aria-label="' + esc(t(same ? 'cmp.same' : 'cmp.diff')) + '">' + (same ? '=' : '≠') + '</i></div><div class="c fighter">' + esc(b) + '</div></div>';
+    };
+    return '<div class="tn-cmp"><div class="tn-cmp-row head"><div class="c coach">' + esc(L(P.coach.name)) + '</div><div class="k"></div><div class="c fighter">' + esc(L(P.fighter.name)) + '</div></div>' +
+      row('cmp.time', t('v.time'), t('v.time'), true) + row('cmp.sched', t('v.sched'), t('v.sched'), true) + row('cmp.fee', money(PRICE), money(PRICE), true) +
+      row('cmp.content', L(P.coach.content), L(P.fighter.content)) + row('cmp.goal', L(P.coach.goalShort), L(P.fighter.goalShort)) + row('cmp.out', L(P.coach.out), L(P.fighter.out)) + '</div>';
   }
-  function promise() {
-    var x = P[path];
-    return '<div class="tn-promise"><div><p class="tn-promise-q">' + esc(L(x.promise)) + '</p><p class="tn-promise-s">' + esc(L(x.promiseSub)) + '</p></div>' + seal(x.seal) + '</div>';
+  function fee() {
+    var x = P[path], ways = payWays();
+    return '<div class="tn-price"><div class="tn-price-big"><p class="tn-fee-v">' + esc(money(PRICE)) + '</p><span>' + esc(t('fee.whole')) + '</span></div>' +
+      '<span class="tn-price-eq" aria-hidden="true">=</span><ul class="tn-cost">' +
+        '<li><b>' + esc(approx(PRICE / 12)) + '</b><span>' + esc(t('fee.mo')) + '</span></li>' +
+        '<li><b>' + esc(approx(PRICE / 52)) + '</b><span>' + esc(t('fee.wk')) + '</span></li>' +
+        '<li class="ca"><b>' + esc(approx(PRICE / SESS)) + '</b><span>' + esc(t('fee.ca')) + '</span><small>' + esc(t('fee.ca.n', { n: SESS })) + '</small></li></ul></div>' +
+      '<div class="tn-value"><div class="tn-gets ' + path + '"><h3>' + esc(t('gets.h', { n: L(x.name) })) + '</h3><ul>' + x.gets.map(function (g, i) {
+        return '<li' + (i === x.gets.length - 1 ? ' class="hl"' : '') + '>' + esc(L(g).replace('{n}', SESS)) + '</li>';
+      }).join('') + '</ul></div>' +
+      '<div class="tn-payw"><h3>' + esc(t('pay.h')) + '</h3><ul>' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') +
+        '<li class="free">' + esc(t('pay.free')) + '</li></ul><a class="tn-btn" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a></div></div>';
+  }
+  // giấy nhập môn: tên / năm sinh cập nhật khi gõ, đóng dấu đỏ khi ghi danh xong
+  function seal(done) {
+    var ring = t('cert.ring', { y: YEAR });
+    return '<svg class="tn-cert-seal" viewBox="0 0 160 160" aria-hidden="true"><defs><path id="tnSealP" d="M80 80 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs>' +
+      '<circle cx="80" cy="80" r="74" class="o"/><circle cx="80" cy="80" r="44" class="i"/>' +
+      '<text class="r" textLength="362" lengthAdjust="spacing"><textPath href="#tnSealP">' + esc(ring) + '</textPath></text>' +
+      (done ? '<text x="80" y="76" text-anchor="middle" class="b">' + esc(t('cert.done1')) + '</text><text x="80" y="98" text-anchor="middle" class="b2">' + esc(t('cert.done2')) + '</text>'
+        : '<text x="80" y="86" text-anchor="middle" class="w">' + esc(t('cert.wait')) + '</text>') + '</svg>';
+  }
+  function cert() {
+    var x = P[path], d = done && done.path === path ? done : null, v = saved || {};
+    return '<div class="tn-cert ' + path + (d ? ' stamped' + (stampNow ? ' stamp-now' : '') : '') + '" role="img" aria-label="' + esc(t('cert.label')) + '">' +
+      '<div class="tn-cert-top"><span>DAPPER COMBAT</span><span>' + esc(t('cert.no')) + ' <b data-cert-code>' + esc(d ? d.code : '—') + '</b></span></div>' +
+      '<p class="tn-cert-title">' + esc(t('cert.title')) + '</p><p class="tn-cert-sub">' + esc(t('cert.sub', { y: YEAR, d: startText() })) + '</p>' +
+      '<p class="tn-cert-lbl">' + esc(t('cert.student')) + '</p><p class="tn-cert-name' + (d || v.name ? '' : ' ph') + '" data-cert-name>' + esc(d ? d.name : v.name || t('cert.ph')) + '</p>' +
+      '<dl class="tn-cert-dl"><div><dt>' + esc(t('cert.path')) + '</dt><dd>' + esc(L(x.name) + ' · ' + L(x.corner)) + '</dd></div><div><dt>' + esc(t('cert.out')) + '</dt><dd>' + esc(L(x.out)) + '</dd></div>' +
+        '<div><dt>' + esc(t('cert.time')) + '</dt><dd>' + esc(t('cert.time.v')) + '</dd></div><div><dt>' + esc(t('cert.born')) + '</dt><dd data-cert-year>' + esc((d ? d.year : v.year) || '—') + '</dd></div></dl>' +
+      '<div class="tn-cert-foot"><p><small>' + esc(t('cert.date')) + '</small>' + esc(today()) + '</p>' + seal(!!d) + '</div></div>';
   }
   function form() {
+    var opts = [['consult', t('opt.consult'), t('opt.consult.s')]];
+    if (DEPOSIT && CAN_PAY) opts.push(['deposit', t('opt.deposit', { d: money(DEPOSIT) }), t('opt.deposit.s')]);
+    if (CAN_PAY) opts.push(['full', t('opt.full', { p: money(PRICE) }), t('opt.full.s') + (ISP ? '. ' + t('opt.full.isp') : '')]);
+    var pay = saved && saved.pay && opts.some(function (o) { return o[0] === saved.pay; }) ? saved.pay : 'consult';
     return '<form class="tn-form" novalidate><fieldset class="tn-pick"><legend>' + esc(t('form.path')) + '</legend>' + ORDER.map(function (k) {
       return '<label class="' + k + '"><input type="radio" name="path" value="' + k + '"' + (path === k ? ' checked' : '') + '><span><small>' + esc(L(P[k].corner)) + '</small><b>' + esc(L(P[k].name)) + '</b><em>' + esc(L(P[k].out)) + '</em></span></label>';
     }).join('') + '</fieldset>' +
       '<div class="tn-fg"><label class="tn-f wide"><span>' + esc(t('form.name')) + '</span><input name="name" autocomplete="name" maxlength="80" required></label>' +
       '<label class="tn-f"><span>' + esc(t('form.phone')) + '</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" required></label>' +
-      '<label class="tn-f"><span>' + esc(t('form.year')) + '</span><input name="year" inputmode="numeric" maxlength="4" placeholder="2004"></label>' +
+      '<label class="tn-f"><span>' + esc(t('form.year')) + '</span><input name="year" inputmode="numeric" maxlength="4"></label>' +
       '<label class="tn-f"><span>' + esc(t('form.email')) + '</span><input name="email" type="email" autocomplete="email" maxlength="120"></label>' +
       '<label class="tn-f"><span>' + esc(t('form.exp')) + '</span><select name="exp">' + [0, 1, 2].map(function (i) { return '<option value="' + i + '">' + esc(t('exp.' + i)) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="tn-f wide"><span>' + esc(t('form.note')) + '</span><textarea name="note" rows="3" maxlength="400"></textarea></label></div>' +
-      '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit">' + esc(t('form.send')) + '</button></form>';
+      '<label class="tn-f wide"><span>' + esc(t('form.note')) + '</span><textarea name="note" rows="2" maxlength="400"></textarea></label></div>' +
+      (opts.length > 1 ? '<fieldset class="tn-payopt"><legend>' + esc(t('form.pay')) + '</legend>' + opts.map(function (o) {
+        return '<label><input type="radio" name="pay" value="' + o[0] + '"' + (o[0] === pay ? ' checked' : '') + '><span><b>' + esc(o[1]) + '</b><small>' + esc(o[2]) + '</small></span></label>';
+      }).join('') + '</fieldset>' : '') +
+      '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit" data-send>' + esc(t('send.' + pay)) + '</button></form>';
+  }
+  function okHtml(r) {
+    var payNote = r.due > 0 ? '<div class="tn-paybox"><p class="tn-paybox-t">' + esc(t('ok.pay', { what: t('ok.what.' + r.pay), d: money(r.due), note: String(r.code).replace(/[^A-Za-z0-9]/g, '') })) + '</p>' +
+      (DC.payQr && BANK ? '<div class="tn-paybox-qr">' + (DC.payQr(r.code, r.due) || '') + (DC.payLines ? DC.payLines(r.code) : '') + '</div>' : '') +
+      '<div class="dc-paylive" id="tnPayLive"></div></div>' : '';
+    return '<div class="tn-ok" role="status"><span class="tn-ok-ic" aria-hidden="true"></span><h3>' + esc(t('ok.h')) + '</h3><p>' + esc(t('ok.p', { c: r.code, ph: r.phone, n: L(P[r.path].name) })) + '</p>' +
+      payNote + (r.slip && DC.slip ? DC.slip.box(r.slip, DC.lang()) : '') + '<button type="button" class="tn-btn ghost" data-again>' + esc(t('ok.again')) + '</button></div>';
   }
   function faq() {
-    return '<div class="tn-faq">' + [1, 2, 3, 4, 5].map(function (i) {
-      return '<details><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(t('a' + i, { d: startText(true), fee: money(PRICE) })) + '</p></details>';
-    }).join('') + '</div>';
+    var ways = payWays().filter(function (w, i) { return !(DEPOSIT && i === 0); });
+    var how = (DEPOSIT ? t('how.dep', { d: money(DEPOSIT) }) + ' ' : '') + (ways.length ? t('how.list', { l: ways.join(', ') }) : t('pay.ask'));
+    var qa = [1, 2, 3, 4, 5, 6].map(function (i) {
+      var a = i === 6 ? (DEPOSIT && CAN_PAY ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free')) : t('a' + i, { d: startText(true), fee: money(PRICE), how: how });
+      return '<details><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(a) + '</p></details>';
+    }).join('');
+    var help = '<aside class="tn-help"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t('help.p')) + '</p><div class="tn-help-b">' +
+      (C.zalo ? '<a class="tn-btn" href="' + esc(C.zalo) + '" target="_blank" rel="noopener">' + esc(t('help.zalo')) + '</a>' : '') +
+      (PHONE ? '<a class="tn-btn ghost" href="tel:' + esc(PHONE.replace(/[^\d+]/g, '')) + '">' + esc(t('help.call', { p: PHONE })) + '</a>' : '') + '</div></aside>';
+    return '<div class="tn-faq-wrap"><div class="tn-faq">' + qa + '</div>' + (C.zalo || PHONE ? help : '') + '</div>';
   }
   var sec = function (id, h, sub, body, cls) { return '<section class="tn-sec' + (cls ? ' ' + cls : '') + '" id="' + id + '"><div class="tn-in"><header class="tn-sec-h"><h2>' + h + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</header>' + body + '</div></section>'; };
 
   /* ─── Vẽ trang ────────────────────────────────────────────────────────── */
-  var saved = null, done = null, intro = true, swT;
+  var saved = null, done = null, swT, stampNow = false;
   function render() {
     [].forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = t(el.getAttribute('data-t')); });
-    document.title = t('h1') + ' — ' + (en() ? 'Coach and fighter training from zero' : 'Đào tạo coach và võ sĩ từ con số 0') + ' | Dapper Combat';
+    document.title = t('title');
     document.body.setAttribute('data-path', path);
-    var facts = [[12, 'f.months'], [5, 'f.sess'], [2, 'f.shifts'], [moneyShort(PRICE), 'f.fee']];
-    root.innerHTML =
-      '<section class="tn-hero" id="top"><div class="tn-in tn-hero-in"><div class="tn-hero-t">' +
-        '<p class="tn-special"><span>' + esc(t('special')) + '</span></p><h1>' + esc(t('h1')) + '</h1><p class="tn-lead">' + esc(t('lead')) + '</p>' +
-        '<p class="tn-start"><b>' + esc(t('start', { d: startText() })) + '</b><span data-left>' + esc(leftText()) + '</span></p>' +
-        '<ul class="tn-facts">' + facts.map(function (f) { return '<li><b>' + esc(String(f[0])) + '</b><span>' + esc(t(f[1])) + '</span></li>'; }).join('') + '</ul>' +
-        '<div class="tn-cta"><a class="tn-btn" href="#dang-ky">' + esc(t('cta.apply')) + '</a><a class="tn-btn ghost" href="#hai-con-duong">' + esc(t('cta.paths')) + '</a></div></div>' +
-        '<div class="tn-ring' + (intro ? ' intro' : '') + '" role="group" aria-label="' + esc(t('ring.label')) + '">' + ring() + cornerBtn('fighter') + cornerBtn('coach') + '<p class="tn-ring-hint">' + esc(t('ring.hint')) + '</p></div>' +
-      '</div></section>' +
-      '<div class="tn-bar"><div class="tn-in tn-bar-in"><span class="tn-bar-l">' + esc(t('bar.label')) + '</span><div class="tn-seg" role="group">' + ORDER.map(function (k) {
-        return '<button type="button" class="' + k + (path === k ? ' on' : '') + '" data-path="' + k + '" aria-pressed="' + (path === k) + '"><i></i>' + esc(L(P[k].name)) + '</button>';
-      }).join('') + '</div><span class="tn-bar-out">' + esc(L(P[path].out)) + '</span><a class="tn-btn sm" href="#dang-ky">' + esc(t('bar.apply')) + '</a></div></div>' +
-      sec('hai-con-duong', esc(t('paths.h')), esc(t('paths.sub')), '<div class="tn-cards">' + ORDER.map(card).join('') + '</div>') +
-      sec('so-sanh', esc(t('cmp.h')), esc(t('cmp.sub')), compare(), 'alt') +
+    root.innerHTML = hero() +
+      sec('trac-nghiem', esc(t('quiz.h')), esc(t('quiz.sub')), '<div class="tn-quiz">' + quizHtml() + '</div>', 'tn-sec-quiz') +
+      bar() +
       sec('lo-trinh', esc(t('road.h')), esc(t('road.sub')), road()) +
       sec('tuan-hoc', esc(t('week.h')), esc(t('week.sub')), week(), 'alt') +
       sec('ky-nang', esc(t('skills.h', { n: L(P[path].name) })), '', skills()) +
-      sec('cam-ket', esc(t('promise.h')), '', promise(), 'alt') +
-      sec('dang-ky', esc(t('form.h')), esc(t('form.sub')), '<div class="tn-apply"><aside class="tn-fee"><p class="tn-fee-k">' + esc(t('fee.h')) + '</p><p class="tn-fee-v">' + esc(money(PRICE)) + '</p><p class="tn-fee-per">' + esc(t('fee.per')) + '</p>' +
-        '<ul><li>' + esc(t('fee.same')) + '</li><li>' + esc(t('v.time')) + ', ' + esc(t('v.sched')) + '</li><li>' + esc(t('start', { d: startText(true) })) + ' (' + esc(leftText()) + ')</li><li>' + esc(t('fee.how')) + '</li></ul></aside>' +
-        '<div class="tn-form-box">' + (done ? okHtml(done) : form()) + '</div></div>') +
-      sec('hoi-dap', esc(t('faq.h')), '', faq(), 'alt');
-    intro = false;
+      sec('so-sanh', esc(t('cmp.h')), esc(t('cmp.sub')), compare(), 'alt') +
+      sec('hoc-phi', esc(t('fee.h', { p: moneyShort(PRICE) })), esc(t('fee.sub')), fee()) +
+      sec('dang-ky', esc(t('form.h', { y: YEAR })), esc(t('form.sub')), '<div class="tn-apply"><div class="tn-form-box">' + (done ? okHtml(done) : form()) + '</div><div class="tn-cert-wrap">' + cert() + '</div></div>', 'tn-sec-apply') +
+      sec('hoi-dap', esc(t('faq.h')), '', faq(), 'alt') +
+      '<div class="tn-dock" aria-hidden="true"><p><b>' + esc(t('dock.t', { y: YEAR, p: moneyShort(PRICE) })) + '</b><small>' + esc(t('dock.left', { n: daysLeft() })) + '</small></p><a class="tn-btn sm" href="#dang-ky" tabindex="-1">' + esc(t('bar.apply')) + '</a></div>';
+    stampNow = false;
     restore();
+    tick();
+    if (done && done.due > 0) payLive();
+    dock();
   }
-  function okHtml(r) {
-    return '<div class="tn-ok" role="status"><span class="tn-ok-ic" aria-hidden="true"></span><h3>' + esc(t('ok.h')) + '</h3><p>' + esc(t('ok.p', { c: r.code, ph: r.phone, n: L(P[r.path].name) })) + '</p><button type="button" class="tn-btn ghost" data-again>' + esc(t('ok.again')) + '</button></div>';
-  }
-  // giữ chữ đã gõ trong form khi đổi ngôn ngữ / con đường
+  // giữ chữ đã gõ khi đổi ngôn ngữ / con đường
   function keep() {
     var f = root.querySelector('.tn-form');
-    saved = f ? [].reduce.call(f.elements, function (o, el) { if (el.name && el.type !== 'radio') o[el.name] = el.value; return o; }, {}) : saved;
+    if (!f) return;
+    saved = [].reduce.call(f.elements, function (o, el) { if (el.name && el.type !== 'radio') o[el.name] = el.value; return o; }, {});
+    var pay = f.querySelector('[name=pay]:checked'); if (pay) saved.pay = pay.value;
   }
   function restore() {
     var f = root.querySelector('.tn-form'); if (!f || !saved) return;
-    Object.keys(saved).forEach(function (k) { if (f.elements[k]) f.elements[k].value = saved[k]; });
+    Object.keys(saved).forEach(function (k) { if (f.elements[k] && f.elements[k].type !== 'radio' && k !== 'pay') f.elements[k].value = saved[k]; });
   }
-  // đổi con đường: vẽ lại các phần theo con đường, giữ vị trí cuộn
   function choose(k, go) {
     if (!P[k]) return;
     keep(); path = k;
@@ -317,19 +449,71 @@
     root.classList.add('sw'); clearTimeout(swT); swT = setTimeout(function () { root.classList.remove('sw'); }, 700);
     if (go) { var s = document.getElementById(go); if (s) s.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }
   }
+  // đếm ngược tới 0 giờ ngày khai giảng (giờ Việt Nam)
+  function tick() {
+    var el = root.querySelector('[data-clock]');
+    if (!el) return;
+    var ms = target - Date.now();
+    if (ms <= 0) { el.innerHTML = '<span class="tn-clock-done">' + esc(t('clock.done', { y: YEAR })) + '</span>'; return; }
+    var v = { d: Math.floor(ms / 86400000), h: Math.floor(ms / 3600000) % 24, m: Math.floor(ms / 60000) % 60, s: Math.floor(ms / 1000) % 60 };
+    Object.keys(v).forEach(function (u) { var b = el.querySelector('[data-u="' + u + '"]'); if (b) b.textContent = u === 'd' ? String(v[u]) : String(v[u]).padStart(2, '0'); });
+  }
+  setInterval(tick, 1000);
+  // thanh "Giữ chỗ" dính đáy màn hình điện thoại: hiện khi đã cuộn qua đầu trang, ẩn khi đang ở form ghi danh
+  function dock() {
+    var d = root.querySelector('.tn-dock'), h = root.querySelector('.tn-hero'), f = document.getElementById('dang-ky');
+    if (!d || !h || !f) return;
+    var fr = f.getBoundingClientRect(), on = h.getBoundingClientRect().bottom < 0 && !(fr.top < innerHeight && fr.bottom > 0);
+    d.classList.toggle('on', on);
+  }
+  window.addEventListener('scroll', dock, { passive: true });
+  window.addEventListener('resize', dock);
+  // còn tiền cọc / học phí: nút trả bằng thẻ / trả góp (cổng đang bật) + tự báo "đã nhận tiền" khi chuyển khoản được xác nhận
+  function payLive() {
+    var box = document.getElementById('tnPayLive'), d = done;
+    if (!box || !d.slip || !DC.slip) return;
+    if (d.paidLive) { paid(); return; }
+    if (!PO.vnpay && !PO.installment && !PO.auto) return;
+    DC.slip.live(box, d.slip, DC.lang(), { buttons: PO.vnpay || PO.installment, poll: PO.auto, alive: function () { return done === d; }, onPaid: function () { d.paidLive = true; if (done === d) paid(); } });
+  }
+  function paid() {
+    var pb = root.querySelector('.tn-paybox');
+    if (pb) pb.outerHTML = '<p class="dc-paid-ok">' + esc(DC.tx ? DC.tx('global.slip.received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!') : '✓') + '</p>';
+  }
 
   /* ─── Sự kiện ─────────────────────────────────────────────────────────── */
   root.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-ans]');
+    if (a) { quiz.ans[quiz.i] = a.getAttribute('data-ans'); quiz.i++; swapQuiz(); return; }
+    var q = e.target.closest('[data-quiz]');
+    if (q) { if (q.getAttribute('data-quiz') === 'back') quiz.i = Math.max(0, quiz.i - 1); else quiz = { i: 0, ans: [] }; swapQuiz(); return; }
     var b = e.target.closest('[data-path]');
     if (b && b.tagName === 'BUTTON') { choose(b.getAttribute('data-path'), b.getAttribute('data-go')); return; }
     if (e.target.closest('[data-again]')) { done = null; saved = null; render(); var n = root.querySelector('.tn-form [name=name]'); if (n) n.focus(); }
   });
-  root.addEventListener('change', function (e) { if (e.target.name === 'path' && e.target.checked) choose(e.target.value); });
+  // trắc nghiệm: chỉ vẽ lại khung câu hỏi
+  function swapQuiz() {
+    var box = root.querySelector('.tn-quiz');
+    if (!box) return;
+    box.innerHTML = quizHtml();
+    var f = box.querySelector('button'); if (f && quiz.i) f.focus({ preventScroll: true });
+  }
+  root.addEventListener('change', function (e) {
+    if (e.target.name === 'path' && e.target.checked) choose(e.target.value);
+    if (e.target.name === 'pay') { var s = root.querySelector('[data-send]'); if (s) s.textContent = t('send.' + e.target.value); }
+  });
+  // giấy nhập môn đổi theo chữ đang gõ
+  root.addEventListener('input', function (e) {
+    var n = e.target.name;
+    if (n === 'name') { var c = root.querySelector('[data-cert-name]'); var v = e.target.value.trim(); c.textContent = v || t('cert.ph'); c.classList.toggle('ph', !v); }
+    if (n === 'year') { var y = root.querySelector('[data-cert-year]'); y.textContent = /^\d{4}$/.test(e.target.value.trim()) ? e.target.value.trim() : '—'; }
+  });
   root.addEventListener('submit', function (e) {
     e.preventDefault();
     var f = e.target, el = f.elements, err = f.querySelector('.tn-err'), btn = f.querySelector('[type=submit]');
     var fail = function (m, name) { err.textContent = m; err.hidden = false; if (name && el[name]) el[name].focus(); };
     var name = el.name.value.trim(), phone = el.phone.value.trim(), year = el.year.value.trim(), k = (f.querySelector('[name=path]:checked') || {}).value || path;
+    var pay = (f.querySelector('[name=pay]:checked') || {}).value || 'consult';
     if (name.length < 2) return fail(t('err.name'), 'name');
     if (!/^[0-9 +().-]{8,20}$/.test(phone) || phone.replace(/\D/g, '').length < 9) return fail(t('err.phone'), 'phone');
     var yr = +year, now = new Date().getFullYear();
@@ -338,11 +522,15 @@
     var exp = T.vi['exp.' + el.exp.value] || '';
     DC.api('/registrations', {
       name: name, phone: phone, email: el.email.value.trim(), program: k, programName: 'Truyền Nghề · ' + P[k].name.vi,
-      detail: 'Khai giảng ' + startText() + (year ? ' · sinh năm ' + year : '') + ' · kinh nghiệm: ' + exp, note: el.note.value.trim(), lang: en() ? 'en' : 'vi',
+      detail: 'Khai giảng ' + startText() + (year ? ' · sinh năm ' + year : '') + ' · kinh nghiệm: ' + exp, note: el.note.value.trim(),
+      pay: pay, payName: T.vi['payname.' + pay], lang: en() ? 'en' : 'vi',
     }).then(function (r) {
-      done = { code: r.code, phone: phone, path: k }; saved = null; path = k; render();
-      var box = root.querySelector('.tn-form-box'); if (box) box.scrollIntoView({ block: 'center' });
-    }, function (x) { btn.disabled = false; btn.textContent = t('form.send'); fail(x.message); });
+      var due = pay === 'full' ? PRICE : pay === 'deposit' ? DEPOSIT : 0;
+      done = { code: r.code, slip: r.slip, phone: phone, name: name, year: year, path: k, pay: pay, due: due };
+      saved = null; path = k; stampNow = true; render();
+      var box = root.querySelector('.tn-sec-apply'); if (box) box.scrollIntoView({ block: 'start' });
+      dock();
+    }, function (x) { btn.disabled = false; btn.textContent = t('send.' + pay); fail(x.message); });
   });
   // mục menu trang chính đang tắt ở /admin → Thiết lập → Thương hiệu & menu
   [].forEach.call(document.querySelectorAll('[data-tn-site] [data-nav]'), function (li) { if (DC.navOn && !DC.navOn(li.getAttribute('data-nav'))) li.style.display = 'none'; });

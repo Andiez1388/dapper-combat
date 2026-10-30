@@ -278,7 +278,33 @@ module.exports = async function browserTests(env, t, browser) {
     const regs = await api('/api/registrations');
     const r0 = regs[0];
     t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 50000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 50 triệu, chưa thu tiền', r0);
+    st = await page.eval(`({ stamped: !!document.querySelector('.tn-cert.stamped'), code: document.querySelector('[data-cert-code]').textContent, name: document.querySelector('[data-cert-name]').textContent, pay: !!document.querySelector('.tn-paybox') })`);
+    t.ok(st.stamped && st.code === r0.code && st.name === 'Võ Sĩ Trình Duyệt' && !st.pay, 'giấy nhập môn đóng dấu "đã ghi danh", ghi mã đăng ký; tư vấn trước → không hiện mã QR', st);
     await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
+    // trắc nghiệm "hợp góc nào" → kết quả → giữ chỗ đúng góc; giấy nhập môn đổi theo tên đang gõ
+    await page.goto(B + '/', { wait: 300 });
+    await page.goto(B + '/truyen-nghe', { wait: 1000 });
+    for (const a of ['fighter', 'coach', 'fighter', 'fighter']) await page.eval(`document.querySelector('.tn-q-a .${a}').click(); 1`);
+    st = await page.eval(`(document.querySelector('.tn-q-res h3') || {}).textContent`);
+    t.ok(st === 'Bạn thuộc góc đỏ: Võ sĩ', 'trắc nghiệm 4 câu → kết quả góc đỏ', st);
+    await page.eval(`document.querySelector('.tn-q-res [data-go="dang-ky"]').click(); 1`);
+    await page.eval(`(() => { const n = document.querySelector('.tn-form [name=name]'); n.value = 'Trần Thị Bình'; n.dispatchEvent(new Event('input', { bubbles: true })); return 1; })()`);
+    st = await page.eval(`({ path: document.body.dataset.path, name: document.querySelector('[data-cert-name]').textContent, out: document.querySelector('.tn-cert-dl div:nth-child(2) dd').textContent, pay: !!document.querySelector('[name=pay]') })`);
+    t.ok(st.path === 'fighter' && st.name === 'Trần Thị Bình' && st.out === 'Thi đấu dưới tên The Corner' && !st.pay, 'bấm "Giữ chỗ khóa Võ sĩ" → form chọn sẵn Võ sĩ, giấy nhập môn hiện tên đang gõ; chưa có tài khoản nhận tiền → chỉ đăng ký tư vấn', st);
+    // có tài khoản nhận tiền + tiền cọc → chọn "Đặt cọc" → mã QR đúng số cọc ngay sau khi gửi
+    await api('/api/cms', { method: 'PUT', body: { payment: { bankBin: '970436', bankAccount: '0123456789', bankHolder: 'DAPPER COMBAT' } } });
+    await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 5000000, careerSeats: 20 } } });
+    await page.goto(B + '/', { wait: 300 });
+    await page.goto(B + '/truyen-nghe#vo-si', { wait: 1000 });
+    st = await page.eval(`({ opts: [...document.querySelectorAll('.tn-form [name=pay]')].map(x => x.value), seats: (document.querySelector('.tn-seats') || {}).textContent })`);
+    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên', 'có tài khoản nhận tiền + tiền cọc → form có Tư vấn / Đặt cọc / Đóng đủ, hiện số chỗ', st);
+    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.querySelector('[name=pay][value=deposit]').click(); f.querySelector('[type=submit]').click(); return 1; })()`);
+    await page.until(`!!document.querySelector('.tn-ok')`, 8000);
+    st = await page.eval(`({ box: !!document.querySelector('.tn-paybox'), qr: (document.querySelector('.tn-paybox .dc-vietqr') || {}).src || '', text: (document.querySelector('.tn-paybox-t') || {}).textContent })`);
+    const dep = (await api('/api/registrations'))[0];
+    t.ok(st.box && /amount=5000000/.test(st.qr) && /5\.000\.000đ/.test(st.text) && dep.name === 'Học Viên Đặt Cọc' && dep.due === 5000000 && dep.payName === 'Đặt cọc giữ chỗ', 'đặt cọc → hiện mã QR 5.000.000đ, đăng ký lưu số cần trả 5.000.000đ', { st, due: dep.due, payName: dep.payName });
+    await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 0, careerSeats: 0 } } });
+    await api('/api/cms', { method: 'PUT', body: { payment: { bankBin: '', bankAccount: '', bankHolder: '' } } });
     // tắt mục "Truyền Nghề" trong /admin → menu các trang ẩn theo
     await api('/api/settings', { method: 'PUT', body: { brand: { nav: { career: false } } } });
     await page.goto(B + '/khoa-hoc', { wait: 1000 });

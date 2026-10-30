@@ -254,11 +254,23 @@ Mục **Academy Ranking** trên menu (menu thả xuống): **Lịch sự kiện*
 
 Chương trình đặc biệt: học boxing từ con số 0 để thành nghề trong 1 năm. Mục **Truyền Nghề** trên menu (sau Academy Ranking; tiếng Anh: Pro Pathways). Bật / tắt ở Thiết lập → Thương hiệu & menu.
 
-- **2 khóa, 2 con đường** như 2 góc đài: **Coach** (góc xanh) — học xong có việc làm tại HVP Academy; **Võ sĩ** (góc đỏ) — học xong ở lại thi đấu dưới tên The Corner.
-- Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần (Thứ 2–Thứ 6), 2 ca mỗi ngày; khác nội dung giảng dạy và mục tiêu. Trang có: so sánh 2 khóa, lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, cam kết, đăng ký giữ chỗ, hỏi đáp.
+- **2 khóa, 2 con đường** như 2 góc đài: **Coach** (góc xanh) — bao việc làm tại HVP Academy khi học xong; **Võ sĩ** (góc đỏ) — bao thi đấu dưới tên The Corner khi học xong.
+- Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần (Thứ 2–Thứ 6), 2 ca mỗi ngày; khác nội dung giảng dạy và mục tiêu.
+- Trang viết theo đường đi của người mua:
+  1. Đầu trang: 2 ảnh tập luyện ghép chéo (rê chuột vào góc nào góc đó nở ra), đồng hồ đếm ngược tới 0 giờ ngày khai giảng (giờ Việt Nam), học phí + giá mỗi ca.
+  2. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
+  3. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, so sánh 2 khóa.
+  4. "50 triệu, chia nhỏ ra": học phí / tháng / tuần / ca (≈ 520 ca = 52 tuần × 10 ca), khóa gồm những gì, cách đóng học phí đang mở.
+  5. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
+  6. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
 - Bấm góc đài / thanh "Con đường" để đổi khóa; mở thẳng một khóa: `/truyen-nghe#coach`, `/truyen-nghe#vo-si`. Đường dẫn tắt `/dao-tao`, `/day-nghe`, `/pro`.
-- **Đăng ký giữ chỗ** lưu vào /admin → Đăng ký khóa học (chương trình `coach` / `fighter`, tên "Truyền Nghề · Coach" / "Truyền Nghề · Võ sĩ", kèm năm sinh + kinh nghiệm). Học phí server tự ghi theo Thiết lập; **chưa thu tiền khi đăng ký** (số cần trả = 0) — tư vấn hình thức đóng học phí sau.
-- Học phí + ngày khai giảng: Thiết lập → Học phí & lịch tập → Truyền Nghề. Nội dung lộ trình, lịch tuần, kỹ năng, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
+- **Ghi danh** lưu vào /admin → Đăng ký khóa học (chương trình `coach` / `fighter`, tên "Truyền Nghề · Coach" / "Truyền Nghề · Võ sĩ", kèm năm sinh + kinh nghiệm). Học phí server tự ghi theo Thiết lập. Khách chọn:
+  - **Tư vấn trước** (luôn có): chưa thu tiền (số cần trả = 0).
+  - **Đặt cọc giữ chỗ**: chỉ hiện khi đã nhập tiền cọc **và** có cách nhận tiền (tài khoản ngân hàng ở /admin → Thanh toán, hoặc VNPay). Số cần trả = tiền cọc.
+  - **Đóng đủ**: hiện khi có cách nhận tiền. Số cần trả = cả học phí (có nút trả góp nếu đang bật trả góp VNPay).
+  - Chọn cọc / đóng đủ → màn hình xong hiện mã VietQR đúng số tiền + nội dung chuyển khoản, nút thẻ / trả góp, tự báo "Đã nhận tiền" khi SePay xác nhận; có phiếu xác nhận để tải.
+- Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí, ngày khai giảng, **tiền cọc giữ chỗ** (0 = không nhận cọc), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
+- Ảnh đầu trang dùng ảnh có sẵn của web (HLV cầm đích: `bc3dad0ad714.jpg`, võ sĩ ra sàn: `bd656e3427a9.jpg`); chưa đổi được trong /admin. Nội dung lộ trình, lịch tuần, kỹ năng, trắc nghiệm, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
 
 ## Email xác nhận tiếng Anh
 
