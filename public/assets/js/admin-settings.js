@@ -152,7 +152,7 @@
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
-    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerDeposit', 'careerSeats'],
+    course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
     brand: ['logo', 'favicon', 'mapQuery', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
@@ -413,6 +413,8 @@
         '<label class="field"><span class="field__label">Ngày khai giảng</span><input type="date" data-text data-g="course" data-k="careerStart" value="' + esc(draft('course').careerStart || '') + '">' +
           '<small class="field__hint">Hiện ở trang Truyền Nghề (/truyen-nghe), kèm đếm ngược tới ngày khai giảng.</small></label>' +
         moneyField('course', 'careerDeposit', 'Tiền cọc giữ chỗ', 'Để 0 = không nhận cọc. Có số tiền → form đăng ký thêm lựa chọn “Đặt cọc giữ chỗ”, khách quét mã QR trả ngay.') +
+        numberField('course', 'careerAgeCoachMin', 'Coach: tuổi từ', 10, 80, 'tuổi') + numberField('course', 'careerAgeCoachMax', 'Coach: tuổi đến', 10, 80, 'tuổi', 'Tính theo năm khai giảng. Hiện ở trang + form ghi danh kiểm tra năm sinh.') +
+        numberField('course', 'careerAgeFighterMin', 'Võ sĩ: tuổi từ', 10, 80, 'tuổi') + numberField('course', 'careerAgeFighterMax', 'Võ sĩ: tuổi đến', 10, 80, 'tuổi') +
         numberField('course', 'careerSeats', 'Số chỗ mỗi khóa', 0, 999, 'chỗ', 'Để 0 = không hiện. Có số → trang ghi “Mỗi khóa nhận tối đa … học viên”.') +
         '<p class="set-err" data-warn="career" hidden></p></div>') +
       panel('Lịch tập',

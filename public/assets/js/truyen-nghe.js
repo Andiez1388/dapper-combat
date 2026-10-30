@@ -19,6 +19,9 @@
   var PRICES = { coach: Number(DC.setting('course.careerPriceCoach', 65000000)) || 65000000, fighter: Number(DC.setting('course.careerPriceFighter', 45000000)) || 45000000 };
   var priceOf = function (k) { return PRICES[k] || PRICES.coach; };
   var PRICE_MIN = Math.min(PRICES.coach, PRICES.fighter);
+  // độ tuổi tuyển, tính theo năm khai giảng
+  var age = function (k, d) { return Number(DC.setting('course.' + k, d)) || d; };
+  var AGES = { coach: [age('careerAgeCoachMin', 18), age('careerAgeCoachMax', 35)], fighter: [age('careerAgeFighterMin', 18), age('careerAgeFighterMax', 26)] };
   var DEPOSIT = Math.min(Number(DC.setting('course.careerDeposit', 2000000)) || 0, PRICE_MIN);
   var SEATS = Number(DC.setting('course.careerSeats', 0)) || 0;
   var SESS = 52 * 10;   // ≈ số ca cả khóa: 52 tuần × 5 buổi × 2 ca
@@ -65,27 +68,30 @@
       'quiz.rs.tie': 'Chọn theo đích đến bạn muốn sau 12 tháng: đứng lớp hay lên sàn.',
       'quiz.see': 'Xem lộ trình {n}', 'quiz.go': 'Giữ chỗ khóa {n}',
       'bar.label': 'Con đường', 'bar.apply': 'Giữ chỗ',
-      'road.h': 'Lộ trình 12 tháng, 4 hiệp', 'road.sub': 'Mỗi hiệp 3 tháng, kết thúc bằng một mốc kiểm tra. Hết hiệp 4 là tiếng chuông đầu tiên của nghề.',
+      'road.h': '12 tháng, 4 hiệp, 12 kỹ năng nghề', 'road.sub': 'Mỗi hiệp 3 tháng mở khóa một nhóm kỹ năng và một danh hiệu mới, xác nhận bằng một lần sát hạch. Hết hiệp 4, bạn mang cả 12 kỹ năng vào nghề.',
+      'road.unlock': 'Kỹ năng mở khóa', 'road.pass': 'Qua mốc: {m}', 'road.carry': 'Bạn mang theo {n} kỹ năng đã mở khóa qua 4 hiệp',
       'road.round': 'Hiệp {n}', 'road.mile': 'Mốc kết thúc hiệp', 'road.bell': 'Sau 12 tháng',
       'week.h': 'Một tuần học mẫu', 'week.sub': 'Thứ 2 đến Thứ 6, mỗi ngày 2 ca. Khung lịch giống nhau ở cả 2 khóa, chỉ nội dung từng ca là khác.',
       'week.s1': 'Ca 1', 'week.s1d': 'buổi sáng', 'week.s2': 'Ca 2', 'week.s2d': 'buổi chiều', 'week.note': '10 ca mỗi tuần ở cả 2 khóa. Đổi con đường ở thanh phía trên để thấy nội dung từng ca thay đổi.',
       'd1': 'Thứ 2', 'd2': 'Thứ 3', 'd3': 'Thứ 4', 'd4': 'Thứ 5', 'd5': 'Thứ 6',
       'tag.tech': 'Kỹ thuật', 'tag.fit': 'Thể lực', 'tag.theory': 'Lý thuyết', 'tag.teach': 'Thực hành dạy', 'tag.spar': 'Sparring', 'tag.tactic': 'Chiến thuật',
       'skills.h': 'Bộ kỹ năng {n}', 'skills.both': 'Hai bộ kỹ năng, hai nghề', 'skills.sub': 'Mỗi khóa luyện một bộ kỹ năng riêng cho đúng đích đến của nó.',
-      'pain.h': 'Muốn sống bằng boxing, vướng ở đâu?', 'pain.sub': 'Những nỗi lo thường gặp khi tự đi con đường coach hoặc võ sĩ, và Truyền Nghề giải quyết từng cái thế nào.',
-      'pain.who.coach': 'Bạn muốn làm coach', 'pain.who.fighter': 'Bạn muốn làm võ sĩ', 'pain.fix': 'Truyền Nghề',
+      'pain.h': 'Muốn đi đường dài, muốn sống cùng với boxing, vướng ở đâu?', 'pain.sub': 'Những nỗi lo thường gặp khi tự đi con đường coach hoặc võ sĩ, và Truyền Nghề giải quyết từng cái thế nào.',
+      'pain.who.coach': 'Bạn muốn làm coach', 'pain.who.fighter': 'Bạn muốn làm võ sĩ', 'pain.fix': 'Truyền Nghề giải quyết', 'pain.col.q': 'Nỗi lo khi tự đi một mình', 'pain.col.a': 'Truyền Nghề giải quyết',
       'cmp.h': 'Cùng khối lượng, khác đích đến', 'cmp.sub': 'Hai khóa cùng số tháng, cùng số buổi, cùng số ca. Khác nhau ở nội dung, mục tiêu, học phí và đầu ra.',
       'cmp.same': 'Giống nhau', 'cmp.diff': 'Khác nhau',
       'cmp.time': 'Thời gian', 'cmp.sched': 'Lịch học', 'cmp.fee': 'Học phí', 'cmp.content': 'Nội dung chính', 'cmp.goal': 'Mục tiêu', 'cmp.out': 'Học xong',
       'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày',
-      'fee.h': 'Bạn nhận về một nghề', 'fee.sub': 'Khóa {n}: học phí trọn khóa {p}. Đây là những gì khoản đó mang lại cho bạn.',
-      'w.get': 'Khóa {n}: bạn nhận về', 'w.pay': 'Học phí trọn khóa', 'w.other': 'Khóa {n}: {p}',
+      'fee.h': 'Bạn nhận về một nghề', 'fee.sub': 'Hai khóa, hai mức học phí. Mỗi khóa là một nghề trọn vẹn trong 12 tháng, kèm cam kết đầu ra.',
+      'w.get': 'Bạn nhận về', 'w.pay': 'Học phí trọn khóa', 'plan.go': 'Giữ chỗ khóa {n}', 'plan.go.dep': 'Đặt cọc {d}, giữ chỗ khóa {n}',
+      'faq.g1': 'Trước khi vào học', 'faq.g2': 'Lịch học và học phí', 'faq.g3': 'Đầu ra và cam kết',
+      'help.visit': 'Ghé xem phòng tập', 'help.hours': 'Mở cửa {o} – {c}', 'help.map': 'Chỉ đường',
       'w.sess': 'ca học trong 12 tháng', 'w.sess.d': '52 tuần, 5 buổi mỗi tuần, 2 ca mỗi ngày',
       'w.rounds': 'hiệp đào tạo, mỗi hiệp có mốc kiểm tra', 'w.skills.coach': 'kỹ năng nghề coach', 'w.skills.fighter': 'kỹ năng thi đấu',
       'w.job.coach': 'nghề để sống: đứng lớp dạy boxing', 'w.job.coach.d': 'Học như một võ sĩ, trợ giảng lớp thật, rồi tự đứng lớp.',
       'w.job.fighter': 'đội để thi đấu: The Corner', 'w.job.fighter.d': 'Sparring có chấm điểm, fight night nội bộ, rồi trận ra mắt.',
       'w.refund': 'học phí hoàn lại',
-      'dep.only': 'Giữ chỗ hôm nay chỉ', 'dep.fee': 'Học phí trọn khóa: Võ sĩ {f}, Coach {c}', 'dep.how': 'đặt cọc, quét mã QR trả ngay khi ghi danh',
+      'dep.only': 'Giữ chỗ hôm nay chỉ', 'dep.fee': 'Học phí trọn khóa: Võ sĩ {f}, Coach {c}', 'dep.how': 'cho khóa nào cũng vậy. Đặt cọc, quét mã QR trả ngay khi ghi danh.',
       'cta.dep': 'Đặt cọc {d} giữ chỗ', 'dock.dep': 'Giữ chỗ chỉ {d}',
       'fee.whole': 'trọn khóa 12 tháng', 'fee.mo': 'mỗi tháng', 'fee.wk': 'mỗi tuần · 10 ca', 'fee.ca': 'mỗi ca tập', 'fee.ca.n': '≈ {n} ca cả khóa',
       'pay.dep': 'Đặt cọc {d} để giữ chỗ', 'pay.bank': 'Chuyển khoản, quét mã QR', 'pay.card': 'Thẻ ngân hàng, Visa / Mastercard (VNPay)', 'pay.isp': 'Trả góp qua thẻ tín dụng',
@@ -101,6 +107,9 @@
       'ok.pay': 'Còn một bước: {what} {d} để giữ chỗ. Nội dung chuyển khoản: {note}.', 'ok.what.deposit': 'đặt cọc', 'ok.what.full': 'thanh toán',
       'ok.again': 'Ghi danh cho người khác',
       'err.name': 'Nhập họ và tên', 'err.phone': 'Số điện thoại chưa đúng', 'err.year': 'Năm sinh chưa đúng',
+      'err.year.req': 'Nhập năm sinh để kiểm tra độ tuổi tuyển', 'err.age': 'Khóa {n} nhận học viên từ {a} đến {b} tuổi (tính theo năm khai giảng {y}).', 'err.age.alt': 'Bạn vừa tuổi khóa {n} ({a}–{b} tuổi).',
+      'age': '{a}–{b} tuổi', 'cmp.age': 'Độ tuổi tuyển',
+      'q9': 'Bao nhiêu tuổi thì đăng ký được?', 'a9': 'Khóa Coach nhận học viên từ {ca} đến {cb} tuổi, khóa Võ sĩ từ {fa} đến {fb} tuổi, tính theo năm khai giảng {y}.',
       'cert.label': 'Bản xem trước giấy nhập môn', 'cert.title': 'Giấy nhập môn', 'cert.sub': 'Truyền Nghề · Khóa {y} · Khai giảng {d}', 'cert.no': 'Số',
       'cert.student': 'Học viên', 'cert.ph': 'Tên của bạn', 'cert.path': 'Con đường', 'cert.out': 'Đầu ra', 'cert.time': 'Thời gian', 'cert.time.v': '12 tháng · 10 ca mỗi tuần',
       'cert.born': 'Năm sinh', 'cert.date': 'Ngày ghi danh', 'cert.wait': 'CHỜ GHI DANH', 'cert.done1': 'ĐÃ', 'cert.done2': 'GHI DANH', 'cert.ring': 'TRUYỀN NGHỀ · KHÓA {y} · DAPPER COMBAT · ',
@@ -148,27 +157,30 @@
       'quiz.rs.tie': 'Pick by where you want to be in 12 months: in front of a class, or in the ring.',
       'quiz.see': 'See the {n} path', 'quiz.go': 'Reserve a {n} place',
       'bar.label': 'Path', 'bar.apply': 'Reserve',
-      'road.h': '12 months, 4 rounds', 'road.sub': 'Each round lasts 3 months and ends with a checkpoint. After round 4 comes the first bell of your career.',
+      'road.h': '12 months, 4 rounds, 12 professional skills', 'road.sub': 'Each 3-month round unlocks a set of skills and a new title, confirmed by a checkpoint. After round 4 you take all 12 skills into your career.',
+      'road.unlock': 'Skills unlocked', 'road.pass': 'Checkpoint: {m}', 'road.carry': 'You leave with {n} skills unlocked across 4 rounds',
       'road.round': 'Round {n}', 'road.mile': 'End-of-round checkpoint', 'road.bell': 'After 12 months',
       'week.h': 'A sample week', 'week.sub': 'Monday to Friday, 2 shifts a day. The timetable is the same for both courses; only what happens in each shift differs.',
       'week.s1': 'Shift 1', 'week.s1d': 'morning', 'week.s2': 'Shift 2', 'week.s2d': 'afternoon', 'week.note': '10 shifts a week on both courses. Switch paths in the bar above to see each shift change.',
       'd1': 'Mon', 'd2': 'Tue', 'd3': 'Wed', 'd4': 'Thu', 'd5': 'Fri',
       'tag.tech': 'Technique', 'tag.fit': 'Conditioning', 'tag.theory': 'Theory', 'tag.teach': 'Teaching practice', 'tag.spar': 'Sparring', 'tag.tactic': 'Tactics',
       'skills.h': '{n} skill set', 'skills.both': 'Two skill sets, two trades', 'skills.sub': 'Each course trains its own skill set for its own destination.',
-      'pain.h': 'Want to make a living from boxing? Here is what gets in the way', 'pain.sub': 'The usual worries when you try the coach or fighter path on your own, and how Pro Pathways deals with each one.',
-      'pain.who.coach': 'You want to coach', 'pain.who.fighter': 'You want to fight', 'pain.fix': 'Pro Pathways',
+      'pain.h': 'Want to go the distance and build a life with boxing? Here is what gets in the way', 'pain.sub': 'The usual worries when you try the coach or fighter path on your own, and how Pro Pathways deals with each one.',
+      'pain.who.coach': 'You want to coach', 'pain.who.fighter': 'You want to fight', 'pain.fix': 'How Pro Pathways fixes it', 'pain.col.q': 'The worry when you go it alone', 'pain.col.a': 'How Pro Pathways fixes it',
       'cmp.h': 'Same workload, different destination', 'cmp.sub': 'Both courses run the same months, sessions and shifts. They differ in content, goal, fee and outcome.',
       'cmp.same': 'Same', 'cmp.diff': 'Different',
       'cmp.time': 'Length', 'cmp.sched': 'Schedule', 'cmp.fee': 'Fee', 'cmp.content': 'Core content', 'cmp.goal': 'Goal', 'cmp.out': 'When you finish',
       'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day',
-      'fee.h': 'You walk away with a trade', 'fee.sub': '{n} course: {p} for the full course. This is what that fee brings you.',
-      'w.get': '{n} course: what you get', 'w.pay': 'Full course fee', 'w.other': '{n} course: {p}',
+      'fee.h': 'You walk away with a trade', 'fee.sub': 'Two courses, two fees. Each is a complete trade in 12 months, backed by an outcome guarantee.',
+      'w.get': 'What you get', 'w.pay': 'Full course fee', 'plan.go': 'Reserve a {n} place', 'plan.go.dep': 'Pay {d}, hold my {n} place',
+      'faq.g1': 'Before you join', 'faq.g2': 'Schedule and fees', 'faq.g3': 'Outcome and guarantee',
+      'help.visit': 'Come and see the gym', 'help.hours': 'Open {o} – {c}', 'help.map': 'Directions',
       'w.sess': 'sessions over 12 months', 'w.sess.d': '52 weeks, 5 days a week, 2 shifts a day',
       'w.rounds': 'training rounds, each ending in a checkpoint', 'w.skills.coach': 'coaching skills', 'w.skills.fighter': 'fight skills',
       'w.job.coach': 'trade to live from: teaching boxing', 'w.job.coach.d': 'Train like a fighter, assist real classes, then lead your own.',
       'w.job.fighter': 'team to fight for: The Corner', 'w.job.fighter.d': 'Scored sparring, in-house fight nights, then your debut.',
       'w.refund': 'of your fee back',
-      'dep.only': 'Hold your place today for just', 'dep.fee': 'Full course: Fighter {f}, Coach {c}', 'dep.how': 'deposit, pay by QR code when you enrol',
+      'dep.only': 'Hold your place today for just', 'dep.fee': 'Full course: Fighter {f}, Coach {c}', 'dep.how': 'for either course. Pay the deposit by QR code when you enrol.',
       'cta.dep': 'Pay {d} deposit, hold my place', 'dock.dep': 'Hold your place for {d}',
       'fee.whole': 'full 12-month course', 'fee.mo': 'per month', 'fee.wk': 'per week · 10 sessions', 'fee.ca': 'per session', 'fee.ca.n': '≈ {n} sessions in total',
       'pay.dep': 'A {d} deposit holds your place', 'pay.bank': 'Bank transfer by QR code', 'pay.card': 'Bank card, Visa / Mastercard (VNPay)', 'pay.isp': 'Instalments on a credit card',
@@ -184,6 +196,9 @@
       'ok.pay': 'One more step: {what} {d} to hold your place. Transfer note: {note}.', 'ok.what.deposit': 'pay the deposit of', 'ok.what.full': 'pay',
       'ok.again': 'Enrol someone else',
       'err.name': 'Please enter your name', 'err.phone': 'Please enter a valid phone number', 'err.year': 'Please check the year of birth',
+      'err.year.req': 'Enter your year of birth so we can check the age range', 'err.age': 'The {n} course takes students aged {a} to {b} (counted in the start year, {y}).', 'err.age.alt': 'You fit the {n} course (age {a}–{b}).',
+      'age': 'age {a}–{b}', 'cmp.age': 'Age range',
+      'q9': 'How old do I need to be?', 'a9': 'The Coach course takes students aged {ca} to {cb}, the Fighter course {fa} to {fb}, counted in the start year {y}.',
       'cert.label': 'Enrolment paper preview', 'cert.title': 'Enrolment paper', 'cert.sub': 'Pro Pathways · Class of {y} · Starts {d}', 'cert.no': 'No.',
       'cert.student': 'Student', 'cert.ph': 'Your name', 'cert.path': 'Path', 'cert.out': 'Outcome', 'cert.time': 'Length', 'cert.time.v': '12 months · 10 sessions a week',
       'cert.born': 'Born', 'cert.date': 'Enrolled on', 'cert.wait': 'AWAITING', 'cert.done1': 'ENROLLED', 'cert.done2': YEAR, 'cert.ring': 'PRO PATHWAYS · CLASS OF {y} · DAPPER COMBAT · ',
@@ -216,10 +231,14 @@
       out: p('100% cơ hội làm việc tại HVP Academy', 'A 100% job opportunity at HVP Academy'),
       content: p('Phương pháp dạy, cầm đích, soạn giáo án', 'Teaching method, pad work, lesson planning'), goalShort: p('Đứng lớp dạy người khác', 'Teach other people'),
       rounds: [
-        { t: p('Nền tảng như một võ sĩ', 'Foundations, like a fighter'), items: [p('Tư thế, bộ pháp, 6 đòn cơ bản', 'Stance, footwork, the 6 basic punches'), p('Thể lực nền, khởi động và giãn cơ đúng', 'Base conditioning, proper warm-up and cool-down'), p('Tự tập đúng trước khi dạy người khác', 'Do it right yourself before you teach it')], mile: p('Sát hạch kỹ thuật cơ bản', 'Basic technique assessment') },
-        { t: p('Nghề cầm đích', 'The craft of the pads'), items: [p('Cầm đích (pad work) và ra bài tập', 'Holding pads and calling drills'), p('Đọc lỗi kỹ thuật và cách sửa', 'Spotting and fixing technical faults'), p('Nguyên lý soạn giáo án một buổi tập', 'Planning a single session')], mile: p('Tự soạn và dạy thử một buổi', 'Plan and teach a trial session') },
-        { t: p('Trợ giảng lớp thật', 'Assisting real classes'), items: [p('Kèm HLV chính tại các lớp đang mở', 'Shadow the head coach in live classes'), p('Quản lý lớp nhóm, giữ nhịp buổi tập', 'Run a group and keep the session moving'), p('Sơ cứu, phòng chấn thương, dinh dưỡng cơ bản', 'First aid, injury prevention, basic nutrition')], mile: p('HLV chính đánh giá đạt', 'Signed off by the head coach') },
-        { t: p('Đứng lớp và sát hạch', 'Leading classes, final test'), items: [p('Đứng lớp nhóm và 1-1 có giám sát', 'Lead group and 1-on-1 sessions under supervision'), p('Xây chương trình 4 tuần cho học viên', 'Build a 4-week program for a member'), p('Tư vấn và giữ chân học viên', 'Advise members and keep them training')], mile: p('Sát hạch cuối khóa', 'Final assessment') },
+        { t: p('Nền tảng như một võ sĩ', 'Foundations, like a fighter'), items: [p('Tư thế, bộ pháp, 6 đòn cơ bản', 'Stance, footwork, the 6 basic punches'), p('Thể lực nền, khởi động và giãn cơ đúng', 'Base conditioning, proper warm-up and cool-down'), p('Tự tập đúng trước khi dạy người khác', 'Do it right yourself before you teach it')], mile: p('Sát hạch kỹ thuật cơ bản', 'Basic technique assessment'), title: p('Học viên nền tảng', 'Foundation student'),
+          unlock: [p('Đánh đúng 6 đòn cơ bản', 'Throw the 6 basic punches right'), p('Tư thế và bộ pháp chuẩn', 'Solid stance and footwork'), p('Khởi động, giãn cơ đúng cách', 'Proper warm-up and cool-down')] },
+        { t: p('Nghề cầm đích', 'The craft of the pads'), items: [p('Cầm đích (pad work) và ra bài tập', 'Holding pads and calling drills'), p('Đọc lỗi kỹ thuật và cách sửa', 'Spotting and fixing technical faults'), p('Nguyên lý soạn giáo án một buổi tập', 'Planning a single session')], mile: p('Tự soạn và dạy thử một buổi', 'Plan and teach a trial session'), title: p('Trợ lý cầm đích', 'Pad assistant'),
+          unlock: [p('Cầm đích, gọi combo', 'Hold pads, call combinations'), p('Đọc và sửa lỗi kỹ thuật', 'Spot and fix faults'), p('Soạn giáo án một buổi', 'Plan a full session')] },
+        { t: p('Trợ giảng lớp thật', 'Assisting real classes'), items: [p('Kèm HLV chính tại các lớp đang mở', 'Shadow the head coach in live classes'), p('Quản lý lớp nhóm, giữ nhịp buổi tập', 'Run a group and keep the session moving'), p('Sơ cứu, phòng chấn thương, dinh dưỡng cơ bản', 'First aid, injury prevention, basic nutrition')], mile: p('HLV chính đánh giá đạt', 'Signed off by the head coach'), title: p('Trợ giảng', 'Assistant coach'),
+          unlock: [p('Dẫn lớp nhóm', 'Run a group class'), p('Sơ cứu, phòng chấn thương', 'First aid, injury prevention'), p('Tư vấn dinh dưỡng cơ bản', 'Basic nutrition advice')] },
+        { t: p('Đứng lớp và sát hạch', 'Leading classes, final test'), items: [p('Đứng lớp nhóm và 1-1 có giám sát', 'Lead group and 1-on-1 sessions under supervision'), p('Xây chương trình 4 tuần cho học viên', 'Build a 4-week program for a member'), p('Tư vấn và giữ chân học viên', 'Advise members and keep them training')], mile: p('Sát hạch cuối khóa', 'Final assessment'), title: p('Coach đứng lớp', 'Class coach'),
+          unlock: [p('Đứng lớp nhóm và 1-1', 'Lead group and 1-on-1 sessions'), p('Xây chương trình 4 tuần', 'Build a 4-week program'), p('Tư vấn, giữ chân học viên', 'Advise and keep members')] },
       ],
       week: [
         [[p('Kỹ thuật nền', 'Core technique'), 'tech'], [p('Giải phẫu và sinh lý vận động', 'Anatomy and exercise physiology'), 'theory']],
@@ -242,10 +261,14 @@
       out: p('100% thi đấu dưới màu cờ The Corner', '100% fighting in The Corner colours'),
       content: p('Kỹ thuật, thể lực, chiến thuật thi đấu', 'Technique, conditioning, fight tactics'), goalShort: p('Lên sàn thi đấu', 'Step into the ring'),
       rounds: [
-        { t: p('Nền tảng và thể lực', 'Foundations and conditioning'), items: [p('Tư thế, bộ pháp, đòn cơ bản', 'Stance, footwork, basic punches'), p('Thể lực nền cho người mới', 'Base conditioning for beginners'), p('Sparring kỹ thuật nhẹ', 'Light technical sparring')], mile: p('Lần chấm kỹ năng đầu tiên trên Academy Ranking', 'First skills score on the Academy Ranking') },
-        { t: p('Xây lối đánh', 'Building your style'), items: [p('Combo, phòng thủ và phản đòn', 'Combinations, defense and counters'), p('Sparring có chấm điểm', 'Scored sparring'), p('Chiến thuật theo từng kiểu đối thủ', 'Tactics for each kind of opponent')], mile: p('Sparring Day có chấm điểm', 'A scored Sparring Day') },
-        { t: p('Thi đấu nội bộ', 'In-house competition'), items: [p('Fight night nội bộ của Academy', 'Academy fight nights'), p('Giữ cân và dinh dưỡng thi đấu', 'Making weight and fight nutrition'), p('Tâm lý trước trận', 'Pre-fight mindset')], mile: p('Trận fight night nội bộ đầu tiên', 'Your first in-house fight night') },
-        { t: p('Trại thi đấu', 'Fight camp'), items: [p('Fight camp trước trận', 'A full fight camp'), p('Phân tích băng hình đối thủ', 'Opponent video study'), p('Chuẩn bị trận ra mắt', 'Preparing your debut')], mile: p('Ra mắt dưới tên The Corner', 'Debut under The Corner') },
+        { t: p('Nền tảng và thể lực', 'Foundations and conditioning'), items: [p('Tư thế, bộ pháp, đòn cơ bản', 'Stance, footwork, basic punches'), p('Thể lực nền cho người mới', 'Base conditioning for beginners'), p('Sparring kỹ thuật nhẹ', 'Light technical sparring')], mile: p('Lần chấm kỹ năng đầu tiên trên Academy Ranking', 'First skills score on the Academy Ranking'), title: p('Tân binh', 'Rookie'),
+          unlock: [p('Tư thế, bộ pháp vững', 'Solid stance and footwork'), p('Đòn cơ bản chuẩn', 'Clean basic punches'), p('Sparring kỹ thuật', 'Technical sparring')] },
+        { t: p('Xây lối đánh', 'Building your style'), items: [p('Combo, phòng thủ và phản đòn', 'Combinations, defense and counters'), p('Sparring có chấm điểm', 'Scored sparring'), p('Chiến thuật theo từng kiểu đối thủ', 'Tactics for each kind of opponent')], mile: p('Sparring Day có chấm điểm', 'A scored Sparring Day'), title: p('Võ sĩ sparring', 'Sparring fighter'),
+          unlock: [p('Combo và phản đòn', 'Combinations and counters'), p('Phòng thủ dưới áp lực', 'Defense under pressure'), p('Lối đánh của riêng bạn', 'A style of your own')] },
+        { t: p('Thi đấu nội bộ', 'In-house competition'), items: [p('Fight night nội bộ của Academy', 'Academy fight nights'), p('Giữ cân và dinh dưỡng thi đấu', 'Making weight and fight nutrition'), p('Tâm lý trước trận', 'Pre-fight mindset')], mile: p('Trận fight night nội bộ đầu tiên', 'Your first in-house fight night'), title: p('Võ sĩ nội bộ', 'In-house fighter'),
+          unlock: [p('Giữ cân, dinh dưỡng thi đấu', 'Making weight, fight nutrition'), p('Tâm lý trước trận', 'Pre-fight mindset'), p('Kinh nghiệm fight night', 'Fight night experience')] },
+        { t: p('Trại thi đấu', 'Fight camp'), items: [p('Fight camp trước trận', 'A full fight camp'), p('Phân tích băng hình đối thủ', 'Opponent video study'), p('Chuẩn bị trận ra mắt', 'Preparing your debut')], mile: p('Ra mắt dưới tên The Corner', 'Debut under The Corner'), title: p('Võ sĩ The Corner', 'The Corner fighter'),
+          unlock: [p('Fight camp trọn vẹn', 'A full fight camp'), p('Đọc băng hình đối thủ', 'Opponent video study'), p('Trận ra mắt', 'Your debut bout')] },
       ],
       week: [
         [[p('Kỹ thuật và combo', 'Technique and combinations'), 'tech'], [p('Thể lực sức bền', 'Endurance conditioning'), 'fit']],
@@ -326,7 +349,7 @@
   function side(k) {
     return '<button type="button" class="tn-side ' + k + '" data-path="' + k + '" data-go="lo-trinh">' +
       '<img src="' + esc(IMG[k]) + '" alt="" ' + (k === 'coach' ? 'fetchpriority="high"' : 'loading="eager"') + ' decoding="async">' +
-      '<span class="tn-side-txt"><small>' + esc(t('side.' + k)) + '</small><strong>' + esc(t('bao.' + k)) + '</strong><span>' + esc(t('baosub.' + k)) + '</span>' +
+      '<span class="tn-side-txt"><small>' + esc(t('side.' + k)) + ' · ' + esc(ageText(k)) + '</small><strong>' + esc(t('bao.' + k)) + '</strong><span>' + esc(t('baosub.' + k)) + '</span>' +
       '<span class="tn-side-badge">' + esc(t('badge.' + k)) + '</span><em class="tn-side-cta">' + esc(t('pick.' + k)) + '</em></span></button>';
   }
   // nút giữ chỗ: có nhận cọc → "Đặt cọc 2 triệu giữ chỗ" (chọn sẵn đặt cọc trong form)
@@ -334,6 +357,7 @@
     return DEP_ON ? '<a class="tn-btn' + (cls ? ' ' + cls : '') + '" href="#dang-ky" data-pick-pay="deposit">' + esc(t('cta.dep', { d: moneyShort(DEPOSIT) })) + '</a>'
       : '<a class="tn-btn' + (cls ? ' ' + cls : '') + '" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a>';
   }
+  var ageText = function (k) { return t('age', { a: AGES[k][0], b: AGES[k][1] }); };
   function clock() {
     return '<div class="tn-clock" data-clock aria-live="off">' + ['d', 'h', 'm', 's'].map(function (u) {
       return '<span><b data-u="' + u + '">00</b><small>' + esc(t('clock.' + u)) + '</small></span>';
@@ -375,8 +399,10 @@
     var x = P[path];
     return '<ol class="tn-road">' + x.rounds.map(function (r, i) {
       return '<li><p class="tn-rd-n"><b>' + (i + 1) + '</b><span>' + esc(t('road.round', { n: i + 1 })) + '</span><small>' + esc(roundMonths(i)) + '</small></p><h3>' + esc(L(r.t)) + '</h3>' +
-        '<ul>' + r.items.map(function (it) { return '<li>' + esc(L(it)) + '</li>'; }).join('') + '</ul><p class="tn-rd-mile"><small>' + esc(t('road.mile')) + '</small>' + esc(L(r.mile)) + '</p></li>';
-    }).join('') + '</ol><div class="tn-bell"><span class="tn-bell-ic" aria-hidden="true"></span><p><small>' + esc(t('road.bell')) + '</small><b>' + esc(L(x.out)) + '</b><span class="tn-bell-alt">' + esc(t('refund.short.' + path)) + '</span></p>' +
+        '<ul>' + r.items.map(function (it) { return '<li>' + esc(L(it)) + '</li>'; }).join('') + '</ul>' +
+        '<div class="tn-rd-skill"><small>' + esc(t('road.unlock')) + '</small><p>' + r.unlock.map(function (u) { return '<span>' + esc(L(u)) + '</span>'; }).join('') + '</p></div>' +
+        '<div class="tn-rd-end"><small>' + esc(t('road.pass', { m: L(r.mile) })) + '</small><p><b>Lv.' + (i + 1) + '</b><span>' + esc(L(r.title)) + '</span></p></div></li>';
+    }).join('') + '</ol><div class="tn-bell"><span class="tn-bell-ic" aria-hidden="true"></span><p><small>' + esc(t('road.bell')) + '</small><b>' + esc(L(x.out)) + '</b><span class="tn-bell-alt">' + esc(t('road.carry', { n: x.rounds.reduce(function (s, r) { return s + r.unlock.length; }, 0) })) + '</span></p>' +
       '<a class="tn-btn" href="#dang-ky">' + esc(t('quiz.go', { n: L(x.name) })) + '</a></div>';
   }
   function week() {
@@ -396,18 +422,23 @@
         '<ul class="tn-skills">' + P[k].skills.map(function (s) { return '<li><h3>' + esc(L(s[0])) + '</h3><p>' + esc(L(s[1])) + '</p></li>'; }).join('') + '</ul></div>';
     }).join('') + '</div>';
   }
-  // nỗi lo khi tự đi con đường coach / võ sĩ → Truyền Nghề giải quyết thế nào
+  // nỗi lo khi tự đi con đường coach / võ sĩ → Truyền Nghề giải quyết: 2 tab chọn khóa (đổi con đường cho cả trang),
+  // mỗi nỗi lo 1 hàng tách đôi — trái xám (nỗi lo), phải màu khóa (cách giải quyết); hàng cuối = hoàn học phí
   function pains() {
-    return '<div class="tn-pain">' + ORDER.map(function (k) {
-      return '<div class="tn-pain-col ' + k + '"><p class="tn-pain-h"><small>' + esc(L(P[k].corner)) + '</small>' + esc(t('pain.who.' + k)) + '</p><ul>' + PAINS[k].map(function (x) {
-        return '<li><p class="tn-pain-q">' + esc(L(x[0])) + '</p><p class="tn-pain-a"><small>' + esc(t('pain.fix')) + '</small>' + esc(L(x[1])) + '</p></li>';
-      }).join('') + '</ul><button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="lo-trinh">' + esc(t('quiz.see', { n: L(P[k].name) })) + '</button></div>';
-    }).join('') + '</div>';
+    var k = path, list = PAINS[k];
+    return '<div class="tn-pain-tabs" role="group">' + ORDER.map(function (o) {
+        return '<button type="button" class="' + o + (o === k ? ' on' : '') + '" data-path="' + o + '" aria-pressed="' + (o === k) + '"><small>' + esc(L(P[o].corner) + ' · ' + ageText(o)) + '</small>' + esc(t('pain.who.' + o)) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="tn-pain"><div class="tn-pain-hd" aria-hidden="true"><span>' + esc(t('pain.col.q')) + '</span><span></span><span>' + esc(t('pain.col.a')) + '</span></div>' + list.map(function (x, i) {
+        return '<div class="tn-pain-row' + (i === list.length - 1 ? ' last' : '') + '"><p class="tn-pain-q">' + esc(L(x[0])) + '</p><i aria-hidden="true"></i>' +
+          '<p class="tn-pain-a"><small>' + esc(t('pain.fix')) + '</small>' + esc(L(x[1])) + '</p></div>';
+      }).join('') + '</div>' +
+      '<p class="tn-pain-go"><button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="lo-trinh">' + esc(t('quiz.see', { n: L(P[k].name) })) + '</button></p>';
   }
   // giống nhau: 1 dòng mờ ở trên; khác nhau: bảng 2 cột xanh / đỏ, chữ to — đầu ra + hoàn học phí nổi nhất
   function compare() {
     var same = [['cmp.time', t('v.time')], ['cmp.sched', t('v.sched')]];
-    var diff = [['cmp.content', L(P.coach.content), L(P.fighter.content)], ['cmp.goal', L(P.coach.goalShort), L(P.fighter.goalShort)], ['cmp.fee', money(PRICES.coach), money(PRICES.fighter), 'fee'],
+    var diff = [['cmp.age', ageText('coach'), ageText('fighter')], ['cmp.content', L(P.coach.content), L(P.fighter.content)], ['cmp.goal', L(P.coach.goalShort), L(P.fighter.goalShort)], ['cmp.fee', money(PRICES.coach), money(PRICES.fighter), 'fee'],
       ['cmp.out', L(P.coach.out), L(P.fighter.out), 'out'], ['cmp.refund', t('cmp.r.coach'), t('cmp.r.fighter'), 'ref']];
     return '<div class="tn-cmp-same"><span class="tn-cmp-same-k"><i aria-hidden="true">=</i>' + esc(t('cmp.same')) + '</span><ul>' + same.map(function (r) {
       return '<li><small>' + esc(t(r[0])) + '</small>' + esc(r[1]) + '</li>';
@@ -419,26 +450,34 @@
       }).join('') + '</div>';
   }
   // cán cân giá trị: trái = những gì nhận về (số to, theo con đường đang xem), phải = học phí gọn nhỏ + giữ chỗ
+  // học phí: dải giữ chỗ chung + 2 thẻ khóa cạnh nhau (ảnh, độ tuổi, đầu ra, thứ nhận về, học phí chia nhỏ, nút giữ chỗ đúng khóa)
   function fee() {
-    var x = P[path], k = path, ways = payWays().filter(function (w, i) { return !(DEP_ON && i === 0); });
+    var ways = payWays().filter(function (w, i) { return !(DEP_ON && i === 0); });
     var cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
-    var rows = [
-      [String(SESS), t('w.sess'), t('w.sess.d')],
-      ['4', t('w.rounds'), x.rounds.map(function (r) { return L(r.t); }).join(' → ')],
-      [String(x.skills.length), t('w.skills.' + k), x.skills.map(function (s) { return L(s[0]); }).join(', ')],
-      ['1', t('w.job.' + k), t('w.job.' + k + '.d')],
-      ['100%', t('pr.big.' + k), t('pr.free.' + k), 'out'],
-      ['100%', t('w.refund'), cap(t('pr.if.' + k)), 'ref'],
-    ];
-    return '<div class="tn-worth"><div class="tn-worth-get ' + k + '"><p class="tn-worth-k">' + esc(t('w.get', { n: L(x.name) })) + '</p><ul>' + rows.map(function (r) {
-        return '<li' + (r[3] ? ' class="' + r[3] + '"' : '') + '><b>' + esc(r[0]) + '</b><p><strong>' + esc(r[1]) + '</strong><span>' + esc(r[2]) + '</span></p></li>';
-      }).join('') + '</ul></div>' +
-      '<aside class="tn-worth-pay"><p class="tn-worth-k">' + esc(t('w.pay')) + '</p><p class="tn-fee-v">' + esc(money(priceOf(k))) + '</p>' +
-        '<ul class="tn-worth-per"><li>' + esc(approx(priceOf(k) / SESS)) + ' ' + esc(t('fee.ca')) + '</li><li>' + esc(approx(priceOf(k) / 12)) + ' ' + esc(t('fee.mo')) + '</li>' +
-        '<li>' + esc(t('w.other', { n: L(P[other(k)].name), p: money(priceOf(other(k))) })) + '</li></ul>' +
-        (DEP_ON ? '<div class="tn-worth-dep"><small>' + esc(t('dep.only')) + '</small><b>' + esc(money(DEPOSIT)) + '</b><span>' + esc(t('dep.how')) + '</span></div>' : '') +
-        applyBtn('wide') + '<ul class="tn-worth-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') +
-        '<li class="free">' + esc(t('pay.free')) + '</li></ul></aside></div>';
+    var plan = function (k) {
+      var x = P[k], pr = priceOf(k);
+      var rows = [
+        [String(SESS), t('w.sess'), t('w.sess.d')],
+        ['4', t('w.rounds'), x.rounds.map(function (r) { return L(r.t); }).join(' → ')],
+        [String(x.skills.length), t('w.skills.' + k), x.skills.map(function (s) { return L(s[0]); }).join(', ')],
+        ['1', t('w.job.' + k), t('w.job.' + k + '.d')],
+        ['100%', t('pr.big.' + k), t('pr.free.' + k), 'out'],
+        ['100%', t('w.refund'), cap(t('pr.if.' + k)), 'ref'],
+      ];
+      return '<article class="tn-plan ' + k + (path === k ? ' on' : '') + '"><header class="tn-plan-top"><img src="' + esc(IMG[k]) + '" alt="" loading="lazy" decoding="async">' +
+        '<p><small>' + esc(L(x.corner) + ' · ' + ageText(k)) + '</small><b>' + esc(L(x.name)) + '</b><span>' + esc(L(x.out)) + '</span></p></header>' +
+        '<p class="tn-worth-k">' + esc(t('w.get')) + '</p><ul class="tn-plan-get">' + rows.map(function (r) {
+          return '<li' + (r[3] ? ' class="' + r[3] + '"' : '') + '><b>' + esc(r[0]) + '</b><p><strong>' + esc(r[1]) + '</strong><span>' + esc(r[2]) + '</span></p></li>';
+        }).join('') + '</ul>' +
+        '<div class="tn-plan-price"><p class="tn-worth-k">' + esc(t('w.pay')) + '</p><p class="tn-fee-v">' + esc(money(pr)) + '</p>' +
+        '<p class="tn-plan-per"><span>' + esc(approx(pr / SESS)) + ' ' + esc(t('fee.ca')) + '</span><span>' + esc(approx(pr / 12)) + ' ' + esc(t('fee.mo')) + '</span></p>' +
+        '<button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="dang-ky"' + (DEP_ON ? ' data-pick-pay="deposit"' : '') + '>' +
+          esc(DEP_ON ? t('plan.go.dep', { d: moneyShort(DEPOSIT), n: L(x.name) }) : t('plan.go', { n: L(x.name) })) + '</button></div></article>';
+    };
+    return (DEP_ON ? '<div class="tn-dep-band"><p><small>' + esc(t('dep.only')) + '</small><b>' + esc(money(DEPOSIT)) + '</b></p><span>' + esc(t('dep.how')) + '</span>' +
+        (SEATS ? '<em>' + esc(t('seats', { n: SEATS })) + '</em>' : '') + '</div>' : '') +
+      '<div class="tn-plans">' + ORDER.map(plan).join('') + '</div>' +
+      '<ul class="tn-plans-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '<li class="free">' + esc(t('pay.free')) + '</li></ul>';
   }
   // giấy nhập môn: tên / năm sinh cập nhật khi gõ, đóng dấu đỏ khi ghi danh xong
   function seal(done) {
@@ -466,7 +505,7 @@
     if (CAN_PAY) opts.push(['full', t('opt.full', { p: money(priceOf(path)) }), t('opt.full.s') + (ISP ? '. ' + t('opt.full.isp') : '')]);
     var pay = saved && saved.pay && opts.some(function (o) { return o[0] === saved.pay; }) ? saved.pay : 'consult';
     return '<form class="tn-form" novalidate><fieldset class="tn-pick"><legend>' + esc(t('form.path')) + '</legend>' + ORDER.map(function (k) {
-      return '<label class="' + k + '"><input type="radio" name="path" value="' + k + '"' + (path === k ? ' checked' : '') + '><span><small>' + esc(L(P[k].corner)) + '</small><b>' + esc(L(P[k].name)) + '</b><i class="tn-pick-p">' + esc(money(priceOf(k))) + '</i><em>' + esc(L(P[k].out)) + '</em></span></label>';
+      return '<label class="' + k + '"><input type="radio" name="path" value="' + k + '"' + (path === k ? ' checked' : '') + '><span><small>' + esc(L(P[k].corner)) + '</small><b>' + esc(L(P[k].name)) + '</b><i class="tn-pick-p">' + esc(money(priceOf(k))) + ' · ' + esc(ageText(k)) + '</i><em>' + esc(L(P[k].out)) + '</em></span></label>';
     }).join('') + '</fieldset>' +
       '<div class="tn-fg"><label class="tn-f wide"><span>' + esc(t('form.name')) + '</span><input name="name" autocomplete="name" maxlength="80" required></label>' +
       '<label class="tn-f"><span>' + esc(t('form.phone')) + '</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" required></label>' +
@@ -487,17 +526,28 @@
     return '<div class="tn-ok" role="status"><span class="tn-ok-ic" aria-hidden="true"></span><h3>' + esc(t('ok.h')) + '</h3><p>' + esc(t('ok.p', { c: r.code, ph: r.phone, n: L(P[r.path].name) })) + '</p>' +
       payNote + (r.slip && DC.slip ? DC.slip.box(r.slip, DC.lang()) : '') + '<button type="button" class="tn-btn ghost" data-again>' + esc(t('ok.again')) + '</button></div>';
   }
+  // hỏi đáp chia 3 nhóm; khung "Còn băn khoăn?": ảnh, Zalo / gọi, ghé phòng tập (địa chỉ, giờ mở cửa, chỉ đường — lấy ở /admin → Liên hệ)
   function faq() {
     var ways = payWays().filter(function (w, i) { return !(DEP_ON && i === 0); });
-    var how = (DEP_ON ? t('how.dep', { d: money(DEPOSIT) }) + ' ' : '') + (ways.length ? t('how.list', { l: ways.join(', ') }) : t('pay.ask'));
-    var qa = [1, 2, 3, 4, 5, 7, 8, 6].map(function (i) {
-      var a = i === 6 ? (DEP_ON ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free')) : t('a' + i, { d: startText(true), f: money(PRICES.fighter), c: money(PRICES.coach), how: how });
-      return '<details><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(a) + '</p></details>';
+    var how = (DEP_ON ? t('how.dep', { d: money(DEP_ON ? DEPOSIT : 0) }) + ' ' : '') + (ways.length ? t('how.list', { l: ways.join(', ') }) : t('pay.ask'));
+    var ans = function (i) {
+      return i === 6 ? (DEP_ON ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free'))
+        : t('a' + i, { d: startText(true), f: money(PRICES.fighter), c: money(PRICES.coach), how: how, ca: AGES.coach[0], cb: AGES.coach[1], fa: AGES.fighter[0], fb: AGES.fighter[1], y: YEAR });
+    };
+    var groups = [['faq.g1', [1, 9, 2]], ['faq.g2', [3, 4, 6]], ['faq.g3', [5, 7, 8]]];
+    var qa = groups.map(function (g, gi) {
+      return '<div class="tn-faq-g"><h3>' + esc(t(g[0])) + '</h3>' + g[1].map(function (i, n) {
+        return '<details' + (gi === 0 && n === 0 ? ' open' : '') + '><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(ans(i)) + '</p></details>';
+      }).join('') + '</div>';
     }).join('');
-    var help = '<aside class="tn-help"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t('help.p')) + '</p><div class="tn-help-b">' +
+    var addr = [C.addr1, C.addr2].filter(Boolean).join(', ');
+    var visit = addr ? '<div class="tn-help-visit"><b>' + esc(t('help.visit')) + '</b><span>' + esc(addr) + '</span>' +
+      (C.hoursOpen && C.hoursClose ? '<span>' + esc(t('help.hours', { o: C.hoursOpen, c: C.hoursClose })) + '</span>' : '') +
+      (C.maps ? '<a href="' + esc(C.maps) + '" target="_blank" rel="noopener">' + esc(t('help.map')) + '</a>' : '') + '</div>' : '';
+    var help = '<aside class="tn-help"><div class="tn-help-img"><img src="' + esc(IMG.coach) + '" alt="" loading="lazy" decoding="async"></div><div class="tn-help-in"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t('help.p')) + '</p><div class="tn-help-b">' +
       (C.zalo ? '<a class="tn-btn" href="' + esc(C.zalo) + '" target="_blank" rel="noopener">' + esc(t('help.zalo')) + '</a>' : '') +
-      (PHONE ? '<a class="tn-btn ghost" href="tel:' + esc(PHONE.replace(/[^\d+]/g, '')) + '">' + esc(t('help.call', { p: PHONE })) + '</a>' : '') + '</div></aside>';
-    return '<div class="tn-faq-wrap"><div class="tn-faq">' + qa + '</div>' + (C.zalo || PHONE ? help : '') + '</div>';
+      (PHONE ? '<a class="tn-btn ghost" href="tel:' + esc(PHONE.replace(/[^\d+]/g, '')) + '">' + esc(t('help.call', { p: PHONE })) + '</a>' : '') + '</div>' + visit + '</div></aside>';
+    return '<div class="tn-faq-wrap"><div class="tn-faq">' + qa + '</div>' + (C.zalo || PHONE || addr ? help : '') + '</div>';
   }
   // 2 tờ "giấy cam kết": số 100% thật lớn + dấu đỏ hoàn 100% học phí, bấm → giữ chỗ đúng khóa
   function refundSeal(k) {
@@ -600,7 +650,12 @@
     var q = e.target.closest('[data-quiz]');
     if (q) { if (q.getAttribute('data-quiz') === 'back') quiz.i = Math.max(0, quiz.i - 1); else quiz = { i: 0, ans: [] }; swapQuiz(); return; }
     var b = e.target.closest('[data-path]');
-    if (b && b.tagName === 'BUTTON') { choose(b.getAttribute('data-path'), b.getAttribute('data-go')); return; }
+    if (b && b.tagName === 'BUTTON') {
+      choose(b.getAttribute('data-path'), b.getAttribute('data-go'));
+      var bp = b.getAttribute('data-pick-pay'), br = bp && root.querySelector('.tn-form [name=pay][value="' + bp + '"]');
+      if (br && !br.checked) br.click();
+      return;
+    }
     var pp = e.target.closest('[data-pick-pay]');
     if (pp) { var r = root.querySelector('.tn-form [name=pay][value="' + pp.getAttribute('data-pick-pay') + '"]'); if (r && !r.checked) r.click(); }
     if (e.target.closest('[data-again]')) { done = null; saved = null; render(); var n = root.querySelector('.tn-form [name=name]'); if (n) n.focus(); }
@@ -630,8 +685,11 @@
     var pay = (f.querySelector('[name=pay]:checked') || {}).value || 'consult';
     if (name.length < 2) return fail(t('err.name'), 'name');
     if (!/^[0-9 +().-]{8,20}$/.test(phone) || phone.replace(/\D/g, '').length < 9) return fail(t('err.phone'), 'phone');
+    if (!year) return fail(t('err.year.req'), 'year');
     var yr = +year, now = new Date().getFullYear();
-    if (year && !(yr >= now - 70 && yr <= now - 10)) return fail(t('err.year'), 'year');
+    if (!/^\d{4}$/.test(year) || !(yr >= now - 80 && yr <= now)) return fail(t('err.year'), 'year');
+    var old = +YEAR - yr, rg = AGES[k], o = other(k), ro = AGES[o];
+    if (old < rg[0] || old > rg[1]) return fail(t('err.age', { n: L(P[k].name), a: rg[0], b: rg[1], y: YEAR }) + (old >= ro[0] && old <= ro[1] ? ' ' + t('err.age.alt', { n: L(P[o].name), a: ro[0], b: ro[1] }) : ''), 'year');
     err.hidden = true; btn.disabled = true; btn.textContent = t('form.sending');
     var exp = T.vi['exp.' + el.exp.value] || '';
     DC.api('/registrations', {
