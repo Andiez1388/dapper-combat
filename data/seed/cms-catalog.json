@@ -3910,7 +3910,7 @@
    "page": "home",
    "section": "home.instructor",
    "type": "title",
-   "vi": "TRẦN<br>MINH KHOA",
+   "vi": "PHONG<br>DAPPER",
    "en": null,
    "html": true,
    "src": "html",
@@ -20076,7 +20076,7 @@
    "kind": "image",
    "url": "/assets/media/e1dc018b71d4.jpg",
    "attr": "src",
-   "alt": "Trần Minh Khoa",
+   "alt": "HLV Phong Dapper",
    "src": "html",
    "order": 9094,
    "sections": [
@@ -20104,7 +20104,7 @@
     "maxKB": 350,
     "format": "JPG hoặc WebP"
    },
-   "label": "Ảnh — Trần Minh Khoa"
+   "label": "Ảnh — HLV Phong Dapper"
   },
   {
    "key": "home.courses.m1",

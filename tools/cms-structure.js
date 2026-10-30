@@ -171,6 +171,7 @@ function audit7Fixups() {
   f('global.mnav.20', 'label', 'Thẻ 6 · Tên trang (mục “Truyền Nghề” trên menu)', 'Truyền Nghề', 'Pro Pathways', { itemLabel: 'Tên trang' });
   f('global.mnav.21', 'label', 'Thẻ 6 · Mô tả ngắn dưới tên (menu điện thoại)', 'Đào tạo coach · võ sĩ từ con số 0', 'Coach & fighter training from zero', { itemLabel: 'Mô tả ngắn dưới tên' });
   setDefault('global.mnav.3', 'Cửa hàng', 'Shop');
+  setDefault('home.instructor.3', 'PHONG<br>DAPPER');   // HLV là Phong Dapper (chủ xác nhận 2026-10-22)
   setDefault('shop.nav.shop', 'Cửa hàng', 'Shop');
   setDefault('shop.crumb.shop', 'Cửa hàng', 'Shop');
 }
