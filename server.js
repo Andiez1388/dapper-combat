@@ -198,6 +198,12 @@ app.get('/xep-hang', (req, res) => rankPage(req, res, '/xep-hang', 'Ranking võ 
 app.get('/vo-si', (req, res) => rankPage(req, res, '/vo-si', 'Thông tin võ sĩ', 'Danh sách võ sĩ Dapper Combat Academy: thành tích, điểm xếp hạng, hạng cân và hồ sơ chi tiết.'));
 app.get('/su-kien', (req, res) => rankPage(req, res, '/su-kien', 'Lịch sự kiện', 'Lịch fight night, sparring và kỳ đánh giá kỹ năng của Dapper Combat Academy, kèm kết quả từng trận.'));
 app.get('/so-sanh', (req, res) => rankPage(req, res, '/so-sanh', 'So sánh võ sĩ', 'So sánh 2 võ sĩ Dapper Combat Academy: điểm, kỹ năng, thông số, đối đầu trực tiếp và khả năng thắng.'));
+// phiếu thông tin võ sĩ in ra giấy (A4, 2 trang): mục A1–A6 / B1–B3 khớp form /admin → Academy Ranking → Võ sĩ
+app.get('/phieu-vo-si', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('X-Robots-Tag', 'noindex');
+  res.sendFile(path.join(PUB, 'phieu-vo-si.html'));
+});
 app.get('/vo-si/:slug', (req, res) => {
   const f = ranking.publicData().fighters.find(x => x.slug === String(req.params.slug).toLowerCase());
   if (!f) return rankPage(req, res, '', 'Không tìm thấy võ sĩ', '', 404);

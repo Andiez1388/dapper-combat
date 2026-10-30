@@ -142,6 +142,51 @@ const SK = ['technique', 'speed', 'power', 'defense', 'stamina', 'footwork'];
 const skills = arr => Object.fromEntries(SK.map((k, i) => [k, arr[i]]));
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const T0 = Date.parse('2026-10-29T00:00:00Z');
+// hồ sơ mẫu theo kỹ năng: nhận xét HLV (điểm mạnh = 2 kỹ năng cao nhất, cần cải thiện = thấp nhất), lối đánh, mục tiêu, vài chiêu tự đặt tên
+const STRONG = {
+  technique: ['Đòn thẳng gọn, combo 1-2-3 mạch lạc', 'Clean straight punches, tidy 1-2-3 combinations'],
+  speed: ['Ra đòn nhanh, thường đánh trước đối thủ', 'Fast hands, usually lands first'],
+  power: ['Đòn tay sau rất nặng, đe dọa KO', 'Heavy rear hand, a real KO threat'],
+  defense: ['Che chắn tốt, ít trúng đòn sạch', 'Tight guard, rarely takes clean shots'],
+  stamina: ['Giữ nhịp tốt tới hiệp cuối', 'Keeps the pace up to the final round'],
+  footwork: ['Di chuyển khéo, kiểm soát khoảng cách', 'Smart footwork, controls the distance'],
+};
+const WEAK = {
+  technique: ['Kỹ thuật đòn móc còn thô, cần sửa tư thế', 'Hooks are still rough, posture needs work'],
+  speed: ['Ra đòn còn chậm, dễ bị đánh trước', 'Slow to throw, often beaten to the punch'],
+  power: ['Đòn chưa đủ nặng để buộc đối thủ lùi', 'Punches lack the weight to back opponents up'],
+  defense: ['Hay hạ tay sau khi ra đòn', 'Drops the hands after punching'],
+  stamina: ['Hụt hơi từ hiệp 3, cần tăng thể lực', 'Fades from round 3, needs more conditioning'],
+  footwork: ['Đứng chân còn nặng, hay bị dồn vào góc', 'Flat-footed, gets trapped in the corner'],
+};
+const STYLE = {
+  technique: ['Kỹ thuật, đánh combo gọn', 'Technical, clean combinations'], speed: ['Tốc độ, ra đòn trước', 'Speed, first to strike'],
+  power: ['Áp sát, đòn nặng', 'Pressure and heavy shots'], defense: ['Phòng thủ phản công', 'Defend and counter'],
+  stamina: ['Ép nhịp liên tục', 'Relentless pace'], footwork: ['Di chuyển, đánh từ xa', 'Move and box from range'],
+};
+const GOAL = [['Vào top 3 hạng cân trong năm 2026', 'Reach the division top 3 in 2026'], ['Giữ chuỗi thắng tới hết năm', 'Keep the win streak to the end of the year'],
+  ['Lên Hạng A ở kỳ đánh giá tới', 'Move up to Class A at the next assessment'], ['Thắng trận đầu tiên bằng KO', 'Get a first KO win']];
+const NOTE = [['Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.', 'Hard-working and coachable. Needs more live bouts to build experience.'],
+  ['Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.', 'Clear progress over two assessments. Should spar more with taller partners.'],
+  ['Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.', 'A natural competitor who stays calm under pressure.']];
+const ULT = [['Móc trái hạ màn', 'Curtain-closing left hook', 'Tung móc trái ngay khi đối thủ hạ tay sau cú jab.', 'Lands the left hook the moment the opponent drops the hands after a jab.'],
+  ['Overhand phải', 'Right overhand', 'Vòng tay sau qua che chắn, nhắm thẳng thái dương.', 'Loops the rear hand over the guard straight to the temple.']];
+const pairOf = a => ({ vi: a[0], en: a[1] });
+function profile(sk, i, joined) {
+  const order = SK.map((k, j) => [k, sk[j]]).sort((a, b) => b[1] - a[1]);
+  const p = {
+    style: pairOf(STYLE[order[0][0]]), goal: pairOf(GOAL[i % GOAL.length]),
+    evalStrong: { vi: STRONG[order[0][0]][0] + '\n' + STRONG[order[1][0]][0], en: STRONG[order[0][0]][1] + '\n' + STRONG[order[1][0]][1] },
+    evalWeak: pairOf(WEAK[order[5][0]]), evalNote: pairOf(NOTE[i % NOTE.length]),
+    started: Number(joined.slice(0, 4)) - (i % 3) + joined.slice(4, 7), otherArts: ['', 'Muay Thái', '', 'Karate', ''][i % 5], priorRecord: i % 4 === 1 ? 'Nghiệp dư 2-1-0' : '',
+    idol: ['Manny Pacquiao', '', 'Canelo Álvarez', '', 'Naoya Inoue'][i % 5], moves: {},
+  };
+  if (i % 4 === 0) {
+    const u = ULT[(i / 4) % ULT.length];
+    p.moves.ult = { name: { vi: u[0], en: u[1] }, desc: { vi: u[2], en: u[3] } };
+  }
+  return p;
+}
 fs.mkdirSync(IMG, { recursive: true });
 const fighters = F.map(([id, name, nick, gender, birth, weight, division, stance, height, reach, hometown, joined, sk, status, look], i) => {
   const no = String(i + 1).padStart(2, '0');
@@ -154,7 +199,8 @@ const fighters = F.map(([id, name, nick, gender, birth, weight, division, stance
   return {
     id, createdAt: T0, name, nickname: nick, gender, birth, weight, division, stance, height, reach, hometown, joined, coach: COACH,
     photo: `/assets/img/fighters/demo-${no}.svg`, status, visible: true, bio: { vi: BIO[id][0], en: BIO[id][1] },
-    skills: skills(sk), assessments: assess, slug: slug(name), updatedAt: T0,
+    skills: skills(sk), assessments: assess, slug: slug(name), updatedAt: T0, ...profile(sk, i, joined),
+    private: { phone: '', emName: '', emRelation: '', emPhone: '', health: '' },
   };
 });
 const events = E.map(([id, vi, en, date, time, type, dvi, den, bouts]) => ({

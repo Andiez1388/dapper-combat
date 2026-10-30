@@ -216,3 +216,16 @@
 .rk-demo { align-items: center; flex-wrap: wrap; gap: 10px 14px; }
 .rk-demo .alert__text { flex: 1 1 320px; }
 .rk-demo .btn { flex: none; }
+
+/* ─── B2. chiêu trên hồ sơ (P Q W E R) ───────────────────── */
+.rk-mvs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.rk-mv { display: grid; gap: 6px; min-width: 0; padding: 12px; border: 1px solid var(--line); }
+.rk-mv__k { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; font-weight: 600; }
+.rk-mv textarea { resize: vertical; }
+@media (max-width: 720px) { .rk-mvs { grid-template-columns: minmax(0, 1fr); } }
+
+/* kèo dự đoán trong thẻ trận + ghi chú phiếu giấy */
+.rk-pred { border-left: 3px solid var(--line-2); }
+.rk-pred b { font-variant-numeric: tabular-nums; }
+.rk-pred .linkbtn { margin-left: auto; }
+.rk-paper { margin-bottom: 16px; }

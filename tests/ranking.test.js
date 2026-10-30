@@ -86,6 +86,27 @@ module.exports = async function rankingTests(env, t) {
     t.ok(/^window\.__DC_RANKING=\{/.test(js) && !js.includes('"birth"'), 'dữ liệu cho trang (/assets/data/ranking.js) không có ngày sinh');
   });
 
+  await t.run('kèo dự đoán', async () => {
+    const P = require('../public/assets/js/rank-predict.js');
+    const S = (s, o) => ({ technique: s, speed: s, power: s, defense: s, stamina: s, footwork: s, ...o });
+    const mk = (s, o = {}) => ({ points: s * 10, skills: S(s), record: { w: 2, l: 1, d: 0, ko: 1, koLost: 0, bouts: 3 }, last6: ['W', 'L', 'W'], height: 175, reach: 178, weight: 64, age: 25, stance: 'orthodox', ...o });
+    const p = P.predict(mk(80), mk(70), { rounds: 3 });
+    t.ok(p.a > p.b && Math.abs(p.a + p.b + p.draw - 1) < 1e-9 && Math.abs(p.aKO + p.aDec - p.a) < 1e-9 && Math.abs(p.odds.a - 1 / p.a) < 0.01 && p.likely === 'aDec',
+      'người mạnh hơn được dự đoán thắng; thắng + hòa + thua = 100%; kèo = 1 / khả năng', p);
+    const q = P.predict(mk(70), mk(80), { rounds: 3 });
+    t.ok(Math.abs(q.b - p.a) < 1e-9 && Math.abs(q.draw - p.draw) < 1e-9, 'đổi góc đỏ / xanh → kết quả đối xứng');
+    const even = P.predict(mk(70), mk(70));
+    t.ok(Math.abs(even.a - even.b) < 1e-9 && even.draw > p.draw, '2 võ sĩ như nhau → 50 / 50, khả năng hòa cao hơn', even);
+    const reach = P.predict(mk(70, { reach: 190 }), mk(70));
+    t.ok(reach.a > reach.b && reach.factors[0].k === 'reach', 'sải tay dài hơn → nghiêng về mình, ghi trong yếu tố quyết định', reach.factors);
+    const gas = o => P.predict(mk(70, { skills: S(70, { stamina: 95 }) }), mk(70), o).a;
+    t.ok(gas({ rounds: 5, type: 'fight' }) > gas({ rounds: 3, type: 'fight' }), 'thể lực tốt có lợi hơn ở trận 5 hiệp');
+    const hit = P.predict(mk(70, { skills: S(70, { power: 95 }) }), mk(70), { type: 'fight' }), flat = P.predict(mk(70), mk(70), { type: 'fight' });
+    t.ok(hit.aKO / hit.a > flat.aKO / flat.a && flat.aKO / flat.a > even.aKO / even.a, 'đấm nặng → dễ thắng KO hơn; sparring ít dừng trận hơn fight night');
+    const sh = P.share(p);
+    t.ok(sh[0] + sh[1] === 100 && sh[0] > 50, 'thanh đỏ / xanh (bỏ phần hòa) cộng đủ 100%', sh);
+  });
+
   t.section('Quản trị: võ sĩ, sự kiện, kết quả');
   await t.run('quản trị', async () => {
     t.ok((await pub('/api/admin/ranking')).s === 401, 'chưa đăng nhập → không xem dữ liệu quản trị');
@@ -106,6 +127,15 @@ module.exports = async function rankingTests(env, t) {
     t.ok(r.s === 400 && /Cân nặng/.test(r.j.error), 'số đo / điểm ngoài khoảng → báo lỗi (không tự bỏ)', r.j);
     r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { skills: { ...sk, power: 90 }, assessDate: ranking.vnToday(), assessNote: 'Tiến bộ sức mạnh' } });
     t.ok(r.j.assessments.length === 2 && r.j.assessments[1].date === ranking.vnToday() && r.j.assessments[1].note === 'Tiến bộ sức mạnh', 'đổi điểm kỹ năng → thêm lần chấm (ngày + ghi chú)', r.j.assessments);
+    // hồ sơ mở rộng (phiếu A3–A5, B2–B3): lưu được; liên hệ + sức khỏe không bao giờ ra trang công khai
+    r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { evalStrong: { vi: 'Đấm nặng\nBền sức' }, evalNote: { vi: 'Tập chăm' }, started: '2024-03', idol: 'Muhammad Ali', otherArts: 'Karate',
+      moves: { ult: { name: { vi: 'Móc trái hạ màn' }, desc: { vi: 'Sau cú jab' } }, power: { name: { vi: '' }, desc: { vi: '' } } }, private: { phone: '0909 000 111', health: 'Đau vai phải' } } });
+    const pm = (await pub('/api/ranking')).j.fighters.find(f => f.id === nf.id);
+    t.ok(r.s === 200 && r.j.private.phone === '0909 000 111' && r.j.started === '2024-03' && r.j.moves.ult.name.vi === 'Móc trái hạ màn' && !r.j.moves.power &&
+      pm && !('private' in pm) && pm.evalStrong.vi === 'Đấm nặng\nBền sức' && pm.moves.ult.desc.vi === 'Sau cú jab' && pm.idol === 'Muhammad Ali' && !JSON.stringify(pm).includes('0909') && !JSON.stringify(pm).includes('Đau vai'),
+      'hồ sơ mở rộng: nhận xét HLV, chiêu tự đặt, kinh nghiệm lưu được; SĐT + sức khỏe chỉ admin xem', { pv: r.j.private, pub: pm && { ev: pm.evalStrong, mv: pm.moves } });
+    r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { started: '2024-13' } });
+    t.ok(r.s === 200 && r.j.started === '' && r.j.private.phone === '0909 000 111', 'tháng sai bị bỏ; sửa mục khác không mất liên hệ đã lưu', { st: r.j.started });
     const opp = (await req('/api/admin/ranking')).j.fighters.find(f => f.slug === 'tran-minh-quan');
     r = await req('/api/events', { method: 'POST', body: { name: { vi: 'Sự kiện thử' }, date: '2026-10-20', bouts: [{ a: nf.id, b: nf.id, rounds: 3 }] } });
     t.ok(r.s === 400 && /2 võ sĩ khác nhau/.test(r.j.error), 'một võ sĩ ở cả 2 góc → báo lỗi', r.j);

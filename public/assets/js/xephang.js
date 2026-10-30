@@ -161,6 +161,38 @@
     en: { 'f.role': 'Role', 'role.all': 'All', 'feat.title': 'Featured bout', 'cd.in': 'Time left until the first bell', 'cd.d': 'days', 'cd.h': 'hrs', 'cd.m': 'min', 'ev.in': 'in {n} days', 'ev.today': 'today' },
   };
   Object.keys(T3).forEach(function (l) { Object.keys(T3[l]).forEach(function (k) { T[l][k] = T3[l][k]; }); });
+  // kèo dự đoán (rank-predict.js), nhận xét HLV, kinh nghiệm + phong cách trên hồ sơ
+  var T4 = {
+    vi: {
+      'prob': 'Khả năng thắng (dự đoán)', 'prob.short': 'dự đoán',
+      'pr.title': 'Kèo dự đoán', 'pr.go': 'Xem kèo', 'pr.draw': 'Hòa', 'pr.odds': 'Kèo', 'pr.oddsLine': 'Kèo {a} – {b}',
+      'pr.out.aKO': '{a} thắng KO / TKO', 'pr.out.aDec': '{a} thắng điểm', 'pr.out.draw': 'Hòa', 'pr.out.bDec': '{b} thắng điểm', 'pr.out.bKO': '{b} thắng KO / TKO',
+      'pr.likely': 'Dễ xảy ra nhất', 'pr.distance': 'Đấm hết {n} hiệp', 'pr.early': 'Nếu dừng trận sớm, khoảng',
+      'pr.factors': 'Yếu tố quyết định', 'pr.conf': 'Độ tin cậy', 'pr.conf.low': 'thấp (ít trận để so)', 'pr.conf.medium': 'vừa', 'pr.conf.high': 'cao',
+      'pr.note': 'Tính từ điểm xếp hạng, kỹ năng HLV chấm, thể hình, kinh nghiệm và phong độ. Chỉ để tham khảo cho vui khi xếp lịch, không dùng để cá cược.',
+      'fx.matchup': 'Tấn công xuyên phòng thủ', 'fx.stamina': 'Thể lực trong trận {n} hiệp', 'fx.reach': 'Sải tay', 'fx.weight': 'Cân nặng', 'fx.stance': 'Thế đứng',
+      'fx.experience': 'Kinh nghiệm thi đấu', 'fx.form': 'Phong độ gần đây', 'fx.age': 'Tuổi', 'fx.boutsN': '{a} vs {b} trận', 'fx.lvl': 'Mức {n}/3',
+      'ult.custom.d': 'Chiêu kết thúc sở trường do HLV ghi nhận.',
+      'ev2.title': 'Nhận xét của HLV', 'ev2.strong': 'Điểm mạnh', 'ev2.weak': 'Cần cải thiện', 'ev2.by': '{c}, lần chấm gần nhất {d}', 'ev2.coach': 'HLV',
+      'pf.started': 'Bắt đầu tập boxing', 'pf.otherArts': 'Môn võ khác', 'pf.prior': 'Thành tích trước khi vào Academy', 'pf.style': 'Lối đánh', 'pf.idol': 'Thần tượng', 'pf.goal': 'Mục tiêu',
+      'an.note': 'Khả năng thắng dự đoán từ điểm, kỹ năng, thể hình và phong độ, so với võ sĩ cùng giới tính ở hạng cân này và hạng cân kề bên. Bấm vào tên để xem kèo chi tiết.',
+    },
+    en: {
+      'prob': 'Win chance (prediction)', 'prob.short': 'prediction',
+      'pr.title': 'Fight odds', 'pr.go': 'See the odds', 'pr.draw': 'Draw', 'pr.odds': 'Odds', 'pr.oddsLine': 'Odds {a} – {b}',
+      'pr.out.aKO': '{a} by KO / TKO', 'pr.out.aDec': '{a} on points', 'pr.out.draw': 'Draw', 'pr.out.bDec': '{b} on points', 'pr.out.bKO': '{b} by KO / TKO',
+      'pr.likely': 'Most likely', 'pr.distance': 'Goes all {n} rounds', 'pr.early': 'If stopped early, around',
+      'pr.factors': 'Deciding factors', 'pr.conf': 'Confidence', 'pr.conf.low': 'low (few bouts to compare)', 'pr.conf.medium': 'medium', 'pr.conf.high': 'high',
+      'pr.note': 'Built from ranking points, coach skill scores, physicals, experience and form. Just for fun when planning bouts, not for betting.',
+      'fx.matchup': 'Offence against defence', 'fx.stamina': 'Stamina over {n} rounds', 'fx.reach': 'Reach', 'fx.weight': 'Weight', 'fx.stance': 'Stance',
+      'fx.experience': 'Ring experience', 'fx.form': 'Recent form', 'fx.age': 'Age', 'fx.boutsN': '{a} vs {b} bouts', 'fx.lvl': 'Level {n} of 3',
+      'ult.custom.d': 'Signature finisher noted by the coaches.',
+      'ev2.title': 'Coach’s assessment', 'ev2.strong': 'Strengths', 'ev2.weak': 'To improve', 'ev2.by': '{c}, last assessed {d}', 'ev2.coach': 'Coach',
+      'pf.started': 'Started boxing', 'pf.otherArts': 'Other martial arts', 'pf.prior': 'Record before the academy', 'pf.style': 'Fighting style', 'pf.idol': 'Idol', 'pf.goal': 'Goal',
+      'an.note': 'Win chance predicted from points, skills, physicals and form, against fighters of the same sex in this division and the ones next to it. Click a name for the full odds.',
+    },
+  };
+  Object.keys(T4).forEach(function (l) { Object.keys(T4[l]).forEach(function (k) { T[l][k] = T4[l][k]; }); });
   var en = function () { return DC.lang() === 'en'; };
   function t(k, vars) {
     var s = (T[en() ? 'en' : 'vi'][k] != null ? T[en() ? 'en' : 'vi'][k] : T.vi[k]) || k;
@@ -194,6 +226,7 @@
   }
   function dateBlock(iso, cls) { var p = dateParts(iso); return '<div class="xh-date' + (cls ? ' ' + cls : '') + '" title="' + esc(dateOf(iso, true)) + '"><b>' + p.d + '</b><span>' + esc(p.m) + '</span><small>' + p.y + '</small></div>'; }
   var divName = function (id) { return DIV[id] ? pick(DIV[id]) : ''; };
+  var monthOf = function (ym) { var d = new Date(ym + '-01T00:00:00Z'); return en() ? d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }) : ym.slice(5) + '/' + ym.slice(0, 4); };
   // khoảng cân của hạng: ≤ 52 kg … > 81 kg (hạng nặng nhất)
   function divRange(d) { var i = (D.divisions || []).indexOf(d); return d.max < 999 ? '≤ ' + d.max + ' kg' : '> ' + ((D.divisions[i - 1] || {}).max || '') + ' kg'; }
   var STOP = ['KO', 'TKO', 'RTD', 'DQ'];
@@ -493,12 +526,14 @@
     }).join('');
     return '<svg class="xh-radar" viewBox="-30 0 300 240" role="img" aria-label="' + esc(t('sk.title')) + '">' + grid + axes + shapes + labels + '</svg>';
   }
-  // khả năng thắng theo điểm hiện tại (công thức Elo dùng để tính điểm): a thắng b
-  var prob = function (a, b) { return 1 / (1 + Math.pow(10, (b.points - a.points) / 400)); };
-  function probBar(a, b) {
-    var p = Math.round(prob(a, b) * 100);
-    return '<div class="xh-prob" title="' + esc(t('prob')) + '"><span class="a" style="width:' + p + '%">' + p + '%</span><span class="b" style="width:' + (100 - p) + '%">' + (100 - p) + '%</span></div>';
+  // dự đoán kèo (rank-predict.js): điểm, kỹ năng, thể hình, kinh nghiệm, phong độ → khả năng thắng / hòa, cách thắng, kèo
+  var predict = function (a, b, opt) { return window.DCPredict.predict(a, b, opt); };
+  // thanh đỏ / xanh: khả năng thắng giữa 2 bên (bỏ phần hòa); opt = { rounds, type } của trận
+  function probBar(a, b, opt) {
+    var s = window.DCPredict.share(predict(a, b, opt));
+    return '<div class="xh-prob" title="' + esc(t('prob')) + '"><span class="a" style="width:' + s[0] + '%">' + s[0] + '%</span><span class="b" style="width:' + s[1] + '%">' + s[1] + '%</span></div>';
   }
+  var oddsLine = function (a, b, opt) { var p = predict(a, b, opt); return '<small class="xh-odds">' + esc(t('pr.oddsLine', { a: numFmt(p.odds.a, 2), b: numFmt(p.odds.b, 2) })) + '</small>'; };
   // diễn biến điểm: điểm kỹ năng → sau từng trận (màu chấm theo kết quả), vạch các mốc hạng
   function chart(f) {
     var pts0 = (f.bouts || []).slice().reverse();
@@ -532,20 +567,26 @@
   /* hồ sơ võ sĩ kiểu trang phân tích tướng (game MOBA): ảnh lớn, huy hiệu hạng, vai trò, độ khó đối đầu,
      bộ kỹ năng P Q W E R (nội tại = thế đứng, Q W E = 3 kỹ năng HLV chấm cao nhất, R = cách thắng sở trường),
      phân tích dễ thắng / khó thắng (theo điểm), lịch sử đấu tô màu thắng / thua */
-  // tuyệt chiêu = cách thắng nhiều nhất (bằng nhau thì ưu tiên thắng KO / TKO)
+  // chiêu HLV tự đặt ở /admin (tên + mô tả, 2 thứ tiếng); để trống = tên tự tạo
+  var moveOf = function (f, slot) { var m = f.moves && f.moves[slot]; return { name: m ? pick(m.name) : '', desc: m ? pick(m.desc) : '' }; };
+  // tuyệt chiêu = cách thắng nhiều nhất (bằng nhau thì ưu tiên thắng KO / TKO), hoặc chiêu kết thúc HLV ghi nhận
   function ultimate(f) {
     var n = {};
     (f.bouts || []).forEach(function (b) { if (b.res === 'W' && b.method) n[b.method] = (n[b.method] || 0) + 1; });
     var m = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || (STOP.indexOf(b) > -1) - (STOP.indexOf(a) > -1); })[0];
-    return m ? { name: t('ult.' + m), lvl: Math.min(3, n[m]), max: 3, desc: t('ult.d', { m: t('m.' + m), n: n[m], ko: f.record.ko, pct: f.record.koPct || 0 }) }
+    var auto = m ? { name: t('ult.' + m), lvl: Math.min(3, n[m]), max: 3, desc: t('ult.d', { m: t('m.' + m), n: n[m], ko: f.record.ko, pct: f.record.koPct || 0 }) }
       : { name: t('ult.none'), lvl: 0, max: 3, desc: t('ult.none.d'), off: true };
+    var c = moveOf(f, 'ult');
+    if (!c.name && !c.desc) return auto;
+    return { name: c.name || auto.name, sub: m ? t('ult.' + m) : '', lvl: Math.max(1, auto.lvl), max: 3, desc: (c.desc || t('ult.custom.d')) + (m ? ' ' + auto.desc : '') };
   }
   function abilities(f) {
     var reach = f.reach && f.height ? ' ' + t('ps.reach', { r: f.reach, h: f.height }) + (f.reach > f.height ? ' ' + t('ps.reachAdv', { n: f.reach - f.height }) : '') : '';
-    return [{ key: 'P', ic: 'stance', label: t('ch.passive'), name: t('ps.' + f.stance), desc: t('ps.' + f.stance + '.d') + reach }]
+    var cp = moveOf(f, 'stance');
+    return [{ key: 'P', ic: 'stance', label: t('ch.passive'), name: cp.name || t('ps.' + f.stance), sub: cp.name ? t('ps.' + f.stance) : '', desc: (cp.desc || t('ps.' + f.stance + '.d')) + reach }]
       .concat(bySkill(f).slice(0, 3).map(function (s, i) {
-        var v = f.skills[s.id] || 0;
-        return { key: 'QWE'.charAt(i), ic: s.id, label: pick(s), name: t('mv.' + s.id), sub: t('mv.score', { v: v }), lvl: Math.max(1, Math.ceil(v / 20)), max: 5, desc: t('mv.' + s.id + '.d') };
+        var v = f.skills[s.id] || 0, cm = moveOf(f, s.id);
+        return { key: 'QWE'.charAt(i), ic: s.id, label: pick(s), name: cm.name || t('mv.' + s.id), sub: t('mv.score', { v: v }), lvl: Math.max(1, Math.ceil(v / 20)), max: 5, desc: cm.desc || t('mv.' + s.id + '.d') };
       }))
       .concat([Object.assign({ key: 'R', ic: 'ult', label: t('ch.ult') }, ultimate(f))]);
   }
@@ -605,7 +646,7 @@
     var tiles = '<div class="xh-tiles">' + tile('an.win', decided ? winPct + '%' : '—') + tile('an.ko', r.ko + (r.w ? ' <small>' + esc(t('an.of', { n: r.w })) + '</small>' : '')) +
       tile('an.avg', deltas.length ? delta(Math.round(avgD * 10) / 10) : '—') + tile('an.rounds', numFmt(r.rounds)) + '</div>';
     var pool = D.fighters.filter(function (x) { return x.id !== f.id && x.gender === f.gender && ranked(x) && Math.abs(dvIds.indexOf(x.division) - di) <= 1; })
-      .map(function (x) { return { x: x, p: Math.round(prob(f, x) * 100) }; });
+      .map(function (x) { return { x: x, p: window.DCPredict.share(predict(f, x))[0] }; });
     var mu = function (o) {
       return '<a class="xh-mu" href="' + cmpHref(f, o.x) + '">' + photo(o.x, 'md') + '<span><span class="xh-mu-n">' + esc(o.x.name) + '</span><small>' + esc(divName(o.x.division)) + ', ' + pts(o.x.points) + ' ' + esc(t('col.points').toLowerCase()) + '</small>' +
         '<span class="xh-mu-bar"><i style="width:' + o.p + '%"></i></span></span><b>' + o.p + '%</b></a>';
@@ -616,9 +657,17 @@
       '<div class="bad"><h4>' + esc(t('an.bad')) + '</h4>' + (bad.length ? bad.map(mu).join('') : '<p class="xh-ch-note">' + esc(t('an.noBad')) + '</p>') + '</div></div><p class="xh-ch-note">' + esc(t('an.note')) + '</p>');
     var up = (f.upcoming || []).map(function (u) {
       var o = byId[u.opp], e = evById[u.event];
-      return o && e ? '<div class="xh-ch-up"><small>' + esc(dateOf(u.date)) + ', <a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' + (u.main ? ', ' + esc(t('ev.main').toLowerCase()) : '') + '</small>' + nameCell(o, rec(o.record)) + probBar(f, o) +
+      return o && e ? '<div class="xh-ch-up"><small>' + esc(dateOf(u.date)) + ', <a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' + (u.main ? ', ' + esc(t('ev.main').toLowerCase()) : '') + '</small>' + nameCell(o, rec(o.record)) + probBar(f, o, { rounds: u.rounds, type: e.type }) + oddsLine(f, o, { rounds: u.rounds, type: e.type }) +
         '<a class="xh-cmp-link" href="' + cmpHref(f, o) + '">' + esc(t('cmp.go')) + '</a></div>' : '';
     }).join('');
+    // nhận xét của HLV (B3): mỗi dòng một ý
+    var lines = function (p) { var l = pick(p).split('\n').map(function (s) { return s.trim(); }).filter(Boolean); return l.length ? '<ul>' + l.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : ''; };
+    var lastA = (f.assessments || [])[(f.assessments || []).length - 1];
+    var evalP = pick(f.evalStrong) || pick(f.evalWeak) || pick(f.evalNote) ? panel(esc(t('ev2.title')),
+      '<div class="xh-eval">' + (pick(f.evalStrong) ? '<div class="good"><h4>' + esc(t('ev2.strong')) + '</h4>' + lines(f.evalStrong) + '</div>' : '') +
+      (pick(f.evalWeak) ? '<div class="bad"><h4>' + esc(t('ev2.weak')) + '</h4>' + lines(f.evalWeak) + '</div>' : '') + '</div>' +
+      (pick(f.evalNote) ? '<p class="xh-eval-note">' + esc(pick(f.evalNote)).replace(/\n/g, '<br>') + '</p>' : '') +
+      '<p class="xh-ch-note">' + esc(t('ev2.by', { c: f.coach || t('ev2.coach'), d: lastA ? dateOf(lastA.date) : '—' })) + '</p>') : '';
     var cmp = D.fighters.length > 1 ? panel(esc(t('cmp.title')), '<form class="xh-cmp-form" action="/so-sanh"><input type="hidden" name="a" value="' + esc(f.slug) + '"><label class="xh-sr" for="xhCmpB">' + esc(t('cmp.with')) + '</label>' +
       '<select id="xhCmpB" name="b">' + fighterOpts((D.fighters.filter(function (x) { return x.id !== f.id && x.gender === f.gender && x.division === f.division; }).sort(byPoints)[0] || {}).slug, f.id) + '</select><button type="submit">' + esc(t('cmp.go')) + '</button></form>') : '';
 
@@ -642,7 +691,10 @@
       [t('pf.stance'), esc(stance(f.stance))], [t('pf.age'), f.age != null ? f.age : '—'], [t('pf.height'), f.height ? esc(t('cm', { n: f.height })) : '—'],
       [t('pf.reach'), f.reach ? esc(t('cm', { n: f.reach })) : '—'], [t('pf.weight'), f.weight ? esc(t('kg', { n: numFmt(f.weight, 1) })) : '—'], [t('pf.home'), esc(f.hometown || '—')],
       [t('pf.joined'), f.joined ? esc(dateOf(f.joined)) : '—'], [t('pf.coach'), esc(f.coach || '—')], [t('pf.debut'), f.debut ? esc(dateOf(f.debut)) : '—'],
-    ];
+    ].concat([ // kinh nghiệm, phong cách: chỉ hiện mục đã điền
+      [t('pf.started'), f.started ? esc(monthOf(f.started)) : ''], [t('pf.otherArts'), esc(f.otherArts || '')], [t('pf.prior'), esc(f.priorRecord || '')],
+      [t('pf.style'), esc(pick(f.style))], [t('pf.idol'), esc(f.idol || '')], [t('pf.goal'), esc(pick(f.goal))],
+    ].filter(function (x) { return x[1]; }));
     var kvT = function (rows) { return '<table class="xh-kv">' + rows.map(function (x) { return '<tr><th>' + esc(x[0]) + '</th><td>' + x[1] + '</td></tr>'; }).join('') + '</table>'; }, half = Math.ceil(kv.length / 2);
     var same = D.fighters.filter(function (x) { return x.gender === f.gender && x.division === f.division && ranked(x); }).sort(byPoints);
     var sameP = same.length ? panel(esc(t('side.sameDiv')), '<ul class="xh-list">' + same.map(function (x) {
@@ -651,7 +703,7 @@
 
     root.innerHTML = top +
       sec('bo-ky-nang', t('ch.skills'), '<div class="xh-ch-2">' + abil + stats + '</div>', t('ch.skillsSub')) +
-      sec('phan-tich', t('an.title'), tiles + '<div class="xh-ch-2">' + mus + '<div class="xh-ch-col">' + (up ? panel(esc(t('up.title')), up) : '') + cmp + '</div></div>') +
+      sec('phan-tich', t('an.title'), tiles + '<div class="xh-ch-2"><div class="xh-ch-col">' + evalP + mus + '</div><div class="xh-ch-col">' + (up ? panel(esc(t('up.title')), up) : '') + cmp + '</div></div>') +
       sec('lich-su', t('bh.title'), '<div class="xh-ch-col">' + panel(esc(t('chart.title')), chart(f)) + (mh ? '<ol class="xh-mhl">' + mh + '</ol>' : panel('', '<p class="xh-empty">' + esc(t('bh.none')) + '</p>')) + '</div>') +
       sec('ho-so', t('pf.facts'), '<div class="xh-ch-2"><div class="xh-ch-col">' + panel('', '<div class="xh-kv2">' + kvT(kv.slice(0, half)) + kvT(kv.slice(half)) + '</div>') +
         (pick(f.bio) ? panel(esc(t('bio.title')), '<p>' + esc(pick(f.bio)).replace(/\n/g, '<br>') + '</p>') : '') + '</div>' + sameP + '</div>');
@@ -680,7 +732,8 @@
     else if (b.result === 'draw') mid = '<b class="xh-bm">' + esc(t('ev.draw')) + '</b>' + (b.method ? '<small>' + methodTitle(b.method) + '</small>' : '');
     else if (b.result === 'nc') mid = '<b class="xh-bm">' + esc(t('ev.nc')) + '</b>';
     else if (e.status === 'pending') mid = '<span class="xh-vs" aria-hidden="true">VS</span><small>' + esc(t('ev.pending')) + '</small>';
-    else mid = '<span class="xh-vs" aria-hidden="true">VS</span><small>' + esc(t('ev.rounds', { n: b.rounds })) + ', ' + esc(t('prob.short')) + '</small>' + probBar(a, c) + '<a class="xh-cmp-link" href="' + cmpHref(a, c) + '">' + esc(t('cmp.go')) + '</a>';
+    else mid = '<span class="xh-vs" aria-hidden="true">VS</span><small>' + esc(t('ev.rounds', { n: b.rounds })) + ', ' + esc(t('prob.short')) + '</small>' + probBar(a, c, { rounds: b.rounds, type: e.type }) +
+      oddsLine(a, c, { rounds: b.rounds, type: e.type }) + '<a class="xh-cmp-link" href="' + cmpHref(a, c) + (e.type === 'fight' ? '&t=fight' : '') + '&r=' + b.rounds + '">' + esc(t('pr.go')) + '</a>';
     return '<div class="xh-bout' + (b.main ? ' main' : '') + '"><p class="xh-bout-k">' + (b.main ? '<span class="xh-mainev">' + esc(t('ev.main')) + '</span>' : '') + esc(divName(b.division)) + '</p>' +
       corner(a, 'a', b.deltaA) + '<div class="xh-bc">' + mid + '</div>' + corner(c, 'b', b.deltaB) + '</div>';
   }
@@ -704,7 +757,7 @@
     if (!a || !c) return '';
     var side = function (f, cls) { return '<a class="xh-feat-f ' + cls + '" href="' + href(f) + '">' + portrait(f) + '<span>' + esc(f.name) + '</span>' + rec(f.record) + '</a>'; };
     return '<div class="xh-feat"><p class="xh-feat-k">' + esc(t('feat.title')) + '</p><div class="xh-feat-vs">' + side(a, 'a') + '<span class="xh-feat-x" aria-hidden="true">VS</span>' + side(c, 'b') + '</div>' +
-      '<p class="xh-feat-e"><a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a><small>' + esc(dateOf(e.date, true)) + (e.time ? ', ' + esc(e.time) : '') + '</small></p>' + countdown(e) + probBar(a, c) + '</div>';
+      '<p class="xh-feat-e"><a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a><small>' + esc(dateOf(e.date, true)) + (e.time ? ', ' + esc(e.time) : '') + '</small></p>' + countdown(e) + probBar(a, c, { rounds: b.rounds, type: e.type }) + oddsLine(a, c, { rounds: b.rounds, type: e.type }) + '</div>';
   }
   function pageEvents() {
     var tab = qs().tab === 'res' ? 'res' : 'up', up = upcoming(), done = finished();
@@ -731,7 +784,34 @@
     var A = bySlug[q.a] || list[0], B = bySlug[q.b] && bySlug[q.b] !== A ? bySlug[q.b] : list.filter(function (x) { return x !== A && x.gender === (A || {}).gender; })[0] || list.filter(function (x) { return x !== A; })[0];
     if (!A || !B) { root.innerHTML = hero({ h1: esc(t('cmp.title')), sub: '<p>' + esc(t('cmp.hint')) + '</p>' }); return; }
     document.title = A.name + ' vs ' + B.name + ' · Dapper Combat Academy Ranking';
-    var pickers = '<div class="xh-cmp-pick"><label class="a">' + esc(t('cmp.red')) + ' <select data-f="a">' + fighterOpts(A.slug) + '</select></label>' +
+    // kèo dự đoán (cho vui): số hiệp + loại trận chọn được, mặc định sparring 3 hiệp
+    var RD = q.r === '5' ? 5 : 3, TY = q.t === 'fight' ? 'fight' : 'sparring', OPT = { rounds: RD, type: TY };
+    var P = predict(A, B, OPT), pc = function (x) { return Math.round(x * 100); }, short = function (f) { return f.name.split(' ').pop(); };
+    var outName = function (k) { return t('pr.out.' + k, { a: short(A), b: short(B) }); };
+    var five = [['aKO', P.aKO], ['aDec', P.aDec], ['draw', P.draw], ['bDec', P.bDec], ['bKO', P.bKO]];
+    var big = function (side, name, p, odds) { return '<div class="' + side + '"><small>' + esc(name) + '</small><b>' + pc(p) + '%</b><span>' + esc(t('pr.odds')) + ' ' + numFmt(odds, 2) + '</span></div>'; };
+    var resTxt = function (s) { return String(s || '').split('').map(function (x) { return t('res.' + x); }).join(' ') || '—'; };
+    var fxDetail = function (x) {
+      return x.k === 'reach' ? t('cm', { n: x.a + ' vs ' + x.b }) : x.k === 'weight' ? t('kg', { n: numFmt(x.a, 1) + ' vs ' + numFmt(x.b, 1) }) : x.k === 'stance' ? stance(x.a) + ' vs ' + stance(x.b)
+        : x.k === 'experience' ? t('fx.boutsN', { a: x.a, b: x.b }) : x.k === 'form' ? resTxt(x.a) + '  vs  ' + resTxt(x.b) : x.k === 'age' ? (x.a != null ? x.a : '—') + ' vs ' + (x.b != null ? x.b : '—')
+          : x.k === 'stamina' ? x.a + ' vs ' + x.b : '';
+    };
+    var factors = P.factors.map(function (x) {
+      var side = x.v > 0 ? 'a' : 'b', lvl = Math.abs(x.v) >= 30 ? 3 : Math.abs(x.v) >= 15 ? 2 : 1;
+      return '<li class="' + side + '"><span class="k">' + esc(t('fx.' + x.k, { n: RD })) + '<small>' + esc(fxDetail(x)) + '</small></span><span class="w">' + esc(short(side === 'a' ? A : B)) +
+        '<i class="l' + lvl + '" aria-label="' + esc(t('fx.lvl', { n: lvl })) + '"><b></b><b></b><b></b></i></span></li>';
+    }).join('');
+    var predBox = box(esc(t('pr.title')), '<div class="xh-pr"><div class="xh-pr-ctl">' + seg('r', [['3', t('ev.rounds', { n: 3 })], ['5', t('ev.rounds', { n: 5 })]], String(RD)) +
+      seg('t', [['sparring', t('type.sparring')], ['fight', t('type.fight')]], TY) + '</div>' +
+      '<div class="xh-pr-big">' + big('a', A.name, P.a, P.odds.a) + big('d', t('pr.draw'), P.draw, P.odds.draw) + big('b', B.name, P.b, P.odds.b) + '</div>' +
+      '<div class="xh-pr-bar" role="img" aria-label="' + esc(five.map(function (x) { return outName(x[0]) + ' ' + pc(x[1]) + '%'; }).join(', ')) + '">' +
+        five.map(function (x) { return '<i class="' + x[0] + '" style="flex-grow:' + Math.max(0.4, x[1] * 100).toFixed(1) + '"></i>'; }).join('') + '</div>' +
+      '<ul class="xh-pr-leg">' + five.map(function (x) { return '<li class="' + x[0] + '"><i></i>' + esc(outName(x[0])) + '<b>' + pc(x[1]) + '%</b></li>'; }).join('') + '</ul>' +
+      '<dl class="xh-pr-kv"><div><dt>' + esc(t('pr.likely')) + '</dt><dd>' + esc(outName(P.likely)) + '</dd></div><div><dt>' + esc(t('pr.distance', { n: RD })) + '</dt><dd>' + pc(P.distance) + '%</dd></div>' +
+        '<div><dt>' + esc(t('pr.early')) + '</dt><dd>' + esc(short(A) + ' ' + t('ev.round', { n: P.aRound }) + ', ' + short(B) + ' ' + t('ev.round', { n: P.bRound })) + '</dd></div></dl>' +
+      (factors ? '<h4 class="xh-pr-h">' + esc(t('pr.factors')) + '</h4><ul class="xh-pr-fx">' + factors + '</ul>' : '') +
+      '<p class="xh-ch-note">' + esc(t('pr.conf') + ': ' + t('pr.conf.' + P.confidence) + '. ' + t('pr.note')) + '</p></div>');
+    var pickers ='<div class="xh-cmp-pick"><label class="a">' + esc(t('cmp.red')) + ' <select data-f="a">' + fighterOpts(A.slug) + '</select></label>' +
       '<button type="button" class="xh-swap" data-swap>' + esc(t('cmp.swap')) + '</button><label class="b">' + esc(t('cmp.blue')) + ' <select data-f="b">' + fighterOpts(B.slug) + '</select></label></div>';
     var card = function (f, side) {
       return '<div class="xh-cmp-card ' + side + '"><span class="xh-cmp-img">' + portrait(f) + '</span><div class="xh-cmp-t">' + emblem(f, true) + (f.nickname ? '<small>' + esc(f.nickname) + '</small>' : '') +
@@ -763,12 +843,13 @@
       h2h.map(function (x) { var e = evById[x.event]; return '<tr><td class="num nw">' + esc(dateOf(x.date)) + '</td><td class="xh-hide-sm">' + (e ? '<a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a>' : '') + '</td><td class="c">' + res(x.res) + '</td><td>' + methodTitle(x.method) + '</td><td class="c num">' + (x.round ? x.round + '/' + x.rounds : x.rounds) + '</td></tr>'; }).join('') + '</tbody></table></div>'
       : '<p class="xh-empty">' + esc(t('cmp.noH2h')) + '</p>';
     root.innerHTML = hero({ h1: esc(t('cmp.title')), sub: '<p>' + esc(t('cmp.hint')) + '</p>', cls: 'xh-vs-hero',
-      after: pickers + '<div class="xh-cmp-head">' + card(A, 'a') + '<div class="xh-cmp-vs" aria-hidden="true">VS</div>' + card(B, 'b') + '</div><div class="xh-cmp-prob"><small>' + esc(t('prob')) + '</small>' + probBar(A, B) + '</div>' }) +
-      page('<div class="xh-grid xh-cmp-grid"><div class="xh-col">' + box(esc(t('cmp.stats')), '<div class="xh-tape">' + tape + '</div>') +
+      after: pickers + '<div class="xh-cmp-head">' + card(A, 'a') + '<div class="xh-cmp-vs" aria-hidden="true">VS</div>' + card(B, 'b') + '</div><div class="xh-cmp-prob"><small>' + esc(t('prob')) + '</small>' + probBar(A, B, OPT) + oddsLine(A, B, OPT) + '</div>' }) +
+      page('<div class="xh-grid xh-cmp-grid"><div class="xh-col">' + predBox + box(esc(t('cmp.stats')), '<div class="xh-tape">' + tape + '</div>') +
       box(esc(t('cmp.h2h')), h2hHtml) + '</div><aside class="xh-col">' + box(esc(t('cmp.skills')), '<div class="xh-box-b">' + radar([{ f: A, color: '#D4372E' }, { f: B, color: '#2f6fd6' }]) +
       '<p class="xh-legend"><span class="a">' + esc(A.name) + '</span><span class="b">' + esc(B.name) + '</span></p><div class="xh-bflys">' + bars + '</div></div>') + '</aside></div>');
-    bindFilters(function (k, v) { var o = { a: A.slug, b: B.slug }; o[k] = v; setQs(o); render(); });
-    root.querySelector('[data-swap]').addEventListener('click', function () { setQs({ a: B.slug, b: A.slug }); render(); });
+    var keep = { r: RD === 5 ? '5' : '', t: TY === 'fight' ? 'fight' : '' };
+    bindFilters(function (k, v) { var o = { a: A.slug, b: B.slug, r: keep.r, t: keep.t }; o[k] = k === 'r' ? (v === '5' ? '5' : '') : k === 't' ? (v === 'fight' ? 'fight' : '') : v; setQs(o); render(); });
+    root.querySelector('[data-swap]').addEventListener('click', function () { setQs({ a: B.slug, b: A.slug, r: keep.r, t: keep.t }); render(); });
   }
   function notFound(msg, back, backLabel) {
     root.innerHTML = hero({ h1: esc(t('nf.title')), sub: '<p>' + esc(t(msg)) + '</p><p><a href="' + back + '">' + esc(t(backLabel)) + '</a></p>' });

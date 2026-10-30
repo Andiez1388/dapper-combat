@@ -405,6 +405,62 @@
 .xh-bfly i.a b{background:var(--xh-red);}
 .xh-bfly i.b b{background:var(--xh-blue);}
 .xh-bfly b{display:block;height:100%;}
+/* kèo dự đoán (trang so sánh) + dòng kèo dưới thanh khả năng thắng */
+.xh-odds{display:block;font-size:12px;color:var(--xh-muted);font-variant-numeric:tabular-nums;}
+.xh-cmp-prob .xh-odds{font-size:13px;}
+.xh-pr{padding:0 18px 18px;}
+.xh-pr-ctl{display:flex;flex-wrap:wrap;gap:8px 10px;margin:0 0 18px;}
+.xh-pr-big{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:end;}
+.xh-pr-big > div{display:grid;gap:3px;min-width:0;}
+.xh-pr-big .d{text-align:center;}
+.xh-pr-big .b{text-align:right;}
+.xh-pr-big small{font-size:12.5px;color:var(--xh-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.xh-pr-big b{font:800 48px/1 var(--xh-display);font-variant-numeric:tabular-nums;}
+.xh-pr-big .a b{color:var(--xh-red-hi);}
+.xh-pr-big .b b{color:var(--xh-blue-hi);}
+.xh-pr-big .d b{font-size:30px;color:var(--xh-gold-lt);}
+.xh-pr-big span{font-size:12.5px;color:var(--xh-ink-2);font-variant-numeric:tabular-nums;}
+.xh-pr-bar{display:flex;gap:2px;height:14px;margin:16px 0 12px;}
+.xh-pr-bar i{flex:0 0 0;min-width:3px;}
+.xh-pr-bar .aKO,.xh-pr-leg .aKO i{background:#ff5a4f;}
+.xh-pr-bar .aDec,.xh-pr-leg .aDec i{background:#a52a22;}
+.xh-pr-bar .draw,.xh-pr-leg .draw i{background:var(--xh-gold);}
+.xh-pr-bar .bDec,.xh-pr-leg .bDec i{background:#22509f;}
+.xh-pr-bar .bKO,.xh-pr-leg .bKO i{background:#5b93f0;}
+.xh-pr-leg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px 18px;margin:0;padding:0;list-style:none;font-size:12.5px;color:var(--xh-ink-2);}
+.xh-pr-leg li{display:flex;align-items:center;gap:7px;}
+.xh-pr-leg i{flex:none;width:10px;height:10px;}
+.xh-pr-leg b{margin-left:auto;color:#fff;font-variant-numeric:tabular-nums;}
+.xh-pr-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:18px 0 0;background:var(--xh-line);border:1px solid var(--xh-line);}
+.xh-pr-kv div{padding:10px 12px;background:#10141a;}
+.xh-pr-kv dt{font-size:12px;color:var(--xh-muted);}
+.xh-pr-kv dd{margin:4px 0 0;font:700 18px/1.15 var(--xh-display);}
+.xh-pr-h{margin:20px 0 4px;font:700 17px/1.2 var(--xh-display);letter-spacing:0.04em;text-transform:uppercase;color:var(--xh-gold-lt);}
+.xh-pr-fx{margin:0;padding:0;list-style:none;}
+.xh-pr-fx li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--xh-line-2);}
+.xh-pr-fx li:first-child{border-top:0;}
+.xh-pr-fx .k{min-width:0;font-size:13.5px;}
+.xh-pr-fx .k small{display:block;font-size:12px;color:var(--xh-muted);}
+.xh-pr-fx .w{display:flex;align-items:center;gap:8px;font:700 16px/1 var(--xh-display);white-space:nowrap;}
+.xh-pr-fx li.a .w{color:var(--xh-red-hi);}
+.xh-pr-fx li.b .w{color:var(--xh-blue-hi);}
+.xh-pr-fx .w i{display:inline-flex;gap:2px;}
+.xh-pr-fx .w i b{width:6px;height:13px;background:var(--xh-track);}
+.xh-pr-fx li.a .l1 b:first-child,.xh-pr-fx li.a .l2 b:nth-child(-n+2),.xh-pr-fx li.a .l3 b{background:var(--xh-red);}
+.xh-pr-fx li.b .l1 b:first-child,.xh-pr-fx li.b .l2 b:nth-child(-n+2),.xh-pr-fx li.b .l3 b{background:var(--xh-blue);}
+.xh-pr .xh-ch-note{margin-top:14px;}
+
+/* nhận xét của HLV (hồ sơ võ sĩ) */
+.xh-eval{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;}
+.xh-eval h4{margin:0 0 6px;font:700 16px/1.2 var(--xh-display);letter-spacing:0.04em;text-transform:uppercase;}
+.xh-eval .good h4{color:var(--xh-win);}
+.xh-eval .bad h4{color:#f0a24b;}
+.xh-eval ul{margin:0;padding-left:18px;font-size:14px;color:var(--xh-ink-2);}
+.xh-eval li{margin:0 0 4px;}
+.xh-eval .good li::marker{color:var(--xh-win);}
+.xh-eval .bad li::marker{color:#f0a24b;}
+.xh-eval-note{margin:14px 0 0;padding:12px 14px;background:rgba(0,0,0,0.25);border-left:3px solid var(--xh-gold);font-style:italic;color:var(--xh-ink-2);}
+
 .xh-radar{width:100%;max-width:280px;height:auto;display:block;margin:0 auto;}
 .xh-chart svg{display:block;width:100%;height:auto;}
 
@@ -690,6 +746,11 @@
   .xh-tp b{font-size:16px;}
   .xh-tp-bar{max-width:56px;}
   .xh-bfly{grid-template-columns:24px minmax(0,1fr) 66px minmax(0,1fr) 24px;gap:6px;font-size:11.5px;}
+  .xh-pr{padding:0 14px 16px;}
+  .xh-pr-big b{font-size:34px;}
+  .xh-pr-big .d b{font-size:22px;}
+  .xh-pr-kv{grid-template-columns:minmax(0,1fr);}
+  .xh-eval{grid-template-columns:minmax(0,1fr);}
 
   /* hồ sơ: ảnh lên trên, chữ đè lên phần ảnh mờ dần */
   .xh-ch-grid{grid-template-columns:minmax(0,1fr);gap:0;}

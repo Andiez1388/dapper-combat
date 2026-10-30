@@ -195,7 +195,7 @@
   function fList() {
     var root = $('[data-rk-root]');
     root.innerHTML = A.pageHead('Võ sĩ', { eyebrow: 'Academy Ranking',
-        actions: '<a class="btn btn--ghost" href="/xep-hang" target="_blank" rel="noopener">Bảng xếp hạng ↗</a>' +
+        actions: '<a class="btn btn--ghost" href="/phieu-vo-si" target="_blank" rel="noopener">In phiếu thông tin võ sĩ ↗</a><a class="btn btn--ghost" href="/xep-hang" target="_blank" rel="noopener">Bảng xếp hạng ↗</a>' +
           '<a class="btn btn--primary" href="#/fighters/new">' + ICON.plus + '<span>Thêm võ sĩ</span></a>' }) +
       '<div class="cms-help"><p>Hồ sơ võ sĩ trên <a href="/xep-hang" target="_blank" rel="noopener">Dapper Combat Academy Ranking</a>. <strong>Điểm xếp hạng</strong> = điểm kỹ năng (trung bình 6 kỹ năng HLV chấm × 10) cộng / trừ điểm thắng thua sau mỗi trận. ' +
         'Bấm vào võ sĩ để sửa hồ sơ hoặc chấm điểm kỹ năng; kết quả trận nhập ở <a href="#/rank-events">Sự kiện &amp; kết quả</a>. Chỉ võ sĩ <strong>đang thi đấu</strong> và <strong>đang hiện trên web</strong> được xếp hạng.</p></div>' +
@@ -293,7 +293,8 @@
   // ═══ Sửa võ sĩ ═════════════════════════════════════════════════════════════
   function fDraft(src) {
     src = src || {};
-    var sk = {};
+    var sk = {}, pv = src.private || {}, mv = {};
+    moveSlots().forEach(function (k) { var m = (src.moves && src.moves[k]) || {}; mv[k] = { name: pair(m.name), desc: pair(m.desc) }; });
     skills().forEach(function (s) {
       var raw = src.skills ? src.skills[s.id] : null, v = Number(raw);
       sk[s.id] = raw != null && raw !== '' && isFinite(v) ? Math.max(0, Math.min(100, Math.round(v))) : 50;
@@ -304,8 +305,14 @@
       hometown: src.hometown || '', joined: src.joined || '', coach: src.coach || '', photo: src.photo || '',
       status: src.status === 'inactive' ? 'inactive' : 'active', visible: src.visible !== false, bio: pair(src.bio),
       skills: sk, assessDate: today(), assessNote: '', slug: src.slug || '',
+      started: src.started || '', otherArts: src.otherArts || '', priorRecord: src.priorRecord || '', idol: src.idol || '',
+      style: pair(src.style), goal: pair(src.goal), evalStrong: pair(src.evalStrong), evalWeak: pair(src.evalWeak), evalNote: pair(src.evalNote),
+      private: { phone: pv.phone || '', emName: pv.emName || '', emRelation: pv.emRelation || '', emPhone: pv.emPhone || '', health: pv.health || '' },
+      moves: mv,
     };
   }
+  // chiêu trên hồ sơ: P = thế đứng, 6 kỹ năng (3 cao nhất là Q W E), R = tuyệt chiêu
+  function moveSlots() { return ['stance'].concat(skills().map(function (s) { return s.id; }), ['ult']); }
   // dữ liệu gửi máy chủ (cũng dùng để so sánh có thay đổi chưa lưu)
   function fBody(d) {
     var nv = function (s) { s = String(s == null ? '' : s).trim(); return s === '' ? null : Number(s); };
@@ -314,8 +321,14 @@
       height: nv(d.height), reach: nv(d.reach), hometown: d.hometown.trim(), joined: d.joined, coach: d.coach.trim(), photo: d.photo,
       status: d.status, visible: !!d.visible, bio: { vi: d.bio.vi.trim(), en: d.bio.en }, skills: clone(d.skills),
       assessDate: d.assessDate, assessNote: d.assessNote.trim(), slug: d.slug.replace(/^-+|-+$/g, ''),
+      started: d.started, otherArts: d.otherArts.trim(), priorRecord: d.priorRecord.trim(), idol: d.idol.trim(),
+      style: tp(d.style), goal: tp(d.goal), evalStrong: tp(d.evalStrong), evalWeak: tp(d.evalWeak), evalNote: tp(d.evalNote),
+      private: { phone: d.private.phone.trim(), emName: d.private.emName.trim(), emRelation: d.private.emRelation.trim(), emPhone: d.private.emPhone.trim(), health: d.private.health.trim() },
+      moves: moveSlots().reduce(function (o, k) { o[k] = { name: tp(d.moves[k].name), desc: tp(d.moves[k].desc) }; return o; }, {}),
     };
   }
+  function tp(p) { return { vi: String(p.vi || '').trim(), en: p.en || '' }; }
+  function setPath(o, p, v) { var ks = p.split('.'), last = ks.pop(); ks.forEach(function (k) { o = o[k]; }); o[last] = v; }
   function fEditor(id) {
     var root = $('[data-rk-root]'), isNew = id === 'new', src = isNew ? null : fById(id);
     if (!isNew && !src) { ED = null; root.innerHTML = notFound(VF); return; }
@@ -328,7 +341,8 @@
           (!isNew && src.visible !== false ? '<a class="btn btn--ghost" href="' + esc(pubF(src)) + '" target="_blank" rel="noopener">Xem trên web ↗</a>' : '') }) +
       '<p class="form-msg" data-rk-msg role="alert" hidden></p>' +
       '<div class="rk-grid"><div class="rk-main">' +
-        sec('Thông tin võ sĩ',
+        '<p class="cms-help rk-paper">Các mục <strong>A1–A5</strong> (võ sĩ tự khai) và <strong>B1–B3</strong> (HLV đánh giá) khớp với <a href="/phieu-vo-si" target="_blank" rel="noopener">phiếu thông tin võ sĩ in ra giấy</a>: chép lần lượt từng mục.</p>' +
+        sec('A1. Thông tin cá nhân',
           '<div class="set-grid2">' +
             field('Họ tên — bắt buộc', '<input type="text" data-ff="name" value="' + esc(d.name) + '" maxlength="80" autocomplete="off" placeholder="VD: Nguyễn Văn A">') +
             field('Biệt danh', '<input type="text" data-ff="nickname" value="' + esc(d.nickname) + '" maxlength="40" autocomplete="off" placeholder="Không bắt buộc">') +
@@ -340,7 +354,7 @@
             field('Quê quán', '<input type="text" data-ff="hometown" value="' + esc(d.hometown) + '" maxlength="60" autocomplete="off" placeholder="VD: TP. Hồ Chí Minh">') +
             field('HLV phụ trách', '<input type="text" data-ff="coach" value="' + esc(d.coach) + '" maxlength="60" autocomplete="off">') +
           '</div>') +
-        sec('Thể hình & hạng cân',
+        sec('A2. Thể hình & hạng cân',
           '<div class="set-grid3">' +
             field('Cân nặng', '<span class="set-affix"><input type="number" data-ff="weight" value="' + esc(d.weight) + '" min="30" max="200" step="0.1" inputmode="decimal"><em>kg</em></span>') +
             field('Chiều cao', '<span class="set-affix"><input type="number" data-ff="height" value="' + esc(d.height) + '" min="120" max="230" step="1" inputmode="numeric"><em>cm</em></span>') +
@@ -349,16 +363,44 @@
             field('Hạng cân', '<select data-ff="division">' + divOptions(d.division) + '</select>', '<span data-rk-divhint></span>') +
             field('Thế đứng', '<select data-ff="stance">' + optsHtml(STANCE, d.stance) + '</select>') +
           '</div>') +
-        fSkillsHtml(d, hist, last) +
-        sec('Giới thiệu',
-          field('Giới thiệu (Tiếng Việt)', '<textarea rows="5" maxlength="2000" data-ff="bio" placeholder="Lối đánh, điểm mạnh, thành tích nổi bật…">' + esc(d.bio.vi) + '</textarea>', 'Hiện trong hồ sơ võ sĩ trên web.') +
+        sec('A3. Kinh nghiệm',
+          '<div class="set-grid3">' +
+            field('Bắt đầu tập boxing (tháng / năm)', '<input type="month" data-ff="started" value="' + esc(d.started) + '" max="' + esc(today().slice(0, 7)) + '">') +
+            field('Môn võ khác đã tập', '<input type="text" data-ff="otherArts" value="' + esc(d.otherArts) + '" maxlength="100" autocomplete="off" placeholder="VD: Muay Thái 1 năm">') +
+            field('Thành tích trước khi vào Academy', '<input type="text" data-ff="priorRecord" value="' + esc(d.priorRecord) + '" maxlength="100" autocomplete="off" placeholder="VD: Nghiệp dư 3-1-0">') +
+          '</div><p class="field__hint">Hiện trong mục Hồ sơ võ sĩ trên web (ô để trống thì không hiện).</p>') +
+        sec('A4. Phong cách & giới thiệu',
+          '<div class="set-grid3">' +
+            field('Lối đánh', '<input type="text" data-ff="style.vi" value="' + esc(d.style.vi) + '" maxlength="200" autocomplete="off" placeholder="VD: Áp sát, đòn nặng">') +
+            field('Thần tượng', '<input type="text" data-ff="idol" value="' + esc(d.idol) + '" maxlength="60" autocomplete="off" placeholder="VD: Manny Pacquiao">') +
+            field('Mục tiêu', '<input type="text" data-ff="goal.vi" value="' + esc(d.goal.vi) + '" maxlength="200" autocomplete="off" placeholder="VD: Vào top 3 hạng cân">') +
+          '</div>' +
+          field('Giới thiệu (Tiếng Việt)', '<textarea rows="5" maxlength="2000" data-ff="bio" placeholder="Đôi dòng về võ sĩ: vì sao tập boxing, thành tích nổi bật…">' + esc(d.bio.vi) + '</textarea>', 'Hiện trong hồ sơ võ sĩ trên web. Tiếng Anh do AI tự dịch khi lưu.') +
           enHtml(d.bio, 'Bản')) +
+        sec('A5. Liên hệ & sức khỏe',
+          '<p class="set-note">Chỉ HLV và admin xem, <strong>không bao giờ hiện trên web</strong>.</p>' +
+          '<div class="set-grid2">' +
+            field('Số điện thoại võ sĩ', '<input type="tel" data-ff="private.phone" value="' + esc(d.private.phone) + '" maxlength="20" autocomplete="off" inputmode="tel">') +
+            field('Người liên hệ khẩn cấp', '<input type="text" data-ff="private.emName" value="' + esc(d.private.emName) + '" maxlength="60" autocomplete="off">') +
+            field('Quan hệ', '<input type="text" data-ff="private.emRelation" value="' + esc(d.private.emRelation) + '" maxlength="30" autocomplete="off" placeholder="VD: Bố, mẹ, vợ…">') +
+            field('SĐT người liên hệ', '<input type="tel" data-ff="private.emPhone" value="' + esc(d.private.emPhone) + '" maxlength="20" autocomplete="off" inputmode="tel">') +
+          '</div>' +
+          field('Chấn thương / bệnh cần lưu ý', '<textarea rows="3" maxlength="500" data-ff="private.health" placeholder="VD: Từng trật khớp vai phải (2024), hen nhẹ…">' + esc(d.private.health) + '</textarea>')) +
+        fSkillsHtml(d, hist, last) +
+        fMovesHtml(d) +
+        sec('B3. Nhận xét của HLV',
+          '<div class="set-grid2">' +
+            field('Điểm mạnh', '<textarea rows="4" maxlength="600" data-ff="evalStrong.vi" placeholder="Mỗi dòng một ý">' + esc(d.evalStrong.vi) + '</textarea>') +
+            field('Cần cải thiện', '<textarea rows="4" maxlength="600" data-ff="evalWeak.vi" placeholder="Mỗi dòng một ý">' + esc(d.evalWeak.vi) + '</textarea>') +
+          '</div>' +
+          field('Nhận xét chung', '<textarea rows="3" maxlength="1000" data-ff="evalNote.vi" placeholder="Thái độ tập, tiến bộ, đề xuất thời gian tới…">' + esc(d.evalNote.vi) + '</textarea>',
+            'Hiện trong mục Phân tích của hồ sơ võ sĩ trên web, kèm tên HLV phụ trách. Tiếng Anh do AI tự dịch khi lưu.')) +
       '</div><aside class="rk-side">' +
         imgSecHtml('Ảnh võ sĩ', 'Ảnh chân dung dọc tỉ lệ 4:5 — nên ' + PHOTO.w + ' × ' + PHOTO.h + ' px, JPG hoặc WebP ≤ ' + PHOTO.kb + ' KB. Chụp nửa người, mặt rõ, nền gọn.') +
         sec('Thi đấu & hiển thị',
           field('Trạng thái', '<select data-ff="status">' + optsHtml([['active', 'Đang thi đấu'], ['inactive', 'Nghỉ thi đấu']], d.status) + '</select>', 'Nghỉ thi đấu: hồ sơ vẫn hiện trên web nhưng không được xếp hạng.') +
           '<div><label class="check"><input type="checkbox" data-ff="visible"' + (d.visible ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Hiện trên web</span></label>' +
-            '<p class="field__hint">Tắt = ẩn hồ sơ khỏi website và bảng xếp hạng. Các trận đã đấu vẫn tính điểm cho đối thủ.</p></div>' +
+            '<p class="field__hint">Bật khi võ sĩ đã đồng ý ở mục A6 của phiếu. Tắt = ẩn hồ sơ khỏi website và bảng xếp hạng. Các trận đã đấu vẫn tính điểm cho đối thủ.</p></div>' +
           field('Đường dẫn trên web', '<span class="pslug"><em>/vo-si/</em><input type="text" data-ff="slug" value="' + esc(d.slug) + '" maxlength="60" spellcheck="false" autocomplete="off" placeholder="' + esc(slug(d.name) || 'ten-vo-si') + '"></span>',
             'Chữ thường không dấu, số và dấu gạch ngang. Để trống = tự tạo từ họ tên.')) +
         (c ? fStatsHtml(c) + fBoutsHtml(c) : '') +
@@ -400,7 +442,7 @@
         '<input class="rk-skill__num" id="' + esc(id) + '" type="number" min="0" max="100" step="1" inputmode="numeric" value="' + esc(v) + '" data-sk-num="' + esc(s.id) + '">' +
         '<span class="rk-skill__prev" data-sk-prev></span></div>';
     }).join('');
-    return sec('Chấm điểm kỹ năng',
+    return sec('B1. Chấm điểm kỹ năng',
       '<p class="set-note">Thang 0–100 cho từng kỹ năng — kéo thanh hoặc gõ số. Điểm và hạng bên dưới cập nhật ngay khi chấm.</p>' +
       '<div class="rk-skills">' + rows + '</div>' +
       '<div class="rk-sum" data-rk-sum aria-live="polite"></div>' +
@@ -411,6 +453,29 @@
       '<p class="field__hint">Lưu mà điểm kỹ năng có thay đổi sẽ ghi thêm một dòng vào lịch sử chấm điểm (theo ngày chấm ở trên). Lưu mà không đổi điểm thì không ghi.</p>' +
       histHtml(hist),
       esc(last ? 'Chấm gần nhất ' + day(last.date) : 'Chưa chấm lần nào'));
+  }
+  // B2. chiêu trên hồ sơ: tên + mô tả tự đặt cho P (thế đứng), từng kỹ năng (3 kỹ năng cao nhất thành Q W E) và R (tuyệt chiêu)
+  var MOVE_DEF = { technique: 'Đòn chuẩn xác', speed: 'Tay nhanh', power: 'Cú đấm nặng ký', defense: 'Khóa chặt và phản đòn', stamina: 'Bình xăng không đáy', footwork: 'Bộ pháp' };
+  var STANCE_DEF = { orthodox: 'Thế thuận', southpaw: 'Thế tay trái', 'switch': 'Đổi thế' };
+  function fMovesHtml(d) {
+    var label = function (k) { return k === 'stance' ? 'P · Nội tại (thế đứng)' : k === 'ult' ? 'R · Tuyệt chiêu' : (skills().filter(function (s) { return s.id === k; })[0] || {}).vi || k; };
+    var ph = function (k) { return k === 'stance' ? STANCE_DEF[d.stance] || 'Thế thuận' : k === 'ult' ? 'Để trống = theo cách thắng nhiều nhất' : MOVE_DEF[k] || ''; };
+    return sec('B2. Chiêu trên hồ sơ (P Q W E R)',
+      '<p class="set-note">Đặt tên + mô tả chiêu tủ của võ sĩ. 3 kỹ năng điểm cao nhất thành Q, W, E trên web. Ô để trống thì web tự đặt tên mặc định (chữ mờ trong ô).</p>' +
+      '<div class="rk-mvs">' + moveSlots().map(function (k) {
+        return '<div class="rk-mv" data-mv="' + esc(k) + '"><p class="rk-mv__k">' + esc(label(k)) + '<span class="badge" data-mvkey hidden></span></p>' +
+          '<input type="text" data-ff="moves.' + esc(k) + '.name.vi" value="' + esc(d.moves[k].name.vi) + '" maxlength="40" autocomplete="off" placeholder="' + esc(ph(k)) + '" aria-label="' + esc('Tên chiêu: ' + label(k)) + '">' +
+          '<textarea rows="2" data-ff="moves.' + esc(k) + '.desc.vi" maxlength="300" placeholder="Mô tả ngắn (không bắt buộc)" aria-label="' + esc('Mô tả chiêu: ' + label(k)) + '">' + esc(d.moves[k].desc.vi) + '</textarea></div>';
+      }).join('') + '</div>');
+  }
+  // nhãn Q / W / E theo 3 kỹ năng đang cao nhất (cập nhật khi chấm điểm)
+  function mvKeys() {
+    if (!ED || ED.view !== VF) return;
+    var top = skills().map(function (s) { return s.id; }).sort(function (a, b) { return (ED.d.skills[b] || 0) - (ED.d.skills[a] || 0); }).slice(0, 3);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mv]'), function (el) {
+      var i = top.indexOf(el.getAttribute('data-mv')), b = $('[data-mvkey]', el);
+      if (b) { b.hidden = i < 0; b.textContent = i < 0 ? '' : 'đang là ' + 'QWE'.charAt(i); }
+    });
   }
   function histHtml(hist) {
     if (!hist.length) return '<p class="rk-hist-empty">Chưa có lần chấm nào — lưu võ sĩ để ghi lần chấm đầu tiên.</p>';
@@ -448,6 +513,7 @@
   function skSum() {
     var box = $('[data-rk-sum]'); if (!box || !ED || ED.view !== VF) return;
     Array.prototype.forEach.call(document.querySelectorAll('[data-sk-row]'), function (row) { skRow(row, row.getAttribute('data-sk-row')); });
+    mvKeys();
     var avg = avgOf(ED.d.skills), kp = Math.round(avg * 10), c = ED.id !== 'new' ? cfById(ED.id) : null;
     var fp = c ? r1(c.fightPoints) : 0, total = r1(kp + fp), t = tierOf(total), changed = c && c.skillPoints !== kp;
     var nb = c && c.record ? (c.record.bouts || 0) : 0;
@@ -501,6 +567,7 @@
     if (k === 'visible') d.visible = t.checked;
     else if (k === 'bio') d.bio.vi = t.value;
     else if (k === 'slug') d.slug = slugInput(t);
+    else if (k.indexOf('.') > 0) setPath(d, k, t.value);
     else if (A.has(d, k) && typeof d[k] === 'string') d[k] = t.value;
     if (k === 'weight' && commit && String(d.weight).trim() !== '') {
       var w = r1(d.weight); if (isFinite(w) && w > 0) { d.weight = String(w); t.value = d.weight; }
@@ -525,6 +592,7 @@
     if (r !== '' && !inR(r, 120, 240)) return ['reach', 'Sải tay phải từ 120 đến 240 cm (hoặc để trống).'];
     if (d.photo && !A.safeImg(d.photo)) return ['photo', 'Ảnh võ sĩ không hợp lệ — hãy tải ảnh lại.'];
     if (d.assessDate && d.assessDate > today()) return ['assessDate', 'Ngày chấm không được sau ngày hôm nay.'];
+    if (d.started && d.started > today().slice(0, 7)) return ['started', 'Tháng bắt đầu tập boxing chưa đúng (sau tháng này).'];
     return null;
   }
   function saveF(btn) {
@@ -875,8 +943,20 @@
           '<label class="check rk-bout__main"><input type="checkbox" data-bf="main"' + (b.main ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Trận chính</span></label>' +
           '<label class="rk-bout__note"><span class="sr">Ghi chú trận ' + (i + 1) + '</span><input type="text" data-bf="note" value="' + esc(b.note) + '" maxlength="120" autocomplete="off" placeholder="Ghi chú (không bắt buộc), vd: tranh đai nội bộ"></label>' +
         '</div>' +
-        deltaRowHtml(b) +
+        deltaRowHtml(b) + '<div data-bpred>' + predHtml(b) + '</div>' +
       '</div></article>';
+  }
+  // kèo dự đoán cho vui khi xếp trận (public/assets/js/rank-predict.js, cùng cách tính với trang So sánh)
+  function predHtml(b) {
+    var a = cfById(b.a), c = cfById(b.b);
+    if (!window.DCPredict || !a || !c || b.a === b.b || b.result) return '';
+    var p = window.DCPredict.predict(a, c, { rounds: toInt(b.rounds) || 3, type: ED.d.type });
+    var pc = function (x) { return Math.round(x * 100) + '%'; }, nm = function (f) { return f.name.split(' ').pop(); };
+    var likely = { aKO: nm(a) + ' thắng KO / TKO', aDec: nm(a) + ' thắng điểm', draw: 'Hòa', bDec: nm(c) + ' thắng điểm', bKO: nm(c) + ' thắng KO / TKO' }[p.likely];
+    return '<p class="rk-delta rk-pred"><span class="rk-delta__k">Kèo dự đoán</span>' +
+      '<span class="rk-delta__v"><i class="rk-dot rk-dot--red" aria-hidden="true"></i>' + esc(nm(a)) + ' <b>' + pc(p.a) + '</b> · hòa ' + pc(p.draw) + ' · <i class="rk-dot rk-dot--blue" aria-hidden="true"></i>' + esc(nm(c)) + ' <b>' + pc(p.b) + '</b></span>' +
+      '<span class="rk-delta__v">Kèo ' + esc(p.odds.a.toFixed(2)) + ' – ' + esc(p.odds.b.toFixed(2)) + ' · dễ xảy ra nhất: ' + esc(likely) + '</span>' +
+      '<a class="linkbtn" href="/so-sanh?a=' + encodeURIComponent(a.slug) + '&b=' + encodeURIComponent(c.slug) + '&r=' + (toInt(b.rounds) >= 5 ? 5 : 3) + (ED.d.type === 'fight' ? '&t=fight' : '') + '" target="_blank" rel="noopener">Xem phân tích ↗</a></p>';
   }
   function renderBouts(focusSel) {
     var box = $('[data-rk-bouts]'); if (!box || !ED || ED.view !== VE) return;
@@ -919,6 +999,7 @@
       b.rounds = t.value;
       var rd = $('[data-bf="round"]', card), r = toInt(t.value);
       if (rd && r >= 1 && r <= 12) { rd.max = r; rd.placeholder = r; }
+      var pr = $('[data-bpred]', card); if (pr) pr.innerHTML = predHtml(b);
     } else if (f === 'round') b.round = t.value;
     else if (f === 'a' || f === 'b') {
       b[f] = t.value;

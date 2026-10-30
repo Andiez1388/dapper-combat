@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Phiếu thông tin võ sĩ — Dapper Combat Academy</title>
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Phiếu thông tin võ sĩ in khổ A4 (2 trang): trang 1 võ sĩ tự ghi (A1–A6), trang 2 HLV đánh giá (B1–B3).
+   Mục đánh số khớp form /admin → Academy Ranking → Võ sĩ để chép lên hệ thống. Mực đen, đỏ thương hiệu chỉ ở số mục. */
+@page { size: A4; margin: 11mm 12mm 12mm; }
+:root { --ink: #111; --muted: #5d5d5d; --line: #8a8a8a; --soft: #f2f2f0; --red: #D4372E; --display: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e6e6e3; color: var(--ink); font: 9.6pt/1.35 Inter, Arial, Helvetica, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px max(16px, calc(50% - 105mm)); background: #111; color: #fff; font-size: 13px; }
+.bar p { margin: 0; flex: 1 1 320px; color: rgba(255,255,255,.75); }
+.bar button { height: 38px; padding: 0 18px; border: 0; background: var(--red); color: #fff; font: 600 14px Inter, Arial, sans-serif; cursor: pointer; }
+.bar button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.sheet { width: 210mm; min-height: 297mm; margin: 14px auto; padding: 11mm 12mm 12mm; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+@media print {
+  body { background: #fff; }
+  .bar { display: none; }
+  .sheet { width: auto; min-height: 0; height: 273mm; margin: 0; padding: 0; box-shadow: none; break-after: page; }
+  .sheet:last-child { break-after: auto; }
+}
+@media screen and (max-width: 820px) { .sheet { width: auto; min-height: 0; margin: 10px; padding: 16px; } }
+
+/* đầu phiếu */
+.head { display: grid; grid-template-columns: minmax(0, 1fr) 30mm; gap: 6mm; align-items: start; padding-bottom: 3mm; border-bottom: 2px solid var(--ink); }
+.brand { margin: 0; font: 800 12pt/1 var(--display); letter-spacing: .06em; }
+.brand span { margin-left: 6px; color: var(--red); }
+h1 { margin: 2mm 0 1mm; font: 800 24pt/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+.lead { margin: 0; color: var(--muted); font-size: 9pt; max-width: 120mm; }
+.photo { display: grid; place-items: center; height: 31mm; border: 1px dashed var(--line); text-align: center; font-size: 8pt; color: var(--muted); padding: 2mm; }
+.code { display: flex; gap: 6mm; margin-top: 2mm; font-size: 8.5pt; color: var(--muted); }
+
+/* mục */
+section { margin-top: 2.6mm; }
+h2 { display: flex; align-items: baseline; gap: 2.5mm; margin: 0 0 1.6mm; font: 700 12pt/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+h2 b { color: var(--red); }
+h2 small { font: 400 8pt Inter, Arial, sans-serif; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.row { display: grid; gap: 2mm 5mm; margin-top: 1.2mm; }
+.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.w2 { grid-column: span 2; }
+.f { min-width: 0; }
+.f > span { display: block; font-size: 8pt; color: var(--muted); }
+.ln { height: 6.3mm; border-bottom: 1px dotted var(--line); }
+.lns .ln { height: 6.2mm; }
+.unit { display: flex; align-items: flex-end; gap: 2mm; }
+.unit .ln { flex: 1; }
+.unit em { font-style: normal; font-size: 8.5pt; color: var(--muted); padding-bottom: .6mm; }
+.date { display: flex; align-items: flex-end; gap: 1.5mm; height: 6.3mm; font-size: 9pt; color: var(--muted); }
+.date i { display: inline-block; width: 7mm; border-bottom: 1px dotted var(--line); height: 5mm; }
+.date i.y { width: 12mm; }
+.opts { display: flex; flex-wrap: wrap; gap: 1.5mm 5mm; padding-top: 1.4mm; font-size: 9pt; }
+.opts label { display: inline-flex; align-items: center; gap: 1.6mm; }
+.box { display: inline-block; width: 3.6mm; height: 3.6mm; border: 1px solid var(--ink); flex: none; }
+.hint { margin: 1mm 0 0; font-size: 8pt; color: var(--muted); }
+.private { padding: 2mm 3mm 2.5mm; background: var(--soft); }
+.consent { display: grid; grid-template-columns: minmax(0, 1fr) 62mm; gap: 6mm; align-items: end; }
+.consent p { margin: 0; font-size: 8.8pt; }
+.chk { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2.4mm; align-items: start; }
+.chk .box { margin-top: .5mm; }
+.sign { text-align: center; font-size: 8pt; color: var(--muted); }
+.sign .ln { height: 11mm; margin-bottom: 1mm; }
+
+/* chấm điểm kỹ năng */
+.rubric { display: flex; flex-wrap: wrap; gap: 1mm 4mm; margin: 0 0 1.6mm; font-size: 8pt; color: var(--muted); }
+.rubric b { color: var(--ink); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 1.4mm 2mm; background: var(--soft); border: 1px solid var(--line); font: 600 8pt Inter, Arial, sans-serif; text-align: left; }
+td { height: 13.5mm; padding: 1mm 2mm; border: 1px solid var(--line); vertical-align: top; font-size: 8.4pt; }
+td.sk { width: 30mm; font-weight: 600; }
+td.sk small { display: block; font-weight: 400; color: var(--muted); font-size: 7.6pt; }
+td.sc { width: 22mm; }
+td.sc span { display: block; text-align: right; color: var(--muted); font-size: 7.6pt; padding-top: 5mm; }
+.mv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3mm 5mm; }
+.mv .card { padding: 2mm 3mm; border: 1px solid var(--line); }
+.mv .card b { display: block; font-size: 8.8pt; }
+.mv .card .ln { height: 6.2mm; }
+.foot { margin-top: auto; padding-top: 3mm; display: flex; justify-content: space-between; gap: 6mm; font-size: 7.6pt; color: var(--muted); border-top: 1px solid var(--line); }
+.admin { display: flex; gap: 6mm; flex-wrap: wrap; }
+.admin i { display: inline-block; width: 26mm; border-bottom: 1px dotted var(--line); }
+</style>
+</head>
+<body>
+<div class="bar"><p>Phiếu in khổ A4, 2 trang. Bấm <strong>In phiếu</strong> (hoặc Ctrl + P), chọn khổ A4, tỉ lệ 100%. Trang 1 đưa võ sĩ tự ghi, trang 2 để HLV chấm. Sau đó chép theo đúng số mục vào /admin → Academy Ranking → Võ sĩ.</p><button type="button" onclick="window.print()">In phiếu</button></div>
+
+<!-- ══ Trang 1: võ sĩ tự ghi ══ -->
+<div class="sheet">
+  <div class="head">
+    <div>
+      <p class="brand">DAPPER COMBAT<span>ACADEMY RANKING</span></p>
+      <h1>Phiếu thông tin võ sĩ</h1>
+      <p class="lead">Phần A do võ sĩ tự ghi, chữ in rõ ràng. Mục A5 chỉ HLV xem, không đăng lên web. Ghi xong nộp lại cho HLV.</p>
+    </div>
+    <div>
+      <div class="photo">Dán ảnh chân dung<br>(nửa người, mặt rõ)</div>
+    </div>
+  </div>
+
+  <section>
+    <h2><b>A1</b> Thông tin cá nhân</h2>
+    <div class="row c3">
+      <div class="f w2"><span>Họ và tên</span><div class="ln"></div></div>
+      <div class="f"><span>Biệt danh / tên thi đấu</span><div class="ln"></div></div>
+    </div>
+    <div class="row c3">
+      <div class="f"><span>Giới tính</span><div class="opts"><label><i class="box"></i>Nam</label><label><i class="box"></i>Nữ</label></div></div>
+      <div class="f"><span>Ngày sinh</span><div class="date"><i></i>/<i></i>/<i class="y"></i></div></div>
+      <div class="f"><span>Quê quán</span><div class="ln"></div></div>
+    </div>
+    <div class="row c3">
+      <div class="f"><span>Ngày vào Dapper Combat Academy</span><div class="date"><i></i>/<i></i>/<i class="y"></i></div></div>
+      <div class="f w2"><span>HLV phụ trách</span><div class="ln"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><b>A2</b> Thể hình &amp; hạng cân <small>HLV có thể đo giúp sải tay</small></h2>
+    <div class="row c4">
+      <div class="f"><span>Cân nặng</span><div class="unit"><div class="ln"></div><em>kg</em></div></div>
+      <div class="f"><span>Chiều cao</span><div class="unit"><div class="ln"></div><em>cm</em></div></div>
+      <div class="f"><span>Sải tay</span><div class="unit"><div class="ln"></div><em>cm</em></div></div>
+      <div class="f"><span>Hạng cân mong muốn</span><div class="ln"></div></div>
+    </div>
+    <div class="row">
+      <div class="f"><span>Thế đứng</span><div class="opts"><label><i class="box"></i>Thuận (tay trái trước)</label><label><i class="box"></i>Tay trái (tay phải trước)</label><label><i class="box"></i>Đổi thế linh hoạt</label></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><b>A3</b> Kinh nghiệm</h2>
+    <div class="row c3">
+      <div class="f"><span>Bắt đầu tập boxing (tháng / năm)</span><div class="date"><i></i>/<i class="y"></i></div></div>
+      <div class="f"><span>Môn võ khác đã tập (bao lâu)</span><div class="ln"></div></div>
+      <div class="f"><span>Thành tích trước đây (thắng-thua-hòa)</span><div class="ln"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><b>A4</b> Phong cách &amp; giới thiệu <small>hiện trên hồ sơ web</small></h2>
+    <div class="row c3">
+      <div class="f"><span>Lối đánh yêu thích</span><div class="ln"></div></div>
+      <div class="f"><span>Thần tượng</span><div class="ln"></div></div>
+      <div class="f"><span>Mục tiêu năm nay</span><div class="ln"></div></div>
+    </div>
+    <div class="row">
+      <div class="f"><span>Đòn tủ / chiêu sở trường (ghi tên và mô tả ngắn)</span><div class="lns"><div class="ln"></div><div class="ln"></div></div></div>
+    </div>
+    <div class="row">
+      <div class="f"><span>Giới thiệu bản thân: vì sao tập boxing, điều muốn mọi người biết về mình</span><div class="lns"><div class="ln"></div><div class="ln"></div></div></div>
+    </div>
+  </section>
+
+  <section class="private">
+    <h2><b>A5</b> Liên hệ &amp; sức khỏe <small>chỉ HLV xem, không đăng lên web</small></h2>
+    <div class="row c2">
+      <div class="f"><span>Số điện thoại của bạn</span><div class="ln"></div></div>
+      <div class="f"><span>Người liên hệ khi khẩn cấp (họ tên)</span><div class="ln"></div></div>
+    </div>
+    <div class="row c2">
+      <div class="f"><span>Quan hệ với bạn</span><div class="ln"></div></div>
+      <div class="f"><span>Số điện thoại người liên hệ</span><div class="ln"></div></div>
+    </div>
+    <div class="row">
+      <div class="f"><span>Chấn thương, bệnh hoặc thuốc đang dùng cần HLV lưu ý</span><div class="lns"><div class="ln"></div><div class="ln"></div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><b>A6</b> Đồng ý đăng hồ sơ</h2>
+    <div class="consent">
+      <p><label class="chk"><i class="box"></i><span>Tôi đồng ý để Dapper Combat Academy đăng ảnh, họ tên, biệt danh, thành tích, điểm xếp hạng và nhận xét của HLV lên website (Academy Ranking). Thông tin ở mục A5 chỉ HLV xem. Dưới 18 tuổi cần phụ huynh ký cùng.</span></label></p>
+      <div class="sign"><div class="ln"></div>Chữ ký võ sĩ (và phụ huynh) · Ngày <span class="date" style="display:inline-flex;height:auto"><i></i>/<i></i>/<i class="y"></i></span></div>
+    </div>
+  </section>
+
+  <div class="foot"><span>Dapper Combat Academy · Phiếu thông tin võ sĩ · Trang 1/2 · Võ sĩ tự ghi</span><span>dappervietnam.com/xep-hang</span></div>
+</div>
+
+<!-- ══ Trang 2: HLV đánh giá ══ -->
+<div class="sheet">
+  <div class="head">
+    <div>
+      <p class="brand">DAPPER COMBAT<span>ACADEMY RANKING</span></p>
+      <h1>Đánh giá của HLV</h1>
+      <p class="lead">Phần B do HLV ghi. Điểm 6 kỹ năng tạo điểm xếp hạng (trung bình × 10); 3 kỹ năng điểm cao nhất thành chiêu Q, W, E trên hồ sơ web.</p>
+    </div>
+    <div class="code" style="flex-direction:column;gap:2mm">
+      <div class="f"><span>Võ sĩ</span><div class="ln"></div></div>
+      <div class="f"><span>Ngày chấm</span><div class="date"><i></i>/<i></i>/<i class="y"></i></div></div>
+    </div>
+  </div>
+
+  <section>
+    <h2><b>B1</b> Chấm điểm kỹ năng <small>thang 0–100</small></h2>
+    <p class="rubric"><span><b>90–100</b> xuất sắc</span><span><b>75–89</b> tốt</span><span><b>60–74</b> khá</span><span><b>45–59</b> trung bình</span><span><b>dưới 45</b> cần cải thiện nhiều</span></p>
+    <table>
+      <thead><tr><th>Kỹ năng</th><th>Điểm</th><th>Tên chiêu (nếu có)</th><th>Ghi chú của HLV</th></tr></thead>
+      <tbody>
+        <tr><td class="sk">Kỹ thuật<small>đòn đúng, combo gọn</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+        <tr><td class="sk">Tốc độ<small>ra đòn, thu tay</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+        <tr><td class="sk">Sức mạnh<small>độ nặng của đòn</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+        <tr><td class="sk">Phòng thủ<small>che, né, lắc, phản đòn</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+        <tr><td class="sk">Thể lực<small>giữ nhịp tới hiệp cuối</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+        <tr><td class="sk">Di chuyển<small>bộ pháp, khoảng cách, góc</small></td><td class="sc"><span>/100</span></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2><b>B2</b> Chiêu trên hồ sơ <small>để trống thì web tự đặt tên</small></h2>
+    <div class="mv">
+      <div class="card"><b>P · Nội tại (thế đứng): tên + mô tả</b><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+      <div class="card"><b>R · Tuyệt chiêu (đòn kết thúc sở trường): tên + mô tả</b><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><b>B3</b> Nhận xét của HLV <small>mỗi dòng một ý, hiện trên hồ sơ web</small></h2>
+    <div class="row c2">
+      <div class="f"><span>Điểm mạnh</span><div class="lns"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+      <div class="f"><span>Cần cải thiện</span><div class="lns"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    </div>
+    <div class="row">
+      <div class="f"><span>Nhận xét chung: thái độ tập, tiến bộ, đề xuất thời gian tới</span><div class="lns"><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    </div>
+    <div class="row c3">
+      <div class="f"><span>Trạng thái</span><div class="opts"><label><i class="box"></i>Đang thi đấu</label><label><i class="box"></i>Nghỉ thi đấu</label></div></div>
+      <div class="f"><span>Hạng cân HLV xếp</span><div class="ln"></div></div>
+      <div class="f sign"><div class="ln" style="height:12mm"></div>HLV chấm (ký, ghi rõ họ tên)</div>
+    </div>
+  </section>
+
+  <div class="foot"><span class="admin">Dành cho admin: đã nhập lên hệ thống ngày <i></i> · người nhập <i></i></span><span>Trang 2/2 · HLV ghi</span></div>
+</div>
+</body>
+</html>

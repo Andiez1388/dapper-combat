@@ -8,10 +8,11 @@
  * Nhân viên (HLV) được thêm / sửa võ sĩ, chấm điểm, nhập kết quả; xóa cần tài khoản admin.
  */
 const ranking = require('../lib/ranking');
+const TEXT = ranking.FIGHTER_TEXT.map(x => x[0]);
 const translate = require('../lib/translate');
 
 module.exports = function mountRanking(router, { adminOnly, staffOk }) {
-  // tiếng Anh tự dịch: giới thiệu võ sĩ, tên + mô tả sự kiện
+  // tiếng Anh tự dịch: chữ trên hồ sơ võ sĩ (giới thiệu, lối đánh, mục tiêu, nhận xét HLV, chiêu), tên + mô tả sự kiện
   translate.register('ranking', {
     collect(refs) {
       const want = refs && new Set(refs);
@@ -23,7 +24,8 @@ module.exports = function mountRanking(router, { adminOnly, staffOk }) {
   const staleEn = (before, after, fields, kind) => {
     const refs = [];
     for (const k of fields) {
-      const b = (before && before[k]) || {}, a = after[k];
+      const b = (before && ranking.getPath(before, k)) || {}, a = ranking.getPath(after, k);
+      if (!a) continue;
       if (a.vi !== (b.vi || '') && a.en === (b.en || '')) a.en = '';
       if (a.vi && !a.en) refs.push(kind + '|' + after.id + '|' + k);
     }
@@ -40,7 +42,7 @@ module.exports = function mountRanking(router, { adminOnly, staffOk }) {
   router.post('/fighters', staffOk, (req, res) => {
     const list = ranking.fighters(), r = ranking.cleanFighter(req.body || {}, {}, list, req.user.email);
     if (r.error) return res.status(400).json({ error: r.error });
-    const refs = staleEn(null, r.fighter, ['bio'], 'fighter');
+    const refs = staleEn(null, r.fighter, TEXT, 'fighter');
     list.push(r.fighter);
     ranking.write('fighters.json', list);
     translate.queue('ranking', refs);
@@ -51,7 +53,7 @@ module.exports = function mountRanking(router, { adminOnly, staffOk }) {
     if (i < 0) return res.status(404).json({ error: 'Không tìm thấy võ sĩ' });
     const r = ranking.cleanFighter(req.body || {}, list[i], list, req.user.email);
     if (r.error) return res.status(400).json({ error: r.error });
-    const refs = staleEn(list[i], r.fighter, ['bio'], 'fighter');
+    const refs = staleEn(list[i], r.fighter, TEXT, 'fighter');
     list[i] = r.fighter;
     ranking.write('fighters.json', list);
     translate.queue('ranking', refs);

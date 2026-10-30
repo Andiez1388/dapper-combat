@@ -71,7 +71,50 @@
       }
     ],
     "slug": "nguyen-hoang-long",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Kỹ thuật, đánh combo gọn",
+      "en": "Technical, clean combinations"
+    },
+    "goal": {
+      "vi": "Vào top 3 hạng cân trong năm 2026",
+      "en": "Reach the division top 3 in 2026"
+    },
+    "evalStrong": {
+      "vi": "Đòn thẳng gọn, combo 1-2-3 mạch lạc\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Clean straight punches, tidy 1-2-3 combinations\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2023-02",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Manny Pacquiao",
+    "moves": {
+      "ult": {
+        "name": {
+          "vi": "Móc trái hạ màn",
+          "en": "Curtain-closing left hook"
+        },
+        "desc": {
+          "vi": "Tung móc trái ngay khi đối thủ hạ tay sau cú jab.",
+          "en": "Lands the left hook the moment the opponent drops the hands after a jab."
+        }
+      }
+    },
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs02",
@@ -145,7 +188,39 @@
       }
     ],
     "slug": "tran-minh-quan",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Giữ chuỗi thắng tới hết năm",
+      "en": "Keep the win streak to the end of the year"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Heavy rear hand, a real KO threat\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2021-11",
+    "otherArts": "Muay Thái",
+    "priorRecord": "Nghiệp dư 2-1-0",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs03",
@@ -219,7 +294,39 @@
       }
     ],
     "slug": "le-duc-anh",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Lên Hạng A ở kỳ đánh giá tới",
+      "en": "Move up to Class A at the next assessment"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2021-06",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Canelo Álvarez",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs04",
@@ -293,7 +400,39 @@
       }
     ],
     "slug": "pham-gia-huy",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Ép nhịp liên tục",
+      "en": "Relentless pace"
+    },
+    "goal": {
+      "vi": "Thắng trận đầu tiên bằng KO",
+      "en": "Get a first KO win"
+    },
+    "evalStrong": {
+      "vi": "Giữ nhịp tốt tới hiệp cuối\nChe chắn tốt, ít trúng đòn sạch",
+      "en": "Keeps the pace up to the final round\nTight guard, rarely takes clean shots"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2023-01",
+    "otherArts": "Karate",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs05",
@@ -367,7 +506,50 @@
       }
     ],
     "slug": "vo-thanh-dat",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Vào top 3 hạng cân trong năm 2026",
+      "en": "Reach the division top 3 in 2026"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nĐòn thẳng gọn, combo 1-2-3 mạch lạc",
+      "en": "Heavy rear hand, a real KO threat\nClean straight punches, tidy 1-2-3 combinations"
+    },
+    "evalWeak": {
+      "vi": "Ra đòn còn chậm, dễ bị đánh trước",
+      "en": "Slow to throw, often beaten to the punch"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2021-08",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Naoya Inoue",
+    "moves": {
+      "ult": {
+        "name": {
+          "vi": "Overhand phải",
+          "en": "Right overhand"
+        },
+        "desc": {
+          "vi": "Vòng tay sau qua che chắn, nhắm thẳng thái dương.",
+          "en": "Loops the rear hand over the guard straight to the temple."
+        }
+      }
+    },
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs06",
@@ -441,7 +623,39 @@
       }
     ],
     "slug": "dang-quoc-bao",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Giữ chuỗi thắng tới hết năm",
+      "en": "Keep the win streak to the end of the year"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Heavy rear hand, a real KO threat\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2022-01",
+    "otherArts": "",
+    "priorRecord": "Nghiệp dư 2-1-0",
+    "idol": "Manny Pacquiao",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs07",
@@ -515,7 +729,39 @@
       }
     ],
     "slug": "bui-tuan-kiet",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Lên Hạng A ở kỳ đánh giá tới",
+      "en": "Move up to Class A at the next assessment"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Fast hands, usually lands first\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2024-03",
+    "otherArts": "Muay Thái",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs08",
@@ -589,7 +835,39 @@
       }
     ],
     "slug": "huynh-nhat-minh",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Thắng trận đầu tiên bằng KO",
+      "en": "Get a first KO win"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Hay hạ tay sau khi ra đòn",
+      "en": "Drops the hands after punching"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2023-05",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Canelo Álvarez",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs09",
@@ -663,7 +941,50 @@
       }
     ],
     "slug": "ngo-thanh-tung",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Vào top 3 hạng cân trong năm 2026",
+      "en": "Reach the division top 3 in 2026"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Hay hạ tay sau khi ra đòn",
+      "en": "Drops the hands after punching"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2021-09",
+    "otherArts": "Karate",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {
+      "ult": {
+        "name": {
+          "vi": "Móc trái hạ màn",
+          "en": "Curtain-closing left hook"
+        },
+        "desc": {
+          "vi": "Tung móc trái ngay khi đối thủ hạ tay sau cú jab.",
+          "en": "Lands the left hook the moment the opponent drops the hands after a jab."
+        }
+      }
+    },
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs10",
@@ -737,7 +1058,39 @@
       }
     ],
     "slug": "do-khanh-duy",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Giữ chuỗi thắng tới hết năm",
+      "en": "Keep the win streak to the end of the year"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Heavy rear hand, a real KO threat\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2024-07",
+    "otherArts": "",
+    "priorRecord": "Nghiệp dư 2-1-0",
+    "idol": "Naoya Inoue",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs11",
@@ -811,7 +1164,39 @@
       }
     ],
     "slug": "phan-van-hau",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Lên Hạng A ở kỳ đánh giá tới",
+      "en": "Move up to Class A at the next assessment"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2023-02",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Manny Pacquiao",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs12",
@@ -885,7 +1270,39 @@
       }
     ],
     "slug": "trinh-bao-nam",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Thắng trận đầu tiên bằng KO",
+      "en": "Get a first KO win"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Fast hands, usually lands first\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Hay hạ tay sau khi ra đòn",
+      "en": "Drops the hands after punching"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2023-01",
+    "otherArts": "Muay Thái",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs13",
@@ -959,7 +1376,50 @@
       }
     ],
     "slug": "ly-hai-dang",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Vào top 3 hạng cân trong năm 2026",
+      "en": "Reach the division top 3 in 2026"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Heavy rear hand, a real KO threat\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Ra đòn còn chậm, dễ bị đánh trước",
+      "en": "Slow to throw, often beaten to the punch"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2023-03",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Canelo Álvarez",
+    "moves": {
+      "ult": {
+        "name": {
+          "vi": "Overhand phải",
+          "en": "Right overhand"
+        },
+        "desc": {
+          "vi": "Vòng tay sau qua che chắn, nhắm thẳng thái dương.",
+          "en": "Loops the rear hand over the guard straight to the temple."
+        }
+      }
+    },
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs14",
@@ -1033,7 +1493,39 @@
       }
     ],
     "slug": "mai-xuan-phuc",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Áp sát, đòn nặng",
+      "en": "Pressure and heavy shots"
+    },
+    "goal": {
+      "vi": "Giữ chuỗi thắng tới hết năm",
+      "en": "Keep the win streak to the end of the year"
+    },
+    "evalStrong": {
+      "vi": "Đòn tay sau rất nặng, đe dọa KO\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Heavy rear hand, a real KO threat\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2024-03",
+    "otherArts": "Karate",
+    "priorRecord": "Nghiệp dư 2-1-0",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs15",
@@ -1107,7 +1599,39 @@
       }
     ],
     "slug": "nguyen-thao-vy",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Lên Hạng A ở kỳ đánh giá tới",
+      "en": "Move up to Class A at the next assessment"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2021-04",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Naoya Inoue",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs16",
@@ -1181,7 +1705,39 @@
       }
     ],
     "slug": "tran-ngoc-han",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Kỹ thuật, đánh combo gọn",
+      "en": "Technical, clean combinations"
+    },
+    "goal": {
+      "vi": "Thắng trận đầu tiên bằng KO",
+      "en": "Get a first KO win"
+    },
+    "evalStrong": {
+      "vi": "Đòn thẳng gọn, combo 1-2-3 mạch lạc\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Clean straight punches, tidy 1-2-3 combinations\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2022-12",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Manny Pacquiao",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs17",
@@ -1255,7 +1811,50 @@
       }
     ],
     "slug": "le-khanh-linh",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Vào top 3 hạng cân trong năm 2026",
+      "en": "Reach the division top 3 in 2026"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Fast hands, usually lands first\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2022-10",
+    "otherArts": "Muay Thái",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {
+      "ult": {
+        "name": {
+          "vi": "Móc trái hạ màn",
+          "en": "Curtain-closing left hook"
+        },
+        "desc": {
+          "vi": "Tung móc trái ngay khi đối thủ hạ tay sau cú jab.",
+          "en": "Lands the left hook the moment the opponent drops the hands after a jab."
+        }
+      }
+    },
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs18",
@@ -1329,7 +1928,39 @@
       }
     ],
     "slug": "pham-thu-trang",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Ép nhịp liên tục",
+      "en": "Relentless pace"
+    },
+    "goal": {
+      "vi": "Giữ chuỗi thắng tới hết năm",
+      "en": "Keep the win streak to the end of the year"
+    },
+    "evalStrong": {
+      "vi": "Giữ nhịp tốt tới hiệp cuối\nĐòn tay sau rất nặng, đe dọa KO",
+      "en": "Keeps the pace up to the final round\nHeavy rear hand, a real KO threat"
+    },
+    "evalWeak": {
+      "vi": "Đứng chân còn nặng, hay bị dồn vào góc",
+      "en": "Flat-footed, gets trapped in the corner"
+    },
+    "evalNote": {
+      "vi": "Có tố chất thi đấu, giữ bình tĩnh tốt dưới áp lực.",
+      "en": "A natural competitor who stays calm under pressure."
+    },
+    "started": "2021-07",
+    "otherArts": "",
+    "priorRecord": "Nghiệp dư 2-1-0",
+    "idol": "Canelo Álvarez",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs19",
@@ -1403,7 +2034,39 @@
       }
     ],
     "slug": "vo-my-duyen",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Lên Hạng A ở kỳ đánh giá tới",
+      "en": "Move up to Class A at the next assessment"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nDi chuyển khéo, kiểm soát khoảng cách",
+      "en": "Fast hands, usually lands first\nSmart footwork, controls the distance"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tập chăm, nghe góp ý tốt. Cần thêm trận thực chiến để tích kinh nghiệm.",
+      "en": "Hard-working and coachable. Needs more live bouts to build experience."
+    },
+    "started": "2024-09",
+    "otherArts": "Karate",
+    "priorRecord": "",
+    "idol": "",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   },
   {
     "id": "vs20",
@@ -1477,6 +2140,38 @@
       }
     ],
     "slug": "hoang-anh-thu",
-    "updatedAt": 1793232000000
+    "updatedAt": 1793232000000,
+    "style": {
+      "vi": "Tốc độ, ra đòn trước",
+      "en": "Speed, first to strike"
+    },
+    "goal": {
+      "vi": "Thắng trận đầu tiên bằng KO",
+      "en": "Get a first KO win"
+    },
+    "evalStrong": {
+      "vi": "Ra đòn nhanh, thường đánh trước đối thủ\nGiữ nhịp tốt tới hiệp cuối",
+      "en": "Fast hands, usually lands first\nKeeps the pace up to the final round"
+    },
+    "evalWeak": {
+      "vi": "Đòn chưa đủ nặng để buộc đối thủ lùi",
+      "en": "Punches lack the weight to back opponents up"
+    },
+    "evalNote": {
+      "vi": "Tiến bộ rõ sau 2 kỳ đánh giá. Nên tập thêm sparring với người cao hơn.",
+      "en": "Clear progress over two assessments. Should spar more with taller partners."
+    },
+    "started": "2023-06",
+    "otherArts": "",
+    "priorRecord": "",
+    "idol": "Naoya Inoue",
+    "moves": {},
+    "private": {
+      "phone": "",
+      "emName": "",
+      "emRelation": "",
+      "emPhone": "",
+      "health": ""
+    }
   }
 ]

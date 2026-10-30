@@ -142,6 +142,14 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ names: [...document.querySelectorAll('.xh-cmp-card b')].map(b => b.textContent), prob: [...document.querySelectorAll('.xh-cmp-prob .xh-prob span')].map(s => parseInt(s.textContent, 10)), h2h: [...document.querySelectorAll('#xh .xh-res')].map(x => x.textContent), radar: document.querySelectorAll('.xh-radar polygon[fill-opacity]').length, tab: document.querySelector('.xh-tabs a.on').textContent })`);
     t.ok(st.names.join() === 'Nguyễn Hoàng Long,Lê Đức Anh' && st.prob[0] + st.prob[1] === 100 && st.prob[0] > 50 && st.h2h.includes('T') && st.radar === 2 && st.tab === 'So sánh',
       'so sánh 2 võ sĩ: khả năng thắng, đối đầu trực tiếp, radar chồng 2 võ sĩ', st);
+    st = await page.eval(`({ big: [...document.querySelectorAll('.xh-pr-big b')].map(b => parseInt(b.textContent, 10)), fx: document.querySelectorAll('.xh-pr-fx li').length })`);
+    t.ok(st.big.length === 3 && Math.abs(st.big[0] + st.big[1] + st.big[2] - 100) <= 2 && st.big[0] > st.big[2] && st.fx >= 1, 'so sánh: kèo dự đoán (thắng / hòa / thua ~100%, yếu tố quyết định)', st);
+    await page.eval(`document.querySelector('[data-seg="r"][data-v="5"]').click(); 1`);
+    st = await page.eval(`({ url: location.search, kv: [...document.querySelectorAll('.xh-pr-kv dt')].map(x => x.textContent).join('|') })`);
+    t.ok(/r=5/.test(st.url) && /5 hiệp/.test(st.kv), 'chọn 5 hiệp → tính lại kèo, nhớ trên đường dẫn', st);
+    await page.goto(B + '/phieu-vo-si', { wait: 800 });
+    st = await page.eval(`({ sheets: document.querySelectorAll('.sheet').length, h2: [...document.querySelectorAll('h2 b')].map(b => b.textContent).join(',') })`);
+    t.ok(st.sheets === 2 && st.h2 === 'A1,A2,A3,A4,A5,A6,B1,B2,B3', 'phiếu thông tin võ sĩ in ra giấy: 2 trang, mục A1–A6, B1–B3', st);
     await page.goto(B + '/su-kien', { wait: 1000 });
     st = await page.eval(`document.querySelectorAll('#xh .xh-prob').length`);
     t.ok(st >= 6, 'trận sắp đấu có thanh khả năng thắng (theo điểm)', st);
@@ -156,8 +164,9 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ h1: document.querySelector('#xh h1').textContent, radar: !!document.querySelector('.xh-radar polygon[fill-opacity]'), chart: document.querySelectorAll('.xh-chart circle').length, bouts: document.querySelectorAll('#xh .xh-res').length, title: document.title, cmp: !!document.querySelector('.xh-cmp-form select[name=b]') })`);
     t.ok(st.h1 === 'Nguyễn Hoàng Long' && st.radar && st.chart === 4 && st.bouts >= 3 && /Rồng Đen/.test(st.title) && /Academy Ranking/.test(st.title) && st.cmp,
       'hồ sơ võ sĩ: tên, radar kỹ năng, biểu đồ diễn biến điểm, lịch sử thi đấu, ô so sánh', st);
-    st = await page.eval(`(() => { document.querySelector('[data-ab="4"]').click(); return { keys: [...document.querySelectorAll('[data-ab] .xh-ab-k')].map(k => k.textContent).join(''), on: document.querySelector('[data-ab].on').getAttribute('data-ab'), name: document.querySelector('#xhAbD h3').textContent }; })()`);
-    t.ok(st.keys === 'PQWER' && st.on === '4' && st.name === 'Áp đảo thẻ điểm', 'hồ sơ kiểu trang tướng: bấm R → hiện tuyệt chiêu (cách thắng sở trường: 2 lần thắng điểm tuyệt đối)', st);
+    st = await page.eval(`(() => { document.querySelector('[data-ab="4"]').click(); return { keys: [...document.querySelectorAll('[data-ab] .xh-ab-k')].map(k => k.textContent).join(''), on: document.querySelector('[data-ab].on').getAttribute('data-ab'), name: document.querySelector('#xhAbD h3').textContent, sub: (document.querySelector('#xhAbD .xh-ab-sub') || {}).textContent }; })()`);
+    t.ok(st.keys === 'PQWER' && st.on === '4' && st.name === 'Móc trái hạ màn' && st.sub === 'Áp đảo thẻ điểm',
+      'hồ sơ kiểu trang tướng: bấm R → tuyệt chiêu HLV đặt tên, kèm cách thắng sở trường (2 lần thắng điểm tuyệt đối)', st);
     await page.eval(`document.querySelector('.xh-lang [data-lang="en"]').click(); 1`);
     st = await page.eval(`({ tab: document.querySelector('.xh-tabs a.on').textContent, th: document.querySelector('.xh-kv th').textContent, html: document.documentElement.lang })`);
     t.ok(st.tab === 'Fighters' && st.th === 'Ranking points' && st.html === 'en', 'bấm EN → giao diện bảng xếp hạng sang tiếng Anh', st);
@@ -314,6 +323,12 @@ module.exports = async function browserTests(env, t, browser) {
     await page.eval(`location.hash = '#/orders/${o.id}'; 1`);
     const conf = await page.until(`document.body.textContent.includes('Xác nhận cho khách')`, 5000);   // innerText bị in hoa theo CSS
     t.ok(conf, 'chi tiết đơn hàng có mục "Xác nhận cho khách"');
+    await page.eval(`location.hash = '#/fighters/vs01'; 1`);
+    const fsec = await page.until(`document.querySelectorAll('[data-ff^="moves."]').length === 16 && [...document.querySelectorAll('.panel__title')].map(h => h.textContent.slice(0, 2)).join()`, 5000);
+    t.ok(fsec && ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3'].every(k => fsec.includes(k)), 'hồ sơ võ sĩ trong admin: đủ mục A1–A5, B1–B3 (khớp phiếu giấy), 8 ô chiêu P Q W E R', fsec);
+    await page.eval(`location.hash = '#/rank-events/sk07'; 1`);
+    const pred = await page.until(`document.querySelectorAll('.rk-pred').length`, 5000);
+    t.ok(pred === 6, 'xếp trận trong admin: trận chưa đấu hiện kèo dự đoán', pred);
     await page.eval(`location.hash = '#/dashboard'; 1`);
     await sleep(600);
     for (const w of [375, 820]) {
