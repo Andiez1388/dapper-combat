@@ -28,6 +28,14 @@
   nav a:hover{background:#fff;color:#0b0b0b;border-color:#fff;}
   @media(max-width:600px){nav a{flex:1 1 100%;text-align:center;}}
   .dc-brand-img{display:block;height:30px;width:auto;max-width:200px;object-fit:contain;}
+  /* điện thoại + tablet (≤1199px): chữ ≥12px, vùng bấm 40px, lề 32px trên tablet, chữ nội dung 15px trên điện thoại */
+  @media(max-width:1199px){
+    header a{display:inline-flex;align-items:center;min-height:40px;}
+    .lang-switch button{font-size:0.75rem;min-height:40px;min-width:44px;}
+    .eyebrow,nav a{font-size:0.75rem;}
+  }
+  @media(min-width:601px) and (max-width:1199px){header{padding-left:2rem;padding-right:2rem;}main{padding-left:2rem;padding-right:2rem;}}
+  @media(max-width:600px){header{padding:1rem 1.25rem;}main{padding:3rem 1.25rem;}p{font-size:0.9375rem;}}
 </style>
 <script src="/assets/js/site.js"></script>
 <script src="/assets/data/cms.js"></script>

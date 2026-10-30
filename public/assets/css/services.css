@@ -345,3 +345,55 @@ section,header{scroll-margin-top:var(--sm,120px);}
 @media(max-width:800px){.ft{grid-template-columns:1fr 1fr;}}
 @media(max-width:480px){.ft{grid-template-columns:1fr;}.ft>div:first-child{grid-column:auto;}}
 .ft + .dc-biz{margin:2.2rem 0 0;color:rgba(255,255,255,0.6);opacity:1;}
+
+/* ===== Đợt sửa 4: điện thoại + tablet — chữ ≥12px, vùng bấm ~40px, thẻ tablet 2 cột trong, lưới không lẻ ô (desktop ≥1200px giữ nguyên) ===== */
+@media(max-width:1024px){
+  .eyebrow,.hero-facts small,.hero-call small,.snav a,.snav a em,.snav a.snav-cta,.svc-num,.svc-tag,.why i,.fit i,.pk-tier,.pk-rib,.pk-help a,.pk-note,.btn,.cat-link,.step i,.step em,.gal figcaption,.gal-note,.ct-list span,.ct-hot small,.cta-call small,.cta-zalo,.fl,.err-msg,.chip,.form-note,.ok-steps i,.sbar small,.sbar a,.sbar button{font-size:0.75rem;}
+  .inp{font-size:1rem;}
+  /* nhãn ô nhập: đổi lề thành đệm → bấm vào nhãn dễ hơn, khoảng cách giữ nguyên */
+  .fl{margin:0.6rem 0 0;padding:0.7rem 0 0.55rem;}
+  .chip{min-height:40px;}
+  .cat-link{padding-top:1.2rem;margin-top:-0.4rem;}
+}
+/* mục lục dính ≤900px: nút Zalo đã có ở thanh đáy → ẩn như ý ban đầu (trước bị quy tắc sau ghi đè, lòi ra cuối dải) */
+@media(max-width:900px){.snav a.snav-cta{display:none;}}
+/* 5 ô "phù hợp cho ai" / 5 bước quy trình trên lưới 2 cột: ô cuối trải hết hàng thay vì để trống 1 ô */
+@media(min-width:521px) and (max-width:1000px){
+  .fit:last-child:nth-child(odd),.step:last-child:nth-child(odd){grid-column:1/-1;}
+}
+/* tablet dọc 601–900px: thẻ dịch vụ và gói nằm ngang (chữ bên trái, danh mục bên phải) thay vì 1 cột kéo dài */
+@media(min-width:601px) and (max-width:900px){
+  section{padding:5rem 0;}
+  .svc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto 1fr;column-gap:2rem;align-items:start;}
+  .svc>*{grid-column:1;}
+  .svc ul{grid-column:2;grid-row:1/-1;margin-top:0;border-top:none;padding-top:0;border-left:1px solid var(--line);padding-left:1.5rem;align-self:stretch;}
+  .svc.feat ul{border-left-color:#262626;}
+  .svc-ic{margin:1rem 0 0.9rem;}
+  .svc-tag{align-self:end;justify-self:start;}
+  .pk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto auto auto 1fr;column-gap:2rem;padding:2rem 1.8rem;}
+  .pk>*:not(.pk-rib):not(ul){grid-column:1;}
+  .pk ul{grid-column:2;grid-row:1/-1;margin:0;border-top:none;padding-top:0;border-left:1px solid var(--line);padding-left:1.5rem;}
+  .pk.pop ul{border-left-color:#262626;}
+  .pk .btn{align-self:end;margin-top:1.4rem;}
+}
+/* điện thoại: khoảng cách các khối gọn hơn */
+@media(max-width:600px){
+  section{padding:3.75rem 0;}
+  .svc-head{margin-bottom:2rem;}
+  .fit-grid,.pk-grid,.cat-grid,.why-grid,.gal{margin-top:2rem;}
+  .steps{margin-top:2.2rem;}
+  .svc{padding:1.7rem 1.3rem 1.9rem;}
+  .pk{padding:1.8rem 1.3rem;}
+}
+/* điện thoại hẹp: danh mục thiết bị icon bên trái, chữ bên phải (bớt nửa chiều cao) */
+@media(max-width:480px){
+  .cat{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:1rem;padding:1.3rem 1.2rem;}
+  .cat svg{grid-row:1/span 3;}
+  .cat b{margin:0.4rem 0 0.3rem;}
+  .cat small,.cat .cat-link{grid-column:2;}
+  .cat .cat-link{justify-self:start;}
+}
+/* dải thông báo + chân trang của Dịch vụ setup: chữ ≥12px trên điện thoại / tablet */
+@media (max-width:1199px){
+  .ann,.ft h4,.ft-bot{font-size:0.75rem;}
+}

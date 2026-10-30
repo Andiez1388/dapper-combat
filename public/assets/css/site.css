@@ -27,11 +27,25 @@ button[disabled]{cursor:progress;opacity:0.75;}
   .nav .nav-logo svg{width:26px!important;height:auto!important;}
   .nav .lang-switch button{padding-left:8px!important;padding-right:8px!important;}
 }
-/* tablet ngang / laptop nhỏ (901–1120px): menu chữ gọn lại để không chạm logo ở giữa */
-@media(min-width:901px) and (max-width:1120px){
-  .nav .nav-links{gap:1rem!important;}
-  .nav .nav-links a{font-size:0.66rem!important;letter-spacing:0.05em!important;}
+/* tablet dọc / ngang, laptop nhỏ (≤1199px): hàng chữ menu không còn đủ chỗ (gãy 2 dòng, chữ 10px) → dùng nút menu ☰ như điện thoại.
+   Thanh menu: logo trái · VI/EN + giỏ / Đăng ký + ☰ bên phải (821–900px trước đây mất cả hàng chữ lẫn nút ☰ ở Trang chủ) */
+@media(max-width:1199px){
+  .nav .nav-back,.nav .nav-cta{font-size:0.75rem!important;}
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;}
+  .nav .nav-links{display:none!important;}
+  .nav .nav-logo{justify-self:auto;min-height:40px;}
+  .nav .nav-right{margin-left:auto;}
+  .nav .mn-btn,.nav .hamburger-btn{display:flex;}
+  /* nút VI / EN đủ lớn để bấm bằng ngón tay (cao bằng nút ☰ 40px) */
+  .nav .lang-switch{align-items:stretch;}
+  .nav .lang-switch button{min-height:40px;min-width:40px;font-size:0.75rem;}
 }
+/* tablet: lề thanh menu 32px cho thẳng hàng với nội dung */
+@media(min-width:601px) and (max-width:1199px){.nav{padding-left:2rem;padding-right:2rem;}}
+/* desktop: mỗi mục menu 1 dòng (trước đây "Trang / chủ" gãy 2 dòng cả ở 1366px) — khoảng cách gọn hơn ở 1200–1439px */
+@media(min-width:1200px){.nav .nav-links > li > a{white-space:nowrap;}}
+@media(min-width:1200px) and (max-width:1365px){.nav .nav-links{gap:0.85rem!important;}.nav .nav-links > li > a{letter-spacing:0.02em!important;}}
+@media(min-width:1366px) and (max-width:1599px){.nav .nav-links{gap:1.2rem!important;}.nav .nav-links > li > a{letter-spacing:0.06em!important;}}
 /* Dịch vụ Setup: hero giữ lề hai bên khi màn hẹp hơn khung 1200px */
 .hero-in.wrap{padding-left:2rem;padding-right:2rem;}
 @media(max-width:600px){.hero-in.wrap{padding-left:1.15rem;padding-right:1.15rem;}}
@@ -176,3 +190,25 @@ button[disabled]{cursor:progress;opacity:0.75;}
 .nav .nav-links .dc-dd-menu a{display:block;padding:10px 18px;white-space:nowrap;}
 .nav .nav-links .dc-dd-menu a:hover,.nav .nav-links .dc-dd-menu a[aria-current]{background:#1a1a1a;}
 @media (prefers-reduced-motion:reduce){.nav .nav-links .dc-dd-menu{transition:none;}}
+
+/* ===== Điện thoại + tablet (≤1199px; desktop ≥1200px giữ nguyên) ===== */
+/* menu ☰ (MNAV — Trang chủ · Shop · Khóa học · Dịch vụ): chữ phụ ≥12px, lề 32px trên tablet, tắt chuyển động khi máy yêu cầu */
+@media(max-width:1199px){
+  .mn-link em{font-size:0.75rem;}
+  .mn-link small{font-size:0.75rem;letter-spacing:0.05em;line-height:1.45;}
+  .mn-cta,.mn-sec{font-size:0.78rem;}
+  .mn-soc a{font-size:0.75rem;}
+  .mn-foot p{font-size:0.75rem;}
+}
+@media(min-width:601px) and (max-width:1199px){.mn{padding-left:2rem;padding-right:2rem;}.mn-top{height:66px;}}
+@media(prefers-reduced-motion:reduce){.mn{transition:none;transform:none;}}
+/* chữ nhỏ dùng chung (báo lỗi form, chuyển khoản, phiếu, thanh toán, chọn size nhanh, chân trang) ≥12px trên màn cảm ứng */
+@media(max-width:1199px){
+  .dc-form-err,.dc-paylines,.dc-cart-note,.cart-item .ci-var,.dc-slipbox-btns > *,.dc-paybtns-h,.dc-isp-h,.dc-biz{font-size:0.75rem;}
+  .dc-qs-top span,.dc-qs-view{font-size:0.75rem;}
+  .dc-qs-sizes button{font-size:0.75rem;}
+  /* nút đóng ô chọn size + link "xem chi tiết": vùng bấm 40px, giữ nguyên kích thước nhìn thấy */
+  .dc-qs-x{width:40px;height:40px;margin:-0.65rem -0.65rem -0.65rem 0;display:inline-flex;align-items:center;justify-content:center;}
+  .dc-qs-view{position:relative;}
+  .dc-qs-view::before{content:'';position:absolute;left:-4px;right:-4px;top:-12px;bottom:-12px;}
+}

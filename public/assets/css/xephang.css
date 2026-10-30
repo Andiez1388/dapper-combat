@@ -648,9 +648,86 @@
 @media (max-width:1000px){
   .xh-grid{grid-template-columns:minmax(0,1fr);}
 }
+/* máy tính bảng ngang (1001–1100): đầu trang vẫn hai cột (chữ | top 3 / trận tâm điểm / ngày + đếm ngược) như màn rộng */
+@media (max-width:1100px) and (min-width:1001px){
+  .xh-hero-in{grid-template-columns:minmax(0,1fr) auto;}
+}
+/* máy tính bảng (721–1100): bảng ranking vừa khung, cột điểm luôn thấy được — ẩn cột hạng cân, cột hẹp hơn */
+@media (max-width:1100px) and (min-width:721px){
+  .xh-hide-md{display:none;}
+  .xh-rt th,.xh-rt td{padding-left:8px;padding-right:8px;}
+  .xh-rt .xh-name{min-width:140px;}
+}
+/* lề hai bên máy tính bảng */
+@media (max-width:1000px) and (min-width:721px){
+  .xh-in{padding:0 24px;}
+}
+/* máy tính bảng dọc (721–1000) */
+@media (max-width:1000px) and (min-width:721px){
+  /* đầu trang: menu chính không xuống dòng; thanh 4 mục không bị cắt, ô tìm co giãn (hết chỗ thì xuống hàng) */
+  .xh-top-in{gap:16px;}
+  .xh .xh-logo{gap:10px;}
+  .xh-logo-tag{font-size:14px;padding-left:10px;}
+  .xh-site{gap:14px;}
+  .xh .xh-site a{white-space:nowrap;}
+  .xh-nav-in{flex-wrap:wrap;column-gap:16px;}
+  .xh-tabs{flex:none;max-width:100%;}
+  .xh .xh-tabs a{padding:16px 10px 13px;}
+  .xh-search{flex:1 1 180px;}
+  .xh-search input{width:auto;flex:1;min-width:0;}
+  /* cột phải xuống dưới: chia 2 cột so le thay vì kéo dài cả bề ngang */
+  .xh-side{display:block;columns:2;column-gap:20px;}
+  .xh-side > *{break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:20px;}
+  .xh-side > :last-child{margin-bottom:0;}
+  /* thẻ võ sĩ 4 cột (20 võ sĩ = 5 hàng đủ) */
+  .xh-cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+  .xh-card-b{padding:10px 11px;}
+  .xh-card-n{font-size:18px;}
+  /* đầu trang sự kiện: ngày + đếm ngược nằm ngang, canh trái theo chữ */
+  .xh-ev-side{grid-auto-flow:column;justify-content:start;align-items:center;}
+  /* hồ sơ: 4 chỉ số thành lưới 2×2, không còn vạch lẻ khi xuống dòng */
+  .xh-ch-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+  .xh-ch-stats div{padding:0;border-left:0;}
+  /* so sánh: 2 ô chọn + nút đổi góc trên một hàng */
+  .xh-cmp-pick{flex-wrap:nowrap;}
+  .xh-cmp-pick label{flex:1 1 0;min-width:0;}
+  .xh-cmp-pick select{width:100%;}
+}
+@media (max-width:800px) and (min-width:721px){
+  .xh-tabs .xh-ic{display:none;}
+}
+/* màn cảm ứng (≤1024): chữ tối thiểu 12px (ô T/B/H 11px đậm), vùng bấm ~40px — nới bằng padding + margin âm hoặc lớp phủ trong suốt, bố cục giữ nguyên */
+@media (max-width:1024px){
+  .xh .xh-logo{padding:10px 0;margin:-10px 0;}
+  .xh .xh-lang button{position:relative;}
+  .xh .xh-lang button::after{content:'';position:absolute;left:0;right:0;top:-6px;bottom:-6px;}
+  .xh-search input,.xh-search button{height:40px;}
+  .xh-tools select,.xh-tools input[type=search]{height:40px;}
+  .xh-tools label{min-height:40px;}
+  .xh-tools input[type=checkbox]{width:20px;height:20px;}
+  .xh-seg button{min-height:34px;}
+  .xh-cmp-form select,.xh-cmp-form button{height:40px;}
+  .xh .xh-cmp-link{padding:10px 8px;margin:-10px -8px;}
+  .xh .xh-cn-t a,.xh .xh-cmp-t a{padding:9px 0;margin:-9px 0;}
+  .xh .xh-name a,.xh-list .grow > a,.xh .xh-crumb a,.xh .xh-mh-o a,.xh-mh-e a,.xh-ch-up a:not(.xh-cmp-link),.xh-side-ev a,.xh-ev-h h2 a,.xh .xh-feat-e a{padding:10px 0;}
+  .xh .xh-hero-sub a,.xh .xh-foot a{padding:8px 0;}
+  .xh-res{font-size:12px;}
+  .xh-last .xh-res{min-width:20px;height:20px;font-size:11px;}
+  .xh-wr small{font-size:12px;}
+  .xh-mv.new{font-size:11px;}
+  .xh-list .xh-date{width:56px;}
+  .xh-list .xh-date span,.xh-date small,.xh-cd small,.xh-kv td small{font-size:12px;}
+  .xh-mainev,.xh-prob{font-size:12px;}
+  .xh-radar{overflow:visible;}
+  .xh-radar text,.xh-chart text{font-size:13px;}
+}
 @media (max-width:720px){
   .xh-in{padding:0 16px;}
-  .xh-site{display:none;}
+  /* menu chính xuống dòng riêng, vuốt ngang (như Truyền Nghề) để điện thoại vẫn sang được trang khác */
+  .xh-top-in{flex-wrap:wrap;row-gap:0;}
+  .xh-site{order:3;width:100%;margin:0;gap:18px;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,0.08);}
+  .xh-site::-webkit-scrollbar{display:none;}
+  .xh .xh-site a{display:block;padding:11px 0;white-space:nowrap;}
   .xh .xh-lang{margin-left:auto;}
   .xh-nav{position:static;}
   .xh-nav-in{flex-wrap:wrap;gap:0;padding-bottom:12px;}
@@ -670,7 +747,7 @@
   .xh-tools .xh-count{margin-left:0;}
   .xh-toolbar{margin-bottom:14px;}
   .xh-rolef{gap:6px;}
-  .xh-rolef button{height:36px;padding:0 10px;font-size:14px;}
+  .xh-rolef button{height:40px;padding:0 10px;font-size:14px;}
 
   /* top 3: ba cột, số 1 ở giữa rộng hơn */
   .xh-pod{display:grid;grid-template-columns:1fr 1.22fr 1fr;gap:8px;}
@@ -679,7 +756,7 @@
   .xh-pod-t{padding:20px 6px 10px;}
   .xh-pod-t .xh-emb{width:30px;margin-left:-15px;top:-18px;}
   .xh-pod-n,.xh-pod li.p1 .xh-pod-n{font-size:15px;}
-  .xh-pod-m{flex-direction:column;align-items:center;gap:2px;font-size:11px;}
+  .xh-pod-m{flex-direction:column;align-items:center;gap:2px;font-size:12px;}
 
   /* bảng ranking thành từng dòng thẻ: hạng | võ sĩ | điểm, bên dưới ± và thành tích */
   .xh-rt thead{display:none;}
@@ -703,7 +780,7 @@
   .xh-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
   .xh-card-b{padding:10px;}
   .xh-card-n{font-size:17px;}
-  .xh-card-k{font-size:11px;letter-spacing:0.14em;}
+  .xh-card-k{font-size:12px;letter-spacing:0.12em;}
   .xh-card-emb{width:32px;}
   .xh-card-role{width:28px;height:28px;}
   .xh-card-f .xh-rec{font-size:15px;}
@@ -745,7 +822,7 @@
   .xh-tp .a,.xh-tp .b{gap:8px;}
   .xh-tp b{font-size:16px;}
   .xh-tp-bar{max-width:56px;}
-  .xh-bfly{grid-template-columns:24px minmax(0,1fr) 66px minmax(0,1fr) 24px;gap:6px;font-size:11.5px;}
+  .xh-bfly{grid-template-columns:24px minmax(0,1fr) 66px minmax(0,1fr) 24px;gap:6px;font-size:12px;}
   .xh-pr{padding:0 14px 16px;}
   .xh-pr-big b{font-size:34px;}
   .xh-pr-big .d b{font-size:22px;}
@@ -792,6 +869,11 @@
   .xh-kv2{grid-template-columns:minmax(0,1fr);}
   .xh-kv2 .xh-kv:first-child tr:last-child th,.xh-kv2 .xh-kv:first-child tr:last-child td{border-bottom:1px solid var(--xh-line-2);}
   .xh-sum b{font-size:20px;}
+
+  /* chữ đọc trên điện thoại tối thiểu 15px; nhãn biểu đồ to lên vì SVG bị thu nhỏ theo bề ngang */
+  .xh-hero-sub,.xh-how,.xh-ab-p,.xh-eval ul,.xh-eval-note,.xh-ch-p > p,.xh-box-b > p,.xh-ch-h p{font-size:15px;}
+  .xh-radar text{font-size:14px;}
+  .xh-chart text{font-size:14px;}
 }
 @media (max-width:420px){
   .xh-top-in{gap:10px;}
@@ -803,6 +885,7 @@
   .xh-ch-hero h1{font-size:38px;}
   .xh-record{gap:18px;}
   .xh-record b{font-size:42px;}
+  .xh-chart text{font-size:17px;}
 }
 @media (prefers-reduced-motion:no-preference){
   .xh-st i b,.xh-bfly b{animation:xh-fill 0.7s cubic-bezier(0.2,0.7,0.2,1) both;transform-origin:left;}

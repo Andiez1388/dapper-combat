@@ -1489,3 +1489,103 @@ footer .footer-bottom{padding-top:1.2rem;border-top:1px solid var(--line);}
 #payOpts .pay-opt.is-off{opacity:0.55;cursor:not-allowed;}
 #v3Ok .dc-paid-ok{max-width:none;}
 .v3ok-pay .dc-paybtns{border:0;padding:0;}.v3ok-pay .dc-paybtns-h{display:none;}
+
+/* ===== Đợt sửa 4: điện thoại + tablet — chữ ≥12px, vùng bấm ~40px, lưới tablet, lề đều (desktop ≥1200px giữ nguyên) ===== */
+@media(max-width:1024px){
+  /* trang danh sách */
+  .v3-coll-crumb{font-size:0.75rem;}
+  .v3-coll-crumb a{display:inline-block;padding:0.75rem 0;margin:-0.75rem 0;}
+  .v3-coll-d{font-size:0.8125rem;}
+  .v3-coll-cats{font-size:0.75rem;}
+  .v3-coll-cats a{padding-top:0.7rem;margin-top:-0.7rem;}
+  .v3-coll-bar{font-size:0.75rem;}
+  #v3FilterBtn{font-size:0.75rem;padding:0.75rem 0;margin:-0.75rem 0;}
+  .v3c-badge,.v3-out-badge{font-size:0.75rem;letter-spacing:0.04em;}
+  .v3c-col{font-size:0.75rem;letter-spacing:0.03em;}
+  .v3c-qa span,.v3c-qa button,.v3-promo-btn,.v3-empty button{font-size:0.75rem;}
+  /* tim: vùng bấm 40px, ô trắng vẫn 30px như cũ */
+  .v3c-heart{width:40px!important;height:40px!important;top:3px;right:3px;background:transparent!important;}
+  .v3c-heart::before{content:'';position:absolute;inset:5px;background:rgba(255,255,255,0.9);z-index:-1;}
+  /* trang sản phẩm */
+  .v3-crumb,.v3-fit,.v3-ship,.v3-stock,.v3-wish,.pay-label,.pay-logo,.v3-set-item b,.v3-set-foot,.v3-set-foot button,.v3-news-form button,.v3-news small{font-size:0.75rem;}
+  .v3-crumb a{display:inline-block;padding:0.7rem 0;margin:-0.7rem 0;}
+  .v3-wish{padding:0.65rem 0;margin:-0.65rem 0 0.05rem;}
+  .v3-set-foot button{min-height:40px;}
+  #detailView .opt-label,#detailView .size-guide,#detailView .pdp-faq-h,#detailView #dSave,.v3-article .pdp-article h4{font-size:0.75rem!important;}
+  #detailView .size-guide{padding:0.7rem 0;margin:-0.7rem 0;}
+  .v3-tile:has(video)::after{font-size:0.75rem;}
+  .v3-rcount,.v3-fitlab,.v3-fitscale,.v3-sort,.v3-rtabs,.v3-ver,.v3-rcity,.v3-rrec,.v3-rdate,.v3-rvar,.v3-rmore,.v3-rempty{font-size:0.75rem;}
+  .v3-news-form input,.v3-rsearch input{font-size:1rem;}
+  .v3-sg-sub,.v3-sg-tabs button,.v3-sg-unit button,.v3-sg-table,.v3-sg-table th,.v3-sg-note,.v3-sg-ref,.v3-sg-how b,.v3-sg-foot{font-size:0.75rem;}
+  .v3-sg-x,.v3-f-head button{width:40px;height:40px;margin:-0.5rem -0.6rem -0.5rem 0;}
+  /* ngăn lọc */
+  .v3-f-sec h4,.v3-f-chips button,.v3-f-foot button{font-size:0.75rem;}
+  .v3-f-list{gap:0;}
+  .v3-f-list button{min-height:40px;}
+  .v3-f-chips button{min-height:40px;}
+  /* giỏ hàng */
+  .ci-var,.ci-del,.cart-row,.cart-total .lbl{font-size:0.75rem!important;}
+  .ci-qty button{width:36px;height:36px;}
+  .ci-del{padding:0.7rem 0 0.7rem 0.6rem;margin:-0.7rem 0;}
+  .cart-close{width:40px;height:40px;}
+  .v3-bar small,.v3-bar button{font-size:0.75rem;}
+  /* thanh toán */
+  .back-link{font-size:0.75rem!important;padding:0.75rem 0;margin:-0.75rem 0 0.75rem;}
+  .co-steps .st,.co-steps .st .n,.co-assure div,.field label,.po-sub,.sum-count,.promo-hint,.sum-row,.secure-note,.freeship-note,.pay-badges span{font-size:0.75rem!important;}
+  .v3-sopt small,.v3-po-logos .pay-logo,.v3-po-logos .pay-logo b,.pay-logo.pl-card b,.v3-err,.v3-remember,.v3-prefill,.v3-msum-h,.v3-msum-i small,.v3-msum-img em,.v3-msum-r{font-size:0.75rem;}
+  .field input,.field textarea,.promo input{font-size:1rem!important;}
+  /* màn đặt hàng thành công */
+  .v3ok-eyebrow,.v3ok-track b,.v3ok-track small,.v3ok-card-h span,.v3ok-card-h em,.v3ok-qr-info small,.v3ok-cod small,.v3ok-dl dt,.v3ok-item small,.v3ok-item .im em,.v3ok-rows div,.v3ok-xsell small,.v3ok-next,.ok-qr-demo,.dc-notfound p{font-size:0.75rem!important;}
+  #success .v3ok-copy button,#success .v3ok-primary,.v3ok-ghost{font-size:0.75rem;}
+}
+/* trang sản phẩm 901–1199px: cột thông tin rộng hơn để số lượng + Thêm vào giỏ + tim nằm 1 hàng */
+@media(min-width:901px) and (max-width:1199px){
+  #detailView .pdp-grid{grid-template-columns:minmax(0,55%) minmax(0,45%)!important;}
+  #detailView .pdp-info{padding:2.5rem 2rem 3rem;}
+  #detailView #dAdd{min-width:0;padding-left:1rem;padding-right:1rem;}
+}
+/* tablet dọc 601–900px: lưới 3 cột thay vì 2 ô to, 2 ô danh mục cạnh nhau, lề 28–32px */
+@media(min-width:601px) and (max-width:900px){
+  #shopView .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  .v3-promo-row{grid-template-columns:1fr 1fr;}
+  .v3-promo{aspect-ratio:4/3;}
+  .v3-coll{padding:1.2rem 1.75rem 0;}
+  .v3-collnav{padding:0 1.75rem;}
+  .v3-gal{grid-auto-columns:47%;}
+  #detailView .pdp-info{padding:1.8rem 2rem 2.2rem;}
+  #detailView .pdp-below{padding-left:2rem!important;padding-right:2rem!important;}
+  #detailView .related-grid,.v3-seen-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #detailView .acc-inner,.v3-fit{max-width:640px;}
+  .v3-set-row{grid-template-columns:minmax(0,200px) auto minmax(0,200px);justify-content:start;}
+  .checkout{padding:2.5rem 2rem 5rem;}
+  .field-row{grid-template-columns:1fr 1fr;}
+}
+/* thanh dính đáy (≤900px) không che chân trang khi cuộn hết trang */
+@media(max-width:900px){body:has(.v3-bar.on) footer{padding-bottom:calc(2rem + 80px + env(safe-area-inset-bottom));}}
+/* điện thoại */
+@media(max-width:600px){
+  .v3-coll-d{font-size:0.9375rem;}
+  /* danh mục: 1 hàng vuốt ngang thay vì rớt 2 hàng */
+  .v3-collnav .v3-coll-cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-1.25rem;margin-right:-1.25rem;padding:0 1.25rem;}
+  .v3-collnav .v3-coll-cats::-webkit-scrollbar{display:none;}
+  .v3-collnav .v3-coll-cats{margin-top:1rem;}
+  .v3-coll-cats a{flex-shrink:0;white-space:nowrap;margin-top:0;}
+  #detailView .acc-inner{font-size:0.875rem!important;}
+  .v3-article .pdp-article p,.v3-article .pdp-article ul li{font-size:0.9375rem!important;}
+  /* số lượng + Thêm vào giỏ + tim vừa 1 hàng (trước: tim rớt xuống hàng riêng) */
+  #detailView .detail-qty button{width:40px;}
+  #detailView .detail-qty span{min-width:36px;}
+  #detailView #dAdd{min-width:0;flex:1 1 0!important;padding-left:0.75rem;padding-right:0.75rem;letter-spacing:0.1em!important;white-space:nowrap;}
+  /* thanh toán: lề 16px, khối gọn hơn để chữ không bị bẻ vụn */
+  .checkout{padding:1.6rem 1rem 3rem;}
+  .co-block{padding:1.4rem 1.1rem;}
+  .summary{padding:1.5rem 1.1rem;}
+  .co-assure div{font-size:0.75rem!important;letter-spacing:0.02em;line-height:1.35;}
+  .co-steps .st{font-size:0.75rem!important;letter-spacing:0;}
+  .co-steps{gap:0.3rem!important;}
+  .v3ok-track b,.v3ok-track small{letter-spacing:0.02em;}
+}
+/* dải thông báo + chân trang của Cửa hàng: chữ ≥12px trên điện thoại / tablet */
+@media (max-width:1199px){
+  .v3-announce,.footer-col h4,.footer-badge{font-size:0.75rem;}
+}

@@ -1499,7 +1499,7 @@ footer {
 /* ── Shop cards: premium ── */
 .product-tags{position:absolute;top:0.8rem;left:0.8rem;z-index:3;display:flex;flex-direction:column;gap:0.35rem;align-items:flex-start;}
 .product-tag{position:static!important;}
-.product-badge{font-family:var(--f-display);font-weight:800;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.6rem;border-radius:999px;color:#fff;}
+.product-badge{font-family:var(--f-display);font-weight:800;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.3rem 0.6rem;border-radius:999px;color:#fff;background:#0b0b0b;}   /* nền mặc định: nhãn "MỚI" không có lớp màu riêng */
 .product-badge.hot{background:var(--accent);box-shadow:0 6px 16px rgba(212,55,46,.4);}
 .product-badge.sale{background:#1C9B52;}
 .product-badge.new{background:var(--ink-on-lt);}
@@ -2035,3 +2035,91 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(max-width:480px){.footer-grid{grid-template-columns:1fr;}}
 footer .dc-biz{max-width:1100px;color:rgba(247,244,240,0.6);opacity:1;}
 .footer-col a{color:inherit;}
+
+/* ===== Đợt sửa 3: điện thoại + tablet (≤1199px) — desktop ≥1200px giữ nguyên ===== */
+/* màn cảm ứng: chữ nhãn tối thiểu 12px (vẫn in hoa, giãn chữ như cũ) */
+@media(max-width:1199px){
+  .ticker-item,.hero-eyebrow,.section-eyebrow,.vbanner-tag,.cta-banner-tag,.instructor-title-label,.pillar-label,.instructor-role,.istat-label,
+  .cc-badge,.cc-level,.cc-cta,.product-tag,.product-badge,.stat-label,.rv-name,.rv-role,.loc-card h4,.footer-badge,.social-btn{font-size:0.75rem!important;}
+  .hero-scroll-hint,.instructor-badge,.loc-open,.map-pill,.sc-txt em,.p-sold{font-size:0.75rem;}
+  .cart-badge{min-width:18px;height:18px;line-height:18px;font-size:0.72rem;}
+  /* vùng bấm ≥40px, giữ nguyên kích thước nhìn thấy */
+  .see-all{padding:0.45rem 0;margin:-0.45rem 0;}
+  .osm-cred{font-size:0.75rem;padding:0.45rem 0.5rem;}
+  .product-fav::before{content:'';position:absolute;inset:-4px;}
+  .social-btn{position:relative;}
+  .social-btn::after{content:'';position:absolute;left:-4px;right:-4px;top:-6px;bottom:-6px;}
+  .footer-col ul li{padding:0;}
+  .footer-col ul li a{display:block;padding:0.55rem 0;}
+  .cart-close{width:40px;height:40px;margin:-10px -12px -10px 0;display:inline-flex;align-items:center;justify-content:center;}
+  .ci-qty button{position:relative;}
+  .ci-qty button::before{content:'';position:absolute;inset:-7px -5px;}
+  .ci-rm{padding:0.6rem 0 0.6rem 0.75rem;margin:-0.6rem 0;}
+  .cart-cont{padding:0.7rem 0;margin-top:0.3rem;}
+  /* đánh giá: thẻ đầu tiên thẳng lề với tiêu đề (cuộn bắt điểm đang dính sát mép) */
+  .reviews-track{scroll-padding-inline:2rem;}
+  /* địa chỉ: 2 nút cùng bề rộng khi xuống dòng */
+  .locate-btn{flex:1 1 auto;justify-content:center;}
+  /* chân trang: chừa chỗ cho 2 bong bóng chat cố định ở góc phải */
+  .footer-bottom{padding-right:4rem;}
+}
+/* tablet ngang / laptop nhỏ: cột "Chính sách" đang ẩn thì không để trống 1 cột bên phải */
+@media(min-width:901px) and (max-width:1199px){.footer-grid:has(> .footer-col[hidden]){grid-template-columns:1.4fr repeat(3,minmax(0,1fr));}}
+/* thanh menu ≤1199px: giỏ hàng + nút ☰ vùng bấm 40px (nút ☰ vuông như các trang khác) */
+@media(max-width:1199px){
+  .nav-cart{min-height:40px;min-width:40px;justify-content:center;}
+  .hamburger-btn{width:40px;height:40px;padding:0;align-items:center;justify-content:center;}
+}
+@media(max-width:820px){.cart-badge{top:2px;right:-2px;}}
+/* tablet (601–1199px): lề 32px, khoảng cách khối 5rem */
+@media(min-width:601px) and (max-width:1199px){
+  .philo,.courses,.community,.shop,.locate{padding:5rem 2rem;}
+  .cta-banner{padding:4.5rem 2rem;}
+  footer{padding:3.5rem 2rem 2rem;}
+  .hero-content{padding:0 2rem;}
+  .reviews{padding:5rem 0;}
+  .reviews-head{padding:0 2rem;}
+  .reviews-track{padding:0 2rem 1.25rem;}
+  .hero-scroll-hint{right:2rem;}
+}
+/* tablet dọc (601–900px): HLV 1 cột → ảnh cao hơn, 4 số liệu trên 1 hàng */
+@media(min-width:601px) and (max-width:900px){
+  .instructor-photo{height:460px;}
+  .instructor-info{padding:3.5rem 2rem 4rem;}
+  .instructor-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;}
+}
+/* điện thoại (≤600px): lề 20px, khối gọn hơn, chữ nội dung 15px, nút cùng bề rộng */
+@media(max-width:600px){
+  .philo,.courses,.community,.shop,.locate,.cta-banner{padding:4rem 1.25rem;}
+  footer{padding:3rem 1.25rem 2rem;}
+  .hero-content{padding:0 1.25rem;}
+  .instructor-info{padding:2.75rem 1.25rem 3.25rem;}
+  .reviews{padding:4rem 0;}
+  .reviews-head{padding:0 1.25rem;}
+  .reviews-track{padding:0 1.25rem 1.25rem;scroll-padding-inline:1.25rem;}
+  .vbanner-content,.imgbanner .vbanner-content{padding-left:1.25rem;padding-right:1.25rem;}
+  .section-header{margin-bottom:2.25rem;}
+  .product-grid{margin-top:2rem;}
+  /* chữ nội dung */
+  .hero-sub,.philo-text p,.philo-text,.comm-text,.instructor-bio{font-size:0.9375rem!important;}
+  .cc-desc,.rv-text{font-size:0.9375rem!important;}
+  .vbanner-sub{font-size:0.9375rem;}
+  .rv-text{-webkit-line-clamp:4;}
+  .hero-trust span{font-size:0.75rem;}
+  .product-addbtn{font-size:0.75rem;}
+  /* gợi ý "cuộn xuống" trùng bong bóng chat → ẩn trên điện thoại */
+  .hero-scroll-hint{display:none;}
+  /* nút: cùng bề rộng, không gãy chữ */
+  .hero-actions > *,.cta-banner-btns > *{flex:1 1 220px;max-width:340px;text-align:center;padding-left:1.25rem;padding-right:1.25rem;}
+  .comm-btns > *{flex:1 1 220px;text-align:center;}
+  /* banner video / ảnh: bớt cao (nội dung ngắn) */
+  .vbanner{height:520px;}
+  .imgbanner{min-height:560px;}
+  /* số liệu cộng đồng */
+  .stat-block{padding:1.75rem 1.25rem;}
+  /* chân trang: thương hiệu 1 hàng, các cột link 2 cột */
+  .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:2.25rem 1.25rem;}
+  .footer-grid > :first-child{grid-column:1 / -1;}
+  .footer-bottom{padding-right:3.5rem;}
+}
+@media(max-width:400px){.hero-eyebrow{gap:0.5rem;}.hero-eyebrow::before{width:18px;}}
