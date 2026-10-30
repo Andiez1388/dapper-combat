@@ -148,13 +148,13 @@ module.exports = async function apiTests(env, t) {
       t.ok(r.s === 201 && /^#DC-REG-/.test(r.j.code), 'đăng ký Truyền Nghề · ' + program, r.j);
     }
     const tn = (await req('/api/registrations', { tok: T })).j.filter(x => x.program === 'coach' || x.program === 'fighter');
-    t.ok(tn.length === 2 && tn.every(x => x.total === (x.program === 'coach' ? 65000000 : 45000000) && x.due === 0), 'Truyền Nghề: học phí Coach 65.000.000đ, Võ sĩ 45.000.000đ, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
+    t.ok(tn.length === 2 && tn.every(x => x.total === (x.program === 'coach' ? 85000000 : 65000000) && x.due === 0), 'Truyền Nghề: học phí Coach 85.000.000đ, Võ sĩ 65.000.000đ, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
     // chọn đặt cọc / đóng đủ: số cần trả theo tiền cọc trong Thiết lập (0 = không nhận cọc)
     const dueOf = async (pay, program = 'coach') => {
       const x = await req('/api/registrations', { method: 'POST', body: { name: 'Học Viên Cọc', phone: '0907654322', program, pay, lang: 'vi' } });
       return (await req('/api/registrations', { tok: T })).j.find(e => e.code === x.j.code).due;
     };
-    t.ok(await dueOf('deposit') === 2000000 && await dueOf('full') === 65000000 && await dueOf('full', 'fighter') === 45000000, 'Truyền Nghề: tiền cọc mặc định 2.000.000đ; đóng đủ = cả học phí của khóa');
+    t.ok(await dueOf('deposit') === 2000000 && await dueOf('full') === 85000000 && await dueOf('full', 'fighter') === 65000000, 'Truyền Nghề: tiền cọc mặc định 2.000.000đ; đóng đủ = cả học phí của khóa');
     await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 0 } } });
     t.ok(await dueOf('deposit') === 0, 'Truyền Nghề: tiền cọc 0 (không nhận cọc) → chọn cọc vẫn chưa thu');
     await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 5000000, careerSeats: 2000 } } });
@@ -187,8 +187,8 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.t.includes('06.05.2030'), 'ngày khai giảng mới hiện trên trang Khóa học');
     r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 40000000, careerStart: '2027-13-40' } } });
     t.ok(r.s === 200 && r.j.course.careerPriceFighter === 40000000 && r.j.course.careerStart === '2027-02-20', 'Truyền Nghề: lưu học phí, bỏ qua ngày khai giảng sai', r.j && r.j.course);
-    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 45000000, careerStart: '2027-02-20' } } });
-    t.ok(r.s === 200 && r.j.course.careerPriceFighter === 45000000, 'Truyền Nghề: trả lại học phí mặc định');
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 65000000, careerStart: '2027-02-20' } } });
+    t.ok(r.s === 200 && r.j.course.careerPriceFighter === 65000000, 'Truyền Nghề: trả lại học phí mặc định');
     r = await req('/truyen-nghe');
     t.ok(r.s === 200 && /Truyền Nghề/.test(r.t) && /HVP Academy/.test(r.t) && /The Corner/.test(r.t), 'trang /truyen-nghe mở được');
     r = await req('/dao-tao');

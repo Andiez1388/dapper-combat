@@ -254,7 +254,7 @@ module.exports = async function browserTests(env, t, browser) {
       cell1: document.querySelector('.tn-wk-c b').textContent, out: document.querySelector('.tn-bell b').textContent, fee: document.querySelector('.tn-fee-v').textContent, start: document.querySelector('.tn-start b').textContent,
       skills: document.querySelectorAll('.tn-skills li').length, pains: document.querySelectorAll('.tn-pain-row').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
     let st = await look();
-    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '65.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
+    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '85.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
     t.ok(st.cells === 10 && st.skills === 12 && st.pains === 5 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 2 bộ × 6 kỹ năng, 5 nỗi lo theo khóa đang xem, menu có "Cửa hàng" + "Truyền Nghề"', st);
     const coachCell = st.cell1;
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
@@ -287,16 +287,22 @@ module.exports = async function browserTests(env, t, browser) {
     t.ok(ok && /DC-REG-/.test(await page.eval(`document.querySelector('.tn-ok').textContent`)), 'gửi đăng ký → hiện mã đăng ký');
     const regs = await api('/api/registrations');
     const r0 = regs[0];
-    t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 45000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 45 triệu, chưa thu tiền', r0);
+    t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 65000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 65 triệu, chưa thu tiền', r0);
     st = await page.eval(`({ stamped: !!document.querySelector('.tn-cert.stamped'), code: document.querySelector('[data-cert-code]').textContent, name: document.querySelector('[data-cert-name]').textContent, pay: !!document.querySelector('.tn-paybox') })`);
     t.ok(st.stamped && st.code === r0.code && st.name === 'Võ Sĩ Trình Duyệt' && !st.pay, 'giấy nhập môn đóng dấu "đã ghi danh", ghi mã đăng ký; tư vấn trước → không hiện mã QR', st);
     await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
     // trắc nghiệm "hợp góc nào" → kết quả → giữ chỗ đúng góc; giấy nhập môn đổi theo tên đang gõ
     await page.goto(B + '/', { wait: 300 });
     await page.goto(B + '/truyen-nghe', { wait: 1000 });
-    for (const a of ['fighter', 'coach', 'fighter', 'fighter']) await page.eval(`document.querySelector('.tn-q-a .${a}').click(); 1`);
-    st = await page.eval(`(document.querySelector('.tn-q-res h3') || {}).textContent`);
-    t.ok(st === 'Bạn thuộc góc đỏ: Võ sĩ', 'trắc nghiệm 4 câu → kết quả góc đỏ', st);
+    st = await page.eval(`({ n: document.querySelector('.tn-q-n').textContent, parts: document.querySelectorAll('.tn-q-parts li').length, bars: document.querySelectorAll('.tn-q-parts i').length })`);
+    t.ok(st.n === 'Câu 1 / 12' && st.parts === 4 && st.bars === 12, 'trắc nghiệm tự đánh giá: 12 câu chia 4 phần', st);
+    // 9 câu chọn ý nghiêng Võ sĩ, 3 câu nghiêng Coach; lùi 1 câu → ý đã chọn vẫn sáng
+    for (let i = 0; i < 12; i++) {
+      await page.eval(`document.querySelector('.tn-q-a [data-lean=${i % 4 === 1 ? 'coach' : 'fighter'}]').click(); 1`);
+      if (i === 4) { await page.eval(`document.querySelector('[data-quiz=back]').click(); 1`); st = await page.eval(`!!document.querySelector('.tn-q-a .on[data-lean=fighter]')`); t.ok(st, 'quay lại câu trước: ý đã chọn vẫn được đánh dấu'); await page.eval(`document.querySelector('.tn-q-a .on').click(); 1`); }
+    }
+    st = await page.eval(`({ h: (document.querySelector('.tn-q-res h3') || {}).textContent, mix: [...document.querySelectorAll('.tn-q-mix b')].map(b => b.textContent), dims: document.querySelectorAll('.tn-q-dims > div').length, fd: document.querySelectorAll('.tn-q-dims .fighter').length, age: document.querySelector('.tn-q-age').textContent })`);
+    t.ok(st.h === 'Bạn thuộc góc đỏ: Võ sĩ' && st.mix[0] === '22%' && st.mix[1] === '78%' && st.dims === 4 && st.fd === 4 && st.age === 'Khóa Võ sĩ nhận học viên 18–26 tuổi.', 'trắc nghiệm 12 câu → góc đỏ, 22% / 78%, nhận xét 4 phần, độ tuổi khóa Võ sĩ', st);
     await page.eval(`document.querySelector('.tn-q-res [data-go="dang-ky"]').click(); 1`);
     await page.eval(`(() => { const n = document.querySelector('.tn-form [name=name]'); n.value = 'Trần Thị Bình'; n.dispatchEvent(new Event('input', { bubbles: true })); return 1; })()`);
     st = await page.eval(`({ path: document.body.dataset.path, name: document.querySelector('[data-cert-name]').textContent, out: document.querySelector('.tn-cert-dl div:nth-child(2) dd').textContent, pay: !!document.querySelector('[name=pay]') })`);
@@ -309,14 +315,14 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ opts: [...document.querySelectorAll('.tn-form [name=pay]')].map(x => x.value), seats: (document.querySelector('.tn-seats') || {}).textContent,
       strip: document.querySelector('.tn-strip-price b').textContent, dep: (document.querySelector('.tn-dep-band b') || {}).textContent, fee: document.querySelector('.tn-plan.fighter .tn-fee-v').textContent, coachFee: document.querySelector('.tn-plan.coach .tn-fee-v').textContent,
       rows: [...document.querySelectorAll('.tn-plan.fighter .tn-plan-get li > b')].map(b => b.textContent).join(' '), dock: document.querySelector('.tn-dock b').textContent })`);
-    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên' && st.strip === '5.000.000đ' && st.dep === '5.000.000đ' && st.fee === '45.000.000đ' && st.coachFee === '65.000.000đ' && st.rows === '520 4 6 1 100% 100%' && st.dock === 'Giữ chỗ chỉ 5 triệu',
+    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên' && st.strip === '5.000.000đ' && st.dep === '5.000.000đ' && st.fee === '65.000.000đ' && st.coachFee === '85.000.000đ' && st.rows === '520 4 6 1 100% 100%' && st.dock === 'Giữ chỗ chỉ 5 triệu',
       'có tài khoản nhận tiền + tiền cọc → mời "giữ chỗ chỉ 5 triệu", khu học phí liệt kê thứ nhận về, form có Tư vấn / Đặt cọc / Đóng đủ', st);
     await page.eval(`document.querySelector('.tn-strip-cta [data-pick-pay]').click(); 1`);
     st = await page.eval(`({ pay: (document.querySelector('.tn-form [name=pay]:checked') || {}).value, send: document.querySelector('.tn-form [data-send]').textContent })`);
     t.ok(st.pay === 'deposit' && st.send === 'Ghi danh và đặt cọc', 'bấm "Đặt cọc 5 triệu giữ chỗ" → form chọn sẵn đặt cọc', st);
     await page.eval(`document.querySelector('.tn-plan.coach [data-pick-pay]').click(); 1`);
     st = await page.eval(`({ path: document.body.dataset.path, pay: (document.querySelector('.tn-form [name=pay]:checked') || {}).value, full: document.querySelector('.tn-form [name=pay][value=full] + span b').textContent })`);
-    t.ok(st.path === 'coach' && st.pay === 'deposit' && st.full === 'Đóng đủ 65.000.000đ', 'thẻ khóa Coach → bấm đặt cọc: chọn khóa Coach + đặt cọc, đóng đủ theo giá Coach', st);
+    t.ok(st.path === 'coach' && st.pay === 'deposit' && st.full === 'Đóng đủ 85.000.000đ', 'thẻ khóa Coach → bấm đặt cọc: chọn khóa Coach + đặt cọc, đóng đủ theo giá Coach', st);
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
     await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.elements.year.value = '2005'; f.querySelector('[type=submit]').click(); return 1; })()`);
     await page.until(`!!document.querySelector('.tn-ok')`, 8000);

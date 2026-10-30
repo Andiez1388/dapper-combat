@@ -16,7 +16,7 @@
   var START = String(DC.setting('course.careerStart', '2027-02-20') || '2027-02-20');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(START)) START = '2027-02-20';
   // học phí mỗi khóa (Coach, Võ sĩ khác giá)
-  var PRICES = { coach: Number(DC.setting('course.careerPriceCoach', 65000000)) || 65000000, fighter: Number(DC.setting('course.careerPriceFighter', 45000000)) || 45000000 };
+  var PRICES = { coach: Number(DC.setting('course.careerPriceCoach', 85000000)) || 85000000, fighter: Number(DC.setting('course.careerPriceFighter', 65000000)) || 65000000 };
   var priceOf = function (k) { return PRICES[k] || PRICES.coach; };
   var PRICE_MIN = Math.min(PRICES.coach, PRICES.fighter);
   // độ tuổi tuyển, tính theo năm khai giảng
@@ -40,7 +40,8 @@
   var T = {
     vi: {
       'site.home': 'Trang chủ', 'site.shop': 'Cửa hàng', 'site.course': 'Khóa học', 'site.services': 'Dịch vụ Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Truyền Nghề',
-      'foot.note': 'Truyền Nghề là chương trình đào tạo nghề boxing của Dapper Combat.', 'foot.home': 'Về trang chủ Dapper Combat',
+      'foot.h1': 'Độc quyền tại Dapper Combat.', 'foot.h2': 'Không dạy cho biết, truyền nghề để sống.',
+      'foot.note': 'Truyền Nghề là chương trình đào tạo nghề boxing chuyên sâu do Dapper Combat xây dựng và trực tiếp giảng dạy: 12 tháng, 520 ca, 4 lần sát hạch, bắt đầu từ con số 0. Đầu ra cam kết bằng con số: 100% cơ hội làm việc tại HVP Academy cho khóa Coach, 100% thi đấu dưới màu cờ The Corner cho khóa Võ sĩ, và hoàn 100% học phí nếu bạn đạt chuẩn mà không có đầu ra.', 'foot.home': 'Về trang chủ Dapper Combat',
       'title': 'Truyền Nghề — Học boxing thành nghề trong 1 năm | Dapper Combat',
       'h1': 'Truyền Nghề', 'special': 'Chương trình đặc biệt · Khóa {y}', 'claim': 'Một năm. Từ con số 0 thành nghề boxing.',
       'side.coach': 'Góc xanh · Coach', 'side.fighter': 'Góc đỏ · Võ sĩ', 'bao.coach': 'Bao việc làm', 'bao.fighter': 'Bao thi đấu',
@@ -60,33 +61,34 @@
       'start': 'Khai giảng {d}', 'clock.d': 'ngày', 'clock.h': 'giờ', 'clock.m': 'phút', 'clock.s': 'giây', 'clock.done': 'Khóa {y} đã khai giảng',
       'fee.from': 'Học phí trọn khóa từ', 'fee.both': 'Võ sĩ {f} · Coach {c}', 'seats': 'Mỗi khóa nhận tối đa {n} học viên',
       'cta.apply': 'Giữ chỗ khóa {y}', 'cta.quiz': 'Bạn hợp góc nào?',
-      'quiz.h': 'Bạn hợp góc nào?', 'quiz.sub': '4 câu hỏi, chưa tới 30 giây. Không có câu trả lời sai, chỉ có góc hợp với bạn hơn.',
+      'quiz.h': 'Bạn hợp góc nào?', 'quiz.sub': '12 câu về tính cách, năng lượng, sở thích và mục tiêu, khoảng 2 phút. Không có đáp án đúng hay sai: chọn điều gần với bạn nhất, kết quả sẽ cho bạn thấy mình nghiêng về góc nào và vì sao.',
       'quiz.n': 'Câu {i} / {n}', 'quiz.back': 'Câu trước', 'quiz.res': 'Kết quả của bạn', 'quiz.again': 'Làm lại',
       'quiz.r.coach': 'Bạn thuộc góc xanh: Coach', 'quiz.r.fighter': 'Bạn thuộc góc đỏ: Võ sĩ', 'quiz.r.tie': 'Bạn hợp cả hai góc',
       'quiz.rs.coach': 'Bạn thích làm người khác giỏi lên. Học xong 1 năm, bạn có 100% cơ hội làm việc tại HVP Academy.',
       'quiz.rs.fighter': 'Bạn muốn tự mình lên sàn. Học xong 1 năm, bạn 100% thi đấu dưới màu cờ The Corner.',
       'quiz.rs.tie': 'Chọn theo đích đến bạn muốn sau 12 tháng: đứng lớp hay lên sàn.',
+      'quiz.lean.coach': 'Nghiêng về Coach', 'quiz.lean.fighter': 'Nghiêng về Võ sĩ', 'quiz.lean.both': 'Cân bằng hai góc', 'quiz.age': 'Khóa {n} nhận học viên {a}.',
       'quiz.see': 'Xem lộ trình {n}', 'quiz.go': 'Giữ chỗ khóa {n}',
       'bar.label': 'Con đường', 'bar.apply': 'Giữ chỗ',
       'road.h': '12 tháng, 4 hiệp, 12 kỹ năng nghề', 'road.sub': 'Mỗi hiệp 3 tháng mở khóa một nhóm kỹ năng và một danh hiệu mới, xác nhận bằng một lần sát hạch. Hết hiệp 4, bạn mang cả 12 kỹ năng vào nghề.',
       'road.unlock': 'Kỹ năng mở khóa', 'road.pass': 'Qua mốc: {m}', 'road.carry': 'Bạn mang theo {n} kỹ năng đã mở khóa qua 4 hiệp',
       'road.round': 'Hiệp {n}', 'road.mile': 'Mốc kết thúc hiệp', 'road.bell': 'Sau 12 tháng',
-      'week.h': 'Một tuần học mẫu', 'week.sub': 'Thứ 2 đến Thứ 6, mỗi ngày 2 ca. Khung lịch giống nhau ở cả 2 khóa, chỉ nội dung từng ca là khác.',
-      'week.s1': 'Ca 1', 'week.s1d': 'buổi sáng', 'week.s2': 'Ca 2', 'week.s2d': 'buổi chiều', 'week.note': '10 ca mỗi tuần ở cả 2 khóa. Đổi con đường ở thanh phía trên để thấy nội dung từng ca thay đổi.',
+      'week.h': 'Một tuần học mẫu', 'week.sub': 'Thứ 2 đến Thứ 6, mỗi ngày 2 ca, mỗi ca 2–3 tiếng. Khung lịch giống nhau ở cả 2 khóa, chỉ nội dung từng ca là khác.',
+      'week.s1': 'Ca 1', 'week.s1d': 'buổi sáng', 'week.s2': 'Ca 2', 'week.s2d': 'buổi chiều', 'week.len': '2–3 tiếng', 'week.note': '10 ca mỗi tuần, mỗi ca 2–3 tiếng: 20–30 giờ tập mỗi tuần, hơn 1.000 giờ trong 12 tháng. Đổi con đường ở thanh phía trên để thấy nội dung từng ca thay đổi.',
       'd1': 'Thứ 2', 'd2': 'Thứ 3', 'd3': 'Thứ 4', 'd4': 'Thứ 5', 'd5': 'Thứ 6',
       'tag.tech': 'Kỹ thuật', 'tag.fit': 'Thể lực', 'tag.theory': 'Lý thuyết', 'tag.teach': 'Thực hành dạy', 'tag.spar': 'Sparring', 'tag.tactic': 'Chiến thuật',
       'skills.h': 'Bộ kỹ năng {n}', 'skills.both': 'Hai bộ kỹ năng, hai nghề', 'skills.sub': 'Mỗi khóa luyện một bộ kỹ năng riêng cho đúng đích đến của nó.',
-      'pain.h': 'Muốn đi đường dài, muốn sống cùng với boxing, vướng ở đâu?', 'pain.sub': 'Những nỗi lo thường gặp khi tự đi con đường coach hoặc võ sĩ, và Truyền Nghề giải quyết từng cái thế nào.',
-      'pain.who.coach': 'Bạn muốn làm coach', 'pain.who.fighter': 'Bạn muốn làm võ sĩ', 'pain.fix': 'Truyền Nghề giải quyết', 'pain.col.q': 'Nỗi lo khi tự đi một mình', 'pain.col.a': 'Truyền Nghề giải quyết',
+      'pain.h': 'Muốn đi đường dài, muốn sống cùng với boxing, vướng ở đâu?', 'pain.sub': 'Nếu từng nghĩ tới chuyện sống bằng boxing, chắc bạn đã gặp ít nhất một điều dưới đây. Đây là cái giá của việc tự đi một mình, và cách Truyền Nghề gỡ từng cái.',
+      'pain.who.coach': 'Bạn muốn làm coach', 'pain.who.fighter': 'Bạn muốn làm võ sĩ', 'pain.fix': 'Truyền Nghề giải quyết', 'pain.cost': 'Cái giá phải trả', 'pain.col.q': 'Nỗi lo khi tự đi một mình', 'pain.col.a': 'Truyền Nghề giải quyết',
       'cmp.h': 'Cùng khối lượng, khác đích đến', 'cmp.sub': 'Hai khóa cùng số tháng, cùng số buổi, cùng số ca. Khác nhau ở nội dung, mục tiêu, học phí và đầu ra.',
       'cmp.same': 'Giống nhau', 'cmp.diff': 'Khác nhau',
       'cmp.time': 'Thời gian', 'cmp.sched': 'Lịch học', 'cmp.fee': 'Học phí', 'cmp.content': 'Nội dung chính', 'cmp.goal': 'Mục tiêu', 'cmp.out': 'Học xong',
-      'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày',
+      'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày, mỗi ca 2–3 tiếng',
       'fee.h': 'Bạn nhận về một nghề', 'fee.sub': 'Hai khóa, hai mức học phí. Mỗi khóa là một nghề trọn vẹn trong 12 tháng, kèm cam kết đầu ra.',
       'w.get': 'Bạn nhận về', 'w.pay': 'Học phí trọn khóa', 'plan.go': 'Giữ chỗ khóa {n}', 'plan.go.dep': 'Đặt cọc {d}, giữ chỗ khóa {n}',
       'faq.g1': 'Trước khi vào học', 'faq.g2': 'Lịch học và học phí', 'faq.g3': 'Đầu ra và cam kết',
       'help.visit': 'Ghé xem phòng tập', 'help.hours': 'Mở cửa {o} – {c}', 'help.map': 'Chỉ đường',
-      'w.sess': 'ca học trong 12 tháng', 'w.sess.d': '52 tuần, 5 buổi mỗi tuần, 2 ca mỗi ngày',
+      'w.sess': 'ca học trong 12 tháng', 'w.sess.d': '52 tuần, 5 buổi mỗi tuần, 2 ca mỗi ngày, mỗi ca 2–3 tiếng',
       'w.rounds': 'hiệp đào tạo, mỗi hiệp có mốc kiểm tra', 'w.skills.coach': 'kỹ năng nghề coach', 'w.skills.fighter': 'kỹ năng thi đấu',
       'w.job.coach': 'nghề để sống: đứng lớp dạy boxing', 'w.job.coach.d': 'Học như một võ sĩ, trợ giảng lớp thật, rồi tự đứng lớp.',
       'w.job.fighter': 'đội để thi đấu: The Corner', 'w.job.fighter.d': 'Sparring có chấm điểm, fight night nội bộ, rồi trận ra mắt.',
@@ -110,15 +112,15 @@
       'err.year.req': 'Nhập năm sinh để kiểm tra độ tuổi tuyển', 'err.age': 'Khóa {n} nhận học viên từ {a} đến {b} tuổi (tính theo năm khai giảng {y}).', 'err.age.alt': 'Bạn vừa tuổi khóa {n} ({a}–{b} tuổi).',
       'age': '{a}–{b} tuổi', 'cmp.age': 'Độ tuổi tuyển',
       'q9': 'Bao nhiêu tuổi thì đăng ký được?', 'a9': 'Khóa Coach nhận học viên từ {ca} đến {cb} tuổi, khóa Võ sĩ từ {fa} đến {fb} tuổi, tính theo năm khai giảng {y}.',
-      'cert.label': 'Bản xem trước giấy nhập môn', 'cert.title': 'Giấy nhập môn', 'cert.sub': 'Truyền Nghề · Khóa {y} · Khai giảng {d}', 'cert.no': 'Số',
+      'cert.label': 'Bản xem trước giấy nhập môn', 'cert.title': 'Giấy nhập môn', 'cert.kick': '★ Truyền Nghề · Khóa {y} ★', 'cert.sub': 'Khai giảng {d}', 'cert.no': 'Số',
       'cert.student': 'Học viên', 'cert.ph': 'Tên của bạn', 'cert.path': 'Con đường', 'cert.out': 'Đầu ra', 'cert.time': 'Thời gian', 'cert.time.v': '12 tháng · 10 ca mỗi tuần',
       'cert.born': 'Năm sinh', 'cert.date': 'Ngày ghi danh', 'cert.wait': 'CHỜ GHI DANH', 'cert.done1': 'ĐÃ', 'cert.done2': 'GHI DANH', 'cert.ring': 'TRUYỀN NGHỀ · KHÓA {y} · DAPPER COMBAT · ',
-      'faq.h': 'Câu hỏi thường gặp', 'help.h': 'Còn băn khoăn?', 'help.p': 'Hỏi thẳng Dapper Combat về lịch học, học phí và đầu ra trước khi quyết định.',
-      'help.zalo': 'Nhắn Zalo', 'help.call': 'Gọi {p}',
+      'faq.h': 'Câu hỏi thường gặp', 'help.h': 'Còn băn khoăn?', 'help.p': 'Nhắn Zalo hoặc gọi hotline, Dapper Combat trả lời bạn về lịch học, học phí và đầu ra trước khi bạn quyết định.', 'help.p0': 'Nhắn Zalo, Dapper Combat trả lời bạn về lịch học, học phí và đầu ra trước khi bạn quyết định.',
+      'help.zalo': 'Nhắn Zalo', 'help.call': 'Gọi hotline', 'help.hot': 'Hotline',
       'dock.t': 'Khóa {y} · từ {p}', 'dock.left': 'còn {n} ngày tới khai giảng',
       'q1': 'Chưa từng tập boxing có học được không?', 'a1': 'Được. Cả 2 khóa đều bắt đầu từ con số 0. Hiệp đầu tiên (3 tháng đầu) dành cho nền tảng: tư thế, bộ pháp, đòn cơ bản và thể lực.',
-      'q2': 'Hai khóa khác nhau ở đâu?', 'a2': 'Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần, 2 ca mỗi ngày. Khác nội dung và mục tiêu: Coach học phương pháp dạy, có 100% cơ hội làm việc tại HVP Academy; Võ sĩ học kỹ thuật, chiến thuật thi đấu và 100% thi đấu dưới màu cờ The Corner.',
-      'q3': 'Lịch học cụ thể thế nào?', 'a3': 'Học từ Thứ 2 đến Thứ 6, mỗi ngày 2 ca (sáng và chiều), liên tục 12 tháng kể từ ngày khai giảng {d}.',
+      'q2': 'Hai khóa khác nhau ở đâu?', 'a2': 'Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần, 2 ca mỗi ngày, mỗi ca 2–3 tiếng. Khác nội dung và mục tiêu: Coach học phương pháp dạy, có 100% cơ hội làm việc tại HVP Academy; Võ sĩ học kỹ thuật, chiến thuật thi đấu và 100% thi đấu dưới màu cờ The Corner.',
+      'q3': 'Lịch học cụ thể thế nào?', 'a3': 'Học từ Thứ 2 đến Thứ 6, mỗi ngày 2 ca (sáng và chiều), mỗi ca 2–3 tiếng, liên tục 12 tháng kể từ ngày khai giảng {d}.',
       'q4': 'Học phí bao nhiêu, đóng thế nào?', 'a4': 'Khóa Võ sĩ {f}, khóa Coach {c}, cho cả khóa 1 năm. {how}',
       'q5': 'Học xong thì sao?', 'a5': 'Coach có 100% cơ hội làm việc tại HVP Academy, hoặc tự do tìm việc ở các phòng tập khác. Võ sĩ ở lại tập luyện và 100% được thi đấu dưới màu cờ The Corner.',
       'q7': 'Nếu học xong mà không có việc, hoặc không được thi đấu?', 'a7': 'Bạn được hoàn 100% học phí khi đã đạt tiêu chuẩn mà: với khóa Coach, HVP Academy không sắp xếp được công việc và bạn không tìm được việc ở nơi khác; với khóa Võ sĩ, bạn không được thi đấu dưới màu cờ The Corner.',
@@ -129,7 +131,8 @@
     },
     en: {
       'site.home': 'Home', 'site.shop': 'Shop', 'site.course': 'Courses', 'site.services': 'Gym Setup', 'site.ranking': 'Academy Ranking', 'site.career': 'Pro Pathways',
-      'foot.note': 'Pro Pathways is the boxing career program of Dapper Combat.', 'foot.home': 'Back to Dapper Combat',
+      'foot.h1': 'Only at Dapper Combat.', 'foot.h2': 'Not a class to try, a trade to live from.',
+      'foot.note': 'Pro Pathways is an in-depth boxing career program built and taught by Dapper Combat: 12 months, 520 sessions, 4 assessments, starting from zero. The outcomes are promised in numbers: a 100% job opportunity at HVP Academy on the Coach course, 100% fighting in The Corner colours on the Fighter course, and a 100% refund if you meet the standard without that outcome.', 'foot.home': 'Back to Dapper Combat',
       'title': 'Pro Pathways — A boxing career in one year | Dapper Combat',
       'h1': 'Pro Pathways', 'special': 'Special program · Class of {y}', 'claim': 'One year. From zero to a boxing career.',
       'side.coach': 'Blue corner · Coach', 'side.fighter': 'Red corner · Fighter', 'bao.coach': 'Job guaranteed', 'bao.fighter': 'Fights guaranteed',
@@ -149,33 +152,34 @@
       'start': 'Starts {d}', 'clock.d': 'days', 'clock.h': 'hrs', 'clock.m': 'min', 'clock.s': 'sec', 'clock.done': 'The class of {y} has started',
       'fee.from': 'Full course from', 'fee.both': 'Fighter {f} · Coach {c}', 'seats': 'Each course takes at most {n} students',
       'cta.apply': 'Reserve a place for {y}', 'cta.quiz': 'Which corner fits you?',
-      'quiz.h': 'Which corner fits you?', 'quiz.sub': '4 questions, under 30 seconds. No wrong answers, just the corner that suits you better.',
+      'quiz.h': 'Which corner fits you?', 'quiz.sub': '12 questions on personality, energy, interests and goals, about 2 minutes. No right or wrong answers: pick what is closest to you, and the result shows which corner you lean towards and why.',
       'quiz.n': 'Question {i} / {n}', 'quiz.back': 'Previous', 'quiz.res': 'Your result', 'quiz.again': 'Start over',
       'quiz.r.coach': 'You belong in the blue corner: Coach', 'quiz.r.fighter': 'You belong in the red corner: Fighter', 'quiz.r.tie': 'Both corners fit you',
       'quiz.rs.coach': 'You like making other people better. Finish the year with a 100% job opportunity at HVP Academy.',
       'quiz.rs.fighter': 'You want to step into the ring yourself. Finish the year and you are 100% fighting in The Corner colours.',
       'quiz.rs.tie': 'Pick by where you want to be in 12 months: in front of a class, or in the ring.',
+      'quiz.lean.coach': 'Leans Coach', 'quiz.lean.fighter': 'Leans Fighter', 'quiz.lean.both': 'Balanced', 'quiz.age': 'The {n} course: {a}.',
       'quiz.see': 'See the {n} path', 'quiz.go': 'Reserve a {n} place',
       'bar.label': 'Path', 'bar.apply': 'Reserve',
       'road.h': '12 months, 4 rounds, 12 professional skills', 'road.sub': 'Each 3-month round unlocks a set of skills and a new title, confirmed by a checkpoint. After round 4 you take all 12 skills into your career.',
       'road.unlock': 'Skills unlocked', 'road.pass': 'Checkpoint: {m}', 'road.carry': 'You leave with {n} skills unlocked across 4 rounds',
       'road.round': 'Round {n}', 'road.mile': 'End-of-round checkpoint', 'road.bell': 'After 12 months',
-      'week.h': 'A sample week', 'week.sub': 'Monday to Friday, 2 shifts a day. The timetable is the same for both courses; only what happens in each shift differs.',
-      'week.s1': 'Shift 1', 'week.s1d': 'morning', 'week.s2': 'Shift 2', 'week.s2d': 'afternoon', 'week.note': '10 shifts a week on both courses. Switch paths in the bar above to see each shift change.',
+      'week.h': 'A sample week', 'week.sub': 'Monday to Friday, 2 shifts a day, 2–3 hours each. The timetable is the same for both courses; only what happens in each shift differs.',
+      'week.s1': 'Shift 1', 'week.s1d': 'morning', 'week.s2': 'Shift 2', 'week.s2d': 'afternoon', 'week.len': '2–3 hours', 'week.note': '10 shifts a week, 2–3 hours each: 20–30 hours of training a week, over 1,000 hours in 12 months. Switch paths in the bar above to see each shift change.',
       'd1': 'Mon', 'd2': 'Tue', 'd3': 'Wed', 'd4': 'Thu', 'd5': 'Fri',
       'tag.tech': 'Technique', 'tag.fit': 'Conditioning', 'tag.theory': 'Theory', 'tag.teach': 'Teaching practice', 'tag.spar': 'Sparring', 'tag.tactic': 'Tactics',
       'skills.h': '{n} skill set', 'skills.both': 'Two skill sets, two trades', 'skills.sub': 'Each course trains its own skill set for its own destination.',
-      'pain.h': 'Want to go the distance and build a life with boxing? Here is what gets in the way', 'pain.sub': 'The usual worries when you try the coach or fighter path on your own, and how Pro Pathways deals with each one.',
-      'pain.who.coach': 'You want to coach', 'pain.who.fighter': 'You want to fight', 'pain.fix': 'How Pro Pathways fixes it', 'pain.col.q': 'The worry when you go it alone', 'pain.col.a': 'How Pro Pathways fixes it',
+      'pain.h': 'Want to go the distance and build a life with boxing? Here is what gets in the way', 'pain.sub': 'If you have ever thought about living from boxing, you have probably hit at least one of these. This is what going it alone costs, and how Pro Pathways fixes each one.',
+      'pain.who.coach': 'You want to coach', 'pain.who.fighter': 'You want to fight', 'pain.fix': 'How Pro Pathways fixes it', 'pain.cost': 'What it costs you', 'pain.col.q': 'The worry when you go it alone', 'pain.col.a': 'How Pro Pathways fixes it',
       'cmp.h': 'Same workload, different destination', 'cmp.sub': 'Both courses run the same months, sessions and shifts. They differ in content, goal, fee and outcome.',
       'cmp.same': 'Same', 'cmp.diff': 'Different',
       'cmp.time': 'Length', 'cmp.sched': 'Schedule', 'cmp.fee': 'Fee', 'cmp.content': 'Core content', 'cmp.goal': 'Goal', 'cmp.out': 'When you finish',
-      'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day',
+      'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day, 2–3 hours each',
       'fee.h': 'You walk away with a trade', 'fee.sub': 'Two courses, two fees. Each is a complete trade in 12 months, backed by an outcome guarantee.',
       'w.get': 'What you get', 'w.pay': 'Full course fee', 'plan.go': 'Reserve a {n} place', 'plan.go.dep': 'Pay {d}, hold my {n} place',
       'faq.g1': 'Before you join', 'faq.g2': 'Schedule and fees', 'faq.g3': 'Outcome and guarantee',
       'help.visit': 'Come and see the gym', 'help.hours': 'Open {o} – {c}', 'help.map': 'Directions',
-      'w.sess': 'sessions over 12 months', 'w.sess.d': '52 weeks, 5 days a week, 2 shifts a day',
+      'w.sess': 'sessions over 12 months', 'w.sess.d': '52 weeks, 5 days a week, 2 shifts a day, 2–3 hours each',
       'w.rounds': 'training rounds, each ending in a checkpoint', 'w.skills.coach': 'coaching skills', 'w.skills.fighter': 'fight skills',
       'w.job.coach': 'trade to live from: teaching boxing', 'w.job.coach.d': 'Train like a fighter, assist real classes, then lead your own.',
       'w.job.fighter': 'team to fight for: The Corner', 'w.job.fighter.d': 'Scored sparring, in-house fight nights, then your debut.',
@@ -199,15 +203,15 @@
       'err.year.req': 'Enter your year of birth so we can check the age range', 'err.age': 'The {n} course takes students aged {a} to {b} (counted in the start year, {y}).', 'err.age.alt': 'You fit the {n} course (age {a}–{b}).',
       'age': 'age {a}–{b}', 'cmp.age': 'Age range',
       'q9': 'How old do I need to be?', 'a9': 'The Coach course takes students aged {ca} to {cb}, the Fighter course {fa} to {fb}, counted in the start year {y}.',
-      'cert.label': 'Enrolment paper preview', 'cert.title': 'Enrolment paper', 'cert.sub': 'Pro Pathways · Class of {y} · Starts {d}', 'cert.no': 'No.',
+      'cert.label': 'Enrolment paper preview', 'cert.title': 'Enrolment paper', 'cert.kick': '★ Pro Pathways · Class of {y} ★', 'cert.sub': 'Starts {d}', 'cert.no': 'No.',
       'cert.student': 'Student', 'cert.ph': 'Your name', 'cert.path': 'Path', 'cert.out': 'Outcome', 'cert.time': 'Length', 'cert.time.v': '12 months · 10 sessions a week',
       'cert.born': 'Born', 'cert.date': 'Enrolled on', 'cert.wait': 'AWAITING', 'cert.done1': 'ENROLLED', 'cert.done2': YEAR, 'cert.ring': 'PRO PATHWAYS · CLASS OF {y} · DAPPER COMBAT · ',
-      'faq.h': 'Questions', 'help.h': 'Still unsure?', 'help.p': 'Ask Dapper Combat directly before you decide: schedule, fees and what happens after.',
-      'help.zalo': 'Message on Zalo', 'help.call': 'Call {p}',
+      'faq.h': 'Questions', 'help.h': 'Still unsure?', 'help.p': 'Message us on Zalo or call the hotline: Dapper Combat answers your questions on schedule, fees and outcomes before you decide.', 'help.p0': 'Message us on Zalo: Dapper Combat answers your questions on schedule, fees and outcomes before you decide.',
+      'help.zalo': 'Message on Zalo', 'help.call': 'Call the hotline', 'help.hot': 'Hotline',
       'dock.t': 'Class of {y} · from {p}', 'dock.left': '{n} days until the start',
       'q1': 'Can I join if I have never boxed?', 'a1': 'Yes. Both courses start from zero. The first round (the first 3 months) covers the foundations: stance, footwork, basic punches and conditioning.',
-      'q2': 'How do the two courses differ?', 'a2': 'Same workload: 12 months, 5 sessions a week, 2 shifts a day. Different content and goal: Coach learns how to teach, with a 100% job opportunity at HVP Academy; Fighter learns competition technique and tactics and is 100% fighting in The Corner colours.',
-      'q3': 'What does the timetable look like?', 'a3': 'Monday to Friday, 2 shifts a day (morning and afternoon), for 12 months from the start date, {d}.',
+      'q2': 'How do the two courses differ?', 'a2': 'Same workload: 12 months, 5 sessions a week, 2 shifts a day, 2–3 hours each. Different content and goal: Coach learns how to teach, with a 100% job opportunity at HVP Academy; Fighter learns competition technique and tactics and is 100% fighting in The Corner colours.',
+      'q3': 'What does the timetable look like?', 'a3': 'Monday to Friday, 2 shifts a day (morning and afternoon), 2–3 hours each, for 12 months from the start date, {d}.',
       'q4': 'How much is it and how do I pay?', 'a4': 'Fighter course {f}, Coach course {c}, for the full year. {how}',
       'q5': 'What happens when I finish?', 'a5': 'Coaches have a 100% job opportunity at HVP Academy, or can find work at any other gym. Fighters stay on to train and are 100% fighting in The Corner colours.',
       'q7': 'What if I finish and get no job, or no fight?', 'a7': 'You get 100% of the fee back if you met the standard and: on the Coach course, HVP Academy cannot place you and you cannot find work elsewhere; on the Fighter course, you do not get to fight in The Corner colours.',
@@ -288,30 +292,152 @@
     },
   };
   var ORDER = ['coach', 'fighter'];
-  // nỗi lo thường gặp → cách Truyền Nghề giải quyết (lấy từ lộ trình + cam kết ở trên)
+  // nỗi lo khi tự đi một mình: [nỗi lo, cái giá phải trả, tiêu đề giải pháp, [3 ý cụ thể]] — giải pháp lấy từ lộ trình / lịch tuần / kỹ năng
   var PAINS = {
     coach: [
-      [p('Biết đánh, nhưng không biết cách dạy người khác', 'You can box, but you do not know how to teach it'), p('Học phương pháp dạy: cầm đích, đọc lỗi, soạn giáo án, quản lý lớp.', 'Learn to teach: pads, fixing faults, lesson plans, running a class.')],
-      [p('Tự học qua video, sai kỹ thuật mà không ai sửa', 'Learning from videos, with nobody to fix your mistakes'), p('Lộ trình 12 tháng, 4 hiệp, sát hạch cuối mỗi hiệp.', 'A 12-month path in 4 rounds, with an assessment after each round.')],
-      [p('Chưa từng đứng lớp thật, sợ học viên không tin', 'Never led a real class, worried members will not trust you'), p('Trợ giảng lớp thật trước, rồi đứng lớp có giám sát.', 'Assist real classes first, then lead your own under supervision.')],
-      [p('Học xong không biết xin việc ở đâu', 'No idea where to find work when you finish'), p('100% cơ hội làm việc tại HVP Academy, hoặc tự do chọn phòng tập khác.', 'A 100% job opportunity at HVP Academy, or any other gym you choose.')],
-      [p('Sợ bỏ tiền ra mà không có việc', 'Afraid to pay and still end up without a job'), p('Đạt chuẩn mà không có việc: hoàn 100% học phí.', 'Meet the standard but get no job: 100% fee refund.')],
+      [p('Biết đánh, nhưng đứng trước học viên thì không biết dạy gì', 'You can box, but in front of a class you do not know what to teach'),
+       p('Bạn đấm được, nhưng không giải thích được vì sao đòn của học viên sai. Họ tập mãi không lên, rồi lặng lẽ nghỉ. Không phòng tập nào giữ một coach không giữ nổi học viên.', 'You can punch, but you cannot explain why a member\'s punch is wrong. They stop improving and quietly quit. No gym keeps a coach who cannot keep members.'),
+       p('Học nghề dạy, không chỉ học đánh', 'Learn to teach, not just to box'),
+       [p('Cầm đích, giữ nhịp, gọi combo theo trình độ từng học viên', 'Hold pads, keep the rhythm, call combinations for each member\'s level'),
+        p('Nhìn ra lỗi tư thế, lỗi đòn và sửa bằng đúng bài tập', 'Spot stance and punch faults and fix them with the right drill'),
+        p('Soạn giáo án từ một buổi tới chương trình nhiều tuần', 'Plan anything from a single session to a multi-week program')]],
+      [p('Tự học qua video, sai từ gốc mà không ai sửa', 'Learning from videos, wrong from the root with nobody to fix it'),
+       p('Một lỗi lặp lại trăm lần thành thói quen. Bạn đem thói quen sai đó dạy cho người khác, nó thành chấn thương của họ và vết xấu trên uy tín của bạn.', 'A mistake repeated a hundred times becomes a habit. You pass that habit on, it turns into other people\'s injuries and a mark on your name.'),
+       p('Xây lại nền tảng như một võ sĩ', 'Rebuild your foundations like a fighter'),
+       [p('Hiệp 1 (3 tháng đầu): tư thế, bộ pháp, 6 đòn cơ bản, thể lực nền', 'Round 1 (first 3 months): stance, footwork, the 6 basic punches, base conditioning'),
+        p('520 ca trong 12 tháng, 10 ca mỗi tuần từ Thứ 2 đến Thứ 6', '520 sessions over 12 months, 10 a week from Monday to Friday'),
+        p('Mỗi hiệp kết thúc bằng một lần sát hạch', 'Every round ends with an assessment')]],
+      [p('Chưa từng đứng lớp thật, lần đầu đứng lớp là lần đầu run', 'Never led a real class, so your first class is your first panic'),
+       p('Hai mươi người nhìn vào bạn. Bạn quên bài, mất nhịp, buổi tập rời rạc. Học viên nhận ra ngay, và chủ phòng tập cũng vậy.', 'Twenty people are watching. You forget the drill, lose the rhythm, the session falls apart. Members notice at once, and so does the gym owner.'),
+       p('Đứng lớp thật trước khi phải tự đứng lớp', 'Real classes before you lead your own'),
+       [p('Hiệp 3: trợ giảng, kèm HLV chính tại các lớp đang mở', 'Round 3: assist the head coach in live classes'),
+        p('Học quản lý lớp nhóm, giữ nhịp buổi tập, sơ cứu và phòng chấn thương', 'Learn to run a group, keep the session moving, first aid and injury prevention'),
+        p('Hiệp 4: đứng lớp nhóm và 1-1 có giám sát', 'Round 4: lead group and 1-on-1 sessions under supervision')]],
+      [p('Học xong không biết bắt đầu đi làm ở đâu', 'You finish and have no idea where to start working'),
+       p('Phòng tập cần người đã từng đứng lớp, không cần thêm một người "biết đánh". Không có chỗ bắt đầu, bạn quay về nghề cũ và boxing lại chỉ là sở thích.', 'Gyms want someone who has led classes, not another person who "can box". With nowhere to start, you go back to your old job and boxing becomes a hobby again.'),
+       p('100% cơ hội làm việc tại HVP Academy', 'A 100% job opportunity at HVP Academy'),
+       [p('Học xong có cơ hội làm việc tại HVP Academy', 'A place to work at HVP Academy when you finish'),
+        p('Hoặc tự do chọn phòng tập khác, mang theo 12 kỹ năng đã mở khóa', 'Or any other gym you choose, with 12 unlocked skills to show'),
+        p('Học cách tư vấn và giữ chân học viên, để làm nghề lâu dài', 'Learn to advise and keep members, so the job lasts')]],
+      [p('Không có gì chứng minh tay nghề khi đi xin việc', 'Nothing to prove your skill when you apply for a job'),
+       p('Ai cũng nói mình biết dạy. Không có mốc đánh giá nào, hồ sơ của bạn giống hệt hàng chục hồ sơ khác, và mức lương cũng vậy.', 'Everyone says they can teach. Without any assessment, your application looks like dozens of others, and so does your pay.'),
+       p('4 lần sát hạch, 4 danh hiệu, 12 kỹ năng', '4 assessments, 4 titles, 12 skills'),
+       [p('Qua mỗi hiệp, nhận một danh hiệu: Học viên nền tảng, Trợ lý cầm đích, Trợ giảng, Coach đứng lớp', 'Each round earns a title: Foundation student, Pad assistant, Assistant coach, Class coach'),
+        p('Sát hạch cuối khóa trước khi chính thức đứng lớp', 'A final assessment before you lead classes for real'),
+        p('12 kỹ năng mở khóa, kể ra được từng cái khi phỏng vấn', '12 unlocked skills you can name one by one in an interview')]],
     ],
     fighter: [
-      [p('Tập mãi mà không có trận để đấu', 'Training for years with no fights to take'), p('100% thi đấu dưới màu cờ The Corner.', '100% fighting in The Corner colours.')],
-      [p('Một mình, không có đội đi cùng khi lên sàn', 'On your own, with no team behind you in the ring'), p('Ở lại tập với đội The Corner, có fight camp trước trận.', 'Stay on with The Corner team, with a fight camp before each bout.')],
-      [p('Không biết mình đang ở trình độ nào', 'No idea what level you are really at'), p('Sparring có chấm điểm, chấm kỹ năng trên Dapper Combat Academy Ranking.', 'Scored sparring and skill scores on the Dapper Combat Academy Ranking.')],
-      [p('Tự mày mò xuống cân, ăn uống, giữ tâm lý trước trận', 'Working out weight cuts, diet and nerves on your own'), p('Học giữ cân, dinh dưỡng thi đấu và tâm lý trước trận.', 'Learn weight management, fight nutrition and pre-fight mindset.')],
-      [p('Sợ bỏ tiền ra mà không được lên sàn', 'Afraid to pay and never get into the ring'), p('Đạt chuẩn mà không được thi đấu: hoàn 100% học phí.', 'Meet the standard but get no fight: 100% fee refund.')],
+      [p('Tập mãi mà chưa một lần lên sàn thật', 'Training for years and never once in a real ring'),
+       p('Ngày nào cũng đấm bao, chạy bộ, sparring vài hiệp cho vui. Năm này qua năm khác, chiếc găng vẫn chưa một lần chạm đối thủ thật dưới ánh đèn.', 'Every day: the bag, the run, a few rounds of sparring for fun. Year after year, your gloves have never touched a real opponent under the lights.'),
+       p('100% thi đấu dưới màu cờ The Corner', '100% fighting in The Corner colours'),
+       [p('Hiệp 3: fight night nội bộ của Academy', 'Round 3: Academy fight nights'),
+        p('Hiệp 4: fight camp và trận ra mắt', 'Round 4: fight camp and your debut bout'),
+        p('Học xong ở lại tập và được dẫn đi thi đấu', 'When you finish you stay on to train and are taken to compete')]],
+      [p('Lên sàn một mình, không đội, không ai đứng góc', 'In the ring alone, no team, nobody in your corner'),
+       p('Không ai lo cân, lo găng, lo chiến thuật giữa hiệp. Bạn vừa đánh vừa tự xoay xở mọi thứ, và thua từ trước khi chuông vang.', 'Nobody handles weight, gloves or tactics between rounds. You fight and sort out everything else yourself, and lose before the first bell.'),
+       p('Có cả đội The Corner đứng sau', 'The Corner team behind you'),
+       [p('Ở lại tập với đội The Corner sau khóa học', 'Stay on and train with The Corner team after the course'),
+        p('Fight camp trước trận, có kế hoạch trận đấu rõ ràng', 'A fight camp before each bout, with a clear game plan'),
+        p('Xem băng hình đối thủ, điều chỉnh giữa các hiệp', 'Study opponent video, adjust between rounds')]],
+      [p('Không biết mình đang ở trình độ nào', 'No idea what level you are really at'),
+       p('Không ai chấm điểm, bạn đoán mò. Nhận trận quá sức thì chấn thương, nhận trận quá dễ thì phí cả năm tập.', 'Nobody scores you, so you guess. Take a fight that is too hard and you get hurt, too easy and you waste a year.'),
+       p('Đo trình độ bằng điểm số, không bằng cảm giác', 'Measure your level in scores, not feelings'),
+       [p('Chấm kỹ năng trên Dapper Combat Academy Ranking ngay từ hiệp 1', 'Skill scores on the Dapper Combat Academy Ranking from round 1'),
+        p('Sparring có chấm điểm từ hiệp 2', 'Scored sparring from round 2'),
+        p('Thứ hạng lên xuống theo từng trận, biết rõ mình đứng ở đâu', 'Your rank moves with every bout, so you know where you stand')]],
+      [p('Tự mày mò xuống cân, ăn uống, giữ tâm lý trước trận', 'Working out weight cuts, diet and nerves on your own'),
+       p('Xuống cân sai cách là bước vào trận với cơ thể kiệt sức. Run trước đám đông là quên sạch mọi thứ đã tập suốt nhiều tháng.', 'Cut weight the wrong way and you walk in already drained. Freeze in front of a crowd and months of training disappear.'),
+       p('Học cả phần nằm ngoài sàn đấu', 'Learn everything that happens outside the ring'),
+       [p('Giữ cân an toàn, dinh dưỡng trước và sau trận', 'Safe weight management, eating before and after a fight'),
+        p('Tâm lý trước trận, giữ bình tĩnh trước đám đông và sau thất bại', 'Pre-fight mindset, staying calm in front of a crowd and after a loss'),
+        p('Thể lực sức bền, sức mạnh, tốc độ cho trận nhiều hiệp', 'Endurance, strength and speed for multi-round bouts')]],
+      [p('Tuổi thi đấu trôi qua mà vẫn chưa bắt đầu', 'Your fighting years slipping by before you even start'),
+       p('Võ sĩ có tuổi nghề. Mỗi năm chần chừ là bớt đi một năm có thể thi đấu, và cánh cửa đó không mở lại.', 'Fighters have a shelf life. Every year you wait is one less year you can fight, and that door does not reopen.'),
+       p('Từ con số 0 tới trận ra mắt trong 12 tháng', 'From zero to your debut in 12 months'),
+       [p('Không cần kinh nghiệm: hiệp 1 xây nền tảng và thể lực', 'No experience needed: round 1 builds foundations and fitness'),
+        p('4 hiệp, 520 ca, 10 ca mỗi tuần, không ngắt quãng', '4 rounds, 520 sessions, 10 a week without a break'),
+        p('Hết hiệp 4: trận ra mắt dưới màu cờ The Corner', 'End of round 4: your debut in The Corner colours')]],
     ],
   };
-  // trắc nghiệm: mỗi câu 2 lựa chọn, [Coach, Võ sĩ]
+  // trắc nghiệm tự đánh giá: 4 phần × 3 câu; mỗi lựa chọn [chữ, điểm Coach, điểm Võ sĩ] (mỗi câu tối đa 2 điểm cho mỗi góc),
+  // d = nhận xét phần đó theo góc nghiêng (coach / fighter / both)
   var QUIZ = [
-    [p('Sau 1 năm, bạn muốn mình đang ở đâu?', 'A year from now, where do you want to be?'), p('Đứng lớp, dạy người khác đấm đúng', 'In front of a class, teaching people to punch right'), p('Đứng trên sàn, chờ tiếng chuông', 'In the ring, waiting for the bell')],
-    [p('Trong phòng tập, bạn thích vai nào hơn?', 'In the gym, which role do you prefer?'), p('Người cầm đích, hô combo', 'The one holding pads and calling combos'), p('Người đánh vào đích', 'The one hitting the pads')],
-    [p('Điều gì làm bạn thấy đáng nhất?', 'What feels most worth it to you?'), p('Thấy học viên tiến bộ nhờ mình', 'Seeing a student improve because of you'), p('Thắng một đối thủ mạnh hơn mình', 'Beating an opponent stronger than you')],
-    [p('Áp lực nào bạn sẵn sàng đối mặt?', 'Which pressure are you ready for?'), p('Một lớp 20 người chờ bạn ra bài', 'A class of 20 waiting for your next drill'), p('Một đối thủ chờ bạn ở góc bên kia', 'An opponent waiting in the other corner')],
+    { h: p('Tính cách', 'Personality'),
+      d: { coach: p('Kiên nhẫn, thích giải thích và kéo người khác đi cùng: tố chất của người đứng lớp.', 'Patient, keen to explain and to bring people along: the makings of a coach.'),
+           fighter: p('Thích thử thách, muốn tự mình chứng minh và không chịu thua.', 'You love a challenge, want to prove it yourself and hate to lose.'),
+           both: p('Vừa biết lùi lại để dẫn dắt người khác, vừa có máu hơn thua.', 'You can step back to lead others, and you still hate to lose.') },
+      q: [
+        [p('Trong một nhóm, bạn thường là người…', 'In a group, you are usually the one who…'), [
+          [p('Giải thích lại khi có ai đó chưa hiểu', 'Explains it again when someone is lost'), 2, 0],
+          [p('Nhận phần việc khó nhất về mình', 'Takes on the hardest part'), 0, 2],
+          [p('Kéo mọi người đi cùng, không để ai bị bỏ lại', 'Brings everyone along, nobody left behind'), 1, 0],
+          [p('Lặng lẽ làm phần của mình thật tốt', 'Quietly does their own part really well'), 0, 1]]],
+        [p('Có người thách thức bạn. Bạn…', 'Someone challenges you. You…'), [
+          [p('Muốn chứng minh ngay, càng khó càng hăng', 'Want to prove yourself now, the harder the better'), 0, 2],
+          [p('Bình tĩnh xem người đó giỏi ở đâu để học lại', 'Stay calm and see what they do well, to learn from it'), 1, 0],
+          [p('Về tập kỹ hơn, nhưng nhất định không chịu thua', 'Go and train harder, but you will not lose'), 0, 1],
+          [p('Không cần hơn thua, bạn đi đường của mình', 'No need to win, you walk your own road'), 2, 0]]],
+        [p('Một người làm sai cùng một việc lần thứ năm. Bạn…', 'Someone gets the same thing wrong for the fifth time. You…'), [
+          [p('Thử một cách giải thích khác', 'Try a different way of explaining it'), 2, 0],
+          [p('Mặc họ, bạn tập trung vào việc của mình', 'Leave them to it and focus on your own work'), 0, 2],
+          [p('Làm mẫu lại thật chậm cho họ xem', 'Show it again, slowly'), 1, 0],
+          [p('Bắt đầu sốt ruột, muốn tự làm cho nhanh', 'Get impatient and want to just do it yourself'), 0, 1]]]] },
+    { h: p('Năng lượng', 'Energy'),
+      d: { coach: p('Bạn nạp năng lượng từ con người: đông người, nhịp đều, có người đang nghe mình.', 'People recharge you: a crowd, a steady rhythm, someone listening.'),
+           fighter: p('Bạn nạp năng lượng từ cường độ: tập nặng, dồn hết sức cho một mục tiêu.', 'Intensity recharges you: hard training, everything into one goal.'),
+           both: p('Năng lượng của bạn đến từ cả con người lẫn cường độ.', 'You draw energy from both people and intensity.') },
+      q: [
+        [p('Sau một ngày dài, điều gì nạp lại năng lượng cho bạn?', 'After a long day, what recharges you?'), [
+          [p('Một buổi tập thật nặng, ra hết mồ hôi', 'A really hard session, sweating it all out'), 0, 2],
+          [p('Nói chuyện, gặp gỡ mọi người', 'Talking and being around people'), 2, 0],
+          [p('Ở một mình, yên tĩnh', 'Time alone, in quiet'), 0, 1],
+          [p('Giúp được ai đó một việc', 'Helping someone out'), 1, 0]]],
+        [p('Bạn hợp với nhịp sống nào hơn?', 'Which rhythm suits you better?'), [
+          [p('Đều đặn mỗi ngày, gặp nhiều người, nhiều lớp', 'Steady every day, lots of people, lots of classes'), 2, 0],
+          [p('Dồn hết sức cho một mục tiêu lớn, rồi mới nghỉ', 'Everything into one big goal, then rest'), 0, 2],
+          [p('Mỗi ngày một việc khác, không lặp lại', 'Something different every day'), 1, 1]]],
+        [p('Lúc nào bạn thấy mình "cháy" nhất?', 'When do you feel most on fire?'), [
+          [p('Khi cơ thể mệt rã rời mà vẫn phải đánh tiếp', 'When your body is spent and you keep fighting'), 0, 2],
+          [p('Khi đứng trước đám đông và mọi người đang nghe mình', 'In front of a crowd that is listening to you'), 2, 0],
+          [p('Khi vượt qua con số tốt nhất của chính mình', 'When you beat your own best'), 0, 1],
+          [p('Khi thấy ai đó làm được điều họ tưởng không làm được', 'When someone does what they thought they could not'), 1, 0]]]] },
+    { h: p('Sở thích', 'Interests'),
+      d: { coach: p('Bạn để ý cách dạy, cách sửa đòn, cách người đứng góc làm việc.', 'You notice how things are taught, how punches are fixed, how the corner works.'),
+           fighter: p('Bạn bị cuốn vào trận đấu, sparring và cảm giác được đứng trên sàn.', 'You are drawn to fights, sparring and the feeling of the ring.'),
+           both: p('Bạn mê cả những gì xảy ra trên sàn lẫn chuyện phía sau góc đài.', 'You love both what happens in the ring and what goes on in the corner.') },
+      q: [
+        [p('Xem một trận boxing, bạn để ý điều gì nhất?', 'Watching a fight, what do you notice most?'), [
+          [p('Người đứng góc nói gì giữa hiệp', 'What the corner says between rounds'), 2, 0],
+          [p('Không khí, tiếng hò reo, cảm giác muốn được lên đó', 'The crowd, the noise, wanting to be up there'), 0, 2],
+          [p('Vì sao đòn này trúng, đòn kia trượt', 'Why one punch lands and another misses'), 1, 1],
+          [p('Ai thắng, và thắng bằng cách nào', 'Who wins, and how'), 0, 1]]],
+        [p('Phần nào của buổi tập bạn thích nhất?', 'Which part of training do you enjoy most?'), [
+          [p('Sparring', 'Sparring'), 0, 2],
+          [p('Cầm đích cho người khác đánh', 'Holding pads for someone else'), 2, 0],
+          [p('Đánh bao tới khi mỏi tay', 'Hitting the bag until your arms give out'), 0, 1],
+          [p('Chỉ cho người mới vài đòn cơ bản', 'Showing a beginner the basics'), 1, 0]]],
+        [p('Rảnh rỗi, bạn hay xem gì về boxing?', 'In your free time, what boxing do you watch?'), [
+          [p('Video hướng dẫn, phân tích kỹ thuật', 'Tutorials and technique breakdowns'), 2, 0],
+          [p('Highlight, những pha knock-out', 'Highlights and knockouts'), 0, 2],
+          [p('Phỏng vấn, câu chuyện của võ sĩ và HLV', 'Interviews and stories of fighters and coaches'), 1, 1]]]] },
+    { h: p('Mục tiêu', 'Goals'),
+      d: { coach: p('Bạn muốn một nghề vững, đứng lớp và nhìn học viên lớn lên.', 'You want a solid trade, a class of your own and students who grow.'),
+           fighter: p('Bạn muốn lên sàn, gặp đối thủ thật dưới ánh đèn.', 'You want the ring and real opponents under the lights.'),
+           both: p('Bạn muốn cả hai: thi đấu khi còn trẻ, rồi đứng lớp lâu dài.', 'You want both: fight while you are young, then coach for years.') },
+      q: [
+        [p('Sau 1 năm, bạn muốn mình đang ở đâu?', 'A year from now, where do you want to be?'), [
+          [p('Đứng lớp, dạy người khác đấm đúng', 'In front of a class, teaching people to punch right'), 2, 0],
+          [p('Đứng trên sàn, chờ tiếng chuông', 'In the ring, waiting for the bell'), 0, 2]]],
+        [p('Điều gì làm bạn thấy đáng nhất?', 'What feels most worth it to you?'), [
+          [p('Thắng một đối thủ mạnh hơn mình', 'Beating an opponent stronger than you'), 0, 2],
+          [p('Thấy học viên tiến bộ nhờ mình', 'Seeing a student improve because of you'), 2, 0],
+          [p('Được người trong nghề công nhận', 'Being respected by people in the sport'), 1, 1]]],
+        [p('Bạn muốn boxing là gì trong đời mình?', 'What do you want boxing to be in your life?'), [
+          [p('Một nghề vững để sống lâu dài', 'A solid trade to live from for years'), 2, 0],
+          [p('Một giai đoạn cháy hết mình khi còn trẻ', 'A few years of giving everything while young'), 0, 2],
+          [p('Thi đấu trước, rồi đứng lớp sau', 'Fight first, coach later'), 1, 1]]]] }
   ];
+  var QN = QUIZ.reduce(function (s, g) { return s + g.q.length; }, 0);
   var path = location.hash === '#vo-si' || location.hash === '#fighter' ? 'fighter' : 'coach';
   var quiz = { i: 0, ans: [] };
 
@@ -374,20 +500,45 @@
       '</div></div></section>';
   }
   function quizHtml() {
-    if (quiz.i >= QUIZ.length) {
-      var c = quiz.ans.filter(function (a) { return a === 'coach'; }).length, f = quiz.ans.length - c;
-      var r = c > f ? 'coach' : f > c ? 'fighter' : 'tie';
-      var btns = (r === 'tie' ? ORDER : [r]).map(function (k) {
+    if (quiz.i >= QN) {
+      // cộng điểm từng phần → % Coach, góc nghiêng của từng phần
+      var C = 0, F = 0, n = 0;
+      var dims = QUIZ.map(function (g) {
+        var c = 0, f = 0;
+        g.q.forEach(function (x) { var a = x[1][quiz.ans[n++]] || [0, 0, 0]; c += a[1]; f += a[2]; });
+        C += c; F += f;
+        return [g, c > f ? 'coach' : f > c ? 'fighter' : 'both'];
+      });
+      var pc = C + F ? Math.round(C * 100 / (C + F)) : 50;
+      var r = Math.abs(pc - 50) <= 6 ? 'tie' : pc > 50 ? 'coach' : 'fighter', ks = r === 'tie' ? ORDER : [r];
+      var btns = ks.map(function (k) {
         return '<button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="dang-ky">' + esc(t('quiz.go', { n: L(P[k].name) })) + '</button>' +
           (r === 'tie' ? '' : '<button type="button" class="tn-btn ghost" data-path="' + k + '" data-go="lo-trinh">' + esc(t('quiz.see', { n: L(P[k].name) })) + '</button>');
       }).join('');
-      return '<div class="tn-q tn-q-res ' + r + '" role="status"><p class="tn-q-n">' + esc(t('quiz.res')) + '</p><h3>' + esc(t('quiz.r.' + r)) + '</h3><p class="tn-q-rs">' + esc(t('quiz.rs.' + r)) + '</p>' +
+      return '<div class="tn-q tn-q-res ' + r + '" role="status"><p class="tn-q-n">' + esc(t('quiz.res')) + '</p><h3>' + esc(t('quiz.r.' + r)) + '</h3>' +
+        '<div class="tn-q-mix"><p><span class="coach">' + esc(L(P.coach.name)) + ' <b>' + pc + '%</b></span><span class="fighter">' + esc(L(P.fighter.name)) + ' <b>' + (100 - pc) + '%</b></span></p>' +
+        '<div class="tn-q-bar" aria-hidden="true"><i style="width:' + pc + '%"></i></div></div>' +
+        '<p class="tn-q-rs">' + esc(t('quiz.rs.' + r)) + '</p>' +
+        '<dl class="tn-q-dims">' + dims.map(function (x) {
+          return '<div class="' + x[1] + '"><dt>' + esc(L(x[0].h)) + '<small>' + esc(t('quiz.lean.' + x[1])) + '</small></dt><dd>' + esc(L(x[0].d[x[1]])) + '</dd></div>';
+        }).join('') + '</dl>' +
+        '<p class="tn-q-age">' + ks.map(function (k) { return esc(t('quiz.age', { n: L(P[k].name), a: ageText(k) })); }).join(' ') + '</p>' +
         '<div class="tn-q-go">' + btns + '</div><button type="button" class="tn-q-back" data-quiz="again">' + esc(t('quiz.again')) + '</button></div>';
     }
-    var q = QUIZ[quiz.i];
-    return '<div class="tn-q"><ol class="tn-q-dots" aria-hidden="true">' + QUIZ.map(function (x, i) { return '<li class="' + (i < quiz.i ? 'done ' + quiz.ans[i] : i === quiz.i ? 'cur' : '') + '"></li>'; }).join('') + '</ol>' +
-      '<p class="tn-q-n">' + esc(t('quiz.n', { i: quiz.i + 1, n: QUIZ.length })) + '</p><h3>' + esc(L(q[0])) + '</h3>' +
-      '<div class="tn-q-a"><button type="button" class="coach" data-ans="coach">' + esc(L(q[1])) + '</button><button type="button" class="fighter" data-ans="fighter">' + esc(L(q[2])) + '</button></div>' +
+    // câu đang hỏi + thanh tiến độ theo 4 phần (mỗi câu 1 vạch)
+    var s = 0, g, x;
+    for (g = 0; g < QUIZ.length; g++) { if (quiz.i < s + QUIZ[g].q.length) break; s += QUIZ[g].q.length; }
+    x = QUIZ[g].q[quiz.i - s];
+    var m = 0, parts = '<ol class="tn-q-parts" aria-hidden="true">' + QUIZ.map(function (gg) {
+      var a = m; m += gg.q.length;
+      return '<li class="' + (quiz.i >= m ? 'done' : quiz.i >= a ? 'cur' : '') + '"><span>' + esc(L(gg.h)) + '</span><p>' + gg.q.map(function (y, j) {
+        return '<i class="' + (a + j < quiz.i ? 'done' : a + j === quiz.i ? 'cur' : '') + '"></i>';
+      }).join('') + '</p></li>';
+    }).join('') + '</ol>';
+    return '<div class="tn-q">' + parts + '<p class="tn-q-n">' + esc(t('quiz.n', { i: quiz.i + 1, n: QN })) + '</p><h3>' + esc(L(x[0])) + '</h3>' +
+      '<div class="tn-q-a">' + x[1].map(function (a, j) {
+        return '<button type="button" data-ans="' + j + '" data-lean="' + (a[1] > a[2] ? 'coach' : a[2] > a[1] ? 'fighter' : 'both') + '"' + (quiz.ans[quiz.i] === j ? ' class="on"' : '') + '>' + esc(L(a[0])) + '</button>';
+      }).join('') + '</div>' +
       (quiz.i ? '<button type="button" class="tn-q-back" data-quiz="back">' + esc(t('quiz.back')) + '</button>' : '') + '</div>';
   }
   function bar() {
@@ -408,7 +559,7 @@
   function week() {
     var x = P[path], head = '<div class="tn-wk-h"></div>' + [1, 2, 3, 4, 5].map(function (d) { return '<div class="tn-wk-h">' + esc(t('d' + d)) + '</div>'; }).join('');
     var shift = function (s) {
-      return '<div class="tn-wk-s"><b>' + esc(t('week.s' + s)) + '</b><small>' + esc(t('week.s' + s + 'd')) + '</small></div>' + x.week.map(function (day, i) {
+      return '<div class="tn-wk-s"><b>' + esc(t('week.s' + s)) + '</b><small>' + esc(t('week.s' + s + 'd')) + '</small><small class="tn-wk-len">' + esc(t('week.len')) + '</small></div>' + x.week.map(function (day, i) {
         var c = day[s - 1];
         return '<div class="tn-wk-c ' + c[1] + '"><small class="tn-wk-d">' + esc(t('d' + (i + 1))) + ', ' + esc(t('week.s' + s)) + '</small><b>' + esc(L(c[0])) + '</b><span>' + esc(t('tag.' + c[1])) + '</span></div>';
       }).join('');
@@ -430,8 +581,8 @@
         return '<button type="button" class="' + o + (o === k ? ' on' : '') + '" data-path="' + o + '" aria-pressed="' + (o === k) + '"><small>' + esc(L(P[o].corner) + ' · ' + ageText(o)) + '</small>' + esc(t('pain.who.' + o)) + '</button>';
       }).join('') + '</div>' +
       '<div class="tn-pain"><div class="tn-pain-hd" aria-hidden="true"><span>' + esc(t('pain.col.q')) + '</span><span></span><span>' + esc(t('pain.col.a')) + '</span></div>' + list.map(function (x, i) {
-        return '<div class="tn-pain-row' + (i === list.length - 1 ? ' last' : '') + '"><p class="tn-pain-q">' + esc(L(x[0])) + '</p><i aria-hidden="true"></i>' +
-          '<p class="tn-pain-a"><small>' + esc(t('pain.fix')) + '</small>' + esc(L(x[1])) + '</p></div>';
+        return '<div class="tn-pain-row"><div class="tn-pain-q"><h3>' + esc(L(x[0])) + '</h3><p><small>' + esc(t('pain.cost')) + '</small>' + esc(L(x[1])) + '</p></div><i aria-hidden="true"></i>' +
+          '<div class="tn-pain-a"><small>' + esc(t('pain.fix')) + '</small><h3>' + esc(L(x[2])) + '</h3><ul>' + x[3].map(function (b) { return '<li>' + esc(L(b)) + '</li>'; }).join('') + '</ul></div></div>';
       }).join('') + '</div>' +
       '<p class="tn-pain-go"><button type="button" class="tn-btn ' + k + '" data-path="' + k + '" data-go="lo-trinh">' + esc(t('quiz.see', { n: L(P[k].name) })) + '</button></p>';
   }
@@ -479,7 +630,7 @@
       '<div class="tn-plans">' + ORDER.map(plan).join('') + '</div>' +
       '<ul class="tn-plans-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '<li class="free">' + esc(t('pay.free')) + '</li></ul>';
   }
-  // giấy nhập môn: tên / năm sinh cập nhật khi gõ, đóng dấu đỏ khi ghi danh xong
+  // giấy nhập môn (kiểu tờ đăng ký boxing Mỹ thập niên 70–80): tên / năm sinh cập nhật khi gõ, đóng dấu đỏ ở cuống khi ghi danh xong
   function seal(done) {
     var ring = t('cert.ring', { y: YEAR });
     return '<svg class="tn-cert-seal" viewBox="0 0 160 160" aria-hidden="true"><defs><path id="tnSealP" d="M80 80 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs>' +
@@ -491,12 +642,12 @@
   function cert() {
     var x = P[path], d = done && done.path === path ? done : null, v = saved || {};
     return '<div class="tn-cert ' + path + (d ? ' stamped' + (stampNow ? ' stamp-now' : '') : '') + '" role="img" aria-label="' + esc(t('cert.label')) + '">' +
-      '<div class="tn-cert-top"><span>DAPPER COMBAT</span><span>' + esc(t('cert.no')) + ' <b data-cert-code>' + esc(d ? d.code : '—') + '</b></span></div>' +
-      '<p class="tn-cert-title">' + esc(t('cert.title')) + '</p><p class="tn-cert-sub">' + esc(t('cert.sub', { y: YEAR, d: startText() })) + '</p>' +
+      '<div class="tn-cert-top"><span>★ DAPPER COMBAT ★</span><span>' + esc(t('cert.no')) + ' <b data-cert-code>' + esc(d ? d.code : '—') + '</b></span></div>' +
+      '<div class="tn-cert-body"><p class="tn-cert-kick">' + esc(t('cert.kick', { y: YEAR })) + '</p><p class="tn-cert-title">' + esc(t('cert.title')) + '</p><p class="tn-cert-sub">' + esc(t('cert.sub', { d: startText() })) + '</p>' +
       '<p class="tn-cert-lbl">' + esc(t('cert.student')) + '</p><p class="tn-cert-name' + (d || v.name ? '' : ' ph') + '" data-cert-name>' + esc(d ? d.name : v.name || t('cert.ph')) + '</p>' +
       '<dl class="tn-cert-dl"><div><dt>' + esc(t('cert.path')) + '</dt><dd>' + esc(L(x.name) + ' · ' + L(x.corner)) + '</dd></div><div><dt>' + esc(t('cert.out')) + '</dt><dd>' + esc(L(x.out)) + '</dd></div>' +
         '<div><dt>' + esc(t('cert.time')) + '</dt><dd>' + esc(t('cert.time.v')) + '</dd></div><div><dt>' + esc(t('cert.born')) + '</dt><dd data-cert-year>' + esc((d ? d.year : v.year) || '—') + '</dd></div></dl>' +
-      '<p class="tn-cert-guar"><small>' + esc(t('cert.guar')) + '</small>' + esc(t('refund.short.' + path)) + '</p>' +
+      '<p class="tn-cert-guar"><small>' + esc(t('cert.guar')) + '</small>' + esc(t('refund.short.' + path)) + '</p></div>' +
       '<div class="tn-cert-foot"><p><small>' + esc(t('cert.date')) + '</small>' + esc(today()) + '</p>' + seal(!!d) + '</div></div>';
   }
   function form() {
@@ -544,9 +695,12 @@
     var visit = addr ? '<div class="tn-help-visit"><b>' + esc(t('help.visit')) + '</b><span>' + esc(addr) + '</span>' +
       (C.hoursOpen && C.hoursClose ? '<span>' + esc(t('help.hours', { o: C.hoursOpen, c: C.hoursClose })) + '</span>' : '') +
       (C.maps ? '<a href="' + esc(C.maps) + '" target="_blank" rel="noopener">' + esc(t('help.map')) + '</a>' : '') + '</div>' : '';
-    var help = '<aside class="tn-help"><div class="tn-help-img"><img src="' + esc(IMG.coach) + '" alt="" loading="lazy" decoding="async"></div><div class="tn-help-in"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t('help.p')) + '</p><div class="tn-help-b">' +
+    var tel = PHONE ? 'tel:' + PHONE.replace(/[^\d+]/g, '') : '';
+    var help = '<aside class="tn-help"><div class="tn-help-img"><img src="' + esc(IMG.coach) + '" alt="" loading="lazy" decoding="async"></div><div class="tn-help-in"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t(PHONE ? 'help.p' : 'help.p0')) + '</p>' +
+      (PHONE ? '<a class="tn-help-tel" href="' + esc(tel) + '"><small>' + esc(t('help.hot')) + '</small><b>' + esc(PHONE) + '</b></a>' : '') +
+      '<div class="tn-help-b' + (C.zalo && PHONE ? ' two' : '') + '">' +
       (C.zalo ? '<a class="tn-btn" href="' + esc(C.zalo) + '" target="_blank" rel="noopener">' + esc(t('help.zalo')) + '</a>' : '') +
-      (PHONE ? '<a class="tn-btn ghost" href="tel:' + esc(PHONE.replace(/[^\d+]/g, '')) + '">' + esc(t('help.call', { p: PHONE })) + '</a>' : '') + '</div>' + visit + '</div></aside>';
+      (PHONE ? '<a class="tn-btn ghost" href="' + esc(tel) + '">' + esc(t('help.call')) + '</a>' : '') + '</div>' + visit + '</div></aside>';
     return '<div class="tn-faq-wrap"><div class="tn-faq">' + qa + '</div>' + (C.zalo || PHONE || addr ? help : '') + '</div>';
   }
   // 2 tờ "giấy cam kết": số 100% thật lớn + dấu đỏ hoàn 100% học phí, bấm → giữ chỗ đúng khóa
@@ -646,7 +800,7 @@
   /* ─── Sự kiện ─────────────────────────────────────────────────────────── */
   root.addEventListener('click', function (e) {
     var a = e.target.closest('[data-ans]');
-    if (a) { quiz.ans[quiz.i] = a.getAttribute('data-ans'); quiz.i++; swapQuiz(); return; }
+    if (a) { quiz.ans[quiz.i] = +a.getAttribute('data-ans'); quiz.i++; swapQuiz(); return; }
     var q = e.target.closest('[data-quiz]');
     if (q) { if (q.getAttribute('data-quiz') === 'back') quiz.i = Math.max(0, quiz.i - 1); else quiz = { i: 0, ans: [] }; swapQuiz(); return; }
     var b = e.target.closest('[data-path]');
