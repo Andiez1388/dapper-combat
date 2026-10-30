@@ -142,19 +142,19 @@ module.exports = async function apiTests(env, t) {
     env.reg = r.j;
     const regs = (await req('/api/registrations', { tok: T })).j;
     t.ok(regs[0].total > 0 && regs[0].due === regs[0].total, 'server tự tính học phí + số cần trả', regs[0]);
-    // Truyền Nghề: Coach và Võ sĩ cùng học phí (thiết lập course.careerPrice), chưa thu tiền khi đăng ký
+    // Truyền Nghề: học phí theo khóa (course.careerPriceCoach / careerPriceFighter), chưa thu tiền khi đăng ký
     for (const [program, name] of [['coach', 'Học Viên Coach'], ['fighter', 'Học Viên Võ Sĩ']]) {
       r = await req('/api/registrations', { method: 'POST', body: { name, phone: '0907654321', program, programName: 'Truyền Nghề · ' + program, detail: 'Khai giảng 20.02.2027', lang: 'vi' } });
       t.ok(r.s === 201 && /^#DC-REG-/.test(r.j.code), 'đăng ký Truyền Nghề · ' + program, r.j);
     }
     const tn = (await req('/api/registrations', { tok: T })).j.filter(x => x.program === 'coach' || x.program === 'fighter');
-    t.ok(tn.length === 2 && tn.every(x => x.total === 50000000 && x.due === 0), 'Truyền Nghề: học phí 50.000.000đ cho cả 2 khóa, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
+    t.ok(tn.length === 2 && tn.every(x => x.total === (x.program === 'coach' ? 65000000 : 45000000) && x.due === 0), 'Truyền Nghề: học phí Coach 65.000.000đ, Võ sĩ 45.000.000đ, chưa thu khi đăng ký', tn.map(x => [x.program, x.total, x.due]));
     // chọn đặt cọc / đóng đủ: số cần trả theo tiền cọc trong Thiết lập (0 = không nhận cọc)
     const dueOf = async (pay, program = 'coach') => {
       const x = await req('/api/registrations', { method: 'POST', body: { name: 'Học Viên Cọc', phone: '0907654322', program, pay, lang: 'vi' } });
       return (await req('/api/registrations', { tok: T })).j.find(e => e.code === x.j.code).due;
     };
-    t.ok(await dueOf('deposit') === 2000000 && await dueOf('full') === 50000000, 'Truyền Nghề: tiền cọc mặc định 2.000.000đ; đóng đủ = cả học phí');
+    t.ok(await dueOf('deposit') === 2000000 && await dueOf('full') === 65000000 && await dueOf('full', 'fighter') === 45000000, 'Truyền Nghề: tiền cọc mặc định 2.000.000đ; đóng đủ = cả học phí của khóa');
     await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 0 } } });
     t.ok(await dueOf('deposit') === 0, 'Truyền Nghề: tiền cọc 0 (không nhận cọc) → chọn cọc vẫn chưa thu');
     await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerDeposit: 5000000, careerSeats: 2000 } } });
@@ -185,10 +185,10 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.s === 200 && r.j.course.foundStart === '2030-05-06' && r.j.shop.lowStock === 25 && r.j.shop.eta.stdMax === 3, 'lưu ngày khai giảng, ngưỡng sắp hết, thời gian giao', r.j && r.j.shop);
     r = await req('/khoa-hoc');
     t.ok(r.t.includes('06.05.2030'), 'ngày khai giảng mới hiện trên trang Khóa học');
-    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPrice: 45000000, careerStart: '2027-13-40' } } });
-    t.ok(r.s === 200 && r.j.course.careerPrice === 45000000 && r.j.course.careerStart === '2027-02-20', 'Truyền Nghề: lưu học phí, bỏ qua ngày khai giảng sai', r.j && r.j.course);
-    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPrice: 50000000, careerStart: '2027-02-20' } } });
-    t.ok(r.s === 200 && r.j.course.careerPrice === 50000000, 'Truyền Nghề: trả lại học phí mặc định');
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 40000000, careerStart: '2027-13-40' } } });
+    t.ok(r.s === 200 && r.j.course.careerPriceFighter === 40000000 && r.j.course.careerStart === '2027-02-20', 'Truyền Nghề: lưu học phí, bỏ qua ngày khai giảng sai', r.j && r.j.course);
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 45000000, careerStart: '2027-02-20' } } });
+    t.ok(r.s === 200 && r.j.course.careerPriceFighter === 45000000, 'Truyền Nghề: trả lại học phí mặc định');
     r = await req('/truyen-nghe');
     t.ok(r.s === 200 && /Truyền Nghề/.test(r.t) && /HVP Academy/.test(r.t) && /The Corner/.test(r.t), 'trang /truyen-nghe mở được');
     r = await req('/dao-tao');

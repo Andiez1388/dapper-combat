@@ -191,7 +191,7 @@ Lưu ở `data/settings.json`.
   - **Trang thanh toán:** bật / tắt từng cách thanh toán (chuyển khoản, MoMo, ZaloPay, thẻ, trả góp — luôn còn ít nhất một cách quét mã); ô email, phường / xã, ghi chú: không bắt buộc / bắt buộc / ẩn. Server kiểm tra lại khi nhận đơn.
   - **Trang chi tiết sản phẩm:** ẩn / hiện từng phần (video, cam kết, logo thanh toán, gợi ý size, tồn kho, ngày giao, điểm nổi bật, "hoàn thiện bộ trang phục", hỏi đáp, bài viết, đánh giá, "khách hàng cũng mua", "đã xem gần đây", đăng ký nhận tin). Phần **đánh giá** đang tắt sẵn vì 12 đánh giá trong mục Chữ trên trang chỉ là mẫu — bật lại khi đã thay bằng đánh giá thật. Sao và số đánh giá dưới tên sản phẩm chỉ hiện khi sản phẩm có số đánh giá (mục Sản phẩm).
 - **Học phí & lịch tập:**
-  - **Truyền Nghề:** học phí mỗi khóa 1 năm (Coach và Võ sĩ cùng giá, mặc định 50.000.000₫) và ngày khai giảng (mặc định 20/02/2027) — hiện ở trang /truyen-nghe kèm đếm ngược.
+  - **Truyền Nghề:** học phí mỗi khóa 1 năm (mặc định Coach 65.000.000₫, Võ sĩ 45.000.000₫) và ngày khai giảng (mặc định 20/02/2027) — hiện ở trang /truyen-nghe kèm đếm ngược.
   - Học phí Foundation, tiền cọc và **ngày khai giảng** (biến `{found.start}` trên Trang chủ / Khóa học; ngày đã qua thì Tổng quan nhắc cập nhật), lớp HSSV, Membership.
   - **Gói Group Training:** thêm / bớt / sắp xếp gói (số tháng, giá, ghi chú, tên riêng, nhãn "Hời nhất"). Giá mỗi tháng và tiền tiết kiệm tự tính; thẻ giá trên trang, nút chọn gói trong form đăng ký và số tiền server lưu đều theo đây.
   - Giá hiển thị trên trang, form đăng ký, mã QR và số tiền server lưu đều lấy theo mục này.
@@ -261,19 +261,20 @@ Chương trình đặc biệt: học boxing từ con số 0 để thành nghề 
 - Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần (Thứ 2–Thứ 6), 2 ca mỗi ngày; khác nội dung giảng dạy và mục tiêu.
 - Trang viết theo đường đi của người mua:
   1. Đầu trang: 2 ảnh tập luyện ghép chéo (rê chuột vào góc nào góc đó nở ra), đồng hồ đếm ngược tới 0 giờ ngày khai giảng (giờ Việt Nam), học phí + giá mỗi ca.
-  2. "Cam kết 100%, hoặc hoàn 100% học phí": 2 tờ giấy cam kết (số 100% lớn, dấu đỏ hoàn học phí, nút giữ chỗ đúng khóa). Cam kết còn nhắc lại ở đầu trang, lộ trình, học phí, form ghi danh, giấy nhập môn và hỏi đáp.
-  3. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
-  4. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, so sánh 2 khóa (điểm giống nhau gom 1 dòng mờ, điểm khác nhau thành 2 cột xanh / đỏ).
-  5. "Bạn nhận về một nghề": bên trái những gì học viên nhận về, số to (520 ca, 4 hiệp, 6 kỹ năng, 1 nghề / 1 đội, 100% đầu ra, 100% hoàn học phí); bên phải học phí 50 triệu chữ nhỏ (≈ 96.000đ mỗi ca), nổi nhất là "Giữ chỗ hôm nay chỉ 2.000.000đ" + nút đặt cọc (chọn sẵn đặt cọc trong form). Dải đầu trang và thanh dính đáy điện thoại cũng mời "giữ chỗ chỉ 2 triệu" khi đang nhận cọc.
-  6. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
-  7. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
+  2. "Muốn sống bằng boxing, vướng ở đâu?": 2 cột × 5 nỗi lo thường gặp khi tự đi con đường coach / võ sĩ, mỗi nỗi lo kèm cách Truyền Nghề giải quyết.
+  3. "Bạn đạt chuẩn, chúng tôi giữ lời": 2 tờ giấy cam kết (số 100% lớn, dấu đỏ hoàn học phí, nút giữ chỗ đúng khóa). Cam kết còn nhắc lại ở đầu trang, lộ trình, học phí, form ghi danh, giấy nhập môn và hỏi đáp.
+  4. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
+  5. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, 2 bộ kỹ năng cạnh nhau (Coach / Võ sĩ), so sánh 2 khóa (điểm giống nhau gom 1 dòng mờ, điểm khác nhau thành 2 cột xanh / đỏ).
+  6. "Bạn nhận về một nghề": bên trái những gì học viên nhận về, số to (520 ca, 4 hiệp, 6 kỹ năng, 1 nghề / 1 đội, 100% đầu ra, 100% hoàn học phí); bên phải học phí của khóa đang xem chữ nhỏ (≈ giá mỗi ca, kèm giá khóa kia), nổi nhất là "Giữ chỗ hôm nay chỉ 2.000.000đ" + nút đặt cọc (chọn sẵn đặt cọc trong form). Dải đầu trang và thanh dính đáy điện thoại cũng mời "giữ chỗ chỉ 2 triệu" khi đang nhận cọc.
+  7. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
+  8. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
 - Bấm góc đài / thanh "Con đường" để đổi khóa; mở thẳng một khóa: `/truyen-nghe#coach`, `/truyen-nghe#vo-si`. Đường dẫn tắt `/dao-tao`, `/day-nghe`, `/pro`.
 - **Ghi danh** lưu vào /admin → Đăng ký khóa học (chương trình `coach` / `fighter`, tên "Truyền Nghề · Coach" / "Truyền Nghề · Võ sĩ", kèm năm sinh + kinh nghiệm). Học phí server tự ghi theo Thiết lập. Khách chọn:
   - **Tư vấn trước** (luôn có): chưa thu tiền (số cần trả = 0).
   - **Đặt cọc giữ chỗ**: chỉ hiện khi đã nhập tiền cọc **và** có cách nhận tiền (tài khoản ngân hàng ở /admin → Thanh toán, hoặc VNPay). Số cần trả = tiền cọc.
   - **Đóng đủ**: hiện khi có cách nhận tiền. Số cần trả = cả học phí (có nút trả góp nếu đang bật trả góp VNPay).
   - Chọn cọc / đóng đủ → màn hình xong hiện mã VietQR đúng số tiền + nội dung chuyển khoản, nút thẻ / trả góp, tự báo "Đã nhận tiền" khi SePay xác nhận; có phiếu xác nhận để tải.
-- Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí, ngày khai giảng, **tiền cọc giữ chỗ** (mặc định 2.000.000₫; 0 = không nhận cọc), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
+- Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí khóa Coach và khóa Võ sĩ (2 mức riêng), ngày khai giảng, **tiền cọc giữ chỗ** (mặc định 2.000.000₫; 0 = không nhận cọc), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
 - Ảnh đầu trang dùng ảnh có sẵn của web (HLV cầm đích: `bc3dad0ad714.jpg`, võ sĩ ra sàn: `bd656e3427a9.jpg`); chưa đổi được trong /admin. Nội dung lộ trình, lịch tuần, kỹ năng, trắc nghiệm, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
 
 ## Email xác nhận tiếng Anh

@@ -701,7 +701,7 @@ router.post('/registrations', limit('reg', 10), (req, res) => {
   if (!reg.program) return bad('Chưa chọn chương trình', 'Please choose a program');
   const fee = settings.all().course;
   const gt = (fee.gtPackages || []).find(k => String(k.months) === reg.pkg);   // gói Group Training theo số tháng
-  const totals = { found: fee.foundPrice, gt: gt ? gt.price : 0, hssv: fee.hssvMonth * fee.hssvMonths, mem: fee.memMonth, pt: 0, trial: 0, coach: fee.careerPrice, fighter: fee.careerPrice };
+  const totals = { found: fee.foundPrice, gt: gt ? gt.price : 0, hssv: fee.hssvMonth * fee.hssvMonths, mem: fee.memMonth, pt: 0, trial: 0, coach: fee.careerPriceCoach, fighter: fee.careerPriceFighter };
   if (totals[reg.program] !== undefined) {
     reg.total = totals[reg.program];
     const career = reg.program === 'coach' || reg.program === 'fighter';

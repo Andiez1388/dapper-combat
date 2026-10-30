@@ -252,10 +252,10 @@ module.exports = async function browserTests(env, t, browser) {
     await page.goto(B + '/truyen-nghe', { wait: 1200 });
     const look = () => page.eval(`({ path: document.body.dataset.path, h1: document.querySelector('.tn-hero h1').textContent, round1: document.querySelector('.tn-road h3').textContent, cells: document.querySelectorAll('.tn-wk-c').length,
       cell1: document.querySelector('.tn-wk-c b').textContent, out: document.querySelector('.tn-bell b').textContent, fee: document.querySelector('.tn-fee-v').textContent, start: document.querySelector('.tn-start b').textContent,
-      skills: document.querySelectorAll('.tn-skills li').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
+      skills: document.querySelectorAll('.tn-skills li').length, pains: document.querySelectorAll('.tn-pain li').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
     let st = await look();
-    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '50.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
-    t.ok(st.cells === 10 && st.skills === 6 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 6 kỹ năng, menu có "Cửa hàng" + "Truyền Nghề"', st);
+    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '65.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
+    t.ok(st.cells === 10 && st.skills === 12 && st.pains === 10 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 2 bộ × 6 kỹ năng, 2 × 5 nỗi lo, menu có "Cửa hàng" + "Truyền Nghề"', st);
     const coachCell = st.cell1;
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
     st = await look();
@@ -277,7 +277,7 @@ module.exports = async function browserTests(env, t, browser) {
     t.ok(ok && /DC-REG-/.test(await page.eval(`document.querySelector('.tn-ok').textContent`)), 'gửi đăng ký → hiện mã đăng ký');
     const regs = await api('/api/registrations');
     const r0 = regs[0];
-    t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 50000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 50 triệu, chưa thu tiền', r0);
+    t.ok(regs.length === before + 1 && r0.name === 'Võ Sĩ Trình Duyệt' && r0.program === 'fighter' && r0.programName === 'Truyền Nghề · Võ sĩ' && r0.total === 45000000 && r0.due === 0 && /sinh năm 2003/.test(r0.detail) && r0.lang === 'en', 'đăng ký lưu trên server: khóa Võ sĩ, học phí 45 triệu, chưa thu tiền', r0);
     st = await page.eval(`({ stamped: !!document.querySelector('.tn-cert.stamped'), code: document.querySelector('[data-cert-code]').textContent, name: document.querySelector('[data-cert-name]').textContent, pay: !!document.querySelector('.tn-paybox') })`);
     t.ok(st.stamped && st.code === r0.code && st.name === 'Võ Sĩ Trình Duyệt' && !st.pay, 'giấy nhập môn đóng dấu "đã ghi danh", ghi mã đăng ký; tư vấn trước → không hiện mã QR', st);
     await page.eval(`localStorage.setItem('dc_lang','vi'); 1`);
@@ -299,7 +299,7 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ opts: [...document.querySelectorAll('.tn-form [name=pay]')].map(x => x.value), seats: (document.querySelector('.tn-seats') || {}).textContent,
       strip: document.querySelector('.tn-strip-price b').textContent, dep: (document.querySelector('.tn-worth-dep b') || {}).textContent, fee: document.querySelector('.tn-worth-pay .tn-fee-v').textContent,
       rows: [...document.querySelectorAll('.tn-worth-get li > b')].map(b => b.textContent).join(' '), dock: document.querySelector('.tn-dock b').textContent })`);
-    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên' && st.strip === '5.000.000đ' && st.dep === '5.000.000đ' && st.fee === '50.000.000đ' && st.rows === '520 4 6 1 100% 100%' && st.dock === 'Giữ chỗ chỉ 5 triệu',
+    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên' && st.strip === '5.000.000đ' && st.dep === '5.000.000đ' && st.fee === '45.000.000đ' && st.rows === '520 4 6 1 100% 100%' && st.dock === 'Giữ chỗ chỉ 5 triệu',
       'có tài khoản nhận tiền + tiền cọc → mời "giữ chỗ chỉ 5 triệu", khu học phí liệt kê thứ nhận về, form có Tư vấn / Đặt cọc / Đóng đủ', st);
     await page.eval(`document.querySelector('.tn-strip-cta [data-pick-pay]').click(); 1`);
     st = await page.eval(`({ pay: (document.querySelector('.tn-form [name=pay]:checked') || {}).value, send: document.querySelector('.tn-form [data-send]').textContent })`);

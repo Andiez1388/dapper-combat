@@ -241,6 +241,35 @@
 .tn-wk-c.spar{--t:var(--red-hi);}
 .tn-wk-c.tactic{--t:#b39cf2;}
 
+/* nỗi lo → Truyền Nghề giải quyết: 2 cột, nỗi lo xám có dấu ✕, cách giải quyết sáng có dấu ✓ */
+.tn-sec-pain{background:var(--bg-2);border-bottom:1px solid var(--line-2);}
+.tn-pain{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.tn-pain-col{--c:var(--blue);--c-hi:var(--blue-hi);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c);}
+.tn-pain-col.fighter{--c:var(--red);--c-hi:var(--red-hi);}
+.tn-pain-h{margin:0;padding:22px 26px 6px;font:800 clamp(26px,2.6vw,32px)/1.15 var(--serif);}
+.tn-pain-h small{display:block;margin-bottom:4px;color:var(--c-hi);font:600 16px/1 var(--cond);}
+.tn-pain-col ul{margin:0;padding:0 26px;list-style:none;}
+.tn-pain-col li{padding:16px 0;border-top:1px solid var(--line-2);}
+.tn-pain-col li:first-child{border-top:0;}
+.tn-pain-q{position:relative;margin:0;padding-left:34px;color:#a7adb5;font:600 clamp(17px,1.6vw,19px)/1.35 var(--serif);}
+.tn-pain-q::before{content:"";position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,106,95,0.55);
+  background:linear-gradient(45deg,transparent 45%,var(--red-hi) 45% 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,var(--red-hi) 45% 55%,transparent 55%);background-size:12px 12px;background-position:center;background-repeat:no-repeat;}
+.tn-pain-a{position:relative;margin:8px 0 0;padding-left:34px;color:var(--ink);font-size:15.5px;line-height:1.5;}
+.tn-pain-a::before{content:"";position:absolute;left:5px;top:0.35em;width:11px;height:6px;border-left:2.5px solid var(--c-hi);border-bottom:2.5px solid var(--c-hi);transform:rotate(-45deg);}
+.tn-pain-a small{margin-right:8px;color:var(--c-hi);font:700 14px/1 var(--cond);}
+.tn-pain-col li:last-child .tn-pain-a{color:var(--gold-hi);font-weight:600;}
+.tn-pain-col .tn-btn{margin:8px 26px 26px;}
+
+/* bộ kỹ năng: 2 bộ cạnh nhau */
+.tn-skset{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.tn-sk{--c:var(--blue);--c-hi:var(--blue-hi);}
+.tn-sk.fighter{--c:var(--red);--c-hi:var(--red-hi);}
+.tn-sk-h{margin-bottom:14px;padding:14px 18px 12px;background:var(--c);color:#fff;font-size:clamp(24px,2.4vw,30px);line-height:1.15;}
+.tn-sk-h small{display:block;margin-bottom:2px;font:600 15px/1 var(--cond);opacity:0.85;}
+.tn-sk .tn-skills{grid-template-columns:1fr 1fr;gap:10px;}
+.tn-sk .tn-skills li{padding:22px 18px 18px;}
+.tn-sk .tn-skills h3{font-size:19px;}
+.tn-sk .tn-skills p{font-size:14px;}
 /* bộ kỹ năng */
 .tn-skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0;padding:0;list-style:none;}
 .tn-skills li{position:relative;padding:28px 24px 24px;background:var(--panel);border:1px solid var(--line);}
@@ -269,6 +298,7 @@
 .tn-cmp-row.out .c{color:#fff;font-size:clamp(21px,2.2vw,27px);}
 .tn-cmp-row.out .c.coach{background:rgba(47,111,214,0.32);}
 .tn-cmp-row.out .c.fighter{background:rgba(212,55,46,0.32);}
+.tn-cmp-row.fee .c{font:800 clamp(24px,2.4vw,30px)/1.1 var(--cond);letter-spacing:0.01em;}
 .tn-cmp-row.ref .k{color:var(--gold-hi);}
 .tn-cmp-row.ref .c{border-left-color:var(--gold);background:rgba(200,168,90,0.1);color:var(--gold-hi);font:700 19px/1.3 var(--cond);letter-spacing:0.01em;}
 
@@ -322,6 +352,7 @@
 .tn-pick span::before{width:18px;height:18px;opacity:0.5;}
 .tn-pick small{color:var(--c-hi);font:600 15px/1.1 var(--cond);}
 .tn-pick b{font:800 26px/1.15 var(--serif);}
+.tn-pick-p{display:block;font:700 17px/1.2 var(--cond);font-style:normal;color:var(--ink-2);}
 .tn-pick em{font-style:normal;color:var(--muted);font-size:13.5px;line-height:1.4;}
 .tn-pick input:checked+span{border-color:var(--c);background:linear-gradient(180deg,var(--c-soft),var(--field) 80%);box-shadow:0 0 0 1px var(--c);}
 .tn-pick input:checked+span::before{opacity:1;}
@@ -460,6 +491,7 @@
   .tn .tn-site a{white-space:nowrap;}
   .tn-sec-quiz .tn-in{grid-template-columns:1fr;gap:28px;}
   .tn-pr{grid-template-columns:1fr;gap:28px;max-width:620px;}
+  .tn-pain,.tn-skset{grid-template-columns:1fr;}
   .tn-worth{grid-template-columns:1fr;}
   .tn-worth-pay{position:static;}
   .tn-wk{grid-template-columns:1fr 1fr;}
@@ -525,7 +557,10 @@
   .tn-wk{gap:6px;}
   .tn-wk-c{padding:12px 10px 10px;gap:8px;}
   .tn-wk-c b{font-size:14.5px;}
-  .tn-skills{grid-template-columns:1fr;}
+  .tn-skills,.tn-sk .tn-skills{grid-template-columns:1fr;}
+  .tn-pain-h{padding:18px 16px 4px;}
+  .tn-pain-col ul{padding:0 16px;}
+  .tn-pain-col .tn-btn{margin:6px 16px 18px;}
   .tn-worth-get{padding:22px 16px 8px;}
   .tn-worth-get li{grid-template-columns:78px minmax(0,1fr);gap:14px;padding:14px 0;}
   .tn-worth-get li>b{font-size:40px;}
