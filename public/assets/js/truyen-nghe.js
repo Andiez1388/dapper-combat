@@ -16,7 +16,7 @@
   var START = String(DC.setting('course.careerStart', '2027-02-20') || '2027-02-20');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(START)) START = '2027-02-20';
   var PRICE = Number(DC.setting('course.careerPrice', 50000000)) || 50000000;
-  var DEPOSIT = Math.min(Number(DC.setting('course.careerDeposit', 0)) || 0, PRICE);
+  var DEPOSIT = Math.min(Number(DC.setting('course.careerDeposit', 2000000)) || 0, PRICE);
   var SEATS = Number(DC.setting('course.careerSeats', 0)) || 0;
   var SESS = 52 * 10;   // ≈ số ca cả khóa: 52 tuần × 5 buổi × 2 ca
   var YEAR = START.slice(0, 4);
