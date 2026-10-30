@@ -296,14 +296,20 @@ module.exports = async function browserTests(env, t, browser) {
     await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 5000000, careerSeats: 20 } } });
     await page.goto(B + '/', { wait: 300 });
     await page.goto(B + '/truyen-nghe#vo-si', { wait: 1000 });
-    st = await page.eval(`({ opts: [...document.querySelectorAll('.tn-form [name=pay]')].map(x => x.value), seats: (document.querySelector('.tn-seats') || {}).textContent })`);
-    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên', 'có tài khoản nhận tiền + tiền cọc → form có Tư vấn / Đặt cọc / Đóng đủ, hiện số chỗ', st);
-    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.querySelector('[name=pay][value=deposit]').click(); f.querySelector('[type=submit]').click(); return 1; })()`);
+    st = await page.eval(`({ opts: [...document.querySelectorAll('.tn-form [name=pay]')].map(x => x.value), seats: (document.querySelector('.tn-seats') || {}).textContent,
+      strip: document.querySelector('.tn-strip-price b').textContent, dep: (document.querySelector('.tn-worth-dep b') || {}).textContent, fee: document.querySelector('.tn-worth-pay .tn-fee-v').textContent,
+      rows: [...document.querySelectorAll('.tn-worth-get li > b')].map(b => b.textContent).join(' '), dock: document.querySelector('.tn-dock b').textContent })`);
+    t.ok(st.opts.join() === 'consult,deposit,full' && st.seats === 'Mỗi khóa nhận tối đa 20 học viên' && st.strip === '5.000.000đ' && st.dep === '5.000.000đ' && st.fee === '50.000.000đ' && st.rows === '520 4 6 1 100% 100%' && st.dock === 'Giữ chỗ chỉ 5 triệu',
+      'có tài khoản nhận tiền + tiền cọc → mời "giữ chỗ chỉ 5 triệu", khu học phí liệt kê thứ nhận về, form có Tư vấn / Đặt cọc / Đóng đủ', st);
+    await page.eval(`document.querySelector('.tn-strip-cta [data-pick-pay]').click(); 1`);
+    st = await page.eval(`({ pay: (document.querySelector('.tn-form [name=pay]:checked') || {}).value, send: document.querySelector('.tn-form [data-send]').textContent })`);
+    t.ok(st.pay === 'deposit' && st.send === 'Ghi danh và đặt cọc', 'bấm "Đặt cọc 5 triệu giữ chỗ" → form chọn sẵn đặt cọc', st);
+    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.querySelector('[type=submit]').click(); return 1; })()`);
     await page.until(`!!document.querySelector('.tn-ok')`, 8000);
     st = await page.eval(`({ box: !!document.querySelector('.tn-paybox'), qr: (document.querySelector('.tn-paybox .dc-vietqr') || {}).src || '', text: (document.querySelector('.tn-paybox-t') || {}).textContent })`);
     const dep = (await api('/api/registrations'))[0];
     t.ok(st.box && /amount=5000000/.test(st.qr) && /5\.000\.000đ/.test(st.text) && dep.name === 'Học Viên Đặt Cọc' && dep.due === 5000000 && dep.payName === 'Đặt cọc giữ chỗ', 'đặt cọc → hiện mã QR 5.000.000đ, đăng ký lưu số cần trả 5.000.000đ', { st, due: dep.due, payName: dep.payName });
-    await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 0, careerSeats: 0 } } });
+    await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 2000000, careerSeats: 0 } } });
     await api('/api/cms', { method: 'PUT', body: { payment: { bankBin: '', bankAccount: '', bankHolder: '' } } });
     // tắt mục "Truyền Nghề" trong /admin → menu các trang ẩn theo
     await api('/api/settings', { method: 'PUT', body: { brand: { nav: { career: false } } } });

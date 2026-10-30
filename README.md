@@ -264,7 +264,7 @@ Chương trình đặc biệt: học boxing từ con số 0 để thành nghề 
   2. "Cam kết 100%, hoặc hoàn 100% học phí": 2 tờ giấy cam kết (số 100% lớn, dấu đỏ hoàn học phí, nút giữ chỗ đúng khóa). Cam kết còn nhắc lại ở đầu trang, lộ trình, học phí, form ghi danh, giấy nhập môn và hỏi đáp.
   3. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
   4. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, so sánh 2 khóa (điểm giống nhau gom 1 dòng mờ, điểm khác nhau thành 2 cột xanh / đỏ).
-  5. "50 triệu, chia nhỏ ra": học phí / tháng / tuần / ca (≈ 520 ca = 52 tuần × 10 ca), khóa gồm những gì, cách đóng học phí đang mở.
+  5. "Bạn nhận về một nghề": bên trái những gì học viên nhận về, số to (520 ca, 4 hiệp, 6 kỹ năng, 1 nghề / 1 đội, 100% đầu ra, 100% hoàn học phí); bên phải học phí 50 triệu chữ nhỏ (≈ 96.000đ mỗi ca), nổi nhất là "Giữ chỗ hôm nay chỉ 2.000.000đ" + nút đặt cọc (chọn sẵn đặt cọc trong form). Dải đầu trang và thanh dính đáy điện thoại cũng mời "giữ chỗ chỉ 2 triệu" khi đang nhận cọc.
   6. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
   7. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
 - Bấm góc đài / thanh "Con đường" để đổi khóa; mở thẳng một khóa: `/truyen-nghe#coach`, `/truyen-nghe#vo-si`. Đường dẫn tắt `/dao-tao`, `/day-nghe`, `/pro`.
@@ -273,7 +273,7 @@ Chương trình đặc biệt: học boxing từ con số 0 để thành nghề 
   - **Đặt cọc giữ chỗ**: chỉ hiện khi đã nhập tiền cọc **và** có cách nhận tiền (tài khoản ngân hàng ở /admin → Thanh toán, hoặc VNPay). Số cần trả = tiền cọc.
   - **Đóng đủ**: hiện khi có cách nhận tiền. Số cần trả = cả học phí (có nút trả góp nếu đang bật trả góp VNPay).
   - Chọn cọc / đóng đủ → màn hình xong hiện mã VietQR đúng số tiền + nội dung chuyển khoản, nút thẻ / trả góp, tự báo "Đã nhận tiền" khi SePay xác nhận; có phiếu xác nhận để tải.
-- Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí, ngày khai giảng, **tiền cọc giữ chỗ** (0 = không nhận cọc), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
+- Thiết lập → Học phí & lịch tập → Truyền Nghề: học phí, ngày khai giảng, **tiền cọc giữ chỗ** (mặc định 2.000.000₫; 0 = không nhận cọc), **số chỗ mỗi khóa** (0 = không hiện; có số → "Mỗi khóa nhận tối đa … học viên").
 - Ảnh đầu trang dùng ảnh có sẵn của web (HLV cầm đích: `bc3dad0ad714.jpg`, võ sĩ ra sàn: `bd656e3427a9.jpg`); chưa đổi được trong /admin. Nội dung lộ trình, lịch tuần, kỹ năng, trắc nghiệm, hỏi đáp nằm trong `public/assets/js/truyen-nghe.js` (bản nháp, chỉnh theo giáo trình thật).
 
 ## Email xác nhận tiếng Anh

@@ -272,35 +272,40 @@
 .tn-cmp-row.ref .k{color:var(--gold-hi);}
 .tn-cmp-row.ref .c{border-left-color:var(--gold);background:rgba(200,168,90,0.1);color:var(--gold-hi);font:700 19px/1.3 var(--cond);letter-spacing:0.01em;}
 
-/* học phí chia nhỏ */
-.tn-price{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:20px 30px;padding:32px;border:1px solid var(--line);background:linear-gradient(110deg,var(--acc-soft),transparent 55%),var(--panel);}
-.tn-fee-v{margin:0;font:800 clamp(48px,6vw,82px)/1 var(--cond);letter-spacing:0.005em;}
-.tn-price-big span{display:block;margin-top:6px;color:var(--muted);font-size:14px;}
-.tn-price-eq{font:800 54px/1 var(--cond);color:var(--muted);}
-.tn-cost{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none;}
-.tn-cost li{padding:16px 16px 14px;background:var(--bg);border:1px solid var(--line);}
-.tn-cost b{display:block;font:800 clamp(24px,2.4vw,30px)/1.05 var(--cond);font-variant-numeric:tabular-nums;}
-.tn-cost span{display:block;margin-top:6px;color:var(--ink-2);font-size:14px;}
-.tn-cost small{display:block;margin-top:2px;color:var(--muted);font-size:12.5px;}
-.tn-cost li.ca{border-color:var(--acc);background:var(--acc-soft);}
-.tn-cost li.ca b{color:#fff;font-size:clamp(28px,2.8vw,36px);}
-.tn-value{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;margin-top:20px;align-items:start;}
-.tn-gets,.tn-payw{padding:28px;background:var(--panel);border:1px solid var(--line);}
-.tn-gets h3,.tn-payw h3{font-size:24px;line-height:1.2;font-weight:700;margin-bottom:16px;}
-.tn-gets ul,.tn-payw ul{margin:0;padding:0;list-style:none;}
-.tn-gets li{position:relative;padding:10px 0 10px 32px;border-top:1px solid var(--line-2);color:var(--ink-2);}
-.tn-gets li::before{content:"";position:absolute;left:4px;top:1.05em;width:12px;height:6px;border-left:2.5px solid var(--acc-hi);border-bottom:2.5px solid var(--acc-hi);transform:rotate(-45deg);}
-.tn-gets li.hl{margin-top:6px;padding:14px 16px 14px 44px;border:1px solid var(--acc);background:var(--acc-soft);color:#fff;font:700 19px/1.35 var(--serif);}
-.tn-gets li.hl::before{left:16px;top:1.25em;}
-.tn-gets li.hl.refund{border-color:var(--gold);background:rgba(200,168,90,0.1);color:var(--gold-hi);}
-.tn-gets li.hl.refund::before{border-color:var(--gold-hi);}
-.tn-payw{display:flex;flex-direction:column;}
-.tn-payw li{position:relative;padding:9px 0 9px 22px;color:var(--ink-2);border-top:1px solid var(--line-2);}
-.tn-payw li::before{content:"";position:absolute;left:3px;top:1.05em;width:8px;height:8px;background:var(--acc);transform:rotate(45deg);}
-.tn-payw li.free{color:var(--gold-hi);}
-.tn-payw li.free::before{background:var(--gold);}
-.tn-payw .tn-btn{margin-top:auto;width:100%;}
-.tn-payw ul{margin-bottom:22px;}
+/* cán cân giá trị: trái = những gì nhận về (số to), phải = học phí gọn nhỏ + giữ chỗ */
+.tn-sec-fee{background:radial-gradient(900px 500px at 20% 20%,var(--acc-soft),transparent 70%),var(--bg);}
+.tn-worth{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:24px;align-items:start;}
+.tn-worth-k{margin:0 0 6px;color:var(--muted);font:700 17px/1.2 var(--cond);letter-spacing:0.02em;}
+.tn-worth-get{padding:28px 32px 14px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--acc);}
+.tn-worth-get ul{margin:0;padding:0;list-style:none;}
+.tn-worth-get li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:center;padding:16px 0;border-top:1px solid var(--line-2);}
+.tn-worth-get li:first-child{border-top:0;}
+.tn-worth-get li>b{color:var(--acc-hi);font:800 clamp(52px,5.4vw,76px)/0.95 var(--cond);letter-spacing:-0.01em;font-variant-numeric:lining-nums;text-align:right;}
+.tn-worth-get li p{margin:0;}
+.tn-worth-get li strong{display:block;font:700 clamp(19px,1.9vw,23px)/1.25 var(--serif);font-variant-numeric:lining-nums;}
+.tn-worth-get li span{display:block;margin-top:3px;color:var(--muted);font-size:14.5px;line-height:1.45;}
+.tn-worth-get li.out{margin:6px -14px 0;padding:18px 14px;border:1px solid var(--acc);background:var(--acc-soft);}
+.tn-worth-get li.out>b{color:#fff;}
+.tn-worth-get li.out span{color:var(--ink-2);}
+.tn-worth-get li.ref{margin:10px -14px 14px;padding:18px 14px;border:1px solid var(--gold);background:rgba(200,168,90,0.1);}
+.tn-worth-get li.ref>b{color:var(--gold-hi);}
+.tn-worth-get li.ref strong{color:var(--gold-hi);}
+.tn-worth-get li.ref span{color:var(--ink-2);}
+.tn-worth-pay{position:sticky;top:86px;padding:24px;background:#0d0f12;border:1px solid var(--line);}
+.tn-worth-pay .tn-fee-v{margin:0;color:var(--ink-2);font:700 32px/1.05 var(--cond);letter-spacing:0.01em;}
+.tn-worth-per{margin:8px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px;line-height:1.7;}
+.tn-worth-dep{margin:20px 0 0;padding:16px 16px 14px;border:1px solid var(--acc);background:var(--acc-soft);}
+.tn-worth-dep small{display:block;color:var(--ink-2);font:600 16px/1.2 var(--cond);}
+.tn-worth-dep b{display:block;margin-top:4px;color:#fff;font:800 clamp(40px,4vw,52px)/1 var(--cond);font-variant-numeric:lining-nums;}
+.tn-worth-dep span{display:block;margin-top:4px;color:var(--ink-2);font-size:13.5px;}
+.tn-worth-pay .tn-btn.wide{width:100%;margin-top:14px;}
+.tn-worth-ways{margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--line-2);list-style:none;color:var(--muted);font-size:13.5px;line-height:1.5;}
+.tn-worth-ways li{position:relative;padding:3px 0 3px 16px;}
+.tn-worth-ways li::before{content:"";position:absolute;left:2px;top:0.8em;width:6px;height:6px;background:var(--acc);transform:rotate(45deg);}
+.tn-worth-ways li.free{color:var(--gold-hi);}
+.tn-worth-ways li.free::before{background:var(--gold);}
+.tn-strip-price small{display:block;margin-bottom:4px;color:var(--ink-2);font:600 15px/1.1 var(--cond);}
+
 
 /* ghi danh: form + giấy nhập môn */
 .tn-sec-apply{background:radial-gradient(900px 500px at 85% 30%,var(--acc-soft),transparent 70%),var(--bg);}
@@ -416,7 +421,7 @@
 
 /* đổi con đường: phần thay đổi lật vào để thấy rõ cái gì vừa đổi */
 @keyframes tnFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-.tn-main.sw .tn-road>li,.tn-main.sw .tn-skills li,.tn-main.sw .tn-bell,.tn-main.sw .tn-gets,.tn-main.sw .tn-cert{animation:tnFade .4s ease-out both;}
+.tn-main.sw .tn-road>li,.tn-main.sw .tn-skills li,.tn-main.sw .tn-bell,.tn-main.sw .tn-worth-get,.tn-main.sw .tn-cert{animation:tnFade .4s ease-out both;}
 .tn-main.sw .tn-road>li:nth-child(2),.tn-main.sw .tn-skills li:nth-child(2){animation-delay:.05s;}
 .tn-main.sw .tn-road>li:nth-child(3),.tn-main.sw .tn-skills li:nth-child(3){animation-delay:.1s;}
 .tn-main.sw .tn-road>li:nth-child(4),.tn-main.sw .tn-skills li:nth-child(4){animation-delay:.15s;}
@@ -442,8 +447,6 @@
   .tn-skills{grid-template-columns:1fr 1fr;}
   .tn-strip-in{grid-template-columns:auto minmax(0,1fr);}
   .tn-strip-cta{grid-column:1/-1;}
-  .tn-price{grid-template-columns:1fr;}
-  .tn-price-eq{display:none;}
   .tn-apply{grid-template-columns:1fr;}
   .tn-cert-wrap{position:static;order:-1;max-width:560px;}
   .tn-faq-wrap{grid-template-columns:1fr;}
@@ -457,7 +460,8 @@
   .tn .tn-site a{white-space:nowrap;}
   .tn-sec-quiz .tn-in{grid-template-columns:1fr;gap:28px;}
   .tn-pr{grid-template-columns:1fr;gap:28px;max-width:620px;}
-  .tn-value{grid-template-columns:1fr;}
+  .tn-worth{grid-template-columns:1fr;}
+  .tn-worth-pay{position:static;}
   .tn-wk{grid-template-columns:1fr 1fr;}
   .tn-wk-h,.tn-wk-s{display:none;}
   .tn-wk-d{display:block;}
@@ -522,10 +526,10 @@
   .tn-wk-c{padding:12px 10px 10px;gap:8px;}
   .tn-wk-c b{font-size:14.5px;}
   .tn-skills{grid-template-columns:1fr;}
-  .tn-price{padding:22px 18px;}
-  .tn-cost{grid-template-columns:1fr 1fr;}
-  .tn-cost li.ca{grid-column:1/-1;}
-  .tn-gets,.tn-payw{padding:22px 18px;}
+  .tn-worth-get{padding:22px 16px 8px;}
+  .tn-worth-get li{grid-template-columns:78px minmax(0,1fr);gap:14px;padding:14px 0;}
+  .tn-worth-get li>b{font-size:40px;}
+  .tn-worth-get li.out,.tn-worth-get li.ref{margin-left:-8px;margin-right:-8px;padding-left:8px;padding-right:8px;}
   .tn-form-box{padding:22px 16px;}
   .tn-pick{gap:8px;}
   .tn-pick span{padding:16px 12px 14px;}
@@ -539,7 +543,7 @@
 }
 
 /* chữ số thẳng hàng (Ysabeau mặc định dùng số kiểu cũ: "0" trông như "o"); khai báo `font:` gộp ở trên đặt lại thuộc tính này */
-.tn .tn-claim,.tn .tn-side-txt strong,.tn .tn-bell b,.tn .tn-cmp-row .c,.tn .tn-cert-title,.tn .tn-cert-name,.tn .tn-faq summary,.tn .tn-pick b,.tn .tn-gets li.hl{font-variant-numeric:lining-nums;}
+.tn .tn-claim,.tn .tn-side-txt strong,.tn .tn-bell b,.tn .tn-cmp-row .c,.tn .tn-cert-title,.tn .tn-cert-name,.tn .tn-faq summary,.tn .tn-pick b{font-variant-numeric:lining-nums;}
 
 @media (prefers-reduced-motion:reduce){
   .tn *,.tn *::before,.tn *::after{animation:none!important;transition:none!important;}

@@ -27,6 +27,7 @@
   var BANK = DC.pay ? DC.pay() : null;
   var CAN_PAY = !!(BANK || PO.vnpay || PO.installment);
   var ISP = !!(PO.installment && PRICE >= (PO.installmentMin || 0));
+  var DEP_ON = !!(DEPOSIT && CAN_PAY);   // có tiền cọc + có cách nhận tiền → mời đặt cọc giữ chỗ
   var C = (window.__CMS && window.__CMS.c) || {};
   var PHONE = C.phone && !/x/i.test(C.phone) ? String(C.phone) : '';
 
@@ -72,9 +73,16 @@
       'cmp.same': 'Giống nhau', 'cmp.diff': 'Khác nhau',
       'cmp.time': 'Thời gian', 'cmp.sched': 'Lịch học', 'cmp.fee': 'Học phí', 'cmp.content': 'Nội dung chính', 'cmp.goal': 'Mục tiêu', 'cmp.out': 'Học xong',
       'v.time': '12 tháng', 'v.sched': '5 buổi mỗi tuần, 2 ca mỗi ngày',
-      'fee.h': '{p}, chia nhỏ ra', 'fee.sub': 'Học phí trọn khóa 12 tháng. Coach và Võ sĩ cùng một mức.',
+      'fee.h': 'Bạn nhận về một nghề', 'fee.sub': 'Học phí trọn khóa {p}, Coach và Võ sĩ cùng mức. Đây là những gì khoản đó mang lại cho bạn.',
+      'w.get': 'Khóa {n}: bạn nhận về', 'w.pay': 'Học phí trọn khóa', 'w.same': 'Coach và Võ sĩ cùng mức',
+      'w.sess': 'ca học trong 12 tháng', 'w.sess.d': '52 tuần, 5 buổi mỗi tuần, 2 ca mỗi ngày',
+      'w.rounds': 'hiệp đào tạo, mỗi hiệp có mốc kiểm tra', 'w.skills.coach': 'kỹ năng nghề coach', 'w.skills.fighter': 'kỹ năng thi đấu',
+      'w.job.coach': 'nghề để sống: đứng lớp dạy boxing', 'w.job.coach.d': 'Học như một võ sĩ, trợ giảng lớp thật, rồi tự đứng lớp.',
+      'w.job.fighter': 'đội để thi đấu: The Corner', 'w.job.fighter.d': 'Sparring có chấm điểm, fight night nội bộ, rồi trận ra mắt.',
+      'w.refund': 'học phí hoàn lại',
+      'dep.only': 'Giữ chỗ hôm nay chỉ', 'dep.fee': 'Học phí trọn khóa {p} · {c} mỗi ca', 'dep.how': 'đặt cọc, quét mã QR trả ngay khi ghi danh',
+      'cta.dep': 'Đặt cọc {d} giữ chỗ', 'dock.dep': 'Giữ chỗ chỉ {d}',
       'fee.whole': 'trọn khóa 12 tháng', 'fee.mo': 'mỗi tháng', 'fee.wk': 'mỗi tuần · 10 ca', 'fee.ca': 'mỗi ca tập', 'fee.ca.n': '≈ {n} ca cả khóa',
-      'gets.h': 'Khóa {n} gồm', 'pay.h': 'Cách đóng học phí',
       'pay.dep': 'Đặt cọc {d} để giữ chỗ', 'pay.bank': 'Chuyển khoản, quét mã QR', 'pay.card': 'Thẻ ngân hàng, Visa / Mastercard (VNPay)', 'pay.isp': 'Trả góp qua thẻ tín dụng',
       'pay.ask': 'Hình thức đóng học phí được tư vấn khi bạn đăng ký.', 'pay.free': 'Đăng ký tư vấn không mất phí',
       'form.h': 'Ghi danh khóa {y}', 'form.sub': 'Điền thông tin, giấy nhập môn của bạn hiện ngay bên cạnh. Dapper Combat gọi lại để tư vấn và giữ chỗ cho bạn.',
@@ -146,9 +154,16 @@
       'cmp.same': 'Same', 'cmp.diff': 'Different',
       'cmp.time': 'Length', 'cmp.sched': 'Schedule', 'cmp.fee': 'Fee', 'cmp.content': 'Core content', 'cmp.goal': 'Goal', 'cmp.out': 'When you finish',
       'v.time': '12 months', 'v.sched': '5 sessions a week, 2 shifts a day',
-      'fee.h': '{p}, broken down', 'fee.sub': 'One fee for the full 12-month course. Coach and Fighter cost the same.',
+      'fee.h': 'You walk away with a trade', 'fee.sub': 'The full course is {p}, the same for Coach and Fighter. This is what that fee brings you.',
+      'w.get': '{n} course: what you get', 'w.pay': 'Full course fee', 'w.same': 'Same for Coach and Fighter',
+      'w.sess': 'sessions over 12 months', 'w.sess.d': '52 weeks, 5 days a week, 2 shifts a day',
+      'w.rounds': 'training rounds, each ending in a checkpoint', 'w.skills.coach': 'coaching skills', 'w.skills.fighter': 'fight skills',
+      'w.job.coach': 'trade to live from: teaching boxing', 'w.job.coach.d': 'Train like a fighter, assist real classes, then lead your own.',
+      'w.job.fighter': 'team to fight for: The Corner', 'w.job.fighter.d': 'Scored sparring, in-house fight nights, then your debut.',
+      'w.refund': 'of your fee back',
+      'dep.only': 'Hold your place today for just', 'dep.fee': 'Full course {p} · {c} per session', 'dep.how': 'deposit, pay by QR code when you enrol',
+      'cta.dep': 'Pay {d} deposit, hold my place', 'dock.dep': 'Hold your place for {d}',
       'fee.whole': 'full 12-month course', 'fee.mo': 'per month', 'fee.wk': 'per week · 10 sessions', 'fee.ca': 'per session', 'fee.ca.n': '≈ {n} sessions in total',
-      'gets.h': 'The {n} course includes', 'pay.h': 'How to pay',
       'pay.dep': 'A {d} deposit holds your place', 'pay.bank': 'Bank transfer by QR code', 'pay.card': 'Bank card, Visa / Mastercard (VNPay)', 'pay.isp': 'Instalments on a credit card',
       'pay.ask': 'Payment options are explained when you apply.', 'pay.free': 'Applying for advice is free',
       'form.h': 'Enrol for {y}', 'form.sub': 'Fill in your details and your enrolment paper appears alongside. Dapper Combat will call you back to advise and hold your place.',
@@ -193,9 +208,6 @@
       hash: 'coach', corner: p('Góc xanh', 'Blue corner'), name: p('Coach', 'Coach'),
       out: p('100% cơ hội làm việc tại HVP Academy', 'A 100% job opportunity at HVP Academy'),
       content: p('Phương pháp dạy, cầm đích, soạn giáo án', 'Teaching method, pad work, lesson planning'), goalShort: p('Đứng lớp dạy người khác', 'Teach other people'),
-      gets: [p('12 tháng đào tạo, khoảng {n} ca học', '12 months of training, about {n} sessions'), p('Học như một võ sĩ trước, rồi mới học nghề dạy', 'Train like a fighter first, then learn to teach'),
-        p('Cầm đích, đọc lỗi, soạn giáo án, quản lý lớp', 'Pad work, fault-fixing, lesson plans, running a class'), p('Trợ giảng lớp thật trước khi tự đứng lớp', 'Assist real classes before you lead your own'),
-        p('4 mốc sát hạch, mỗi hiệp 3 tháng', '4 checkpoints, one every 3 months'), p('100% cơ hội làm việc tại HVP Academy, hoặc tự do chọn phòng tập khác', 'A 100% job opportunity at HVP Academy, or any other gym you choose')],
       rounds: [
         { t: p('Nền tảng như một võ sĩ', 'Foundations, like a fighter'), items: [p('Tư thế, bộ pháp, 6 đòn cơ bản', 'Stance, footwork, the 6 basic punches'), p('Thể lực nền, khởi động và giãn cơ đúng', 'Base conditioning, proper warm-up and cool-down'), p('Tự tập đúng trước khi dạy người khác', 'Do it right yourself before you teach it')], mile: p('Sát hạch kỹ thuật cơ bản', 'Basic technique assessment') },
         { t: p('Nghề cầm đích', 'The craft of the pads'), items: [p('Cầm đích (pad work) và ra bài tập', 'Holding pads and calling drills'), p('Đọc lỗi kỹ thuật và cách sửa', 'Spotting and fixing technical faults'), p('Nguyên lý soạn giáo án một buổi tập', 'Planning a single session')], mile: p('Tự soạn và dạy thử một buổi', 'Plan and teach a trial session') },
@@ -222,9 +234,6 @@
       hash: 'vo-si', corner: p('Góc đỏ', 'Red corner'), name: p('Võ sĩ', 'Fighter'),
       out: p('100% thi đấu dưới màu cờ The Corner', '100% fighting in The Corner colours'),
       content: p('Kỹ thuật, thể lực, chiến thuật thi đấu', 'Technique, conditioning, fight tactics'), goalShort: p('Lên sàn thi đấu', 'Step into the ring'),
-      gets: [p('12 tháng đào tạo, khoảng {n} ca học', '12 months of training, about {n} sessions'), p('Xây từ nền tảng, chưa từng tập cũng được', 'Built from the ground up, no experience needed'),
-        p('Sparring có chấm điểm, fight night nội bộ', 'Scored sparring and in-house fight nights'), p('Chấm kỹ năng trên Dapper Combat Academy Ranking', 'Skill scores on the Dapper Combat Academy Ranking'),
-        p('4 mốc kiểm tra, mỗi hiệp 3 tháng', '4 checkpoints, one every 3 months'), p('100% thi đấu dưới màu cờ The Corner', '100% fighting in The Corner colours')],
       rounds: [
         { t: p('Nền tảng và thể lực', 'Foundations and conditioning'), items: [p('Tư thế, bộ pháp, đòn cơ bản', 'Stance, footwork, basic punches'), p('Thể lực nền cho người mới', 'Base conditioning for beginners'), p('Sparring kỹ thuật nhẹ', 'Light technical sparring')], mile: p('Lần chấm kỹ năng đầu tiên trên Academy Ranking', 'First skills score on the Academy Ranking') },
         { t: p('Xây lối đánh', 'Building your style'), items: [p('Combo, phòng thủ và phản đòn', 'Combinations, defense and counters'), p('Sparring có chấm điểm', 'Scored sparring'), p('Chiến thuật theo từng kiểu đối thủ', 'Tactics for each kind of opponent')], mile: p('Sparring Day có chấm điểm', 'A scored Sparring Day') },
@@ -281,7 +290,7 @@
   var today = function () { var d = new Date(Date.now() + 7 * 3600000); return String(d.getUTCDate()).padStart(2, '0') + '.' + String(d.getUTCMonth() + 1).padStart(2, '0') + '.' + d.getUTCFullYear(); };
   function payWays() {
     var w = [];
-    if (DEPOSIT) w.push(t('pay.dep', { d: money(DEPOSIT) }));
+    if (DEP_ON) w.push(t('pay.dep', { d: money(DEPOSIT) }));
     if (BANK) w.push(t('pay.bank'));
     if (PO.vnpay) w.push(t('pay.card'));
     if (ISP) w.push(t('pay.isp'));
@@ -296,6 +305,11 @@
       '<span class="tn-side-txt"><small>' + esc(t('side.' + k)) + '</small><strong>' + esc(t('bao.' + k)) + '</strong><span>' + esc(t('baosub.' + k)) + '</span>' +
       '<span class="tn-side-badge">' + esc(t('badge')) + '</span><em class="tn-side-cta">' + esc(t('pick.' + k)) + '</em></span></button>';
   }
+  // nút giữ chỗ: có nhận cọc → "Đặt cọc 2 triệu giữ chỗ" (chọn sẵn đặt cọc trong form)
+  function applyBtn(cls) {
+    return DEP_ON ? '<a class="tn-btn' + (cls ? ' ' + cls : '') + '" href="#dang-ky" data-pick-pay="deposit">' + esc(t('cta.dep', { d: moneyShort(DEPOSIT) })) + '</a>'
+      : '<a class="tn-btn' + (cls ? ' ' + cls : '') + '" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a>';
+  }
   function clock() {
     return '<div class="tn-clock" data-clock aria-live="off">' + ['d', 'h', 'm', 's'].map(function (u) {
       return '<span><b data-u="' + u + '">00</b><small>' + esc(t('clock.' + u)) + '</small></span>';
@@ -306,8 +320,9 @@
       '<div class="tn-hero-mid"><p class="tn-special"><span>' + esc(t('special', { y: YEAR })) + '</span></p><h1>' + esc(t('h1')) + '</h1><p class="tn-claim">' + esc(t('claim')) + '</p></div></div>' +
       '<div class="tn-strip"><div class="tn-in tn-strip-in">' +
         '<div class="tn-start"><b>' + esc(t('start', { d: startText() })) + '</b>' + clock() + '</div>' +
-        '<div class="tn-strip-price"><b>' + esc(money(PRICE)) + '</b><span>' + esc(t('per.course', { c: approx(PRICE / SESS) })) + '</span>' + (SEATS ? '<span class="tn-seats">' + esc(t('seats', { n: SEATS })) + '</span>' : '') + '<a class="tn-guar" href="#cam-ket">' + esc(t('guar.link')) + '</a></div>' +
-        '<div class="tn-strip-cta"><a class="tn-btn" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a><a class="tn-link" href="#trac-nghiem">' + esc(t('cta.quiz')) + '</a></div>' +
+        '<div class="tn-strip-price">' + (DEP_ON ? '<small>' + esc(t('dep.only')) + '</small><b>' + esc(money(DEPOSIT)) + '</b><span>' + esc(t('dep.fee', { p: money(PRICE), c: approx(PRICE / SESS) })) + '</span>'
+          : '<b>' + esc(money(PRICE)) + '</b><span>' + esc(t('per.course', { c: approx(PRICE / SESS) })) + '</span>') + (SEATS ? '<span class="tn-seats">' + esc(t('seats', { n: SEATS })) + '</span>' : '') + '<a class="tn-guar" href="#cam-ket">' + esc(t('guar.link')) + '</a></div>' +
+        '<div class="tn-strip-cta">' + applyBtn() + '<a class="tn-link" href="#trac-nghiem">' + esc(t('cta.quiz')) + '</a></div>' +
       '</div></div></section>';
   }
   function quizHtml() {
@@ -367,18 +382,26 @@
         return '<div class="tn-cmp-row' + (r[3] ? ' ' + r[3] : '') + '"><span class="k">' + esc(t(r[0])) + '</span><span class="c coach">' + esc(r[1]) + '</span><span class="c fighter">' + esc(r[2]) + '</span></div>';
       }).join('') + '</div>';
   }
+  // cán cân giá trị: trái = những gì nhận về (số to, theo con đường đang xem), phải = học phí gọn nhỏ + giữ chỗ
   function fee() {
-    var x = P[path], ways = payWays();
-    return '<div class="tn-price"><div class="tn-price-big"><p class="tn-fee-v">' + esc(money(PRICE)) + '</p><span>' + esc(t('fee.whole')) + '</span></div>' +
-      '<span class="tn-price-eq" aria-hidden="true">=</span><ul class="tn-cost">' +
-        '<li><b>' + esc(approx(PRICE / 12)) + '</b><span>' + esc(t('fee.mo')) + '</span></li>' +
-        '<li><b>' + esc(approx(PRICE / 52)) + '</b><span>' + esc(t('fee.wk')) + '</span></li>' +
-        '<li class="ca"><b>' + esc(approx(PRICE / SESS)) + '</b><span>' + esc(t('fee.ca')) + '</span><small>' + esc(t('fee.ca.n', { n: SESS })) + '</small></li></ul></div>' +
-      '<div class="tn-value"><div class="tn-gets ' + path + '"><h3>' + esc(t('gets.h', { n: L(x.name) })) + '</h3><ul>' + x.gets.map(function (g, i) {
-        return '<li' + (i === x.gets.length - 1 ? ' class="hl"' : '') + '>' + esc(L(g).replace('{n}', SESS)) + '</li>';
-      }).join('') + '<li class="hl refund">' + esc(t('refund.short.' + path)) + '</li></ul></div>' +
-      '<div class="tn-payw"><h3>' + esc(t('pay.h')) + '</h3><ul>' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') +
-        '<li class="free">' + esc(t('pay.free')) + '</li></ul><a class="tn-btn" href="#dang-ky">' + esc(t('cta.apply', { y: YEAR })) + '</a></div></div>';
+    var x = P[path], k = path, ways = payWays().filter(function (w, i) { return !(DEP_ON && i === 0); });
+    var cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+    var rows = [
+      [String(SESS), t('w.sess'), t('w.sess.d')],
+      ['4', t('w.rounds'), x.rounds.map(function (r) { return L(r.t); }).join(' → ')],
+      [String(x.skills.length), t('w.skills.' + k), x.skills.map(function (s) { return L(s[0]); }).join(', ')],
+      ['1', t('w.job.' + k), t('w.job.' + k + '.d')],
+      ['100%', t('pr.big.' + k), t('pr.free.' + k), 'out'],
+      ['100%', t('w.refund'), cap(t('pr.if.' + k)), 'ref'],
+    ];
+    return '<div class="tn-worth"><div class="tn-worth-get ' + k + '"><p class="tn-worth-k">' + esc(t('w.get', { n: L(x.name) })) + '</p><ul>' + rows.map(function (r) {
+        return '<li' + (r[3] ? ' class="' + r[3] + '"' : '') + '><b>' + esc(r[0]) + '</b><p><strong>' + esc(r[1]) + '</strong><span>' + esc(r[2]) + '</span></p></li>';
+      }).join('') + '</ul></div>' +
+      '<aside class="tn-worth-pay"><p class="tn-worth-k">' + esc(t('w.pay')) + '</p><p class="tn-fee-v">' + esc(money(PRICE)) + '</p>' +
+        '<ul class="tn-worth-per"><li>' + esc(approx(PRICE / SESS)) + ' ' + esc(t('fee.ca')) + '</li><li>' + esc(approx(PRICE / 12)) + ' ' + esc(t('fee.mo')) + '</li><li>' + esc(t('w.same')) + '</li></ul>' +
+        (DEP_ON ? '<div class="tn-worth-dep"><small>' + esc(t('dep.only')) + '</small><b>' + esc(money(DEPOSIT)) + '</b><span>' + esc(t('dep.how')) + '</span></div>' : '') +
+        applyBtn('wide') + '<ul class="tn-worth-ways">' + (ways.length ? ways : [t('pay.ask')]).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') +
+        '<li class="free">' + esc(t('pay.free')) + '</li></ul></aside></div>';
   }
   // giấy nhập môn: tên / năm sinh cập nhật khi gõ, đóng dấu đỏ khi ghi danh xong
   function seal(done) {
@@ -402,7 +425,7 @@
   }
   function form() {
     var opts = [['consult', t('opt.consult'), t('opt.consult.s')]];
-    if (DEPOSIT && CAN_PAY) opts.push(['deposit', t('opt.deposit', { d: money(DEPOSIT) }), t('opt.deposit.s')]);
+    if (DEP_ON) opts.push(['deposit', t('opt.deposit', { d: money(DEPOSIT) }), t('opt.deposit.s')]);
     if (CAN_PAY) opts.push(['full', t('opt.full', { p: money(PRICE) }), t('opt.full.s') + (ISP ? '. ' + t('opt.full.isp') : '')]);
     var pay = saved && saved.pay && opts.some(function (o) { return o[0] === saved.pay; }) ? saved.pay : 'consult';
     return '<form class="tn-form" novalidate><fieldset class="tn-pick"><legend>' + esc(t('form.path')) + '</legend>' + ORDER.map(function (k) {
@@ -428,10 +451,10 @@
       payNote + (r.slip && DC.slip ? DC.slip.box(r.slip, DC.lang()) : '') + '<button type="button" class="tn-btn ghost" data-again>' + esc(t('ok.again')) + '</button></div>';
   }
   function faq() {
-    var ways = payWays().filter(function (w, i) { return !(DEPOSIT && i === 0); });
-    var how = (DEPOSIT ? t('how.dep', { d: money(DEPOSIT) }) + ' ' : '') + (ways.length ? t('how.list', { l: ways.join(', ') }) : t('pay.ask'));
+    var ways = payWays().filter(function (w, i) { return !(DEP_ON && i === 0); });
+    var how = (DEP_ON ? t('how.dep', { d: money(DEPOSIT) }) + ' ' : '') + (ways.length ? t('how.list', { l: ways.join(', ') }) : t('pay.ask'));
     var qa = [1, 2, 3, 4, 5, 7, 8, 6].map(function (i) {
-      var a = i === 6 ? (DEPOSIT && CAN_PAY ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free')) : t('a' + i, { d: startText(true), fee: money(PRICE), how: how });
+      var a = i === 6 ? (DEP_ON ? t('a6.dep', { d: money(DEPOSIT) }) : t('a6.free')) : t('a' + i, { d: startText(true), fee: money(PRICE), how: how });
       return '<details><summary>' + esc(t('q' + i)) + '</summary><p>' + esc(a) + '</p></details>';
     }).join('');
     var help = '<aside class="tn-help"><h3>' + esc(t('help.h')) + '</h3><p>' + esc(t('help.p')) + '</p><div class="tn-help-b">' +
@@ -470,10 +493,10 @@
       sec('tuan-hoc', esc(t('week.h')), esc(t('week.sub')), week(), 'alt') +
       sec('ky-nang', esc(t('skills.h', { n: L(P[path].name) })), '', skills()) +
       sec('so-sanh', esc(t('cmp.h')), esc(t('cmp.sub')), compare(), 'alt') +
-      sec('hoc-phi', esc(t('fee.h', { p: moneyShort(PRICE) })), esc(t('fee.sub')), fee()) +
+      sec('hoc-phi', esc(t('fee.h')), esc(t('fee.sub', { p: money(PRICE) })), fee(), 'tn-sec-fee') +
       sec('dang-ky', esc(t('form.h', { y: YEAR })), esc(t('form.sub')), '<div class="tn-apply"><div class="tn-form-box">' + (done ? okHtml(done) : form()) + '</div><div class="tn-cert-wrap">' + cert() + '</div></div>', 'tn-sec-apply') +
       sec('hoi-dap', esc(t('faq.h')), '', faq(), 'alt') +
-      '<div class="tn-dock" aria-hidden="true"><p><b>' + esc(t('dock.t', { y: YEAR, p: moneyShort(PRICE) })) + '</b><small>' + esc(t('dock.left', { n: daysLeft() })) + '</small></p><a class="tn-btn sm" href="#dang-ky" tabindex="-1">' + esc(t('bar.apply')) + '</a></div>';
+      '<div class="tn-dock" aria-hidden="true"><p><b>' + esc(DEP_ON ? t('dock.dep', { d: moneyShort(DEPOSIT) }) : t('dock.t', { y: YEAR, p: moneyShort(PRICE) })) + '</b><small>' + esc(t('dock.left', { n: daysLeft() })) + '</small></p><a class="tn-btn sm" href="#dang-ky" tabindex="-1">' + esc(t('bar.apply')) + '</a></div>';
     stampNow = false;
     restore();
     tick();
@@ -539,6 +562,8 @@
     if (q) { if (q.getAttribute('data-quiz') === 'back') quiz.i = Math.max(0, quiz.i - 1); else quiz = { i: 0, ans: [] }; swapQuiz(); return; }
     var b = e.target.closest('[data-path]');
     if (b && b.tagName === 'BUTTON') { choose(b.getAttribute('data-path'), b.getAttribute('data-go')); return; }
+    var pp = e.target.closest('[data-pick-pay]');
+    if (pp) { var r = root.querySelector('.tn-form [name=pay][value="' + pp.getAttribute('data-pick-pay') + '"]'); if (r && !r.checked) r.click(); }
     if (e.target.closest('[data-again]')) { done = null; saved = null; render(); var n = root.querySelector('.tn-form [name=name]'); if (n) n.focus(); }
   });
   // trắc nghiệm: chỉ vẽ lại khung câu hỏi
