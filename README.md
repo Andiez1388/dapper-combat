@@ -254,15 +254,19 @@ Mục **Academy Ranking** trên menu (menu thả xuống): **Lịch sự kiện*
 
 Chương trình đặc biệt: học boxing từ con số 0 để thành nghề trong 1 năm. Mục **Truyền Nghề** trên menu (sau Academy Ranking; tiếng Anh: Pro Pathways). Bật / tắt ở Thiết lập → Thương hiệu & menu.
 
-- **2 khóa, 2 con đường** như 2 góc đài: **Coach** (góc xanh) — bao việc làm tại HVP Academy khi học xong; **Võ sĩ** (góc đỏ) — bao thi đấu dưới tên The Corner khi học xong.
+- **2 khóa, 2 con đường** như 2 góc đài, mỗi khóa một cam kết 100% (lời chủ chương trình, 30/10/2026):
+  - **Coach** (góc xanh): 100% cơ hội làm việc tại HVP Academy, hoặc tự do tìm việc ở các phòng tập khác. Đạt tiêu chuẩn nhưng HVP Academy không sắp xếp được công việc và không tìm được việc ở nơi khác → **hoàn 100% học phí**.
+  - **Võ sĩ** (góc đỏ): 100% thi đấu dưới màu cờ The Corner. Đạt tiêu chuẩn mà không được thi đấu → **hoàn 100% học phí**.
+  - "Tiêu chuẩn" chưa được mô tả trên trang — nên ghi rõ trong hợp đồng / giấy tờ khi nhận học viên.
 - Cùng khối lượng: 12 tháng, 5 buổi mỗi tuần (Thứ 2–Thứ 6), 2 ca mỗi ngày; khác nội dung giảng dạy và mục tiêu.
 - Trang viết theo đường đi của người mua:
   1. Đầu trang: 2 ảnh tập luyện ghép chéo (rê chuột vào góc nào góc đó nở ra), đồng hồ đếm ngược tới 0 giờ ngày khai giảng (giờ Việt Nam), học phí + giá mỗi ca.
-  2. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
-  3. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, so sánh 2 khóa.
-  4. "50 triệu, chia nhỏ ra": học phí / tháng / tuần / ca (≈ 520 ca = 52 tuần × 10 ca), khóa gồm những gì, cách đóng học phí đang mở.
-  5. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
-  6. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
+  2. "Cam kết 100%, hoặc hoàn 100% học phí": 2 tờ giấy cam kết (số 100% lớn, dấu đỏ hoàn học phí, nút giữ chỗ đúng khóa). Cam kết còn nhắc lại ở đầu trang, lộ trình, học phí, form ghi danh, giấy nhập môn và hỏi đáp.
+  3. Trắc nghiệm "Bạn hợp góc nào?" (4 câu) → gợi ý khóa + nút giữ chỗ đúng khóa.
+  4. Lộ trình 4 hiệp × 3 tháng (tháng tự tính từ ngày khai giảng), tuần học mẫu 10 ca, bộ kỹ năng, so sánh 2 khóa (điểm giống nhau gom 1 dòng mờ, điểm khác nhau thành 2 cột xanh / đỏ).
+  5. "50 triệu, chia nhỏ ra": học phí / tháng / tuần / ca (≈ 520 ca = 52 tuần × 10 ca), khóa gồm những gì, cách đóng học phí đang mở.
+  6. Ghi danh: form + **giấy nhập môn** hiện tên người đăng ký khi gõ, đóng dấu đỏ "Đã ghi danh" + mã đăng ký khi gửi xong.
+  7. Hỏi đáp + nút Nhắn Zalo / Gọi hotline (lấy ở Liên hệ; hotline còn số mẫu "0909 xxx xxx" thì ẩn nút gọi). Điện thoại có thanh "Giữ chỗ" dính đáy màn hình.
 - Bấm góc đài / thanh "Con đường" để đổi khóa; mở thẳng một khóa: `/truyen-nghe#coach`, `/truyen-nghe#vo-si`. Đường dẫn tắt `/dao-tao`, `/day-nghe`, `/pro`.
 - **Ghi danh** lưu vào /admin → Đăng ký khóa học (chương trình `coach` / `fighter`, tên "Truyền Nghề · Coach" / "Truyền Nghề · Võ sĩ", kèm năm sinh + kinh nghiệm). Học phí server tự ghi theo Thiết lập. Khách chọn:
   - **Tư vấn trước** (luôn có): chưa thu tiền (số cần trả = 0).

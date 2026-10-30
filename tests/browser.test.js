@@ -254,12 +254,12 @@ module.exports = async function browserTests(env, t, browser) {
       cell1: document.querySelector('.tn-wk-c b').textContent, out: document.querySelector('.tn-bell b').textContent, fee: document.querySelector('.tn-fee-v').textContent, start: document.querySelector('.tn-start b').textContent,
       skills: document.querySelectorAll('.tn-skills li').length, hash: location.hash, nav: [...document.querySelectorAll('.tn-site a')].filter(a => a.offsetParent).map(a => a.textContent) })`);
     let st = await look();
-    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === 'Có việc làm tại HVP Academy' && st.fee === '50.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
+    t.ok(st.path === 'coach' && st.h1 === 'Truyền Nghề' && st.out === '100% cơ hội làm việc tại HVP Academy' && st.fee === '50.000.000đ' && st.start === 'Khai giảng 20.02.2027', 'mở trang: con đường Coach, học phí + ngày khai giảng từ thiết lập', st);
     t.ok(st.cells === 10 && st.skills === 6 && st.nav.includes('Cửa hàng') && st.nav.includes('Truyền Nghề'), 'tuần học 5 ngày × 2 ca, 6 kỹ năng, menu có "Cửa hàng" + "Truyền Nghề"', st);
     const coachCell = st.cell1;
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
     st = await look();
-    t.ok(st.path === 'fighter' && st.hash === '#vo-si' && st.round1 === 'Nền tảng và thể lực' && st.out === 'Thi đấu dưới tên The Corner' && st.cells === 10 && st.cell1 !== coachCell, 'đổi sang Võ sĩ: cùng khung 10 ca, nội dung + đích đến đổi theo', st);
+    t.ok(st.path === 'fighter' && st.hash === '#vo-si' && st.round1 === 'Nền tảng và thể lực' && st.out === '100% thi đấu dưới màu cờ The Corner' && st.cells === 10 && st.cell1 !== coachCell, 'đổi sang Võ sĩ: cùng khung 10 ca, nội dung + đích đến đổi theo', st);
     await page.goto(B + '/', { wait: 300 });
     await page.goto(B + '/truyen-nghe#vo-si', { wait: 1000 });
     st = await look();
@@ -270,7 +270,7 @@ module.exports = async function browserTests(env, t, browser) {
     t.ok(err === 'Nhập họ và tên', 'thiếu tên → báo lỗi rõ ràng', err);
     await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Võ Sĩ Trình Duyệt'; f.elements.year.value = '2003'; document.querySelector('.tn-lang [data-lang="en"]').click(); return 1; })()`);
     st = await page.eval(`({ h1: document.querySelector('.tn-hero h1').textContent, name: document.querySelector('.tn-form').elements.name.value, phone: document.querySelector('.tn-form').elements.phone.value, out: document.querySelector('.tn-bell b').textContent })`);
-    t.ok(st.h1 === 'Pro Pathways' && st.out === 'Fight under the name The Corner' && st.name === 'Võ Sĩ Trình Duyệt' && st.phone === '0912 345 678', 'tiếng Anh: đổi chữ, giữ thông tin đã gõ', st);
+    t.ok(st.h1 === 'Pro Pathways' && st.out === '100% fighting in The Corner colours' && st.name === 'Võ Sĩ Trình Duyệt' && st.phone === '0912 345 678', 'tiếng Anh: đổi chữ, giữ thông tin đã gõ', st);
     const before = (await api('/api/registrations')).length;
     await page.eval(`document.querySelector('.tn-form [type=submit]').click(); 1`);
     const ok = await page.until(`!!document.querySelector('.tn-ok')`, 8000);
@@ -290,7 +290,7 @@ module.exports = async function browserTests(env, t, browser) {
     await page.eval(`document.querySelector('.tn-q-res [data-go="dang-ky"]').click(); 1`);
     await page.eval(`(() => { const n = document.querySelector('.tn-form [name=name]'); n.value = 'Trần Thị Bình'; n.dispatchEvent(new Event('input', { bubbles: true })); return 1; })()`);
     st = await page.eval(`({ path: document.body.dataset.path, name: document.querySelector('[data-cert-name]').textContent, out: document.querySelector('.tn-cert-dl div:nth-child(2) dd').textContent, pay: !!document.querySelector('[name=pay]') })`);
-    t.ok(st.path === 'fighter' && st.name === 'Trần Thị Bình' && st.out === 'Thi đấu dưới tên The Corner' && !st.pay, 'bấm "Giữ chỗ khóa Võ sĩ" → form chọn sẵn Võ sĩ, giấy nhập môn hiện tên đang gõ; chưa có tài khoản nhận tiền → chỉ đăng ký tư vấn', st);
+    t.ok(st.path === 'fighter' && st.name === 'Trần Thị Bình' && st.out === '100% thi đấu dưới màu cờ The Corner' && !st.pay, 'bấm "Giữ chỗ khóa Võ sĩ" → form chọn sẵn Võ sĩ, giấy nhập môn hiện tên đang gõ; chưa có tài khoản nhận tiền → chỉ đăng ký tư vấn', st);
     // có tài khoản nhận tiền + tiền cọc → chọn "Đặt cọc" → mã QR đúng số cọc ngay sau khi gửi
     await api('/api/cms', { method: 'PUT', body: { payment: { bankBin: '970436', bankAccount: '0123456789', bankHolder: 'DAPPER COMBAT' } } });
     await api('/api/settings', { method: 'PUT', body: { course: { careerDeposit: 5000000, careerSeats: 20 } } });
