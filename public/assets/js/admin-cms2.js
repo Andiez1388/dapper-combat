@@ -402,7 +402,7 @@
   // ═══ Mã tùy chỉnh ══════════════════════════════════════════════════════════
   var CODE_BOXES = [
     ['css', 'CSS thêm vào mọi trang', 'Chỉnh giao diện bằng CSS. Ví dụ: .nav { letter-spacing: 0.1em; }'],
-    ['head', 'Mã gắn vào <head>', 'Ví dụ: Google Analytics, Facebook Pixel, mã xác minh Google Search Console.'],
+    ['head', 'Mã gắn vào <head>', 'Ví dụ: Google Analytics, mã xác minh Google Search Console. Facebook Pixel có ô riêng ở Thiết lập → Thương hiệu & menu.'],
     ['body', 'Mã gắn cuối trang', 'Ví dụ: khung chat (Messenger, Zalo, Tawk.to…).'],
   ];
   function codeVal(k) { var v = K.effGet('code', k); return v == null ? '' : String(v); }

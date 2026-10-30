@@ -369,6 +369,35 @@ module.exports = async function browserTests(env, t, browser) {
     errs('Truyền Nghề + Ranking sửa ở /admin');
   });
 
+  t.section('SEO + Facebook Pixel (Thiết lập → Thương hiệu & menu)');
+  await t.run('seo + pixel', async () => {
+    const html = u => fetch(B + u).then(r => r.text());
+    const ld = h => [...h.matchAll(/<script type="application\/ld\+json">([^<]*)<\/script>/g)].map(m => JSON.parse(m[1])['@type']);
+    const [tn, rk, sh] = await Promise.all(['/truyen-nghe', '/vo-si/nguyen-hoang-long', '/shop'].map(html));
+    t.ok(ld(tn).join() === 'BreadcrumbList,Course,Course' && ld(rk).join() === 'BreadcrumbList,Person' && ld(sh).join() === 'BreadcrumbList,ItemList',
+      'dữ liệu cho Google: breadcrumb + 2 khóa Truyền Nghề, hồ sơ võ sĩ, danh sách sản phẩm', [ld(tn), ld(rk), ld(sh)]);
+    t.ok([tn, rk, sh].every(h => /<meta [^>]*property="og:image" content="https?:\/\/[^"]+">/.test(h) && h.includes('name="twitter:card"')), 'ảnh chia sẻ là đường dẫn đầy đủ, có twitter:card');
+
+    const ID = '123456789012345', tag = "fbq('init','" + ID + "')";
+    await api('/api/settings', { method: 'PUT', body: { brand: { fbPixel: "<script>fbq('init', '" + ID + "'); fbq('track', 'PageView');</script>" } } });
+    const pub = ['/', '/shop', '/shop/' + slug, '/khoa-hoc', '/truyen-nghe', '/xep-hang', '/vo-si/nguyen-hoang-long', '/trang/dieu-khoan-su-dung'];
+    const on = await Promise.all(pub.map(u => html(u).then(h => h.includes(tag))));
+    const off = await Promise.all(['/admin', `/phieu/${s.code}?k=${s.k}`].map(u => html(u).then(h => h.includes('fbq('))));
+    t.ok(on.every(Boolean) && !off.some(Boolean), 'dán cả đoạn mã Pixel → lấy đúng ID, gắn vào mọi trang công khai, không gắn ở /admin và phiếu xác nhận', { on, off });
+    // chặn tải fbevents.js thật (không gọi Facebook khi kiểm tra) → lệnh fbq nằm lại trong hàng đợi
+    await page.send('Network.enable');
+    await page.send('Network.setBlockedURLs', { urls: ['*connect.facebook.net*'] });
+    await page.goto(B + '/shop/' + slug, { wait: 1500 });
+    await page.eval(`(() => { const p = PRODUCTS.find(x => x.id === detailId), v = DC.firstVariant(p); addToCart(p.id, v[0], v[1], 1); showCheckout(); return 1; })()`);
+    const q = await page.eval(`(window.fbq && fbq.queue || []).map(a => a[0] + ':' + a[1])`);
+    t.ok(['init:' + ID, 'track:PageView', 'track:ViewContent', 'track:AddToCart', 'track:InitiateCheckout'].every(x => q.includes(x)), 'Pixel gửi sự kiện: xem trang, xem sản phẩm, thêm vào giỏ, bắt đầu thanh toán', q);
+    await page.eval(`localStorage.removeItem('dc_cart'); 1`);
+    await page.send('Network.setBlockedURLs', { urls: [] });
+    await api('/api/settings', { method: 'PUT', body: { brand: { fbPixel: '' } } });
+    t.ok(!(await html('/')).includes('fbq('), 'xóa ID → gỡ Pixel khỏi trang');
+    errs('SEO + Pixel');
+  });
+
   t.section('Yêu cầu tư vấn setup trên trang');
   await t.run('tư vấn', async () => {
     const before = (await api('/api/consults')).length;

@@ -2,6 +2,19 @@
 (function () {
   var DC = window.DC = {};
 
+  /* Facebook Pixel (/admin → Thiết lập → Thương hiệu & menu): gửi sự kiện chuẩn khi trang đã gắn Pixel
+     (không gửi khi /admin mở trang để "Xem trên trang") */
+  DC.track = function (ev, params) {
+    try { if (typeof window.fbq === 'function' && !/[?&]cms=/.test(location.search)) window.fbq('track', ev, params || {}); } catch (e) { /* bỏ qua */ }
+  };
+  // gửi xong đơn hàng / đăng ký / yêu cầu tư vấn → Purchase / Lead
+  var trackSent = function (path, body, d) {
+    if (path === '/orders') DC.track('Purchase', { value: d.total, currency: 'VND', content_type: 'product', content_ids: (body.items || []).map(function (i) { return i.id; }), num_items: (body.items || []).reduce(function (n, i) { return n + (i.qty || 0); }, 0) });
+    else if (path === '/registrations') DC.track('Lead', { content_name: body.program || 'registration' });
+    else if (path === '/consults') DC.track('Lead', { content_name: 'setup' });
+    else if (path === '/subscribe') DC.track('Lead', { content_name: 'newsletter' });
+  };
+
   // lỗi trả về có err.status: mã HTTP (vd 404), 0 = mất mạng
   DC.api = function (path, body, method) {
     return fetch('/api' + path, {
@@ -11,6 +24,7 @@
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (!r.ok) { var e = new Error(d.error || DC.tx('global.err.send', 'Không gửi được, vui lòng thử lại.', 'Could not send, please try again.')); e.status = r.status; e.data = d; throw e; }
+        if (body && !method) trackSent(path, body, d);
         return d;
       });
     }, function () {

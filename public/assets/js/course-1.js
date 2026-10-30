@@ -340,8 +340,6 @@ function cfinLabels(){
   if(d)[].forEach.call(d.children,function(b,i){b.setAttribute("aria-label",cv3T(DC.x("course.regproc.j3",0,"Gói "),DC.x("course.regproc.j3",1,"Plan "))+(i+1));});
 }
 (function(){
-  /* gallery: ảnh không phải link — bỏ href="#" để bấm không bị nhảy về đầu trang */
-  document.querySelectorAll(".cgallery a").forEach(function(a){a.removeAttribute("href");});
   /* quy trình đăng ký: thêm lối đăng ký ngay dưới 4 bước */
   var rg=document.querySelector(".reg-grid");if(rg)rg.insertAdjacentHTML("afterend",'<div class="cfin-reg" id="cfinReg"></div>');
   /* bảng giá mobile: vuốt ngang, gói nổi bật đứng đầu, chấm chỉ vị trí */

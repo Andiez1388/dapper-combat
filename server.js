@@ -43,6 +43,7 @@ function sendPage(req, res, file, status = 200, head = '', edit = null) {
   let body = cms.transformable(rel) ? cms.transform(rel, raw) : raw;
   if (edit) body = edit(body);
   if (head) body = body.replace('</head>', head + '</head>');
+  if (rel.endsWith('.html')) body = absOg(req, body);
   const etag = '"' + crypto.createHash('sha1').update(body).digest('base64').slice(0, 22) + '"';
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('ETag', etag);
@@ -61,10 +62,20 @@ const attr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').repla
 const baseUrl = req => ((settings.all().notify || {}).siteUrl || process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
 const abs = (req, u) => (/^\//.test(u || '') ? baseUrl(req) + u : u || '');
 const ldJson = o => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
+// ld = 1 khối hoặc mảng khối dữ liệu có cấu trúc
 function seoHead(req, pathName, ld) {
   const url = attr(baseUrl(req) + pathName);
-  return `<link rel="canonical" href="${url}"><meta property="og:url" content="${url}">` + (ld ? ldJson(ld) : '');
+  return `<link rel="canonical" href="${url}"><meta property="og:url" content="${url}"><meta name="twitter:card" content="summary_large_image">` + [].concat(ld || []).map(ldJson).join('');
 }
+// đường dẫn trang trên Google (BreadcrumbList): [[tên, đường dẫn], …] sau "Trang chủ"
+const crumbs = (req, items) => ({ '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [['Trang chủ', '/']].concat(items).map(([name, u], i) => ({ '@type': 'ListItem', position: i + 1, name, item: baseUrl(req) + u })) });
+const ORG = req => ({ '@type': 'Organization', name: 'Dapper Combat', url: baseUrl(req) + '/' });
+// ảnh chia sẻ mặc định (Facebook, Zalo): ảnh chia sẻ của Trang chủ (/admin → Hình ảnh → Trang chủ → SEO)
+const shareImg = () => cms.mediaUrl('home.seo.og');
+const okImg = u => (u && !/\.svg(\?|$)/i.test(u) ? u : '');   // Facebook không đọc ảnh SVG
+// og:image dạng /assets/… → đường dẫn đầy đủ (Facebook, Zalo chỉ đọc đường dẫn đầy đủ)
+const absOg = (req, html) => html.replace(/(<meta [^>]*property="og:image" content=")(\/[^"]*")/g, (m, a, u) => a + attr(baseUrl(req)) + u);
 // phòng tập (Trang chủ): tên, địa chỉ, giờ mở cửa, mạng xã hội — lấy từ /admin → Liên hệ
 const WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const OPEN_DAYS = { '1-6': [1, 2, 3, 4, 5, 6], '0-6': [1, 2, 3, 4, 5, 6, 0], '1-5': [1, 2, 3, 4, 5], '1-6,0': [1, 2, 3, 4, 5, 6, 0] };
@@ -155,7 +166,9 @@ app.get('/shop/:slug', (req, res, next) => {
   }
   const file = path.join(PUB, 'shop.html'), canon = '/shop/' + api.productSlug(p);
   let html = cms.transform('shop.html', fs.readFileSync(file, 'utf8'));
-  const rawDesc = p.seoDesc || ((p.desc && p.desc.vi) || '').slice(0, 300);
+  // mô tả Google: "Mô tả SEO" của sản phẩm, không có thì mô tả sản phẩm (ngắn quá thì thêm giá — Google hiện ~150 ký tự)
+  const pd = ((p.desc && p.desc.vi) || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+  const rawDesc = p.seoDesc || (pd.length < 110 ? (pd ? pd.replace(/[.!…]?$/, '.') + ' ' : '') + `Giá ${Number(p.price || 0).toLocaleString('vi-VN')}₫, mua online tại Dapper Combat.` : pd);
   const title = attr(p.seoTitle || p.name + ' — Dapper Combat'), desc = attr(rawDesc);
   // dữ liệu sản phẩm cho Google (giá, còn hàng, ảnh)
   const ld = {
@@ -170,31 +183,44 @@ app.get('/shop/:slug', (req, res, next) => {
     .replace(/(<meta[^>]*name="description" content=")[^"]*"/, `$1${desc}"`)
     .replace(/(property="og:description" content=")[^"]*"/, `$1${desc}"`)
     .replace(/(property="og:image" content=")[^"]*"/, `$1${attr(abs(req, p.img))}"`)
-    .replace('</head>', seoHead(req, canon, ld) + '</head>');
+    .replace('</head>', seoHead(req, canon, [ld, crumbs(req, [['Cửa hàng', '/shop'], [p.name, canon]])]) + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(html);
 });
 // trang thanh toán: không cho Google lập chỉ mục (trùng nội dung /shop)
 app.get('/shop/checkout', (req, res) => {
-  const html = cms.transform('shop.html', fs.readFileSync(path.join(PUB, 'shop.html'), 'utf8')).replace('</head>', '<meta name="robots" content="noindex"></head>');
+  const html = absOg(req, cms.transform('shop.html', fs.readFileSync(path.join(PUB, 'shop.html'), 'utf8')).replace('</head>', '<meta name="robots" content="noindex"></head>'));
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(html);
 });
-app.get('/shop', page('shop.html', '/shop'));
+app.get('/shop', page('shop.html', '/shop', req => [crumbs(req, [['Cửa hàng', '/shop']]), { '@context': 'https://schema.org', '@type': 'ItemList', name: 'Cửa hàng Dapper Combat',
+  itemListElement: api.publicProducts().map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: baseUrl(req) + '/shop/' + api.productSlug(p) })) }]));
 app.get('/shop/*', page('shop.html'));
-app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc'));
-app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup'));
+app.get('/khoa-hoc', page('khoa-hoc.html', '/khoa-hoc', req => crumbs(req, [['Khóa học', '/khoa-hoc']])));
+app.get('/dich-vu-setup', page('dich-vu-setup.html', '/dich-vu-setup', req => [crumbs(req, [['Dịch vụ Setup', '/dich-vu-setup']]),
+  { '@context': 'https://schema.org', '@type': 'Service', name: 'Dịch vụ setup phòng tập Boxing', serviceType: 'Setup phòng tập Boxing', provider: ORG(req), url: baseUrl(req) + '/dich-vu-setup' }]));
 // Truyền Nghề: đào tạo coach / võ sĩ từ con số 0 (khóa 1 năm, học phí + ngày khai giảng ở /admin → Thiết lập → Học phí & lịch tập)
 // tiêu đề tab + mô tả Google: /admin → Nội dung website → Truyền Nghề → SEO
 const seoText = (html, title, desc) => html.replace(/<title>[^<]*<\/title>/, m => (title ? `<title>${attr(title)}</title>` : m))
-  .replace(/(<meta name="description" content=")[^"]*/, (m, a) => (desc ? a + attr(desc) : m));
-app.get('/truyen-nghe', (req, res) => sendPage(req, res, path.join(PUB, 'truyen-nghe.html'), 200, seoHead(req, '/truyen-nghe'),
-  html => seoText(html, cms.textVi('career.title'), cms.textVi('career.seo.desc'))));
+  .replace(/(<meta (?:name="description"|property="og:description") content=")[^"]*/g, (m, a) => (desc ? a + attr(desc) : m));
+// 2 khóa cho Google (Course): tên, nội dung, đầu ra (chữ sửa ở /admin), học phí + ngày khai giảng (Thiết lập)
+function careerLd(req) {
+  const c = settings.all().course;
+  const course = (k, price) => ({ '@context': 'https://schema.org', '@type': 'Course', name: 'Truyền Nghề — Khóa ' + cms.textVi('career.data.path.' + k + '.name'),
+    description: cms.textVi('career.data.path.' + k + '.content') + '. ' + cms.textVi('career.data.path.' + k + '.out') + '.', provider: ORG(req), url: baseUrl(req) + '/truyen-nghe',
+    offers: { '@type': 'Offer', category: 'Paid', price, priceCurrency: 'VND' }, hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'Onsite', ...(c.careerStart ? { startDate: c.careerStart } : {}) } });
+  return [crumbs(req, [['Truyền Nghề', '/truyen-nghe']]), course('coach', c.careerPriceCoach), course('fighter', c.careerPriceFighter)];
+}
+app.get('/truyen-nghe', (req, res) => sendPage(req, res, path.join(PUB, 'truyen-nghe.html'), 200, seoHead(req, '/truyen-nghe', careerLd(req)),
+  html => seoText(html, cms.textVi('career.title'), cms.textVi('career.seo.desc'))
+    .replace(/(<meta property="og:image" content=")[^"]*/, (m, a) => a + attr(cms.mediaUrl('career.hero.coach')))));
 app.get('/admin', page('admin/index.html'));
 // Dapper Combat Academy Ranking (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> · /so-sanh — chung khuôn public/xep-hang.html
 // ld = dữ liệu có cấu trúc cho Google (võ sĩ: Person, sự kiện: SportsEvent)
-function rankPage(req, res, canon, title, desc, status = 200, ld = null) {
-  let html = fs.readFileSync(path.join(PUB, 'xep-hang.html'), 'utf8');
+// img = ảnh chia sẻ (ảnh võ sĩ / poster sự kiện), không có thì ảnh chia sẻ mặc định
+function rankPage(req, res, canon, title, desc, status = 200, ld = null, img = '') {
+  let html = cms.transform('xep-hang.html', fs.readFileSync(path.join(PUB, 'xep-hang.html'), 'utf8'));
+  html = html.replace('<meta property="og:type"', `<meta property="og:image" content="${attr(abs(req, okImg(img) || shareImg()))}"><meta property="og:type"`);
   if (title) html = html.replace(/<title>[^<]*<\/title>/, `<title>${attr(title)} — Dapper Combat Academy Ranking</title>`).replace('<meta property="og:type"', `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
   if (desc) html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}"><meta property="og:description" content="${attr(desc)}">`);
   html = html.replace('</head>', (status === 200 ? seoHead(req, canon, ld) : '<meta name="robots" content="noindex">') + '</head>');
@@ -203,7 +229,11 @@ function rankPage(req, res, canon, title, desc, status = 200, ld = null) {
 }
 const ACADEMY = { '@type': 'SportsOrganization', name: 'Dapper Combat Academy', sport: 'Boxing' };
 // tiêu đề tab + mô tả Google sửa ở /admin → Nội dung website → Academy Ranking (mặc định trong lib/rank-seo.js)
-for (const p of require('./lib/rank-seo').PAGES) app.get(p.path, (req, res) => rankPage(req, res, p.path, cms.textVi('ranking.' + p.id + '.title', p.title), cms.textVi('ranking.seo.' + p.id + '.desc', p.desc)));
+const RANK_HOME = ['Academy Ranking', '/xep-hang'];
+for (const p of require('./lib/rank-seo').PAGES) app.get(p.path, (req, res) => {
+  const title = cms.textVi('ranking.' + p.id + '.title', p.title);
+  rankPage(req, res, p.path, title, cms.textVi('ranking.seo.' + p.id + '.desc', p.desc), 200, crumbs(req, p.id === 'rank' ? [RANK_HOME] : [RANK_HOME, [title, p.path]]));
+});
 // phiếu thông tin võ sĩ in ra giấy (A4, 2 trang): mục A1–A6 / B1–B3 khớp form /admin → Academy Ranking → Võ sĩ
 app.get('/phieu-vo-si', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
@@ -220,16 +250,16 @@ app.get('/vo-si/:slug', (req, res) => {
   const r = f.record;
   rankPage(req, res, '/vo-si/' + f.slug, f.name + (f.nickname ? ` “${f.nickname}”` : ''),
     `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.DIVISIONS.find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — Dapper Combat Academy Ranking.',
-    200, { '@context': 'https://schema.org', '@type': 'Person', name: f.name, ...(f.nickname ? { alternateName: f.nickname } : {}), gender: f.gender === 'f' ? 'Female' : 'Male',
-      ...(f.height ? { height: f.height + ' cm' } : {}), ...(f.weight ? { weight: f.weight + ' kg' } : {}), ...(f.photo && !/.svg$/.test(f.photo) ? { image: abs(req, f.photo) } : {}), url: baseUrl(req) + '/vo-si/' + f.slug, memberOf: ACADEMY });
+    200, [crumbs(req, [RANK_HOME, ['Thông tin võ sĩ', '/vo-si'], [f.name, '/vo-si/' + f.slug]]), { '@context': 'https://schema.org', '@type': 'Person', name: f.name, ...(f.nickname ? { alternateName: f.nickname } : {}), gender: f.gender === 'f' ? 'Female' : 'Male',
+      ...(f.height ? { height: f.height + ' cm' } : {}), ...(f.weight ? { weight: f.weight + ' kg' } : {}), ...(f.photo && !/.svg$/.test(f.photo) ? { image: abs(req, f.photo) } : {}), url: baseUrl(req) + '/vo-si/' + f.slug, memberOf: ACADEMY }], f.photo);
 });
 app.get('/su-kien/:slug', (req, res) => {
   const e = ranking.publicData().events.find(x => x.slug === String(req.params.slug).toLowerCase());
   if (!e) return rankPage(req, res, '', 'Không tìm thấy sự kiện', '', 404);
-  rankPage(req, res, '/su-kien/' + e.slug, e.name.vi, (e.desc.vi || e.name.vi) + ' — ' + e.date.split('-').reverse().join('/') + ', ' + [e.venue, e.city].filter(Boolean).join(', '), 200, {
+  rankPage(req, res, '/su-kien/' + e.slug, e.name.vi, (e.desc.vi || e.name.vi) + ' — ' + e.date.split('-').reverse().join('/') + ', ' + [e.venue, e.city].filter(Boolean).join(', '), 200, [crumbs(req, [RANK_HOME, ['Lịch sự kiện', '/su-kien'], [e.name.vi, '/su-kien/' + e.slug]]), {
     '@context': 'https://schema.org', '@type': 'SportsEvent', name: e.name.vi, startDate: e.date + (e.time ? 'T' + e.time + ':00+07:00' : ''), sport: 'Boxing', url: baseUrl(req) + '/su-kien/' + e.slug,
     eventStatus: 'https://schema.org/EventScheduled', organizer: ACADEMY, ...(e.desc.vi ? { description: e.desc.vi } : {}),
-    ...(e.venue || e.city ? { location: { '@type': 'Place', name: e.venue || e.city, address: e.city || '' } } : {}) });
+    ...(e.venue || e.city ? { location: { '@type': 'Place', name: e.venue || e.city, address: e.city || '' } } : {}) }], e.poster);
 });
 // phiếu xác nhận cho khách: /phieu/<mã đơn>?k=<khóa> (dữ liệu lấy qua /api/slip, cần đúng khóa)
 app.get('/phieu/:code', page('phieu.html'));

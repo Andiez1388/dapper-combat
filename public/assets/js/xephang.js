@@ -752,7 +752,7 @@
   var evTags = function (e) { return '<div class="xh-ev-tags">' + typeTag(e) + (e.status === 'pending' ? '<span class="xh-tag">' + esc(t('ev.pending')) + '</span>' : '') + '</div>'; };
   function eventBlock(e) {
     return '<article class="xh-ev"><header class="xh-ev-h">' + dateBlock(e.date) + '<div>' + evTags(e) + '<h2><a href="' + evHref(e) + '">' + esc(pick(e.name)) + '</a></h2>' + evMeta(e) + '</div>' +
-      '<a class="xh-btn" href="' + evHref(e) + '">' + esc(t('ev.detail')) + '</a></header>' + bouts(e) + '</article>';
+      '<a class="xh-btn" href="' + evHref(e) + '">' + esc(t('ev.detail')) + '<span class="xh-vh"> — ' + esc(pick(e.name)) + '</span></a></header>' + bouts(e) + '</article>';
   }
   // trận tâm điểm: trận chính của sự kiện sắp tới gần nhất, đồng hồ đếm ngược + dự đoán theo điểm
   function featured() {

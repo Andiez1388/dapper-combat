@@ -467,7 +467,7 @@
   if (/[?&]cmsdump\b/.test(location.search)) window.__cmsDump = SEEN;
   var QN = QUIZ.reduce(function (s, g) { return s + g.q.length; }, 0);
   // "Xem trên trang" từ /admin (?cms=<khóa>) với chữ riêng của khóa Võ sĩ → mở sẵn góc Võ sĩ
-  var path = location.hash === '#vo-si' || location.hash === '#fighter' || /[?&]cms=career.[^&]*fighter/.test(location.search) ? 'fighter' : 'coach';
+  var path = location.hash === '#vo-si' || location.hash === '#fighter' || /[?&]cms=career\.[^&]*fighter/.test(location.search) ? 'fighter' : 'coach';
   var quiz = { i: 0, ans: [] };
 
   /* ─── Số, ngày ───────────────────────────────────────────────────────── */

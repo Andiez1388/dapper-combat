@@ -74,7 +74,8 @@ module.exports = async function rankingTests(env, t) {
     const ev = (await pub('/api/ranking')).j.events[0];
     r = await pub('/su-kien/' + ev.slug);
     t.ok(r.s === 200 && r.t.includes(ev.name.vi), 'trang chi tiết sự kiện', ev.slug);
-    const ld = html => { const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s); return m ? JSON.parse(m[1]) : null; };
+    // khối dữ liệu chính (bỏ qua BreadcrumbList)
+    const ld = html => [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)].map(m => JSON.parse(m[1])).find(j => j['@type'] !== 'BreadcrumbList') || null;
     const evLd = ld(r.t), pLd = ld((await pub('/vo-si/nguyen-hoang-long')).t);
     t.ok(evLd && evLd['@type'] === 'SportsEvent' && evLd.startDate.startsWith(ev.date) && pLd && pLd['@type'] === 'Person' && pLd.alternateName === 'Rồng Đen' && pLd.memberOf.name === 'Dapper Combat Academy',
       'dữ liệu có cấu trúc cho Google: sự kiện (SportsEvent), võ sĩ (Person)', { evLd, pLd });

@@ -153,7 +153,7 @@
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
-    brand: ['logo', 'favicon', 'mapQuery', 'nav'],
+    brand: ['logo', 'favicon', 'mapQuery', 'fbPixel', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
   function changed(g) {
@@ -583,7 +583,12 @@
         '<label class="field"><span class="field__label">Địa chỉ hiển thị trên bản đồ</span>' +
         '<input type="text" maxlength="200" data-text data-g="brand" data-k="mapQuery" value="' + esc(d.mapQuery || '') + '" placeholder="VD: 30 Đường 128, Phước Long, TP. Thủ Đức, TP. Hồ Chí Minh" autocomplete="off">' +
         '<small class="field__hint">Để trống = dùng bản đồ có sẵn của Trang chủ.</small></label>' +
-        '<div class="map-prev" data-map-prev></div>');
+        '<div class="map-prev" data-map-prev></div>') +
+      panel('Facebook Pixel (quảng cáo Facebook)',
+        '<label class="field"><span class="field__label">ID Pixel</span>' +
+        '<input type="text" maxlength="4000" inputmode="numeric" data-text data-g="brand" data-k="fbPixel" value="' + esc(d.fbPixel || '') + '" placeholder="VD: 123456789012345" autocomplete="off" spellcheck="false">' +
+        '<small class="field__hint">Lấy ở Facebook Events Manager → Nguồn dữ liệu → Pixel (dãy 15–16 chữ số). Dán ID hoặc dán cả đoạn mã Pixel, hệ thống tự lấy ID. Để trống = không gắn.</small></label>' +
+        '<p class="set-note">Gắn vào mọi trang (trừ trang quản trị và phiếu xác nhận của khách). Tự gửi sự kiện: xem trang, xem sản phẩm, thêm vào giỏ, bắt đầu thanh toán, đặt hàng (kèm giá trị đơn), đăng ký khóa học / Truyền Nghề / tư vấn setup / nhận tin (Lead). Kiểm tra bằng tiện ích Meta Pixel Helper trên Chrome.</p>');
   }
   function logoPreview(url) {
     var src = A.safeImg(url);

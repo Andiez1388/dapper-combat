@@ -199,6 +199,7 @@ Lưu ở `data/settings.json`.
   - **Gói Group Training:** thêm / bớt / sắp xếp gói (số tháng, giá, ghi chú, tên riêng, nhãn "Hời nhất"). Giá mỗi tháng và tiền tiết kiệm tự tính; thẻ giá trên trang, nút chọn gói trong form đăng ký và số tiền server lưu đều theo đây.
   - Giá hiển thị trên trang, form đăng ký, mã QR và số tiền server lưu đều lấy theo mục này.
   - **Lịch tập:** thêm / bớt / sắp xếp hàng (giờ, tên lớp, mô tả, màu, ngày có lớp T2–CN, bấm vào hàng mở form đăng ký chương trình nào / lớp nào).
+- **Facebook Pixel** (Thương hiệu & menu): dán ID hoặc cả đoạn mã Pixel (server lấy dãy số). Gắn mã gốc + PageView vào mọi trang công khai (cả Truyền Nghề, Academy Ranking, trang phụ), trừ /admin và phiếu xác nhận. `DC.track` (site.js) gửi ViewContent (xem sản phẩm), AddToCart, InitiateCheckout, Purchase (đặt hàng, kèm giá trị đơn), Lead (đăng ký khóa học / Truyền Nghề, tư vấn setup, nhận tin); không gửi khi trang mở bằng "Xem trên trang" của /admin. Mã tùy chỉnh (`<head>`, cuối trang, CSS) cũng áp lên Truyền Nghề và Academy Ranking.
 - **Thương hiệu & menu:** bật / tắt từng mục trên menu (Trang chủ, Cửa hàng, Khóa học, Dịch vụ Setup, Academy Ranking, Truyền Nghề — mặc định ẩn Dịch vụ Setup; tắt chỉ ẩn khỏi menu trên cùng + menu điện thoại, trang vẫn còn); logo trên thanh menu, favicon, địa chỉ để hiện Google Maps ở Trang chủ.
 - **Thông báo:** Telegram / email báo đơn mới (ưu tiên hơn `.env`).
   - **Mẫu tin** cho đơn hàng, đăng ký khóa học, yêu cầu tư vấn: tiêu đề và nội dung với biến `{code}`, `{name}`, `{total}`, `{items}`…; dòng có biến trống tự bỏ; xem trước và gửi thử.
@@ -298,7 +299,10 @@ Chủ shop chỉ cần sửa **tiếng Việt**. Khi bấm Lưu ở Chữ trên 
 ## SEO
 
 - `/sitemap.xml` (trang chính, sản phẩm đang bán, trang phụ đã bật) và `/robots.txt` tự tạo; chặn `/admin`, `/api`, `/phieu`, trang thanh toán.
-- Mỗi trang có link chuẩn (canonical). Trang chủ có dữ liệu phòng tập cho Google (địa chỉ, giờ mở cửa, mạng xã hội, tên doanh nghiệp, MST); trang sản phẩm có dữ liệu sản phẩm (giá, còn hàng, ảnh).
+- Mỗi trang có link chuẩn (canonical), `og:image` đường dẫn đầy đủ (Truyền Nghề: ảnh thẻ Coach; võ sĩ / sự kiện: ảnh võ sĩ / poster, ảnh SVG hoặc chưa có thì ảnh chia sẻ của Trang chủ) và `twitter:card`.
+- Dữ liệu cho Google: Trang chủ = phòng tập (địa chỉ, giờ mở cửa, mạng xã hội, tên doanh nghiệp, MST); sản phẩm = Product (giá, còn hàng, ảnh); Truyền Nghề = 2 Course (tên, nội dung, đầu ra, học phí, ngày khai giảng); Dịch vụ Setup = Service; Shop = danh sách sản phẩm; võ sĩ = Person; sự kiện = SportsEvent; mọi trang con có BreadcrumbList (Trang chủ › … › trang).
+- Mô tả Google của sản phẩm: "Mô tả SEO" của sản phẩm, không có thì mô tả sản phẩm (dưới 110 ký tự thì thêm giá).
+- Link Google đi theo được: chip danh mục Shop và breadcrumb sản phẩm là link `/shop?cat=<mã>` (mở sẵn danh mục đó), không còn `<a>` không có `href`.
 - Chọn tiếng Anh thì tiêu đề tab và mô tả cũng đổi sang tiếng Anh.
 - Cần điền **địa chỉ website** (Thiết lập → Thông báo) khi đưa lên mạng để link chuẩn và ảnh chia sẻ dùng đúng tên miền.
 
