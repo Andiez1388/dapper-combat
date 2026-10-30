@@ -189,6 +189,10 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.s === 200 && r.j.course.careerPriceFighter === 40000000 && r.j.course.careerStart === '2027-02-20', 'Truyền Nghề: lưu học phí, bỏ qua ngày khai giảng sai', r.j && r.j.course);
     r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerPriceFighter: 65000000, careerStart: '2027-02-20' } } });
     t.ok(r.s === 200 && r.j.course.careerPriceFighter === 65000000, 'Truyền Nghề: trả lại học phí mặc định');
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerCohort: '  K02 <b> ' } } });
+    t.ok(r.s === 200 && r.j.course.careerCohort === 'K02 b', 'Truyền Nghề: lưu tên khóa, bỏ ký tự lạ', r.j && r.j.course && r.j.course.careerCohort);
+    r = await req('/api/settings', { method: 'PUT', tok: T, body: { course: { careerCohort: '' } } });
+    t.ok(r.s === 200 && r.j.course.careerCohort === 'K01', 'Truyền Nghề: tên khóa để trống → K01');
     r = await req('/truyen-nghe');
     t.ok(r.s === 200 && /Truyền Nghề/.test(r.t) && /HVP Academy/.test(r.t) && /The Corner/.test(r.t), 'trang /truyen-nghe mở được');
     r = await req('/dao-tao');

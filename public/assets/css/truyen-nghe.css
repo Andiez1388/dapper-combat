@@ -14,7 +14,7 @@
   --acc:var(--blue);--acc-hi:var(--blue-hi);--acc-soft:var(--blue-soft);
   --serif:'Ysabeau','Georgia',serif;--cond:'Barlow Condensed','Arial Narrow',Arial,sans-serif;--sans:'Inter',Arial,Helvetica,sans-serif;
   margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;color-scheme:dark;
-  font-variant-numeric:lining-nums;
+  font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1;
 }
 .tn[data-path="fighter"]{--acc:var(--red);--acc-hi:var(--red-hi);--acc-soft:var(--red-soft);}
 .tn *,.tn *::before,.tn *::after{box-sizing:border-box;}
@@ -94,8 +94,11 @@
 .tn-side.fighter .tn-side-cta{background:var(--red);}
 .tn-side:hover .tn-side-cta{filter:brightness(1.12);}
 .tn-hero-mid{position:absolute;z-index:3;left:50%;top:clamp(36px,8vh,84px);transform:translateX(-50%);width:min(92%,980px);text-align:center;pointer-events:none;}
-.tn-special{margin:0 0 14px;}
-.tn-special span{display:inline-block;padding:6px 14px 5px;border:1px solid var(--gold);border-radius:999px;color:var(--gold-hi);background:rgba(0,0,0,0.35);font:600 16px/1 var(--cond);letter-spacing:0.04em;}
+.tn-special{margin:0 0 16px;}
+/* nhãn tên khóa: chữ vàng giãn rộng + ô K01 nền vàng, như nhãn vé đấu */
+.tn-cohort{display:inline-flex;align-items:stretch;border:1.5px solid var(--gold);background:rgba(8,9,11,0.62);box-shadow:0 8px 22px -10px rgba(0,0,0,0.9);}
+.tn-cohort span{display:flex;align-items:center;padding:9px 14px 8px 16px;color:var(--gold-hi);font:700 17px/1 var(--cond);letter-spacing:0.14em;text-transform:uppercase;}
+.tn-cohort b{display:flex;align-items:center;padding:7px 13px 6px;background:var(--gold);color:#14110a;font:800 23px/1 var(--cond);letter-spacing:0.04em;font-variant-numeric:lining-nums;}
 .tn-hero h1{font-size:clamp(68px,10.5vw,156px);line-height:1.1;letter-spacing:-0.015em;color:#fff;text-shadow:0 6px 50px rgba(0,0,0,0.65);}
 .tn-claim{margin:8px 0 0;font:italic 500 clamp(21px,2.3vw,32px)/1.3 var(--serif);color:#fff;text-shadow:0 2px 24px rgba(0,0,0,0.8);}
 
@@ -392,22 +395,19 @@
 .tn-plan .tn-btn{width:100%;}
 .tn-plans-ways{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 26px;margin:20px 0 0;padding:0;list-style:none;color:var(--muted);font-size:13.5px;}
 .tn-plans-ways li.free{color:var(--gold-hi);}
-/* tháng học đầu tiên: tờ lịch "Tháng 1" + 2 trường hợp hoàn học phí */
-.tn-trial{display:flex;gap:28px;margin-top:36px;padding:26px 28px;background:var(--panel);border:1px solid var(--line);}
-.tn-trial-cal{flex:none;align-self:flex-start;width:92px;margin:0;text-align:center;background:var(--paper);color:var(--paper-ink);box-shadow:0 12px 26px -12px rgba(0,0,0,0.8);transform:rotate(-3deg);}
-.tn-trial-cal small{display:block;padding:7px 0 6px;background:var(--red);color:#fff;font:800 15px/1 var(--cond);letter-spacing:0.06em;}
-.tn-trial-cal b{display:block;padding:4px 0 10px;font:800 60px/1 var(--cond);}
-.tn-trial-in{flex:1;min-width:0;}
-.tn-trial-in>h3{margin:0;font-size:clamp(24px,2.4vw,30px);line-height:1.2;}
-.tn-trial-in>h3+p{max-width:62ch;margin:6px 0 0;color:var(--ink-2);font-size:15.5px;}
-.tn-trial-cases{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+/* học tới khi thuần thục: học lại (màu khóa) · tháng đầu không phù hợp (vàng) · tự dừng (xám) */
+.tn-trial{margin-top:36px;padding:26px 28px;background:var(--panel);border:1px solid var(--line);}
+.tn-trial>h3{margin:0;font-size:clamp(24px,2.4vw,30px);line-height:1.2;}
+.tn-trial>p{max-width:64ch;margin:6px 0 0;color:var(--ink-2);font-size:15.5px;}
+.tn-trial-cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px;}
 .tn-trial-cases div{--c:var(--ink-2);padding:16px 18px;border:1px solid var(--line-2);border-left:4px solid var(--c);background:rgba(255,255,255,0.03);}
+.tn-trial-cases .re{--c:var(--acc);background:var(--acc-soft);}
 .tn-trial-cases .us{--c:var(--gold);background:rgba(200,168,90,0.08);}
+.tn-trial-cases .you b{color:var(--ink-2);}
 .tn-trial-cases small{display:block;color:var(--ink);font:700 16px/1.3 var(--cond);}
 .tn-trial-cases b{display:block;margin:8px 0 3px;color:#fff;font:800 38px/1 var(--cond);font-variant-numeric:lining-nums;}
 .tn-trial-cases .us b{color:var(--gold-hi);}
 .tn-trial-cases span{color:var(--ink-2);font-size:14.5px;}
-.tn-trial-note{margin:12px 0 0;color:var(--muted);font-size:13.5px;}
 .tn-strip-price small{display:block;margin-bottom:4px;color:var(--ink-2);font:600 15px/1.1 var(--cond);}
 
 
@@ -548,7 +548,8 @@
 .tn .tn-help-tel{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;color:#fff;text-decoration:none;}
 .tn-help-tel small{color:var(--gold-hi);font:700 15px/1 var(--cond);letter-spacing:0.04em;}
 .tn-help-tel b{font:800 34px/1 var(--cond);letter-spacing:0.02em;font-variant-numeric:lining-nums;}
-.tn .tn-help-tel:hover b{color:var(--gold-hi);}
+.tn a.tn-help-tel:hover b{color:var(--gold-hi);}
+.tn-help-b span.tn-btn{cursor:default;}
 .tn-help-visit{display:grid;gap:3px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line-2);color:var(--ink-2);font-size:14.5px;}
 .tn-help-visit b{color:var(--ink);font:700 17px/1.2 var(--cond);letter-spacing:0.02em;}
 .tn .tn-help-visit a{width:fit-content;margin-top:4px;color:var(--gold-hi);font:700 15px/1.2 var(--cond);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:4px;}
@@ -624,6 +625,8 @@
   .tn-split{height:auto;display:flex;flex-direction:column;background:var(--bg);}
   .tn-split::after{display:none;}
   .tn-hero-mid{position:static;order:-1;transform:none;width:auto;padding:34px 16px 26px;}
+  .tn-cohort span{padding:8px 10px 7px 12px;font-size:15px;letter-spacing:0.1em;}
+  .tn-cohort b{font-size:20px;}
   .tn-hero h1{font-size:clamp(54px,16vw,76px);}
   .tn-side{position:relative;height:300px;clip-path:none!important;}
   .tn-side img{width:100%;}
@@ -653,9 +656,7 @@
   .tn-bar-l,.tn-bar-out{display:none;}
   .tn-bar-in{gap:10px;min-height:56px;}
   .tn-seg button{padding:0 14px;font-size:17px;}
-  .tn-trial{flex-direction:column;gap:16px;padding:20px 16px;}
-  .tn-trial-cal{width:72px;}
-  .tn-trial-cal b{font-size:44px;}
+  .tn-trial{padding:20px 16px;}
   .tn-trial-cases{grid-template-columns:1fr;}
   .tn-q{padding:22px 16px 20px;}
   .tn-q-parts{gap:6px;}
@@ -738,6 +739,15 @@
     .tn-sk{display:grid;grid-row:span 4;grid-template-rows:subgrid;}
     .tn-sk-h{margin-bottom:4px;}
     .tn-sk .tn-skills{grid-row:span 3;grid-template-rows:subgrid;}
+  }
+}
+/* 2 thẻ học phí: ảnh, nhãn, 6 hàng nhận về và khối học phí nằm cùng hàng giữa 2 thẻ */
+@supports (grid-template-rows:subgrid){
+  @media (min-width:901px){
+    .tn-plans{row-gap:0;}
+    .tn-plan{display:grid;grid-row:span 9;grid-template-rows:subgrid;}
+    .tn-plan-get{grid-row:span 6;display:grid;grid-template-rows:subgrid;}
+    .tn-plan-price{margin-top:0;}
   }
 }
 @media (prefers-reduced-motion:reduce){
