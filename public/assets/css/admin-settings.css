@@ -394,3 +394,42 @@
 .pay-url .field__label { flex: 0 0 100%; margin: 0; }
 .pay-url code { flex: 1 1 260px; min-width: 0; padding: 6px 8px; background: var(--paper, #f6f6f6); border: 1px solid var(--line, #e5e5e5); font-size: 12px; overflow-wrap: anywhere; }
 .paylog { margin: 4px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+
+/* ── Yêu cầu file ảnh / video (admin-media.js) — dưới mọi nút tải ảnh / video ── */
+.mspec { margin: 10px 0 0; }
+.mspec dd { color: var(--ink); }
+.mspec + .set-msg, .mspec + .field, .mspec + .set-actions { margin-top: 10px; }
+.mspec-more { margin-top: 8px; font-size: 12px; line-height: 1.45; }
+.mspec-more > summary { cursor: pointer; color: var(--muted); }
+.mspec-more > summary:hover, .mspec-more[open] > summary { color: var(--ink); }
+.mspec-more > .mspec { margin-top: 6px; }
+
+/* ── Chuẩn bị chạy thật (admin-launch.js) ── */
+.lc-sum { display: grid; gap: 10px; padding: 16px 18px; margin-bottom: 16px; }
+.lc-sum__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lc-sum__n { margin: 0; font-size: 15px; }
+.lc-sum__ok { margin: 0; font-weight: 600; }
+.lc-bar { height: 8px; background: var(--grey); overflow: hidden; }
+.lc-bar > span { display: block; height: 100%; background: var(--ink); transition: width .3s var(--ease); }
+.lc-group { margin-bottom: 16px; }
+.lc-list { list-style: none; margin: 0; padding: 0; }
+.lc-item { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px 18px; border-top: 1px solid var(--line); }
+.lc-item:first-child { border-top: 0; }
+.lc-mark { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 13px; font-weight: 700; line-height: 1; }
+.lc-item--done .lc-mark { background: var(--ink); color: #fff; }
+.lc-item--todo .lc-mark { background: var(--red); color: #fff; }
+.lc-item--optional .lc-mark { background: var(--grey); color: var(--muted); }
+.lc-title { margin: 2px 0 0; font-weight: 600; font-size: 14px; }
+.lc-title .badge { margin-left: 6px; vertical-align: 1px; }
+.lc-detail { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.lc-item--todo .lc-detail { color: var(--ink); }
+.lc-meta { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.lc-act { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.lc-check { min-height: 32px; white-space: nowrap; }
+.lc-dash { margin-bottom: 16px; }
+.lc-dash__body { display: grid; gap: 10px; padding: 14px 18px; font-size: 13px; }
+.lc-dash__body p { margin: 0; }
+@media (max-width: 640px) {
+  .lc-item { grid-template-columns: 24px minmax(0, 1fr); padding: 14px 14px; }
+  .lc-act { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
+}

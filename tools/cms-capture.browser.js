@@ -91,7 +91,7 @@
     if (cover && box[0] / box[1] > 1.35) { w = Math.min(cap, 1920); h = Math.round(w * 9 / 16); }
     const full = m.d && m.d[0] >= 1200;
     return { key: c.key, section: m.sections[0] || c.section, sections: m.sections, natural: m.natural, box: { desktop: m.d, mobile: m.m }, hidden: !m.d && !m.m,
-      rec: { w, h, ratio: ratioName(w, h), maxKB: c.kind === 'video' ? 8000 : (full ? 600 : 350), format: c.kind === 'video' ? 'MP4 (H.264), không cần âm thanh, 6–15 giây' : 'JPG hoặc WebP', cover: m.bg || c.kind === 'video' || undefined } };
+      rec: { w, h, ratio: ratioName(w, h), maxKB: c.kind === 'video' ? (/\.hero\./.test(c.key) ? 3000 : 5000) : (full ? 600 : 350), format: c.kind === 'video' ? 'MP4 (H.264), không cần âm thanh, 6–15 giây' : 'JPG hoặc WebP', cover: m.bg || c.kind === 'video' || undefined } };
   });
   const r = await fetch('/api/cms/capture', { method: 'POST', headers: H, body: JSON.stringify({ fields, media: list }) });
   window.__capture = { fields, media: list };

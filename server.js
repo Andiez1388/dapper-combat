@@ -277,7 +277,7 @@ app.get('/vo-si/:slug', (req, res) => {
   if (!f) return rankPage(req, res, '', 'Không tìm thấy võ sĩ', '', 404);
   const r = f.record;
   rankPage(req, res, '/vo-si/' + f.slug, f.name + (f.nickname ? ` “${f.nickname}”` : ''),
-    `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.DIVISIONS.find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — Dapper Combat Academy Ranking.',
+    `${f.name}: thành tích ${r.w}-${r.l}-${r.d} (${r.ko} KO), ${f.points} điểm xếp hạng` + (f.rank && f.rank.div ? `, hạng ${f.rank.div}/${f.rank.divOf} ${(ranking.divisions().find(d => d.id === f.division) || {}).vi || ''}` : '') + ' — Dapper Combat Academy Ranking.',
     200, [crumbs(req, [RANK_HOME, ['Thông tin võ sĩ', '/vo-si'], [f.name, '/vo-si/' + f.slug]]), { '@context': 'https://schema.org', '@type': 'Person', name: f.name, ...(f.nickname ? { alternateName: f.nickname } : {}), gender: f.gender === 'f' ? 'Female' : 'Male',
       ...(f.height ? { height: f.height + ' cm' } : {}), ...(f.weight ? { weight: f.weight + ' kg' } : {}), ...(f.photo && !/.svg$/.test(f.photo) ? { image: abs(req, f.photo) } : {}), url: baseUrl(req) + '/vo-si/' + f.slug, memberOf: ACADEMY }], f.photo);
 });

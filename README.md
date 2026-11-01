@@ -250,6 +250,7 @@ Mục **Academy Ranking** trên menu (menu thả xuống): **Lịch sự kiện*
 - **Điểm kỹ năng:** HLV chấm 6 kỹ năng (kỹ thuật, tốc độ, sức mạnh, phòng thủ, thể lực, di chuyển) thang 100 → trung bình × 10. Mỗi lần đổi điểm được lưu thành một lần chấm (ngày, ghi chú) — hồ sơ hiện lịch sử.
 - **Điểm thắng thua:** mỗi trận / sparring có chấm điểm tính kiểu Elo như BoxRec: `E = 1 / (1 + 10^((điểm đối thủ − điểm mình) / 400))`, cộng `40 × (kết quả − E)`; thắng KO / TKO / RTD / DQ × 1.25; hòa = 0.5; không kết quả (NC) không tính.
 - **Điểm xếp hạng** = điểm kỹ năng + điểm thắng thua. **Hạng:** Tinh anh ≥ 850, A ≥ 750, B ≥ 650, C ≥ 550, còn lại Tân binh. **Sao** 1–5 theo thứ hạng trong cùng giới tính. **Thứ hạng** theo giới tính (toàn Academy) và theo hạng cân; võ sĩ “Nghỉ thi đấu” không xếp hạng.
+- **Hạng cân:** trên web tên hạng luôn kèm số kg, vd “Hạng Ruồi (≤ 52 kg)”, “Hạng Gà (52–56 kg)”, “Hạng Nặng (> 81 kg)”. Sửa tên (tiếng Việt, AI dịch tiếng Anh) và cân tối đa từng hạng ở `/admin` → Academy Ranking → **Hạng cân** (chỉ admin, lưu `data/divisions.json`, `PUT /api/admin/ranking/divisions`); bật “Tự xếp lại” để chuyển võ sĩ vào đúng hạng theo mốc mới.
 - Quản trị: `/admin` → Academy Ranking → **Võ sĩ** (thông tin, ảnh, chấm điểm kỹ năng) và **Sự kiện & kết quả** (danh sách trận, người thắng, cách thắng, hiệp). Nhân viên (HLV) nhập được; xóa cần admin; võ sĩ đã có trận không xóa được (chuyển “Nghỉ thi đấu” hoặc tắt “Hiện trên web”).
 - Trang công khai chỉ hiện tuổi (không ngày sinh). Giới thiệu võ sĩ, tên / mô tả sự kiện được AI dịch sang tiếng Anh.
 - Dữ liệu mẫu: 20 võ sĩ (14 nam, 6 nữ), 8 sự kiện, ảnh minh họa vẽ (không phải ảnh người thật) — `node tools/ranking-demo.js` tạo lại. Trước khi chạy thật: thay bằng võ sĩ thật hoặc xóa / ẩn võ sĩ mẫu.
@@ -296,6 +297,13 @@ Chủ shop chỉ cần sửa **tiếng Việt**. Khi bấm Lưu ở Chữ trên 
 - **Chi phí** (Anthropic tính theo lượng chữ): mỗi lần lưu thường vài trăm đồng; dịch toàn bộ website dưới 50.000đ. Nếu AI từ chối một đoạn vì chính sách an toàn, máy chủ Anthropic tự chạy lại bằng model dự phòng (`fallbacks: "default"`).
 - Mã: `lib/translate.js` (hàng đợi dịch nền, gom nhiều câu một lần). Bộ kiểm tra dùng dịch giả (`DC_AI_MOCK=1`), không gọi AI thật.
 
+## Yêu cầu file ảnh / video (dưới mỗi chỗ tải lên trong /admin)
+
+Mọi chỗ tải ảnh / video trong `/admin` (Hình ảnh & video, sản phẩm, danh mục, võ sĩ, poster sự kiện, trang phụ, logo, favicon, icon) có khung **Yêu cầu file**: kích thước (px, tỉ lệ), độ nét, định dạng, thời lượng (video), dung lượng tối đa, lưu ý cắt khung — `public/assets/js/admin-media.js` (`DCAdmin.media`). Ảnh / video ở Nội dung website lấy yêu cầu từ `rec` trong `data/seed/cms-catalog.json`.
+
+- **Ảnh:** không cần ảnh 4K — ảnh lớn hơn kích thước gợi ý hoặc nặng hơn mức tối đa được **tự thu nhỏ + nén** trên trình duyệt trước khi tải lên (JPG, ảnh nền trong suốt → WebP; xóa thông tin EXIF/GPS). Ảnh nhỏ hơn gợi ý / khác tỉ lệ thì báo trước.
+- **Video:** **1080p** (Full HD), MP4 H.264, 25–30 khung hình/giây, không cần âm thanh, 6–15 giây. Video đầu Trang chủ tối đa **3 MB**, video khác **5 MB**. Nặng hơn hoặc 2K / 4K → **không nhận**, báo cách xuất lại (CapCut / HandBrake).
+
 ## SEO
 
 - `/sitemap.xml` (trang chính, sản phẩm đang bán, trang phụ đã bật) và `/robots.txt` tự tạo; chặn `/admin`, `/api`, `/phieu`, trang thanh toán.
@@ -304,7 +312,7 @@ Chủ shop chỉ cần sửa **tiếng Việt**. Khi bấm Lưu ở Chữ trên 
 - Mô tả Google của sản phẩm: "Mô tả SEO" của sản phẩm, không có thì mô tả sản phẩm (dưới 110 ký tự thì thêm giá).
 - Link Google đi theo được: chip danh mục Shop và breadcrumb sản phẩm là link `/shop?cat=<mã>` (mở sẵn danh mục đó), không còn `<a>` không có `href`.
 - Chọn tiếng Anh thì tiêu đề tab và mô tả cũng đổi sang tiếng Anh.
-- Tốc độ: server tự nén gzip HTML / JS / CSS / JSON (trang chủ 65 KB → 13 KB, không cần cài thêm gói); ảnh / video không nén lại (đã nén sẵn, cache 1 năm). Video nằm dưới màn hình đầu (`<video data-autoplay preload="none">`, vd 2 băng video Trang chủ, video Khóa học) chỉ tải và chạy khi khách sắp cuộn tới. Video đầu Trang chủ nên giữ dưới ~1,5 MB.
+- Tốc độ: server tự nén gzip HTML / JS / CSS / JSON (trang chủ 65 KB → 13 KB, không cần cài thêm gói); ảnh / video không nén lại (đã nén sẵn, cache 1 năm). Video nằm dưới màn hình đầu (`<video data-autoplay preload="none">`, vd 2 băng video Trang chủ, video Khóa học) chỉ tải và chạy khi khách sắp cuộn tới. Video đầu Trang chủ tối đa 3 MB (nhẹ hơn càng tốt), video khác tối đa 5 MB — xem mục Yêu cầu file ảnh / video.
 - Cần điền **địa chỉ website** (Thiết lập → Thông báo) khi đưa lên mạng để link chuẩn và ảnh chia sẻ dùng đúng tên miền.
 
 ## Thanh toán chuyển khoản (VietQR)
@@ -336,6 +344,8 @@ Gửi thử: `POST /api/notify/test` (đăng nhập quản trị). Không cài k
 Các form công khai giới hạn số lượt gửi cho mỗi IP để chống spam. API quản trị cần token đăng nhập (`Authorization: Bearer …`).
 
 ## Cần thay trước khi chạy thật
+
+Danh sách này nằm trong `/admin` → Thiết lập → **Chuẩn bị chạy thật** (`public/assets/js/admin-launch.js`, `GET /api/admin/launch`): máy chủ tự kiểm tra từng mục mỗi lần mở (hotline, thông tin doanh nghiệp, trang chính sách, dữ liệu mẫu, dung lượng ảnh / video, tài khoản ngân hàng, báo đơn, tài khoản admin, tên miền, HTTPS, thư mục dữ liệu, sao lưu 7 ngày), mỗi mục có nút tới đúng chỗ sửa. Google Search Console và định nghĩa “tiêu chuẩn” (Truyền Nghề) không tự kiểm tra được → bật “Đã làm xong” (`PUT /api/admin/launch`, lưu `data/launch.json`). Còn việc chưa xong thì Tổng quan có thẻ nhắc.
 
 - **Hotline:** đang là số tạm `0909 xxx xxx`. Thay ở `/admin` → Nội dung website → Liên hệ & mạng xã hội (đổi ở mọi trang cùng lúc).
 - **Tài khoản nhận chuyển khoản:** cài ở `/admin` → Thanh toán để có mã VietQR thật.

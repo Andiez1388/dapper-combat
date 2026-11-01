@@ -127,6 +127,8 @@ module.exports = async function browserTests(env, t, browser) {
     await page.goto(B + '/xep-hang', { wait: 1000 });
     let st = await page.eval(`({ rows: document.querySelectorAll('#xh .xh-table tbody tr').length, first: (document.querySelector('#xh .xh-table tbody tr .xh-name a') || {}).textContent, tab: (document.querySelector('.xh-tabs a.on') || {}).textContent })`);
     t.ok(st.rows === 13 && st.first === 'Nguyễn Hoàng Long' && st.tab === 'Ranking võ sĩ', 'ranking nam: 13 võ sĩ đang thi đấu, số 1 đứng đầu', st);
+    st = await page.eval(`({ side: [...document.querySelectorAll('.xh-list small')].map(e => e.textContent).filter(s => /^Hạng /.test(s)), col: (document.querySelector('#xh .xh-table tbody tr td.dv') || {}).textContent })`);
+    t.ok(st.side.includes('Hạng Ruồi (≤ 52 kg)') && st.side.includes('Hạng Gà (52–56 kg)') && st.side.includes('Hạng Nặng (> 81 kg)') && st.col === 'Hạng Nhẹ (60–64 kg)', 'tên hạng cân luôn kèm số kg (ô "Số 1 từng hạng cân", cột Hạng cân)', st);
     await page.eval(`document.querySelector('[data-seg="g"][data-v="f"]').click(); 1`);
     st = await page.eval(`({ rows: document.querySelectorAll('#xh .xh-table tbody tr').length, first: document.querySelector('#xh .xh-table tbody tr .xh-name a').textContent, url: location.search })`);
     t.ok(st.rows === 6 && st.first === 'Trần Ngọc Hân' && st.url === '?g=f', 'bấm "Nữ" → bảng nữ, nhớ lựa chọn trên đường dẫn', st);
@@ -482,6 +484,27 @@ module.exports = async function browserTests(env, t, browser) {
     await page.eval(`location.hash = '#/rank-events/sk07'; 1`);
     const pred = await page.until(`document.querySelectorAll('.rk-pred').length`, 5000);
     t.ok(pred === 6, 'xếp trận trong admin: trận chưa đấu hiện kèo dự đoán', pred);
+    await page.eval(`location.hash = '#/launch'; 1`);
+    const lc = await page.until(`document.querySelectorAll('.lc-item').length >= 15 && document.querySelectorAll('[data-lc-done]').length`, 6000);
+    t.ok(lc === 2, 'màn "Chuẩn bị chạy thật": đủ mục, 2 mục tự đánh dấu', lc);
+    const specs = {};
+    for (const [rt, sel] of [['#/products/p1', '.pimg'], ['#/fighters/vs01', '[data-rk-img]'], ['#/cms-media', '.mspec']]) {
+      await page.eval(`location.hash = ${JSON.stringify(rt)}; 1`);
+      specs[rt] = await page.until(`document.querySelector(${JSON.stringify(sel)}) && document.querySelectorAll('.mspec').length`, 6000);
+    }
+    t.ok(specs['#/products/p1'] >= 2 && specs['#/fighters/vs01'] >= 1 && specs['#/cms-media'] >= 10, 'khung "Yêu cầu file" (kích thước, độ nét, dung lượng) dưới chỗ tải ảnh / video', specs);
+    const shrink = await page.eval(`(async () => {
+      const c = document.createElement('canvas'); c.width = 4000; c.height = 3000; const x = c.getContext('2d');
+      const d = x.createImageData(4000, 3000); for (let i = 0; i < d.data.length; i += 4) { d.data[i] = Math.random() * 255; d.data[i + 1] = (i >> 12) & 255; d.data[i + 2] = 120; d.data[i + 3] = 255; }
+      x.putImageData(d, 0, 0);
+      const f = new File([await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.95))], 'a.jpg', { type: 'image/jpeg' });
+      const r = await DCAdmin.media.prep(f, { kind: 'image', w: 1600, h: 2000, maxKB: 400 });
+      let vid = '';
+      try { await DCAdmin.media.prep(new File([new Uint8Array(6 * 1024 * 1024)], 'v.mp4', { type: 'video/mp4' }), { kind: 'video', w: 1920, h: 1080, maxKB: 5000 }); } catch (e) { vid = e.message; }
+      return { kb: Math.round(r.file.size / 1024), before: Math.round(f.size / 1024), vid };
+    })()`);
+    t.ok(shrink.before > 2000 && shrink.kb <= 400, 'ảnh điện thoại 4000 × 3000 tự nén còn ' + shrink.kb + ' KB (từ ' + shrink.before + ' KB)', shrink);
+    t.ok(/5 MB/.test(shrink.vid), 'video 6 MB bị từ chối, kèm cách xuất lại', shrink.vid);
     await page.eval(`location.hash = '#/dashboard'; 1`);
     await sleep(600);
     for (const w of [375, 820]) {

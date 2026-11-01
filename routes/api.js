@@ -1372,12 +1372,13 @@ router.get('/backup', adminOnly, (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="dapper-combat-sao-luu-${stampOf()}.json"`);
   res.setHeader('Cache-Control', 'no-store');
   res.json({ app: 'dapper-combat', version: 1, createdAt: Date.now(), createdBy: req.user.email, files });
+  writeFile('launch.json', { ...launchData(), lastBackupAt: Date.now() }); // cho mục "Sao lưu" ở Chuẩn bị chạy thật
 });
-const LIST_FILES = ['orders.json', 'registrations.json', 'consults.json', 'subscribers.json', 'products.json', 'users.json', 'pages.json', 'maillog.json', 'fighters.json', 'events.json'];
-const OBJ_FILES = ['settings.json', 'cms.json', 'promo-usage.json'];
+const LIST_FILES = ['orders.json', 'registrations.json', 'consults.json', 'subscribers.json', 'products.json', 'users.json', 'pages.json', 'maillog.json', 'fighters.json', 'events.json', 'divisions.json'];
+const OBJ_FILES = ['settings.json', 'cms.json', 'promo-usage.json', 'launch.json'];
 const FILE_VI = { 'orders.json': 'đơn hàng', 'registrations.json': 'đăng ký khóa học', 'consults.json': 'yêu cầu tư vấn', 'subscribers.json': 'người nhận tin', 'products.json': 'sản phẩm',
   'users.json': 'tài khoản', 'pages.json': 'trang phụ', 'maillog.json': 'nhật ký gửi tin', 'settings.json': 'thiết lập', 'cms.json': 'nội dung website', 'promo-usage.json': 'lượt dùng mã giảm giá',
-  'fighters.json': 'võ sĩ (xếp hạng CLB)', 'events.json': 'sự kiện (xếp hạng CLB)' };
+  'fighters.json': 'võ sĩ (Academy Ranking)', 'events.json': 'sự kiện (Academy Ranking)', 'divisions.json': 'hạng cân (Academy Ranking)', 'launch.json': 'danh sách chuẩn bị chạy thật' };
 router.post('/backup/restore', adminOnly, express.json({ limit: '200mb' }), (req, res) => {
   const b = req.body || {}, bad = m => res.status(400).json({ error: m });
   if (b.app !== 'dapper-combat' || b.version !== 1 || !b.files || typeof b.files !== 'object' || Array.isArray(b.files)) return bad('File này không phải bản sao lưu của Dapper Combat (hoặc đã bị hỏng).');
@@ -1409,7 +1410,113 @@ router.post('/backup/restore', adminOnly, express.json({ limit: '200mb' }), (req
   });
 });
 
-// ─── Bảng xếp hạng CLB (võ sĩ, sự kiện, kết quả) — routes/ranking.js ─────────
+/* ─── Chuẩn bị chạy thật (/admin → Chuẩn bị chạy thật) ─────────────────────────
+   Tự kiểm tra những việc cần xong trước khi mở website cho khách, kèm chỗ sửa trong /admin.
+   Việc không tự kiểm tra được (Google Search Console, định nghĩa "tiêu chuẩn") thì chủ shop tự đánh dấu — lưu ở data/launch.json. */
+const ranking = require('../lib/ranking');
+const LAUNCH_MANUAL = ['gsc', 'standard'];
+const POLICY_SLUGS = ['chinh-sach-doi-tra', 'chinh-sach-bao-mat', 'dieu-khoan-su-dung', 'chinh-sach-giao-hang-thanh-toan'];
+const DEMO_FIGHTER = /^vs\d\d$/, DEMO_EVENT = /^sk\d\d$/;
+function launchData() { const d = read('launch.json', { manual: {}, lastBackupAt: 0 }); d.manual = d.manual && typeof d.manual === 'object' ? d.manual : {}; return d; }
+// dung lượng file ảnh / video trên máy chủ (KB) — link ngoài (https://) không đo
+function mediaKB(url) {
+  const m = /^\/assets\/(media|uploads)\/([\w.-]+)$/.exec(String(url || ''));
+  if (!m) return 0;
+  const p = m[1] === 'uploads' ? path.join(UPLOAD_DIR, m[2]) : path.join(__dirname, '..', 'public', 'assets', 'media', m[2]);
+  try { return fs.statSync(p).size / 1024; } catch { return 0; }
+}
+const kbText = n => (n >= 1000 ? (n / 1000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + ' MB' : Math.round(n).toLocaleString('vi-VN') + ' KB');
+function launchItems(req) {
+  const ld = launchData(), st = settings.all(), d = cms.data(), ct = cms.contactConfig(), pay = d.payment || {};
+  const site = String(st.notify.siteUrl || process.env.SITE_URL || '').replace(/\/+$/, '');
+  const items = [];
+  // ok: true = xong · false = cần làm · null = không bắt buộc (chưa làm)
+  const add = (group, id, title, ok, detail, href, extra) => items.push({ group, id, title, status: ok ? 'done' : ok === null ? 'optional' : 'todo', detail, href: href || '', ...(extra || {}) });
+  const manual = id => { const m = ld.manual[id]; return m ? { manual: true, doneAt: m.at, doneBy: m.by } : { manual: true }; };
+
+  // ── Thông tin trên website
+  const G1 = 'Thông tin trên website';
+  const phoneOk = !!ct.phone && !/x{3}/i.test(ct.phone);
+  add(G1, 'hotline', 'Số hotline thật', phoneOk, phoneOk ? 'Đang dùng ' + ct.phone + '.' : 'Đang là số tạm “0909 xxx xxx” — khách bấm gọi sẽ không liên lạc được.', '#/cms-contact');
+  const biz = [['company', 'tên doanh nghiệp / hộ kinh doanh'], ['taxId', 'mã số thuế'], ['email', 'email liên hệ']].filter(([k]) => !String(ct[k] || '').trim()).map(([, l]) => l);
+  add(G1, 'business', 'Thông tin doanh nghiệp ở chân trang', !biz.length,
+    biz.length ? 'Còn thiếu: ' + biz.join(', ') + '. Website bán hàng cần ghi rõ chủ website ở chân trang.' : 'Đã có tên doanh nghiệp, mã số thuế và email.', '#/cms-contact');
+  const pol = pages.all().filter(p => POLICY_SLUGS.includes(p.slug));
+  const draft = pol.filter(p => !p.published || /Bản nháp/.test(String((p.body || {}).vi || '')));
+  add(G1, 'policies', 'Trang chính sách (đổi trả, bảo mật, giao hàng, điều khoản)', pol.length > 0 && !draft.length,
+    draft.length ? 'Còn ' + draft.length + ' trang là bản nháp hoặc chưa bật: ' + draft.map(p => (p.title || {}).vi || p.slug).join(', ') + '. Đọc lại, sửa đúng thông tin rồi bật “Hiện trên web”.'
+      : pol.length ? 'Đã bật ' + pol.length + ' trang chính sách.' : 'Chưa có trang chính sách nào.', '#/pages');
+  add(G1, 'standard', 'Định nghĩa “tiêu chuẩn” trong cam kết Truyền Nghề', !!ld.manual.standard,
+    'Ghi rõ thế nào là đạt “tiêu chuẩn” ở trang Truyền Nghề (Nội dung website → Chữ trên trang → Truyền Nghề), xong thì đánh dấu.', '#/cms-text/career', manual('standard'));
+  const fs0 = ranking.fighters(), es0 = ranking.events();
+  const nf = fs0.filter(f => DEMO_FIGHTER.test(f.id)).length, ne = es0.filter(e => DEMO_EVENT.test(e.id)).length;
+  add(G1, 'demoRanking', 'Thay dữ liệu mẫu ở Academy Ranking', !nf && !ne,
+    nf || ne ? 'Còn ' + nf + ' võ sĩ mẫu (ảnh minh họa) và ' + ne + ' sự kiện mẫu. Nhập võ sĩ thật rồi bấm “Xóa dữ liệu mẫu” ở màn Võ sĩ.' : 'Không còn dữ liệu mẫu.', '#/fighters');
+  const seed = seedProducts();
+  const demoP = products().filter(p => p.visible !== false && seed.some(s => s.id === p.id && s.name === p.name && s.price === p.price && s.img === p.img));
+  add(G1, 'demoProducts', 'Thay sản phẩm mẫu ở Shop', !demoP.length,
+    demoP.length ? demoP.length + ' sản phẩm vẫn y nguyên dữ liệu mẫu (tên, giá, ảnh): ' + demoP.slice(0, 3).map(p => p.name).join(', ') + (demoP.length > 3 ? '…' : '') + '. Sửa đúng giá, ảnh, tồn kho thật hoặc ẩn đi.'
+      : 'Sản phẩm đang bán đều đã sửa thông tin.', '#/products');
+  const heavy = [];
+  for (const m of cms.catalog().media || []) {
+    if (m.hidden || !m.rec || !m.rec.maxKB) continue;
+    const size = mediaKB(cms.mediaUrl(m.key));
+    if (size > m.rec.maxKB * 1.05) heavy.push((m.label || m.key) + ' (' + kbText(size) + ', tối đa ' + kbText(m.rec.maxKB) + ')');
+  }
+  add(G1, 'media', 'Ảnh / video không vượt dung lượng tối đa', !heavy.length,
+    heavy.length ? heavy.length + ' file nặng hơn mức cho phép, làm trang tải chậm: ' + heavy.slice(0, 4).join('; ') + (heavy.length > 4 ? '…' : '') + '. Tải lại file nhẹ hơn — xem “Yêu cầu file” dưới từng ảnh / video.'
+      : 'Mọi ảnh / video trên trang đều trong mức dung lượng cho phép.', '#/cms-media');
+
+  // ── Bán hàng & thanh toán
+  const G2 = 'Bán hàng & thanh toán';
+  const bankOk = !!(pay.bankBin && pay.bankAccount && pay.bankHolder);
+  add(G2, 'bank', 'Tài khoản nhận chuyển khoản (mã VietQR)', bankOk,
+    bankOk ? ((cms.banks.find(b => b[0] === pay.bankBin) || [])[1] || 'Ngân hàng') + ' · ' + pay.bankHolder + '.' : 'Chưa có — khách đặt hàng sẽ không có mã QR để chuyển khoản.', '#/cms-payment');
+  const ch = notify.channels(), via = [ch.telegram && 'Telegram', ch.email && 'Email'].filter(Boolean);
+  add(G2, 'notify', 'Báo đơn mới qua Telegram hoặc email', via.length > 0,
+    via.length ? 'Đang báo qua ' + via.join(' và ') + '.' : 'Chưa cài — đơn hàng, đăng ký mới chỉ thấy khi mở trang quản trị.', '#/set-notify');
+  const pr = payments.ready(), online = [pr.sepay && 'SePay', pr.vnpay && 'VNPay', pr.installment && 'Trả góp'].filter(Boolean);
+  add(G2, 'payOnline', 'Thanh toán online (SePay / VNPay)', online.length ? true : null,
+    online.length ? 'Đang bật ' + online.join(', ') + '.' : 'Không bắt buộc. Chưa cài thì khách vẫn quét mã VietQR, bạn đối chiếu sao kê rồi bật “Đã nhận tiền”.', '#/set-payments');
+
+  // ── Hosting & tên miền
+  const G3 = 'Hosting & tên miền';
+  const admins = read('users.json', []).filter(u => u.role === 'admin');
+  const weak = admins.filter(u => checkPw(DEFAULT_PW, u.password)), defMail = admins.filter(u => u.email === 'admin@dappercombat.com');
+  add(G3, 'account', 'Tài khoản quản trị an toàn', !weak.length && !defMail.length,
+    weak.length ? 'Còn tài khoản admin dùng mật khẩu mặc định — đổi ngay (nút “Đổi mật khẩu” cuối menu trái).'
+      : defMail.length ? 'Tài khoản admin đang dùng email mặc định admin@dappercombat.com. Tạo tài khoản admin bằng email của bạn rồi xóa tài khoản này (hoặc đặt ADMIN_EMAIL trên hosting trước lần chạy đầu).'
+        : 'Tài khoản admin dùng email riêng và mật khẩu đã đổi.', '#/users');
+  const siteOk = /^https:\/\//.test(site) && !/localhost|127\.0\.0\.1/.test(site);
+  add(G3, 'siteUrl', 'Địa chỉ website (tên miền)', siteOk,
+    siteOk ? 'Đang dùng ' + site + '.' : 'Điền địa chỉ website có https (vd https://dappercombat.vn) — dùng cho link chuẩn trên Google, ảnh chia sẻ Facebook, link trong email.', '#/set-notify');
+  add(G3, 'https', 'Bảo mật HTTPS (ổ khóa trên trình duyệt)', !!req.secure,
+    req.secure ? 'Trang quản trị đang mở bằng https://.' : 'Đang mở bằng http:// — bật SSL miễn phí cho tên miền ở hosting. Website chạy sau proxy của hosting thì đặt biến TRUST_PROXY=1.', '');
+  const dirsOk = !!(process.env.DC_DATA_DIR && process.env.DC_UPLOAD_DIR);
+  add(G3, 'dataDir', 'Dữ liệu lưu ngoài thư mục code', dirsOk,
+    dirsOk ? 'Đã đặt DC_DATA_DIR và DC_UPLOAD_DIR — cập nhật code không làm mất đơn hàng, ảnh.'
+      : 'Trên hosting, thêm biến môi trường DC_DATA_DIR=~/dapper-data/data và DC_UPLOAD_DIR=~/dapper-data/uploads rồi Redeploy. Thiếu bước này, mỗi lần cập nhật code sẽ mất đơn hàng và ảnh đã tải.', '');
+  add(G3, 'gsc', 'Khai báo website với Google Search Console', !!ld.manual.gsc,
+    'Vào search.google.com/search-console → thêm tên miền → Sơ đồ trang web → gửi ' + (siteOk ? site : 'https://<tên-miền>') + '/sitemap.xml. Xong thì đánh dấu.', 'https://search.google.com/search-console', manual('gsc'));
+  add(G3, 'pixel', 'Facebook Pixel (nếu chạy quảng cáo)', st.brand.fbPixel ? true : null,
+    st.brand.fbPixel ? 'Đã gắn Pixel ' + st.brand.fbPixel + '.' : 'Không bắt buộc. Dán ID Pixel khi bắt đầu chạy quảng cáo Facebook.', '#/set-brand');
+  const lastBk = Number(ld.lastBackupAt) || 0;
+  add(G3, 'backup', 'Sao lưu dữ liệu trong 7 ngày qua', !!lastBk && Date.now() - lastBk < 7 * 864e5,
+    (lastBk ? 'Lần tải gần nhất: ' + new Date(lastBk + 7 * 3600e3).toISOString().slice(0, 10).split('-').reverse().join('/') + '. ' : 'Chưa tải bản sao lưu lần nào. ') +
+      'Nên tải mỗi tuần, kèm chép thư mục ảnh đã tải lên.', '#/backup');
+  return items;
+}
+router.get('/admin/launch', adminOnly, (req, res) => res.json({ items: launchItems(req), production: process.env.NODE_ENV === 'production' }));
+router.put('/admin/launch', adminOnly, (req, res) => {
+  const id = String((req.body || {}).id || '');
+  if (!LAUNCH_MANUAL.includes(id)) return res.status(400).json({ error: 'Mục này tự kiểm tra, không đánh dấu tay được.' });
+  const d = launchData();
+  if (req.body.done) d.manual[id] = { at: Date.now(), by: req.user.email }; else delete d.manual[id];
+  writeFile('launch.json', d);
+  res.json({ items: launchItems(req), production: process.env.NODE_ENV === 'production' });
+});
+
+// ─── Academy Ranking (võ sĩ, sự kiện, kết quả) — routes/ranking.js ─────────
 require('./ranking')(router, { adminOnly, staffOk });
 
 module.exports = router;

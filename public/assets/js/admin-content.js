@@ -19,9 +19,6 @@
   var LONG_TYPES = { text: 1, answer: 1, quote: 1, seo: 1 };
   var HTML_HINT = '<em>chữ</em> = chữ nhấn màu đỏ · <br> = xuống dòng';
   var EN_EMPTY = '(để trống = dùng như tiếng Việt)';
-  var IMG_RE = /^image\/(jpeg|png|webp|gif)$/;
-  var VID_RE = /^video\/(mp4|webm)$/;
-  var MAX_IMG = 10 * 1024 * 1024, MAX_VID = 80 * 1024 * 1024;
   var SEARCH_CAP = 150;           // số ô chữ tối đa hiển thị khi tìm kiếm
   var STALE_MS = 60000;
   var AUTO_SIZE = !!(window.CSS && CSS.supports && CSS.supports('field-sizing', 'content'));
@@ -720,14 +717,14 @@
   }
   function itemMediaHtml(k) {
     var m = C.idx.media[splitKey(k).base]; if (!m) return '';
-    var ov = effGet('media', k), url = A.safeImg(ov || m.url), isVid = m.kind === 'video', r = m.rec || {};
+    var ov = effGet('media', k), url = A.safeImg(ov || m.url), isVid = m.kind === 'video';
     var alt = effGet('alt', k);
     var pend = has(C.pend.media, k) || has(C.pend.alt, k) || has(C.pend.hide, k);
     return '<div class="cms-imed' + (pend ? ' is-pending' : '') + (isHidden(k) ? ' is-hidden' : '') + '" data-imkey="' + esc(k) + '">' +
       '<span class="cms-imed__thumb">' + (url ? (isVid ? '<video src="' + esc(url) + '" muted playsinline preload="metadata"></video>' : '<img src="' + esc(url) + '" alt="" loading="lazy">') : ICON.image) + '</span>' +
       '<div class="cms-imed__main">' +
         '<p class="cms-imed__label">' + esc(m.label || (isVid ? 'Video' : 'Ảnh')) + (ov ? ' <span class="badge badge--mid">Đã thay</span>' : '') + (pend ? ' <span class="badge badge--done">Chưa lưu</span>' : '') + '</p>' +
-        (r.w && r.h ? '<p class="field__hint">Nên dùng ' + esc(num(r.w)) + ' × ' + esc(num(r.h)) + ' px' + (r.ratio ? ' (tỉ lệ ' + esc(r.ratio) + ')' : '') + (r.format ? ' · ' + esc(r.format) : '') + (r.maxKB ? ' · ≤ ' + esc(kb(r.maxKB)) : '') + '</p>' : '') +
+        A.media.html(A.media.fromRec(m), { compact: true }) +
         '<div class="cms-imed__act"><label class="btn btn--line btn--sm file-btn">' + ICON.upload + '<span data-imlabel>' + (isVid ? 'Đổi video' : 'Đổi ảnh') + '</span>' +
           '<input class="sr" type="file" accept="' + (isVid ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp,image/gif') + '" data-imfile></label>' +
           (ov ? '<button type="button" class="btn btn--quiet btn--sm" data-imreset>Dùng lại ' + (isVid ? 'video' : 'ảnh') + ' gốc</button>' : '') +
@@ -873,14 +870,12 @@
     if (!m || !file) return;
     var isVid = m.kind === 'video', note = $('[data-imnote]', box);
     var say = function (t, err) { note.textContent = t; note.hidden = !t; note.classList.toggle('is-err', !!err); };
-    if (!(isVid ? VID_RE : IMG_RE).test(file.type)) { say(isVid ? 'Chỉ nhận video MP4 hoặc WEBM.' : 'Chỉ nhận ảnh JPG, PNG, WEBP hoặc GIF.', true); return; }
-    if (file.size > (isVid ? MAX_VID : MAX_IMG)) { say(isVid ? 'Video tối đa 80MB.' : 'Ảnh tối đa 10MB — hãy nén ảnh rồi thử lại.', true); return; }
     var lbl = $('[data-imlabel]', box), fb = input.closest('.file-btn');
-    fb.classList.add('is-busy'); input.disabled = true;
+    fb.classList.add('is-busy'); input.disabled = true; lbl.textContent = 'Đang xử lý…';
     var warn = [];
-    probe(file, m.kind).then(function (d) {
-      warn = checkLines(m, d, file.size);
-      return uploadFile(file, function (p) { lbl.textContent = 'Đang tải ' + Math.round(p * 100) + '%'; });
+    A.media.prep(file, A.media.fromRec(m)).then(function (p) {
+      warn = p.lines.slice(1);
+      return uploadFile(p.file, function (pr) { lbl.textContent = 'Đang tải ' + Math.round(pr * 100) + '%'; });
     }).then(function (r) {
       var url = A.safeImg(r.url); if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };
       setPend('media', k, url);
@@ -1009,13 +1004,11 @@
     if (m.box && dims(m.box.desktop)) shown.push('máy tính ' + dims(m.box.desktop));
     if (m.box && dims(m.box.mobile)) shown.push('điện thoại ' + dims(m.box.mobile));
     var note = C.media.notes[m.key];
-    var spec = '<dl class="cms-spec">' +
-      (r.w && r.h ? '<div><dt>Kích thước gợi ý</dt><dd><strong>' + esc(num(r.w)) + ' × ' + esc(num(r.h)) + ' px</strong>' + (r.ratio ? ' (tỉ lệ ' + esc(r.ratio) + ')' : '') + '</dd></div>' : '') +
-      (r.format || r.maxKB ? '<div><dt>Định dạng</dt><dd>' + esc(r.format || '') + (r.maxKB ? ' · Dung lượng: ≤ ' + esc(kb(r.maxKB)) : '') + '</dd></div>' : '') +
+    // yêu cầu file chung (admin-media.js): kích thước, độ nét 1080p / không 4K, định dạng, dung lượng tối đa
+    var spec = '<dl class="cms-spec mspec" aria-label="Yêu cầu file">' + A.media.rows(A.media.fromRec(m)) +
       (shown.length ? '<div><dt>Đang hiển thị</dt><dd>' + esc(shown.join(' · ')) + '</dd></div>' : '') +
       '<div><dt>File hiện tại</dt><dd data-natural>' + esc(!over && dims(m.natural) ? dims(m.natural) : 'đang đo…') + '</dd></div>' +
-      '</dl>' +
-      (r.cover ? '<p class="cms-cover">' + (isVid ? 'Video' : 'Ảnh') + ' được cắt tràn khung — đặt chủ thể ở giữa.</p>' : '');
+      '</dl>';
     return '<article class="cms-mcard' + (over ? ' is-over' : '') + '" data-mkey="' + esc(m.key) + '">' +
       '<div class="cms-mcard__preview" style="aspect-ratio:' + w + ' / ' + h + '">' + preview +
         (over ? '<span class="badge badge--done cms-mcard__flag">Đã thay</span>' : '') + '</div>' +
@@ -1121,16 +1114,15 @@
     input.value = '';
     if (!m || !file) return;
     var isVid = m.kind === 'video';
-    if (!(isVid ? VID_RE : IMG_RE).test(file.type)) { setNote(m.key, [isVid ? 'Chỉ nhận video MP4 hoặc WEBM.' : 'Chỉ nhận ảnh JPG, PNG, WEBP hoặc GIF.'], true); return; }
-    if (file.size > (isVid ? MAX_VID : MAX_IMG)) { setNote(m.key, [isVid ? 'Video tối đa 80MB — vui lòng nén lại rồi thử lại.' : 'Ảnh tối đa 10MB — vui lòng nén lại rồi thử lại.'], true); return; }
     var label = $('[data-mfile-label]', card), btn = input.closest('.file-btn');
     btn.classList.add('is-busy'); input.disabled = true; label.textContent = 'Đang xử lý…';
     var lines = [];
-    probe(file, m.kind).then(function (d) {
-      lines = ['File đã chọn: ' + (d ? num(d[0]) + ' × ' + num(d[1]) + ' px · ' : '') + bytes(file.size)].concat(checkLines(m, d, file.size));
+    // kiểm tra theo yêu cầu file của ô này: ảnh to → tự thu nhỏ & nén; video quá nặng / 2K–4K → không nhận
+    A.media.prep(file, A.media.fromRec(m)).then(function (p) {
+      lines = p.lines;
       setNote(m.key, lines.concat(['Đang tải lên…']));
       progress(card, 0);
-      return uploadFile(file, function (p) { progress(card, p); });
+      return uploadFile(p.file, function (pr) { progress(card, pr); });
     }).then(function (res) {
       return setMedia(m, res.url, 'Đã thay “' + (m.label || m.key) + '” — website cập nhật ngay.');
     }).then(function () {

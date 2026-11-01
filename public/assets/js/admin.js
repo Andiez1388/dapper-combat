@@ -1912,7 +1912,15 @@
     var src = safeImg(url);
     return src ? '<img src="' + esc(src) + '" alt="Ảnh sản phẩm">' : '<span class="pimg__empty">' + ICON.image + '<span>Chưa có ảnh</span></span>';
   }
-  var IMG_SPEC = 'Gợi ý: 1600 × 2000 px (tỉ lệ 4:5), JPG/WebP ≤ 400 KB';
+  // yêu cầu file ảnh / video sản phẩm — khung "Yêu cầu file" + tự thu nhỏ / kiểm tra trước khi tải (admin-media.js)
+  var PRODUCT_IMG = { kind: 'image', w: 1600, h: 2000, maxKB: 400, cover: true };
+  var PRODUCT_VID = { kind: 'video', w: 1080, h: 1350, maxKB: 5000, cover: true };
+  function mspec(s) { var M = window.DCAdmin && window.DCAdmin.media; return M ? M.html(s) : ''; }
+  function mprep(file, s) { var M = window.DCAdmin && window.DCAdmin.media; return M ? M.prep(file, s) : Promise.resolve({ file: file, lines: [], warn: [] }); }
+  function mnote(form, key, lines, err) {
+    var n = $('[data-' + key + '-note]', form); if (!n) return;
+    n.textContent = (lines || []).join(' '); n.hidden = !n.textContent; n.classList.toggle('is-err', !!err);
+  }
   var MAX_GALLERY = 12;
   var BADGES = [['', 'Tự động — hiện “-x%” khi có giá gốc'], ['new', 'Mới'], ['best', 'Bán chạy'], ['none', 'Không nhãn']];
   function galItemHtml(url) {
@@ -1947,26 +1955,27 @@
     if (!form || !files.length) return;
     var room = MAX_GALLERY - $$('[data-gal-url]', form).length;
     if (room <= 0) { formError(form, 'Tối đa ' + MAX_GALLERY + ' ảnh phụ.'); return; }
-    var bad = files.filter(function (x) { return !/^image\/(png|jpeg|webp|gif)$/.test(x.type) || x.size > 10 * 1024 * 1024; });
-    var skipped = Math.max(0, files.length - bad.length - room);
-    files = files.filter(function (x) { return bad.indexOf(x) < 0; }).slice(0, room);
-    var msgs = [];
-    if (bad.length) msgs.push(bad.length + ' file bị bỏ qua (chỉ nhận PNG/JPG/WEBP/GIF ≤ 10MB).');
+    var skipped = Math.max(0, files.length - room);
+    files = files.slice(0, room);
+    var msgs = [], shrunk = 0;
     if (skipped) msgs.push(skipped + ' ảnh vượt quá giới hạn ' + MAX_GALLERY + ' ảnh.');
-    if (!files.length) { formError(form, msgs.join(' ')); return; }
     var lbl = $('[data-gal-label]', form), btn = input.closest('.file-btn');
-    btn.classList.add('is-busy'); input.disabled = true;
+    btn.classList.add('is-busy'); input.disabled = true; mnote(form, 'gal', []);
     var done = 0;
     var next = function (i) {
       if (i >= files.length) {
         btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = '+ Tải thêm ảnh';
         galleryState(form); if (done) S.dirty = true;
         if (msgs.length) formError(form, msgs.join(' ')); else setMsg($('[data-form-msg]', form), '');
+        if (shrunk) mnote(form, 'gal', [shrunk + ' ảnh to hơn ' + PRODUCT_IMG.w + ' × ' + PRODUCT_IMG.h + ' px đã được tự thu nhỏ & nén.']);
         if (done) toast('Đã thêm ' + done + ' ảnh phụ — bấm Lưu để áp dụng');
         return;
       }
       lbl.textContent = 'Đang tải ' + (i + 1) + '/' + files.length + '…';
-      uploadRaw(files[i]).then(function (r) {
+      mprep(files[i], PRODUCT_IMG).then(function (p) {
+        if (p.file !== files[i]) shrunk++;
+        return uploadRaw(p.file);
+      }).then(function (r) {
         var url = r && safeImg(r.url);
         var box = $('[data-gal]', form);
         if (url && box) { box.insertAdjacentHTML('beforeend', galItemHtml(url)); done++; }
@@ -1981,19 +1990,23 @@
     var form = input.form || $('#productForm'), file = input.files && input.files[0];
     input.value = '';
     if (!form || !file) return;
-    if (!/^video\/(mp4|webm)$/.test(file.type)) { formError(form, 'Chỉ nhận video MP4 hoặc WEBM.'); return; }
-    if (file.size > MAX_VIDEO) { formError(form, 'Video lớn hơn 80MB — vui lòng cắt ngắn hoặc nén lại.'); return; }
-    var lbl = $('[data-vid-label]', form), btn = input.closest('.file-btn');
-    btn.classList.add('is-busy'); input.disabled = true; lbl.textContent = 'Đang tải video…';
-    uploadRaw(file).then(function (r) {
+    var lbl = $('[data-vid-label]', form), btn = input.closest('.file-btn'), lines = [];
+    btn.classList.add('is-busy'); input.disabled = true; lbl.textContent = 'Đang kiểm tra video…'; mnote(form, 'vid', []);
+    mprep(file, PRODUCT_VID).then(function (p) {
+      lines = p.lines;
+      if (p.file.size > MAX_VIDEO) throw new ApiError('Video lớn hơn 80MB — vui lòng cắt ngắn hoặc nén lại.', 0);
+      lbl.textContent = 'Đang tải video…';
+      return uploadRaw(p.file);
+    }).then(function (r) {
       var url = r && safeImg(r.url);
       if (!url) throw new ApiError('Tải lên thất bại.', 0);
       F(form, 'video').value = url;
       $('[data-vid-preview]', form).innerHTML = vidPreviewHtml(url);
       $('[data-vid-del]', form).hidden = false;
       S.dirty = true; setMsg($('[data-form-msg]', form), '');
+      mnote(form, 'vid', lines);
       toast('Đã tải video — bấm Lưu để áp dụng');
-    }, function (e) { if (e && e.status !== 401) formError(form, (e && e.message) || 'Tải video thất bại.'); })
+    }).catch(function (e) { if (e && e.status !== 401) mnote(form, 'vid', [(e && e.message) || 'Tải video thất bại.'], true); })
       .then(function () { btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = F(form, 'video').value ? 'Đổi video' : 'Tải video lên'; });
   }
   function uploadRaw(file) {
@@ -2030,25 +2043,29 @@
         '<div class="pimg__ctl">' +
         '<label class="btn btn--line file-btn">' + ICON.upload + '<span data-upload-label>Tải ảnh lên</span>' +
         '<input class="sr" type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-upload></label>' +
-        '<small class="field__hint">PNG, JPG, WEBP hoặc GIF · tối đa 8MB</small>' +
+        mspec(PRODUCT_IMG) +
+        '<div class="set-msg" data-img-note hidden></div>' +
         field('Hoặc dán đường dẫn ảnh', '<input type="text" name="img" value="' + esc(p.img || '') + '" placeholder="/assets/media/… hoặc https://…" inputmode="url" spellcheck="false" autocomplete="off">',
           'Chỉ nhận đường dẫn bắt đầu bằng “/” hoặc “https://”.') +
-        '<small class="field__hint field__hint--spec">' + IMG_SPEC + '</small>' +
         '</div></div>') +
       sec('Ảnh phụ (trang chi tiết sản phẩm)',
-        '<p class="field__hint">Hiện sau ảnh chính trong trang chi tiết, đúng thứ tự dưới đây (tối đa ' + MAX_GALLERY + ' ảnh). ' + IMG_SPEC + '.</p>' +
+        '<p class="field__hint">Hiện sau ảnh chính trong trang chi tiết, đúng thứ tự dưới đây (tối đa ' + MAX_GALLERY + ' ảnh). Yêu cầu file giống ảnh chính: ' +
+          PRODUCT_IMG.w + ' × ' + PRODUCT_IMG.h + ' px (4:5), tối đa ' + PRODUCT_IMG.maxKB + ' KB — ảnh to hơn được tự thu nhỏ.</p>' +
         '<div class="gal" data-gal>' + (Array.isArray(p.images) ? p.images : []).map(galItemHtml).join('') + '</div>' +
         '<p class="gal__empty" data-gal-empty' + (Array.isArray(p.images) && p.images.length ? ' hidden' : '') + '>Chưa có ảnh phụ.</p>' +
         '<div class="gal__bar"><label class="btn btn--line file-btn">' + ICON.upload + '<span data-gal-label>+ Tải thêm ảnh</span>' +
         '<input class="sr" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple data-gal-add></label>' +
         '<span class="field__hint" data-gal-count>' + (Array.isArray(p.images) ? p.images.length : 0) + ' / ' + MAX_GALLERY + ' ảnh</span></div>' +
+        '<div class="set-msg" data-gal-note hidden></div>' +
         '<div class="pvid"><span class="field__label">Video sản phẩm (không bắt buộc)</span>' +
         '<div class="pvid__preview" data-vid-preview>' + vidPreviewHtml(p.video) + '</div>' +
         '<div class="gal__bar"><label class="btn btn--line file-btn">' + ICON.upload + '<span data-vid-label>' + (p.video ? 'Đổi video' : 'Tải video lên') + '</span>' +
         '<input class="sr" type="file" accept="video/mp4,video/webm" data-vid-add></label>' +
         '<button class="btn btn--quiet btn--sm" type="button" data-vid-del' + (p.video ? '' : ' hidden') + '>Bỏ video</button></div>' +
         '<input type="hidden" name="video" value="' + esc(p.video || '') + '">' +
-        '<small class="field__hint">MP4 hoặc WEBM, tối đa 80MB (nên ngắn dưới 15 giây, dưới 8MB để trang tải nhanh). Có video riêng thì trang chi tiết hiện video này thay cho 2 video chung.</small></div>') +
+        mspec(PRODUCT_VID) +
+        '<div class="set-msg" data-vid-note hidden></div>' +
+        '<small class="field__hint">Có video riêng thì trang chi tiết hiện video này thay cho 2 video chung.</small></div>') +
       sec('Thông tin bán hàng',
         field('Tên sản phẩm', '<input type="text" name="name" value="' + esc(p.name || '') + '" maxlength="120" required autocomplete="off">') +
         field('Tên sản phẩm · English (AI tự dịch)', '<input type="text" name="nameEn" value="' + esc(p.nameEn || '') + '" maxlength="120" autocomplete="off" placeholder="AI tự dịch khi lưu — không cần nhập">') +
@@ -2201,26 +2218,32 @@
     var form = input.form || $('#productForm');
     input.value = '';
     if (!file || !form) return;
-    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { formError(form, 'Chỉ nhận ảnh PNG, JPG, WEBP hoặc GIF.'); return; }
-    if (file.size > MAX_UPLOAD) { formError(form, 'Ảnh lớn hơn 8MB — vui lòng nén hoặc thu nhỏ ảnh rồi thử lại.'); return; }
-    var lbl = $('[data-upload-label]', form), btn = input.closest('.file-btn');
-    btn.classList.add('is-busy'); lbl.textContent = 'Đang tải ảnh…'; input.disabled = true;
+    var lbl = $('[data-upload-label]', form), btn = input.closest('.file-btn'), lines = [];
+    btn.classList.add('is-busy'); lbl.textContent = 'Đang xử lý ảnh…'; input.disabled = true; mnote(form, 'img', []);
     var done = function () { btn.classList.remove('is-busy'); lbl.textContent = 'Tải ảnh lên'; input.disabled = false; };
-    var reader = new FileReader();
-    reader.onerror = function () { done(); formError(form, 'Không đọc được file ảnh.'); };
-    reader.onload = function () {
-      api('/uploads', { method: 'POST', body: { dataUrl: String(reader.result || '') } }).then(function (r) {
-        done();
-        var url = r && safeImg(r.url);
-        if (!url) { formError(form, 'Máy chủ trả về đường dẫn ảnh không hợp lệ.'); return; }
-        F(form, 'img').value = url;
-        $('[data-img-preview]', form).innerHTML = imgPreviewHtml(url);
-        setMsg($('[data-form-msg]', form), '');
-        S.dirty = true;
-        toast('Đã tải ảnh lên — bấm Lưu để áp dụng');
-      }, function (e) { done(); if (e.status !== 401 && e.status !== 403) formError(form, e.message); });
-    };
-    reader.readAsDataURL(file);
+    mprep(file, PRODUCT_IMG).then(function (p) {
+      lines = p.lines;
+      if (p.file.size > MAX_UPLOAD) throw new ApiError('Ảnh lớn hơn 8MB — vui lòng nén hoặc thu nhỏ ảnh rồi thử lại.', 0);
+      lbl.textContent = 'Đang tải ảnh…';
+      return new Promise(function (ok, no) {
+        var reader = new FileReader();
+        reader.onerror = function () { no(new ApiError('Không đọc được file ảnh.', 0)); };
+        reader.onload = function () { ok(String(reader.result || '')); };
+        reader.readAsDataURL(p.file);
+      });
+    }).then(function (dataUrl) {
+      return api('/uploads', { method: 'POST', body: { dataUrl: dataUrl } });
+    }).then(function (r) {
+      done();
+      var url = r && safeImg(r.url);
+      if (!url) { formError(form, 'Máy chủ trả về đường dẫn ảnh không hợp lệ.'); return; }
+      F(form, 'img').value = url;
+      $('[data-img-preview]', form).innerHTML = imgPreviewHtml(url);
+      setMsg($('[data-form-msg]', form), '');
+      mnote(form, 'img', lines);
+      S.dirty = true;
+      toast('Đã tải ảnh lên — bấm Lưu để áp dụng');
+    }, function (e) { done(); if (e && e.status !== 401 && e.status !== 403) formError(form, (e && e.message) || 'Tải ảnh thất bại.'); });
   }
 
   // ═══ Hộp thoại ══════════════════════════════════════════════════════════════

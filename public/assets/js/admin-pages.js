@@ -13,7 +13,8 @@
   var LANGS = [['vi', 'Tiếng Việt'], ['en', 'English (AI tự dịch)']];
   var HREF_RE = /^(\/[^\s"<>]*|#[\w-]*|https?:\/\/[^\s"<>]+|tel:[+\d\s().-]{3,20}|mailto:[^\s"<>@]+@[^\s"<>]+)$/;
   var SRC_RE = /^(\/assets\/(uploads|media|img)\/[\w./-]+|https:\/\/[^\s"<>]+)$/;
-  var COVER = { w: 1920, h: 800, kb: 400 };
+  // yêu cầu file (khung "Yêu cầu file" + tự thu nhỏ ở admin-media.js)
+  var COVER = { kind: 'image', w: 1920, h: 800, maxKB: 400, cover: true }, BODY_IMG = { kind: 'image', w: 1600, h: 0, maxKB: 400 };
 
   var P = { list: null, loading: null, err: '', editId: '', d: null, orig: '', slugTouched: false, lang: 'vi', html: { vi: false, en: false }, range: null };
 
@@ -147,7 +148,7 @@
             (!isNew && src.published ? '<a class="btn btn--quiet btn--sm" href="' + esc(pageLink(src)) + '" target="_blank" rel="noopener">Xem trang ↗</a>' : '') + '</div></div></section>' +
           '<section class="panel set-sec"><header class="panel__head"><h2 class="panel__title">Ảnh đầu trang</h2></header><div class="set-body">' +
             '<div class="pg-cover" data-pg-cover></div>' +
-            '<p class="set-spec">Nên dùng ' + COVER.w + ' × ' + COVER.h + ' px, JPG hoặc WebP ≤ ' + COVER.kb + ' KB. Không bắt buộc.</p>' +
+            '<p class="field__hint">Không bắt buộc.</p>' + A.media.html(COVER) +
             '<div class="set-actions"><label class="btn btn--line btn--sm file-btn">' + ICON.upload + '<span data-pg-coverlabel>Tải ảnh</span><input class="sr" type="file" accept="image/jpeg,image/png,image/webp" data-pg-coverfile></label>' +
               '<button type="button" class="btn btn--quiet btn--sm" data-pg-coverdel>Bỏ ảnh</button></div>' +
             '<div class="set-msg" data-pg-covermsg hidden></div></div></section>' +
@@ -179,7 +180,8 @@
           '<textarea class="code-ta rte__html" rows="14" spellcheck="false" data-rte-html hidden aria-label="Mã HTML nội dung (' + esc(label) + ')"></textarea>' +
           '<input class="sr" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-rte-img tabindex="-1" aria-hidden="true">' +
         '</div>' +
-        '<p class="field__hint">Dán chữ từ Word / web sẽ tự bỏ định dạng lạ. Có thể dùng giá tự động như <code>{ship.free}</code> — website tự điền số.</p></div>' +
+        '<p class="field__hint">Dán chữ từ Word / web sẽ tự bỏ định dạng lạ. Có thể dùng giá tự động như <code>{ship.free}</code> — website tự điền số.</p>' +
+        A.media.html(BODY_IMG, { compact: true }).replace('Yêu cầu file: ', 'Ảnh chèn vào bài (nút “Chèn ảnh”): ') + '</div>' +
     '</div>';
   }
   function showLang(l) {
@@ -334,11 +336,12 @@
   function insertImage(input) {
     var box = input.closest('[data-rte]'), area = $('[data-rte-area]', box), file = input.files && input.files[0]; input.value = '';
     if (!file) return;
-    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) { A.toast('Chỉ nhận ảnh JPG, PNG, WEBP hoặc GIF.', 'err'); return; }
-    if (file.size > 10 * 1024 * 1024) { A.toast('Ảnh tối đa 10MB — hãy nén ảnh rồi thử lại.', 'err'); return; }
     if (!K.uploadFile) return;
     A.toast('Đang tải ảnh lên…', 'info');
-    K.uploadFile(file, function () {}).then(function (r) {
+    A.media.prep(file, BODY_IMG).then(function (p) {
+      if (p.warn.length) A.toast(p.warn.join(' '), 'info');
+      return K.uploadFile(p.file, function () {});
+    }).then(function (r) {
       var url = A.safeImg(r && r.url); if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };
       return smallDialog({ title: 'Mô tả ảnh', ok: 'Chèn ảnh', fields: [{ name: 'alt', label: 'Mô tả ngắn (giúp Google và người khiếm thị hiểu ảnh)', placeholder: 'VD: Phòng tập Dapper Combat' }] })
         .then(function (v) { restoreRange(area); document.execCommand('insertHTML', false, '<img src="' + esc(url) + '" alt="' + esc((v && v.alt) || '') + '">'); bar(); });
@@ -356,14 +359,11 @@
     var file = input.files && input.files[0]; input.value = '';
     if (!file) return;
     var m = $('[data-pg-covermsg]'), say = function (t, err) { m.textContent = t; m.hidden = !t; m.classList.toggle('is-err', !!err); };
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { say('Chỉ nhận ảnh JPG, PNG hoặc WebP.', true); return; }
-    if (file.size > 10 * 1024 * 1024) { say('Ảnh tối đa 10MB.', true); return; }
     var lbl = $('[data-pg-coverlabel]'), warn = [];
-    (K.probe ? K.probe(file, 'image') : Promise.resolve(null)).then(function (d) {
-      if (d && d[0] < COVER.w * 0.7) warn.push('⚠ Ảnh nhỏ hơn gợi ý (' + d[0] + ' × ' + d[1] + ' px) — có thể bị mờ.');
-      if (d && Math.abs(d[0] / d[1] - COVER.w / COVER.h) / (COVER.w / COVER.h) > 0.15) warn.push('⚠ Khác tỉ lệ 1920 × 800 — ảnh sẽ bị cắt bớt.');
-      if (file.size > COVER.kb * 1024) warn.push('⚠ Dung lượng lớn (' + Math.round(file.size / 1024) + ' KB) — trang sẽ tải chậm, nên nén lại.');
-      return K.uploadFile(file, function (p) { lbl.textContent = 'Đang tải ' + Math.round(p * 100) + '%'; });
+    lbl.textContent = 'Đang xử lý…';
+    A.media.prep(file, COVER).then(function (p) {
+      warn = p.lines.slice(1);
+      return K.uploadFile(p.file, function (pr) { lbl.textContent = 'Đang tải ' + Math.round(pr * 100) + '%'; });
     }).then(function (r) {
       lbl.textContent = 'Tải ảnh';
       var url = A.safeImg(r && r.url); if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };

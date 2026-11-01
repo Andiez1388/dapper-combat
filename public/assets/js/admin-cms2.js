@@ -11,6 +11,7 @@
   var UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>';
   var DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
   var LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>';
+  var ICON_SPEC = { kind: 'icon', w: 256, h: 256, maxKB: 60 };   // yêu cầu file icon (admin-media.js)
   var ICON_HINT = 'Nên dùng SVG nét đơn sắc để icon tự đổi màu theo chữ; PNG nền trong suốt, tối thiểu 96×96px.';
   var ST = { icTab: '', layTab: '', lkTab: '', lkQ: '' };
 
@@ -52,7 +53,7 @@
       '<div class="ipk__tabs" role="tablist">' +
         '<button type="button" role="tab" data-ipk-tab="lib">Thư viện</button><button type="button" role="tab" data-ipk-tab="up">Tải lên SVG / PNG</button><button type="button" role="tab" data-ipk-tab="paste">Dán mã SVG</button></div>' +
       '<div class="ipk__pane" data-ipk-pane="lib"><label class="search ipk__search">' + ICON.search + '<span class="sr">Tìm icon</span><input type="search" data-ipk-q placeholder="Tìm icon, vd: điện thoại, giỏ hàng…" autocomplete="off"></label><div class="ipk__grid" data-ipk-grid></div></div>' +
-      '<div class="ipk__pane" data-ipk-pane="up" hidden><p class="set-note">Chọn file .svg (đổi màu theo chữ) hoặc .png / .webp nền trong suốt.</p>' +
+      '<div class="ipk__pane" data-ipk-pane="up" hidden><p class="set-note">Chọn file .svg (đổi màu theo chữ) hoặc .png / .webp nền trong suốt.</p>' + A.media.html(ICON_SPEC) +
         '<label class="btn btn--line file-btn">' + ICON.upload + '<span data-ipk-uplabel>Chọn file icon</span><input class="sr" type="file" accept=".svg,image/svg+xml,image/png,image/webp" data-ipk-file></label>' +
         '<div class="set-msg" data-ipk-upmsg hidden></div></div>' +
       '<div class="ipk__pane" data-ipk-pane="paste" hidden><label class="field"><span class="field__label">Mã SVG (bắt đầu bằng &lt;svg)</span>' +
@@ -124,11 +125,11 @@
       }, function (e) { say(e.message, true); return null; });
     }
     if (!/^image\/(png|webp)$/.test(file.type)) { say('Chỉ nhận SVG, PNG hoặc WebP.', true); return Promise.resolve(null); }
-    if (file.size > 2 * 1024 * 1024) { say('Ảnh icon tối đa 2MB.', true); return Promise.resolve(null); }
     var orig = label ? label.textContent : '';
-    return K.probe(file, 'image').then(function (d) {
+    return A.media.prep(file, ICON_SPEC).then(function (p) {
+      var d = p.dims;
       if (d && (d[0] < 96 || d[1] < 96)) A.toast('Icon nhỏ hơn 96×96px (' + d[0] + '×' + d[1] + ') — có thể bị mờ.', 'info');
-      return K.uploadFile(file, function (p) { if (label) label.textContent = 'Đang tải ' + Math.round(p * 100) + '%'; });
+      return K.uploadFile(p.file, function (pr) { if (label) label.textContent = 'Đang tải ' + Math.round(pr * 100) + '%'; });
     }).then(function (r) {
       if (label) label.textContent = orig;
       var u = A.safeImg(r && r.url); if (!u) { say('Máy chủ trả về đường dẫn không hợp lệ.', true); return null; }
@@ -161,7 +162,7 @@
     var pages = C.idx.pages.filter(function (p) { return (C.idx.pageIcons[p.id] || []).length; }).map(function (p) { return p.id; });
     var list = C.idx.pageIcons[ST.icTab] || [], groups = [], by = {};
     list.forEach(function (ic) { var g = by[ic.section]; if (!g) { g = by[ic.section] = { id: ic.section, items: [] }; groups.push(g); } g.items.push(ic); });
-    root.innerHTML = '<div class="cms-help"><p><strong>Icon trên website</strong> — thay bằng icon trong thư viện, tải file của bạn hoặc dán mã SVG. ' + esc(ICON_HINT) + ' Bấm “Lưu” để áp dụng.</p></div>' +
+    root.innerHTML = '<div class="cms-help"><p><strong>Icon trên website</strong> — thay bằng icon trong thư viện, tải file của bạn hoặc dán mã SVG. ' + esc(ICON_HINT) + ' Bấm “Lưu” để áp dụng.</p>' + A.media.html(ICON_SPEC, { compact: true }) + '</div>' +
       pageTabs('cms-icons', pages, ST.icTab, function (p) {
         var n = (C.idx.pageIcons[p.id] || []).length, ed = (C.idx.pageIcons[p.id] || []).filter(function (ic) { return K.has(C.store.icons, ic.key); }).length;
         return esc(n) + ' icon' + (ed ? ' · ' + esc(ed) + ' đã thay' : '');

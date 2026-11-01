@@ -229,3 +229,14 @@
 .rk-pred b { font-variant-numeric: tabular-nums; }
 .rk-pred .linkbtn { margin-left: auto; }
 .rk-paper { margin-bottom: 16px; }
+
+/* Hạng cân (#/rank-divisions): tên + mốc cân, xem trước "Hạng Ruồi (≤ 52 kg)" */
+.dv-table td { vertical-align: top; }
+.dv-table input[type=text] { width: 100%; min-width: 180px; }
+.dv-kg { max-width: 140px; }
+.dv-table td.dv-n { white-space: nowrap; color: var(--muted); }
+.dv-foot { display: grid; gap: 12px; padding: 16px 0 0; }
+@media (max-width: 760px) {
+  .dv-table td:first-child { grid-column: 1 / -1; }
+  .dv-table input[type=text] { min-width: 0; }
+}

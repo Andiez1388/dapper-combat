@@ -31227,7 +31227,7 @@
     "w": 1920,
     "h": 1080,
     "ratio": "16:9",
-    "maxKB": 8000,
+    "maxKB": 3000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },
@@ -31509,7 +31509,7 @@
     "w": 1920,
     "h": 1080,
     "ratio": "16:9",
-    "maxKB": 8000,
+    "maxKB": 5000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },
@@ -31686,7 +31686,7 @@
     "w": 1920,
     "h": 1080,
     "ratio": "16:9",
-    "maxKB": 8000,
+    "maxKB": 5000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },
@@ -32885,7 +32885,7 @@
     "w": 1000,
     "h": 1250,
     "ratio": "4:5",
-    "maxKB": 8000,
+    "maxKB": 5000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },
@@ -32922,7 +32922,7 @@
     "w": 1000,
     "h": 1250,
     "ratio": "4:5",
-    "maxKB": 8000,
+    "maxKB": 5000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },
@@ -33071,7 +33071,7 @@
     "w": 1920,
     "h": 1080,
     "ratio": "16:9",
-    "maxKB": 8000,
+    "maxKB": 5000,
     "format": "MP4 (H.264), không cần âm thanh, 6–15 giây",
     "cover": true
    },

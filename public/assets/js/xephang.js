@@ -228,10 +228,16 @@
     return { d: d.getUTCDate(), m: en() ? d.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }) : 'Tháng ' + (d.getUTCMonth() + 1), y: d.getUTCFullYear() };
   }
   function dateBlock(iso, cls) { var p = dateParts(iso); return '<div class="xh-date' + (cls ? ' ' + cls : '') + '" title="' + esc(dateOf(iso, true)) + '"><b>' + p.d + '</b><span>' + esc(p.m) + '</span><small>' + p.y + '</small></div>'; }
-  var divName = function (id) { return DIV[id] ? pick(DIV[id]) : ''; };
+  // tên hạng luôn kèm khoảng cân: "Hạng Ruồi (≤ 52 kg)" — tên + mốc cân sửa ở /admin → Academy Ranking → Hạng cân
+  var divName = function (id) { return DIV[id] ? divLabel(DIV[id]) : ''; };
+  var divShort = function (id) { return DIV[id] ? pick(DIV[id]) : ''; };
   var monthOf = function (ym) { var d = new Date(ym + '-01T00:00:00Z'); return en() ? d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' }) : ym.slice(5) + '/' + ym.slice(0, 4); };
-  // khoảng cân của hạng: ≤ 52 kg … > 81 kg (hạng nặng nhất)
-  function divRange(d) { var i = (D.divisions || []).indexOf(d); return d.max < 999 ? '≤ ' + d.max + ' kg' : '> ' + ((D.divisions[i - 1] || {}).max || '') + ' kg'; }
+  // khoảng cân của hạng: hạng đầu "≤ 52 kg", giữa "52–56 kg", hạng nặng nhất "> 81 kg"
+  function divRange(d) {
+    var l = D.divisions || [], i = l.indexOf(d), p = l[i - 1], n = function (x) { return numFmt(x, x % 1 ? 1 : 0); };
+    return !p ? '≤ ' + n(d.max) + ' kg' : i === l.length - 1 ? '> ' + n(p.max) + ' kg' : n(p.max) + '–' + n(d.max) + ' kg';
+  }
+  function divLabel(d) { return pick(d) + ' (' + divRange(d) + ')'; }
   var STOP = ['KO', 'TKO', 'RTD', 'DQ'];
   var href = function (f) { return '/vo-si/' + encodeURIComponent(f.slug); };
   var evHref = function (e) { return '/su-kien/' + encodeURIComponent(e.slug); };
@@ -284,7 +290,7 @@
   function select(name, label, opts, val) {
     return '<label>' + esc(label) + ' <select data-f="' + name + '">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
   }
-  var divOpts = function () { return [['', t('f.allDiv')]].concat((D.divisions || []).map(function (d) { return [d.id, pick(d)]; })); };
+  var divOpts = function () { return [['', t('f.allDiv')]].concat((D.divisions || []).map(function (d) { return [d.id, divLabel(d)]; })); };
   var tierOpts = function () { return [['', t('f.allTier')]].concat((D.tiers || []).map(function (x) { return [x.id, pick(x)]; })); };
   function seg(name, opts, val) {
     return '<div class="xh-seg" role="group">' + opts.map(function (o) { return '<button type="button" data-seg="' + name + '" data-v="' + esc(o[0]) + '" aria-pressed="' + (o[0] === val) + '"' + (o[0] === val ? ' class="on"' : '') + '>' + esc(o[1]) + '</button>'; }).join('') + '</div>';
@@ -365,7 +371,7 @@
   function sideLeaders(g) {
     var rows = (D.divisions || []).map(function (d) {
       var f = D.fighters.filter(function (x) { return x.gender === g && x.division === d.id && ranked(x) && x.rank.div === 1; })[0];
-      return f ? '<li>' + photo(f, 'sm') + '<div class="grow"><small>' + esc(pick(d)) + '</small><a href="' + href(f) + '">' + esc(f.name) + '</a></div><span class="xh-pts">' + pts(f.points) + '</span></li>' : '';
+      return f ? '<li>' + photo(f, 'sm') + '<div class="grow"><small>' + esc(divLabel(d)) + '</small><a href="' + href(f) + '">' + esc(f.name) + '</a></div><span class="xh-pts">' + pts(f.points) + '</span></li>' : '';
     }).join('');
     return rows ? box(esc(t('side.leaders.' + g)), '<div class="xh-box-b"><ul class="xh-list">' + rows + '</ul></div>') : '';
   }
@@ -563,7 +569,7 @@
     return ['m', 'f'].map(function (g) {
       var list = D.fighters.filter(function (x) { return x.gender === g && x.id !== skip; }).sort(byPoints);
       return list.length ? '<optgroup label="' + esc(t('g.' + g)) + '">' + list.map(function (x) {
-        return '<option value="' + esc(x.slug) + '"' + (x.slug === sel ? ' selected' : '') + '>' + esc(x.name + ' (' + divName(x.division) + ', ' + x.record.w + '-' + x.record.l + '-' + x.record.d + ')') + '</option>';
+        return '<option value="' + esc(x.slug) + '"' + (x.slug === sel ? ' selected' : '') + '>' + esc(x.name + ' (' + divShort(x.division) + ', ' + x.record.w + '-' + x.record.l + '-' + x.record.d + ')') + '</option>';
       }).join('') + '</optgroup>' : '';
     }).join('');
   }

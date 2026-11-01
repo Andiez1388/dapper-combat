@@ -32,7 +32,11 @@
     program: 'chương trình', detail: 'chi tiết', due: 'số tiền cần trả', city: 'tỉnh / thành', type: 'loại hình', area: 'diện tích', services: 'dịch vụ', budget: 'ngân sách',
     slip: 'link phiếu xác nhận',
   };
-  var IMG_RE = /^image\/(png|jpeg|webp|gif)$/;
+  // yêu cầu file logo / favicon (khung "Yêu cầu file" + tự thu nhỏ ở admin-media.js)
+  var BRAND_SPEC = {
+    logo: { kind: 'image', h: 120, maxKB: 150, alpha: true, note: 'Hiện cao khoảng 28 px trên thanh menu; ngang tối đa khoảng 5 lần chiều cao.' },
+    favicon: { kind: 'image', w: 512, h: 512, maxKB: 100, alpha: true, note: 'Hình đơn giản, đọc rõ khi thu nhỏ còn 16 px trên tab trình duyệt.' },
+  };
   var EMAIL_RE = /^[^@\s<>"']+@[^@\s<>"']+\.[^@\s<>"']+$/;
   var ARROW_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>';
   var ARROW_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
@@ -574,10 +578,10 @@
         '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup'], ['ranking', 'Academy Ranking (Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)'], ['career', 'Truyền Nghề (đào tạo coach · võ sĩ từ con số 0)']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
         '<p class="set-note">Tắt = ẩn mục đó khỏi menu trên cùng và menu điện thoại ở mọi trang. Trang vẫn còn nguyên (mở bằng đường dẫn được), bật lại là hiện ngay. Link ở chân trang sửa ở <a href="#/cms-text">Chữ trên trang</a>.</p>') +
       panel('Logo', '<div class="brand-prev"><p class="field__label">Xem trước trên thanh menu</p><div class="brand-bar" data-logo-prev>' + logoPreview(d.logo) + '</div></div>' +
-        '<p class="set-spec">PNG nền trong suốt, cao ≥ 120 px, ngang tối đa ~600 px — hiển thị cao khoảng 28 px trên thanh menu.</p>' +
+        A.media.html(BRAND_SPEC.logo) +
         uploadRow('logo', 'Tải logo mới', d.logo) + '<div class="set-msg" data-brand-note="logo" hidden></div>') +
       panel('Favicon (biểu tượng trên tab trình duyệt)', '<div class="fav-prev" data-fav-prev>' + favPreview(d.favicon) + '</div>' +
-        '<p class="set-spec">PNG vuông 512 × 512 px.</p>' +
+        A.media.html(BRAND_SPEC.favicon) +
         uploadRow('favicon', 'Tải favicon mới', d.favicon) + '<div class="set-msg" data-brand-note="favicon" hidden></div>') +
       panel('Bản đồ Trang chủ',
         '<label class="field"><span class="field__label">Địa chỉ hiển thị trên bản đồ</span>' +
@@ -628,15 +632,6 @@
       $('iframe', box).setAttribute('src', src);
     }, now ? 0 : 700);
   }
-  function probe(file) {
-    return new Promise(function (resolve) {
-      var url = URL.createObjectURL(file), i = new Image();
-      var fin = function (d) { URL.revokeObjectURL(url); resolve(d); };
-      i.onload = function () { fin([i.naturalWidth, i.naturalHeight]); };
-      i.onerror = function () { fin(null); };
-      i.src = url;
-    });
-  }
   function uploadRaw(file) {
     return fetch('/api/uploads/file', { method: 'POST', headers: { Authorization: 'Bearer ' + A.token(), 'Content-Type': file.type }, body: file })
       .then(function (res) {
@@ -656,24 +651,15 @@
     var k = input.getAttribute('data-brand-file'), file = input.files && input.files[0];
     input.value = '';
     if (!file) return;
-    if (!IMG_RE.test(file.type)) { setNote(k, ['Chỉ nhận ảnh PNG, JPG, WEBP hoặc GIF (không nhận SVG).'], true); return; }
-    if (file.size > 10 * 1024 * 1024) { setNote(k, ['Ảnh tối đa 10MB.'], true); return; }
     var btn = input.closest('.file-btn'), lbl = $('[data-brand-label="' + k + '"]');
     var orig = lbl.textContent;
     btn.classList.add('is-busy'); input.disabled = true; lbl.textContent = 'Đang tải…';
     var lines = [];
-    probe(file).then(function (d) {
-      lines.push('File đã chọn: ' + (d ? num(d[0]) + ' × ' + num(d[1]) + ' px · ' : '') + num(Math.round(file.size / 1024)) + ' KB');
-      if (file.type !== 'image/png' && file.type !== 'image/webp') lines.push('⚠ Nên dùng PNG nền trong suốt để ' + (k === 'logo' ? 'logo' : 'biểu tượng') + ' không bị khung trắng.');
-      if (d && k === 'logo') {
-        if (d[1] < 120) lines.push('⚠ Ảnh thấp hơn 120 px — có thể bị mờ trên màn hình nét cao.');
-        if (d[0] / d[1] > 5.5) lines.push('⚠ Logo rất dài (ngang hơn ~5 lần chiều cao) — sẽ chiếm nhiều chỗ trên thanh menu.');
-      }
-      if (d && k === 'favicon') {
-        if (Math.abs(d[0] - d[1]) > 2) lines.push('⚠ Ảnh không vuông — biểu tượng sẽ bị méo hoặc cắt.');
-        if (Math.min(d[0], d[1]) < 192) lines.push('⚠ Nhỏ hơn 192 px — biểu tượng trên điện thoại có thể bị mờ.');
-      }
-      return uploadRaw(file);
+    A.media.prep(file, BRAND_SPEC[k]).then(function (p) {
+      var d = p.dims;
+      lines = p.lines;
+      if (d && k === 'logo' && d[0] / d[1] > 5.5) lines.push('⚠ Logo rất dài (ngang hơn ~5 lần chiều cao) — sẽ chiếm nhiều chỗ trên thanh menu.');
+      return uploadRaw(p.file);
     }).then(function (r) {
       var url = A.safeImg(r.url);
       if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };

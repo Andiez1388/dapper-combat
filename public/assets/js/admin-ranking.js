@@ -23,7 +23,8 @@
   var RES_1 = { W: 'T', L: 'B', D: 'H' };
   var RES_LOW = { W: 'thắng', L: 'thua', D: 'hòa' };
   // ảnh gợi ý: chân dung dọc 4:5 (giống khung hồ sơ trên web), poster dọc 4:5
-  var PHOTO = { w: 800, h: 1000, kb: 300 }, POSTER = { w: 1200, h: 1500, kb: 400 };
+  // yêu cầu file ảnh (khung "Yêu cầu file" + tự thu nhỏ ở admin-media.js)
+  var PHOTO = { kind: 'image', w: 800, h: 1000, maxKB: 300, cover: true, note: 'Chụp nửa người, mặt rõ, nền gọn.' }, POSTER = { kind: 'image', w: 1200, h: 1500, maxKB: 400 };
   var MAX_BOUTS = 40;
   var UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>';
   var DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
@@ -396,7 +397,7 @@
           field('Nhận xét chung', '<textarea rows="3" maxlength="1000" data-ff="evalNote.vi" placeholder="Thái độ tập, tiến bộ, đề xuất thời gian tới…">' + esc(d.evalNote.vi) + '</textarea>',
             'Hiện trong mục Phân tích của hồ sơ võ sĩ trên web, kèm tên HLV phụ trách. Tiếng Anh do AI tự dịch khi lưu.')) +
       '</div><aside class="rk-side">' +
-        imgSecHtml('Ảnh võ sĩ', 'Ảnh chân dung dọc tỉ lệ 4:5 — nên ' + PHOTO.w + ' × ' + PHOTO.h + ' px, JPG hoặc WebP ≤ ' + PHOTO.kb + ' KB. Chụp nửa người, mặt rõ, nền gọn.') +
+        imgSecHtml('Ảnh võ sĩ', 'Ảnh chân dung dọc.', PHOTO) +
         sec('Thi đấu & hiển thị',
           field('Trạng thái', '<select data-ff="status">' + optsHtml([['active', 'Đang thi đấu'], ['inactive', 'Nghỉ thi đấu']], d.status) + '</select>', 'Nghỉ thi đấu: hồ sơ vẫn hiện trên web nhưng không được xếp hạng.') +
           '<div><label class="check"><input type="checkbox" data-ff="visible"' + (d.visible ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Hiện trên web</span></label>' +
@@ -645,10 +646,10 @@
 
   // ── ảnh võ sĩ / poster sự kiện (tải lên /api/uploads/file như mục Hình ảnh) ──
   function imgKey() { return ED && ED.view === VE ? 'poster' : 'photo'; }
-  function imgSecHtml(title, note) {
+  function imgSecHtml(title, note, spec) {
     return sec(title,
       '<div class="rk-img' + (ED.view === VE ? ' rk-img--poster' : '') + '" data-rk-img></div>' +
-      '<p class="set-spec">' + esc(note) + '</p>' +
+      '<p class="field__hint">' + esc(note) + '</p>' + A.media.html(spec) +
       '<div class="set-actions"><label class="btn btn--line btn--sm file-btn">' + ICON.upload + '<span data-rk-imglabel>Tải ảnh</span>' +
         '<input class="sr" type="file" accept="image/jpeg,image/png,image/webp" data-rk-imgfile></label>' +
         '<button type="button" class="btn btn--quiet btn--sm" data-rk-imgdel hidden>Bỏ ảnh</button></div>' +
@@ -677,16 +678,11 @@
     input.value = '';
     if (!file || !ed) return;
     var m = $('[data-rk-imgmsg]'), say = function (t, err) { if (!m) return; m.textContent = t; m.hidden = !t; m.classList.toggle('is-err', !!err); };
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { say('Chỉ nhận ảnh JPG, PNG hoặc WebP.', true); return; }
-    if (file.size > 10 * 1024 * 1024) { say('Ảnh tối đa 10MB — hãy nén ảnh rồi thử lại.', true); return; }
     var lbl = $('[data-rk-imglabel]'), btn = input.closest('.file-btn'), warn = [];
     btn.classList.add('is-busy'); input.disabled = true; say('');
-    var probe = A.cms && A.cms.probe ? A.cms.probe(file, 'image') : Promise.resolve(null);
-    probe.then(function (d) {
-      if (d && d[0] < spec.w * 0.7) warn.push('⚠ Ảnh nhỏ hơn gợi ý (' + d[0] + ' × ' + d[1] + ' px) — có thể bị mờ.');
-      if (d && Math.abs(d[0] / d[1] - spec.w / spec.h) / (spec.w / spec.h) > 0.15) warn.push('⚠ Khác tỉ lệ 4:5 — ' + (key === 'photo' ? 'ảnh sẽ bị cắt bớt trong khung hồ sơ.' : 'poster vẫn hiện đủ, chỉ khác khung gợi ý.'));
-      if (file.size > spec.kb * 1024) warn.push('⚠ Dung lượng ' + Math.round(file.size / 1024) + ' KB — trang sẽ tải chậm, nên nén lại.');
-      return upload(file, function (p) { if (lbl) lbl.textContent = 'Đang tải ' + Math.round(p * 100) + '%'; });
+    A.media.prep(file, spec).then(function (p) {
+      warn = p.lines.slice(1);
+      return upload(p.file, function (pr) { if (lbl) lbl.textContent = 'Đang tải ' + Math.round(pr * 100) + '%'; });
     }).then(function (r) {
       var url = A.safeImg(r && r.url); if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };
       if (ED !== ed) return;
@@ -815,7 +811,7 @@
         '</div></section>' +
       '</div><aside class="rk-side">' +
         impactHtml(fresh) +
-        imgSecHtml('Poster', 'Không bắt buộc. Nên ảnh dọc 4:5 — ' + POSTER.w + ' × ' + POSTER.h + ' px, JPG hoặc WebP ≤ ' + POSTER.kb + ' KB.') +
+        imgSecHtml('Poster', 'Không bắt buộc. Poster hiện đủ, không bị cắt.', POSTER) +
         sec('Hiển thị',
           '<div><label class="check"><input type="checkbox" data-ef="visible"' + (d.visible ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Hiện trên web</span></label>' +
             '<p class="field__hint">Tắt = ẩn sự kiện khỏi lịch trên web. Kết quả các trận vẫn được tính điểm.</p></div>' +

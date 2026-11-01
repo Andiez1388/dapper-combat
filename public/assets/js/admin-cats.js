@@ -9,7 +9,7 @@
   var SS = A.settingsStore, esc = A.esc, ICON = A.ICON;
   var VIEW = 'categories';
   var GUIDES = [['gang', 'Bảng size găng'], ['ao', 'Bảng size áo'], ['dotap', 'Bảng size đồ tập'], ['free', 'Freesize — không cần bảng size']];
-  var MAX_TILES = 4, TILE = { w: 1200, h: 800, kb: 300 };
+  var MAX_TILES = 4, TILE_SPEC = { kind: 'image', w: 1200, h: 800, maxKB: 300, cover: true };
   var ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
   var UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>';
   var DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
@@ -87,7 +87,7 @@
         '<div class="set-body"><p class="set-note">Tối đa ' + MAX_TILES + ' ô ảnh hiện dưới lưới sản phẩm ở trang Shop (khi khách chưa lọc). Bấm vào ô sẽ mở đúng danh mục. Không có ô nào = ẩn cả hàng ô ảnh.</p>' +
           '<div class="tile-list" data-tile-list></div>' +
           '<div class="set-actions"><button type="button" class="btn btn--line btn--sm" data-tile-add>' + ICON.plus + '<span>Thêm ô ảnh</span></button>' +
-          '<span class="field__hint">Ảnh nên ' + TILE.w + ' × ' + TILE.h + ' px, JPG/WebP ≤ ' + TILE.kb + ' KB.</span></div></div></section>' +
+          '</div></div></section>' +
       '<div class="savebar" data-savebar="cats" hidden role="region" aria-label="Lưu thay đổi"><p class="savebar__msg" data-savebar-msg></p>' +
         '<div class="savebar__actions"><button class="btn btn--on-dark" type="button" data-cat-discard>Hủy</button><button class="btn btn--primary" type="button" data-cat-save>Lưu</button></div></div>';
     renderCats(); renderTiles(); bar();
@@ -214,8 +214,8 @@
           '<label class="field" for="' + id + '-en"><span class="field__label">Tiêu đề (English (AI tự dịch))</span><input id="' + id + '-en" type="text" maxlength="80" data-tf="title.en" value="' + esc(t.title.en) + '" autocomplete="off" placeholder="Để trống = dùng tiếng Việt"></label>' +
         '</div>' +
         '<div class="set-actions"><label class="btn btn--line btn--sm file-btn">' + ICON.upload + '<span data-tile-uplabel>' + (src ? 'Đổi ảnh' : 'Tải ảnh') + '</span>' +
-          '<input class="sr" type="file" accept="image/jpeg,image/png,image/webp" data-tile-file></label>' +
-          '<span class="field__hint">' + TILE.w + ' × ' + TILE.h + ' px · JPG/WebP ≤ ' + TILE.kb + ' KB</span></div>' +
+          '<input class="sr" type="file" accept="image/jpeg,image/png,image/webp" data-tile-file></label></div>' +
+        A.media.html(TILE_SPEC, { compact: true }) +
         '<div class="set-msg" data-tile-msg hidden></div>' +
       '</div>' +
       '<div class="tile-row__tools">' +
@@ -230,16 +230,13 @@
     input.value = '';
     if (!t || !file) return;
     var m = $('[data-tile-msg]', row), say = function (s, err) { m.textContent = s; m.hidden = !s; m.classList.toggle('is-err', !!err); };
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { say('Chỉ nhận ảnh JPG, PNG hoặc WebP.', true); return; }
-    if (file.size > 10 * 1024 * 1024) { say('Ảnh tối đa 10MB — hãy nén ảnh rồi thử lại.', true); return; }
     var K = A.cms;
     if (!K || !K.uploadFile) { say('Chưa sẵn sàng tải ảnh — tải lại trang rồi thử lại.', true); return; }
     var lbl = $('[data-tile-uplabel]', row), warn = [];
-    (K.probe ? K.probe(file, 'image') : Promise.resolve(null)).then(function (d) {
-      if (d && d[0] < TILE.w * 0.7) warn.push('⚠ Ảnh nhỏ hơn gợi ý (' + d[0] + ' × ' + d[1] + ' px) — có thể bị mờ.');
-      if (d && Math.abs(d[0] / d[1] - TILE.w / TILE.h) / (TILE.w / TILE.h) > 0.15) warn.push('⚠ Khác tỉ lệ ' + TILE.w + ' × ' + TILE.h + ' — ảnh sẽ bị cắt bớt.');
-      if (file.size > TILE.kb * 1024) warn.push('⚠ Dung lượng ' + Math.round(file.size / 1024) + ' KB — trang sẽ tải chậm, nên nén lại.');
-      return K.uploadFile(file, function (p) { if (lbl) lbl.textContent = 'Đang tải ' + Math.round(p * 100) + '%'; });
+    if (lbl) lbl.textContent = 'Đang xử lý…';
+    A.media.prep(file, TILE_SPEC).then(function (p) {
+      warn = p.lines.slice(1);
+      return K.uploadFile(p.file, function (pr) { if (lbl) lbl.textContent = 'Đang tải ' + Math.round(pr * 100) + '%'; });
     }).then(function (r) {
       var url = A.safeImg(r && r.url); if (!url) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };
       t.img = url;

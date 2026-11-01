@@ -196,4 +196,25 @@ module.exports = async function opsTests(env, t) {
     r = await get('/assets/media/' + jpg, GZ);
     t.ok(r.s === 200 && !r.h['content-encoding'] && /image\//.test(r.h['content-type']), 'ảnh không nén lại (đã nén sẵn)', r.h);
   });
+
+  t.section('Chuẩn bị chạy thật (danh sách trong /admin)');
+  await t.run('chạy thật', async () => {
+    let r = await req('/api/admin/launch');
+    const it = id => r.j.items.find(x => x.id === id);
+    t.ok(r.s === 200 && r.j.items.length >= 15 && r.j.items.every(x => x.group && x.title && /^(done|todo|optional)$/.test(x.status)), 'máy chủ tự kiểm tra ' + (r.j.items || []).length + ' mục', r.j);
+    t.ok(it('hotline') && it('hotline').status === 'todo' && it('demoRanking').status === 'todo', 'còn số hotline tạm + võ sĩ mẫu → "Cần làm"', [it('hotline'), it('demoRanking')]);
+    t.ok(it('media') && it('media').status === 'done', 'ảnh / video có sẵn đều dưới dung lượng tối đa', it('media'));
+    t.ok(r.j.items.filter(x => x.status === 'todo' && !['https', 'dataDir'].includes(x.id)).every(x => x.href), 'mục "Cần làm" sửa được trong admin đều có nút tới chỗ sửa (HTTPS, thư mục dữ liệu làm ở hosting)');
+    r = await req('/api/admin/launch', { method: 'PUT', body: { id: 'hotline', done: true } });
+    t.ok(r.s === 400, 'mục máy tự kiểm tra → không cho đánh dấu tay', r.j);
+    r = await req('/api/admin/launch', { method: 'PUT', body: { id: 'gsc', done: true } });
+    t.ok(r.s === 200 && it('gsc').status === 'done' && it('gsc').doneAt && it('gsc').doneBy, 'Google Search Console: tự đánh dấu "Đã làm xong" (ghi lúc nào, ai)', it('gsc'));
+    r = await req('/api/admin/launch', { method: 'PUT', body: { id: 'gsc', done: false } });
+    t.ok(it('gsc').status === 'todo', 'bỏ đánh dấu được');
+    await req('/api/backup');
+    r = await req('/api/admin/launch');
+    t.ok(it('backup').status === 'done', 'vừa tải bản sao lưu → mục "Sao lưu" thành Xong', it('backup'));
+    r = await req('/api/admin/launch', { tok: false });
+    t.ok(r.s === 401, 'chưa đăng nhập → không xem được', r.s);
+  });
 };

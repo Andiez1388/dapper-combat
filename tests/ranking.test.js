@@ -177,8 +177,28 @@ module.exports = async function rankingTests(env, t) {
       'admin “Xóa dữ liệu mẫu”: bỏ 20 võ sĩ + 8 sự kiện mẫu, giữ võ sĩ đã tự thêm', { r: r.j, left: after.fighters.map(f => f.name) });
     r = await req('/api/backup/restore', { method: 'POST', body: bk });
     t.ok(r.s === 200 && (await pub('/api/ranking')).j.fighters.length === 20, 'khôi phục bản sao lưu → dữ liệu xếp hạng trở lại (có trong bản sao lưu)');
+    // hạng cân: tên + mốc cân sửa ở /admin → Hạng cân (chỉ admin), trang công khai nhận theo
+    const D0 = (await pub('/api/ranking')).j.divisions, putDiv = (body, tok) => req('/api/admin/ranking/divisions', { method: 'PUT', body, tok });
+    t.ok(D0.length === 8 && D0[0].vi === 'Hạng Ruồi' && D0[0].max === 52 && D0[7].max === 999, 'mặc định 8 hạng cân, hạng Ruồi ≤ 52 kg', D0.map(d => d.vi + ' ' + d.max));
+    t.ok((await putDiv({ divisions: D0 }, S)).s === 403, 'HLV không sửa được hạng cân');
+    r = await putDiv({ divisions: D0.map((d, i) => i === 2 ? { ...d, max: 50 } : d) });
+    t.ok(r.s === 400 && /lớn hơn hạng trước/.test(r.j.error), 'mốc cân không tăng dần → báo lỗi', r.j);
+    r = await putDiv({ divisions: D0.map((d, i) => i === 0 ? { ...d, vi: ' ' } : d) });
+    t.ok(r.s === 400, 'tên hạng trống → báo lỗi', r.j);
+    const longW = (await pub('/api/ranking')).j.fighters.find(f => f.slug === 'nguyen-hoang-long');
+    r = await putDiv({ divisions: D0.map((d, i) => i === 3 ? { ...d, max: 63 } : i === 0 ? { ...d, vi: 'Hạng Ruồi mới' } : d), resort: false });
+    t.ok(r.s === 200 && r.j.moved === 0 && r.j.mismatch >= 1 && r.j.divisions[3].max === 63 && r.j.divisions[0].en === '' && r.j.divisions[1].en === 'Bantamweight',
+      'lưu tên + mốc mới: đổi tên → bỏ tiếng Anh cũ chờ AI dịch; chưa xếp lại thì báo số võ sĩ lệch hạng', r.j);
+    await settle();
+    let pd = (await pub('/api/ranking')).j;
+    t.ok(pd.divisions[3].max === 63 && pd.divisions[0].vi === 'Hạng Ruồi mới' && pd.divisions[0].en === '[EN] Hạng Ruồi mới', 'trang công khai nhận tên + mốc mới, tên mới tự dịch tiếng Anh', pd.divisions.slice(0, 4));
+    r = await putDiv({ divisions: r.j.divisions, resort: true });
+    pd = (await pub('/api/ranking')).j;
+    t.ok(r.j.moved >= 1 && r.j.mismatch === 0 && pd.fighters.find(f => f.id === longW.id).division === 'welter', 'bật “Tự xếp lại” → võ sĩ 63,5 kg chuyển sang Hạng Bán trung', { moved: r.j.moved, w: longW.weight });
+    r = await putDiv({ divisions: D0, resort: true });
+    t.ok(r.s === 200 && r.j.divisions[0].en === 'Flyweight' && (await pub('/api/ranking')).j.fighters.find(f => f.id === longW.id).division === 'light', 'trả về mặc định (tên gốc lấy lại tiếng Anh gốc), võ sĩ về hạng cũ', r.j.divisions[0]);
     await req('/api/users/' + sid, { method: 'DELETE' });
-    const d3 = (await pub('/api/ranking')).j, q3 = d3.fighters.find(f => f.id === opp.id);
+    const d3 =(await pub('/api/ranking')).j, q3 = d3.fighters.find(f => f.id === opp.id);
     t.ok(q3.record.l === q.record.l - 1 && q3.points > q.points, 'xóa sự kiện → điểm, thành tích tính lại như cũ', { before: [q.record, q.points], after: [q3.record, q3.points] });
   });
 };

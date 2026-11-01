@@ -5,6 +5,7 @@
  *   POST /api/fighters · PUT/DELETE /api/fighters/:id    võ sĩ (xóa: chỉ admin, võ sĩ chưa có trận nào)
  *   POST /api/events   · PUT/DELETE /api/events/:id      sự kiện + danh sách trận, kết quả
  *   DELETE /api/admin/ranking/demo                         xóa dữ liệu mẫu (chỉ admin)
+ *   PUT  /api/admin/ranking/divisions                      hạng cân: tên + mốc cân (chỉ admin)
  * Nhân viên (HLV) được thêm / sửa võ sĩ, chấm điểm, nhập kết quả; xóa cần tài khoản admin.
  */
 const ranking = require('../lib/ranking');
@@ -35,8 +36,24 @@ module.exports = function mountRanking(router, { adminOnly, staffOk }) {
   router.get('/ranking', (req, res) => res.json(ranking.publicData()));
   router.get('/admin/ranking', staffOk, (req, res) => {
     const c = ranking.compute();
-    res.json({ fighters: ranking.fighters(), events: ranking.events(), computed: c, divisions: ranking.DIVISIONS, skills: ranking.SKILLS, tiers: ranking.TIERS.map(t => ({ ...t, min: Number.isFinite(t.min) ? t.min : 0 })),
+    res.json({ fighters: ranking.fighters(), events: ranking.events(), computed: c, divisions: ranking.divisions(), skills: ranking.SKILLS, tiers: ranking.TIERS.map(t => ({ ...t, min: Number.isFinite(t.min) ? t.min : 0 })),
       methods: ranking.METHODS, eventTypes: ranking.EVENT_TYPES, stances: ranking.STANCES, today: c.today });
+  });
+
+  // hạng cân: đổi tên / mốc cân (chỉ admin); resort = xếp lại võ sĩ có cân nặng vào đúng hạng theo mốc mới
+  const mismatch = () => ranking.fighters().filter(f => f.weight && ranking.divOf(f.weight) !== f.division).length;
+  router.put('/admin/ranking/divisions', adminOnly, (req, res) => {
+    const b = req.body || {}, r = ranking.cleanDivisions(b.divisions);
+    if (r.error) return res.status(400).json({ error: r.error });
+    ranking.write('divisions.json', r.divisions);
+    let moved = 0;
+    if (b.resort) {
+      const list = ranking.fighters();
+      for (const f of list) if (f.weight) { const d = ranking.divOf(f.weight); if (d !== f.division) { f.division = d; moved++; } }
+      if (moved) ranking.write('fighters.json', list);
+    }
+    translate.queue('ranking', r.divisions.filter(d => !d.en).map(d => 'div|' + d.id + '|name'));
+    res.json({ divisions: ranking.divisions(), moved, mismatch: mismatch() });
   });
 
   router.post('/fighters', staffOk, (req, res) => {
