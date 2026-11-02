@@ -5,6 +5,13 @@ const jwt     = require('jsonwebtoken');
 const crypto  = require('crypto');
 
 const router = express.Router();
+// Express 4 không bắt lỗi của hàm async → lỗi bất ngờ làm request treo mãi; bọc mọi hàm xử lý để lỗi về chỗ báo lỗi chung (server.js, trả 500)
+for (const m of ['get', 'post', 'put', 'patch', 'delete']) {
+  const orig = router[m].bind(router);
+  router[m] = (...args) => orig(...args.map(fn => (typeof fn === 'function' && fn.length < 4
+    ? (req, res, next) => { try { const r = fn(req, res, next); if (r && typeof r.catch === 'function') r.catch(next); } catch (e) { next(e); } }
+    : fn)));
+}
 const notify = require('../lib/notify');
 const settings = require('../lib/settings');
 const translate = require('../lib/translate');
@@ -31,10 +38,12 @@ const JWT_SECRET = (() => {
 function read(file, def) {
   const p = path.join(DATA_DIR, file);
   if (!fs.existsSync(p)) { writeFile(file, def); return JSON.parse(JSON.stringify(def)); }
-  try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) {
-    // file hỏng (thường do sửa tay): cất bản hỏng sang bên cạnh để không bị lần ghi sau đè mất
+  const text = fs.readFileSync(p, 'utf8');   // lỗi đọc (máy bận, hết lượt mở file…) → báo lỗi, KHÔNG coi là file hỏng (tránh mất dữ liệu thật)
+  try { return JSON.parse(text); } catch (e) {
+    // file hỏng (thường do sửa tay): cất bản hỏng sang bên cạnh, ghi file trống tại chỗ (không chép lại dữ liệu mẫu)
     const bad = p + '.hong-' + Date.now();
     try { fs.renameSync(p, bad); } catch { /* bỏ qua */ }
+    writeFile(file, def);
     console.error(`[dữ liệu] ${file} bị hỏng (${e.message}) — đã cất bản hỏng ở ${path.basename(bad)}, tạm dùng dữ liệu trống`);
     return JSON.parse(JSON.stringify(def));
   }
@@ -255,7 +264,8 @@ function products() {
   if (list.length && !list.some(p => p.cat)) { const seed = seedProducts(); writeFile('products.json', seed); return seed; }
   return list;
 }
-function publicProducts() { return products().filter(p => p.visible !== false); }
+// bỏ email người sửa (tài khoản đăng nhập admin / nhân viên) khỏi dữ liệu công khai
+function publicProducts() { return products().filter(p => p.visible !== false).map(({ updatedBy, ...p }) => p); }
 router.publicProducts = publicProducts;
 // đường dẫn sản phẩm /shop/<slug>: slug tự đặt trong /admin, hoặc tự tạo từ tên (bỏ dấu)
 const slugify = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
@@ -268,11 +278,13 @@ router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
 const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
+// chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
+const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
 function cleanProduct(body, base = {}) {
   const p = { ...base };
   for (const k of PRODUCT_FIELDS) if (body[k] !== undefined) p[k] = body[k];
-  p.name = str(p.name, 120) || 'Sản phẩm mới';
-  p.nameEn = str(p.nameEn, 120);
+  p.name = plain(p.name, 120) || 'Sản phẩm mới';
+  p.nameEn = plain(p.nameEn, 120);
   const cats = settings.categoryIds();                      // danh mục sửa ở /admin → Danh mục sản phẩm
   p.cat = cats.includes(str(p.cat, 30)) ? str(p.cat, 30) : (cats.includes(base.cat) ? base.cat : cats[0]);
   p.price = int(p.price, 0, 1e9);
@@ -280,25 +292,26 @@ function cleanProduct(body, base = {}) {
   p.stock = int(p.stock, 0, 1e6);
   p.reviews = int(p.reviews, 0, 1e6);
   p.rating = p.reviews ? Math.min(5, Math.max(0, Number(p.rating) || 0)) : 0; // chưa có đánh giá → không hiện sao
-  p.sizes = Array.isArray(p.sizes) && p.sizes.length ? p.sizes.map(s => str(s, 20)).filter(Boolean) : ['One size'];
+  p.sizes = Array.isArray(p.sizes) && p.sizes.length ? p.sizes.map(s => plain(s, 20)).filter(Boolean) : ['One size'];
   // màu: [mã, mã màu HEX, tên tiếng Việt, tên tiếng Anh] — tên trống = dùng tên có sẵn theo mã (Đỏ, Đen…)
   p.colors = Array.isArray(p.colors) && p.colors.length ? p.colors.filter(c => Array.isArray(c) && c[0]).slice(0, 12).map(c => {
     const key = slugify(str(c[0], 30)).slice(0, 20) || 'mau', hex = /^#[0-9a-f]{6}$/i.test(str(c[1], 7)) ? str(c[1], 7) : '#141414';
-    const vi = str(c[2], 30), en = str(c[3], 30);
+    const vi = plain(c[2], 30), en = plain(c[3], 30);
     return vi || en ? [key, hex, vi, en] : [key, hex];
   }) : [['black', '#141414']];
-  for (const k of ['desc', 'full']) p[k] = { vi: str(p[k] && p[k].vi, 2000), en: str(p[k] && p[k].en, 2000) };
+  for (const k of ['desc', 'full']) p[k] = { vi: plain(p[k] && p[k].vi, 2000), en: plain(p[k] && p[k].en, 2000) };
   // điểm nổi bật riêng của sản phẩm (trống = dùng 4 điểm chung ở mục Chữ trên trang)
-  p.features = Array.isArray(p.features) ? p.features.slice(0, 8).map(f => ({ vi: str(f && f.vi, 160), en: str(f && f.en, 160) })).filter(f => f.vi) : [];
+  p.features = Array.isArray(p.features) ? p.features.slice(0, 8).map(f => ({ vi: plain(f && f.vi, 160), en: plain(f && f.en, 160) })).filter(f => f.vi) : [];
   p.img = str(p.img, 300);
+  if (p.img && !MEDIA_URL.test(p.img)) p.img = base.img && MEDIA_URL.test(base.img) ? base.img : '';
   // ảnh phụ cho trang chi tiết (tối đa 12); nhãn trên ảnh: new = Mới, best = Bán chạy, none = không nhãn ("" = tự động; có giá gốc thì hiện % giảm)
   p.images = Array.isArray(p.images) ? p.images.map(u => str(u, 300)).filter(u => MEDIA_URL.test(u)).slice(0, 12) : [];
   // video riêng (MP4 / WEBM) thay cho 2 video chung ở trang chi tiết
   p.video = str(p.video, 300);
   if (p.video && !(MEDIA_URL.test(p.video) && (/^https:/.test(p.video) || /\.(mp4|webm)$/i.test(p.video)))) p.video = '';
   // SEO riêng (trống = tự lấy tên + mô tả) và đường dẫn tự đặt (trống = tự tạo từ tên)
-  p.seoTitle = str(p.seoTitle, 70);
-  p.seoDesc = str(p.seoDesc, 200);
+  p.seoTitle = plain(p.seoTitle, 70);
+  p.seoDesc = plain(p.seoDesc, 200);
   p.slug = slugify(str(p.slug, 80));
   if (p.slug === 'checkout') p.slug = '';
   p.badge = ['new', 'best', 'none'].includes(p.badge) ? p.badge : '';
@@ -586,13 +599,15 @@ function priceOrder(body, req) {
   const catalog = products();
   const items = [];
   for (const it of (Array.isArray(body.items) ? body.items.slice(0, 40) : [])) {
+    if (!it || typeof it !== 'object') continue;
     const p = catalog.find(x => x.id === it.id && x.visible !== false);
     if (!p) return { error: L('Một sản phẩm trong giỏ không còn bán. Vui lòng tải lại trang.', 'An item in your cart is no longer available. Please reload the page.') };
     const qty = int(it.qty, 1, 50, 1);
     const size = p.sizes.includes(it.size) ? it.size : p.sizes[0];
     const pc = p.colors.find(c => c[0] === it.color) || p.colors[0], color = pc[0];
     const same = items.find(x => x.id === p.id && x.size === size && x.color === color);
-    if (same) { same.qty += qty; same.line = same.qty * same.price; continue; }
+    // dòng trùng gộp lại — vẫn tối đa 50 cái mỗi loại (không để một đơn ảo giữ hết tồn kho)
+    if (same) { same.qty = Math.min(50, same.qty + qty); same.line = same.qty * same.price; continue; }
     // tên màu tự đặt (nếu có) lưu kèm đơn — đơn cũ vẫn đọc đúng khi sau này đổi màu sản phẩm
     items.push({ id: p.id, name: p.name, img: p.img, size, color, ...(pc[2] ? { colorName: pc[2] } : {}), qty, price: p.price, line: p.price * qty });
   }
@@ -702,7 +717,9 @@ router.post('/registrations', limit('reg', 10), (req, res) => {
   const fee = settings.all().course;
   const gt = (fee.gtPackages || []).find(k => String(k.months) === reg.pkg);   // gói Group Training theo số tháng
   const totals = { found: fee.foundPrice, gt: gt ? gt.price : 0, hssv: fee.hssvMonth * fee.hssvMonths, mem: fee.memMonth, pt: 0, trial: 0, coach: fee.careerPriceCoach, fighter: fee.careerPriceFighter };
-  if (totals[reg.program] !== undefined) {
+  // số tiền luôn tính ở máy chủ: chương trình lạ (vd "Coach" viết hoa, "__proto__") → từ chối, không lấy số tiền trình duyệt gửi lên
+  if (!Object.prototype.hasOwnProperty.call(totals, reg.program)) return bad('Chương trình không hợp lệ', 'Unknown program');
+  {
     reg.total = totals[reg.program];
     const career = reg.program === 'coach' || reg.program === 'fighter';
     reg.due = !reg.total ? 0 : reg.pay === 'full' ? reg.total : reg.pay !== 'deposit' ? 0
@@ -722,7 +739,9 @@ function bySlip(code, k) {
   const c = '#' + String(code || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
   for (const [file, type] of [['orders.json', 'order'], ['registrations.json', 'registration']]) {
     const x = read(file, []).find(e => e.code === c);
-    if (x && x.confirm && k && crypto.timingSafeEqual(Buffer.from(String(k).padEnd(24).slice(0, 24)), Buffer.from(x.confirm.token))) return { x, file, type };
+    // so khóa theo byte: khóa có ký tự lạ (é…) dài hơn 24 byte → không khớp, thay vì làm timingSafeEqual ném lỗi
+    const a = Buffer.from(String(k || '').padEnd(24).slice(0, 24)), t = x && x.confirm ? Buffer.from(String(x.confirm.token)) : null;
+    if (t && k && a.length === t.length && crypto.timingSafeEqual(a, t)) return { x, file, type };
   }
   return null;
 }
@@ -730,7 +749,7 @@ function bySlip(code, k) {
 function payInfo(type, x) {
   const p = cms.data().payment || {};
   if (x.paid) return null; // đã nhận tiền → không cần mã QR chuyển khoản
-  const amount = type === 'order' ? (QR_PAY.includes(x.pay) ? x.total : 0) : x.due || 0;
+  const amount = type === 'order' && !QR_PAY.includes(x.pay) ? 0 : owed(type, x);
   if (!amount || !p.bankBin || !p.bankAccount) return null;
   // wallet: khách chọn MoMo / ZaloPay → phiếu hướng dẫn quét mã bằng app ví (vẫn chuyển vào tài khoản ngân hàng)
   return { bank: (BANKS.find(b => b[0] === p.bankBin) || [])[1] || '', bin: p.bankBin, acc: p.bankAccount, holder: p.bankHolder || '', amount, note: String(x.code).replace(/[^A-Za-z0-9]/g, ''),
@@ -797,8 +816,13 @@ function byAlnum(code) {
 // mã đơn (DC123456 / DCREG12345) không có chữ T; phần thời gian sau T chỉ gồm chữ số
 const refCode = ref => { const s = String(ref || ''), i = s.indexOf('T'); return i > 0 ? s.slice(0, i) : ''; };
 const newRef = code => code + 'T' + Date.now();
-// còn phải trả bao nhiêu (0 = đã trả / đã hủy / không cần trả trước)
-const owed = (type, x) => (x.paid || x.status === 'cancelled' ? 0 : dueOf(KIND_OF[type], x));
+// còn phải trả bao nhiêu (0 = đã trả / đã hủy / không cần trả trước): trừ các khoản cổng / SePay đã báo về (khách chuyển thiếu → chỉ đòi phần còn lại)
+// đăng ký chỉ tính số cần trả trước (due) — chọn "tư vấn trước" / "trả tại phòng tập" thì không đòi trả online
+const owed = (type, x) => {
+  if (x.paid || x.status === 'cancelled') return 0;
+  const due = type === 'order' ? Number(x.total) || 0 : Number(x.due) || 0;
+  return Math.max(0, due - (x.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0));
+};
 // cổng khách còn dùng được cho đơn / đăng ký này (thẻ VNPay; trả góp khi số tiền đủ mức tối thiểu) — theo cả bật / tắt ở Thiết lập → Bán hàng
 function onlineFor(type, x) {
   const o = payments.online(), ck = settings.all().shop.checkout.pay, due = owed(type, x);
@@ -1310,7 +1334,7 @@ router.get('/translate/status', staffOk, (req, res) => res.json(translate.status
 // dịch mọi chỗ còn thiếu tiếng Anh; wait=1: chờ dịch xong mới trả lời (tối đa 2 phút)
 router.post('/translate/run', adminOnly, async (req, res) => {
   if (!translate.enabled()) return res.status(400).json({ error: 'Chưa bật dịch tự động hoặc chưa có khóa API.' });
-  for (const k of ['cms', 'product', 'settings', 'page']) translate.queue(k, null);
+  for (const k of ['cms', 'product', 'settings', 'page', 'ranking']) translate.queue(k, null);
   if ((req.body || {}).wait) await translate.idle(120000);
   res.json(translate.status());
 });

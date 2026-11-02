@@ -92,6 +92,8 @@
       var root = doc.documentElement;
       if (!root || root.nodeName.toLowerCase() !== 'svg' || doc.getElementsByTagName('parsererror').length) return '';
       (function walk(el) {
+        // bỏ cả chú thích / CDATA / processing instruction: "<!--><img onerror…>-->" hợp lệ trong XML nhưng khi chèn vào HTML sẽ thành thẻ thật
+        Array.prototype.slice.call(el.childNodes || []).forEach(function (c) { if (c.nodeType === 4 || c.nodeType === 7 || c.nodeType === 8) c.parentNode.removeChild(c); });
         Array.prototype.slice.call(el.children || []).forEach(function (c) { if (!SVG_OK.test(c.nodeName)) c.parentNode.removeChild(c); else walk(c); });
         Array.prototype.slice.call(el.attributes).forEach(function (a) {
           var n = a.name.toLowerCase(), v = a.value;
@@ -792,7 +794,8 @@
   }
   function listAction(btn, kind) {
     var box = btn.closest('[data-list]'), lkey = box.getAttribute('data-list'), info = itemsOf(lkey); if (!info) return;
-    var li = btn.closest('[data-item]'), id = li ? li.getAttribute('data-item') : btn.getAttribute('data-item-show');
+    // nút "hiện lại" của danh sách con nằm trong thẻ <li data-item> của mục cha → lấy mã từ chính nút trước
+    var li = btn.closest('[data-item]'), id = btn.hasAttribute('data-item-show') ? btn.getAttribute('data-item-show') : li ? li.getAttribute('data-item') : null;
     var order = info.order.slice(), add = clone(info.add) || {}, noun = (info.L.item || 'mục').toLowerCase(), focusId = id, focusSel = '';
     var ctx = info.items.filter(function (c) { return c.id === id; })[0];
     if (kind === 'move') {

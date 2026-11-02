@@ -1965,6 +1965,7 @@
     var next = function (i) {
       if (i >= files.length) {
         btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = '+ Tải thêm ảnh';
+        if (!document.contains(form)) return;   // khung sửa đã đóng trong lúc tải → không đánh dấu "chưa lưu" cho màn khác
         galleryState(form); if (done) S.dirty = true;
         if (msgs.length) formError(form, msgs.join(' ')); else setMsg($('[data-form-msg]', form), '');
         if (shrunk) mnote(form, 'gal', [shrunk + ' ảnh to hơn ' + PRODUCT_IMG.w + ' × ' + PRODUCT_IMG.h + ' px đã được tự thu nhỏ & nén.']);
@@ -1982,7 +1983,7 @@
       }, function (e) {
         if (e && e.status === 401) return;
         msgs.push(files[i].name + ': ' + ((e && e.message) || 'lỗi tải lên'));
-      }).then(function () { if (S.token) next(i + 1); });
+      }).then(function () { if (S.token) next(document.contains(form) ? i + 1 : files.length); });
     };
     next(0);
   }
@@ -2000,6 +2001,7 @@
     }).then(function (r) {
       var url = r && safeImg(r.url);
       if (!url) throw new ApiError('Tải lên thất bại.', 0);
+      if (!document.contains(form)) return;   // khung sửa đã đóng trong lúc tải
       F(form, 'video').value = url;
       $('[data-vid-preview]', form).innerHTML = vidPreviewHtml(url);
       $('[data-vid-del]', form).hidden = false;
@@ -2237,6 +2239,7 @@
       done();
       var url = r && safeImg(r.url);
       if (!url) { formError(form, 'Máy chủ trả về đường dẫn ảnh không hợp lệ.'); return; }
+      if (!document.contains(form)) return;   // khung sửa đã đóng trong lúc tải
       F(form, 'img').value = url;
       $('[data-img-preview]', form).innerHTML = imgPreviewHtml(url);
       setMsg($('[data-form-msg]', form), '');
@@ -2712,7 +2715,8 @@
     copyText: copyText, PAGE_SIZE: PAGE_SIZE, ROLE_LABEL: ROLE_LABEL, SOURCE: SOURCE,
   };
 
-  // chờ mọi script (defer) đăng ký xong rồi mới khởi động
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  // chờ mọi script (defer) đăng ký xong rồi mới khởi động — lúc admin.js chạy (defer) trang đã ở "interactive"
+  // nhưng các script sau chưa chạy; DOMContentLoaded chỉ báo khi tất cả script defer đã chạy xong
+  if (document.readyState === 'complete') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
 })();

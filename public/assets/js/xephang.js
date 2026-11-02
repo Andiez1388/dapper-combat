@@ -469,7 +469,7 @@
       '<label><input type="checkbox" data-f="all"' + (all ? ' checked' : '') + '> ' + esc(t('f.inactive')) + '</label></div>';
     var since = D.since ? '<p class="xh-note">' + esc(t('move.note', { e: pick(D.since.name), d: dateOf(D.since.date) })) + '</p>' : '';
     root.innerHTML = hero({
-      h1: esc(div && view === 'all' ? t('rank.hd.' + g, { div: divName(div) }) : t('rank.h.' + g)),
+      h1: esc(div && view === 'all' && DIV[div] ? t('rank.hd.' + g, { div: divShort(div) }) + ' (' + divRange(DIV[div]) + ')' : t('rank.h.' + g)),
       sub: '<p>' + esc(t('rank.sub')) + ' <a href="#cach-tinh">' + esc(t('how.title')) + '</a></p>',
       ctl: seg('g', [['m', t('g.m')], ['f', t('g.f')]], g) + '<span class="xh-upd">' + esc(t('updated', { d: dateOf(D.updated) })) + '</span>',
       side: top,

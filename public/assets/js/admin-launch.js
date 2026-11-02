@@ -32,7 +32,7 @@
       '<span class="lc-mark" aria-hidden="true">' + MARK[it.status] + '</span>' +
       '<div class="lc-main"><p class="lc-title">' + esc(it.title) + ' ' + (BADGE[it.status] || '') + '</p>' +
         '<p class="lc-detail">' + esc(it.detail) + '</p>' +
-        (it.manual && it.doneAt ? '<p class="lc-meta">Đánh dấu lúc ' + esc(A.fmtTime(it.doneAt)) + (it.doneBy ? ' · ' + esc(it.doneBy) : '') + '</p>' : '') +
+        (it.manual && it.doneAt ? '<p class="lc-meta">Đánh dấu lúc ' + esc(A.fmtDate(it.doneAt)) + (it.doneBy ? ' · ' + esc(it.doneBy) : '') + '</p>' : '') +
       '</div>' +
       '<div class="lc-act">' +
         (it.href ? '<a class="btn btn--line btn--sm" href="' + esc(it.href) + '"' + (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + (ext ? 'Mở trang ↗' : 'Sửa ngay') + '</a>' : '') +

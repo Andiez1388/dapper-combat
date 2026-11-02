@@ -368,6 +368,10 @@
 
   /* sản phẩm từ server (window.__DC_PRODUCTS, nạp qua /assets/data/products.js); chưa có sản phẩm → danh sách trống (trang hiện "đang cập nhật") */
   var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  // chữ sản phẩm được chèn thẳng vào HTML ở nhiều trang → bỏ < > và đổi " thành ” (máy chủ cũng lọc khi lưu)
+  var plain = function (s) { return typeof s === 'string' ? s.replace(/[<>]/g, '').replace(/"/g, '”') : s; };
+  var plainPair = function (o) { return o && typeof o === 'object' ? { vi: plain(o.vi) || '', en: plain(o.en) || '' } : plain(o); };
+  var SAFE_IMG = /^(\/assets\/(uploads|media|img)\/[\w.\/-]+|https:\/\/[^\s"'<>]+)$/;
   window.DCProducts = function () {
     var list = window.__DC_PRODUCTS;
     if (!Array.isArray(list) || !list.length) return [];
@@ -375,6 +379,13 @@
     if (img) Object.keys(img).forEach(function (k) { byUrl[img[k]] = k; });
     return list.map(function (p) {
       p = Object.assign({}, p);
+      p.name = plain(p.name); p.nameEn = plain(p.nameEn);
+      if (p.img && !SAFE_IMG.test(p.img)) p.img = '';
+      if (Array.isArray(p.sizes)) p.sizes = p.sizes.map(plain);
+      if (Array.isArray(p.colors)) p.colors = p.colors.map(function (c) { return Array.isArray(c) ? [plain(String(c[0])), /^#[0-9a-f]{3,8}$/i.test(c[1]) ? c[1] : '#141414'].concat(c.slice(2).map(plain)) : c; });
+      if (Array.isArray(p.features)) p.features = p.features.map(plainPair);
+      if (p.desc) p.desc = plainPair(p.desc);
+      if (p.full) p.full = plainPair(p.full);
       if (img) { if (byUrl[p.img]) p.img = byUrl[p.img]; else if (p.img) img[p.img] = p.img; else { p.img = 'blank'; img.blank = BLANK; } }
       if (!Array.isArray(p.sizes) || !p.sizes.length) p.sizes = ['One size'];
       if (!Array.isArray(p.colors) || !p.colors.length) p.colors = [['black', '#141414']];
@@ -385,7 +396,7 @@
     });
   };
   DC.slug = function (s) {
-    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);   // giống slugify ở máy chủ
   };
 
   /* ngôn ngữ: chọn VI/EN ở trang nào thì các trang khác cũng theo */

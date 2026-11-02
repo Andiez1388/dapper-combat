@@ -46,7 +46,7 @@ function DCshopSubmit(ok, fail) {
     window.DC_LAST_ORDER = res;
     // thẻ (VNPay): làm trống giỏ rồi chuyển sang cổng; cổng lỗi (payError) → màn thành công + nút thanh toán lại
     // trả góp: màn thành công tự mở bảng chọn ngân hàng / kỳ hạn (v3okRender bên dưới)
-    if (res.payUrl) { dcPayRedirect(res.payUrl); return; }
+    if (res.payUrl) { dcPayRedirect(res.payUrl, res.slip); return; }
     ok();                       // màn "Đặt hàng thành công" chụp lại giỏ ngay trong lệnh này
     cart = {}; sync();          // rồi làm trống giỏ (cả bản lưu)
     if (location.pathname !== '/shop/checkout') history.replaceState(null, '', '/shop/checkout');
@@ -65,7 +65,10 @@ function DCshopSubmit(ok, fail) {
   });
 }
 
-function dcPayRedirect(url) {
+// đơn đã tạo, giỏ đã xóa → đổi địa chỉ trang hiện tại thành phiếu xác nhận trước khi sang VNPay:
+// khách bấm Back / mở lại tab sẽ về phiếu (có mã đơn + nút thanh toán lại), không về giỏ trống rồi đặt đơn lần nữa
+function dcPayRedirect(url, ref) {
+  if (ref && DC.slip) try { history.replaceState(null, '', DC.slip.url(ref)); } catch (e) {}
   try {
     var rm = document.getElementById('v3Remember'), f = document.getElementById('checkoutForm');
     if (rm && rm.checked && f) { var o = {}; V3U_F.forEach(function (k) { var i = f.querySelector('[name="' + k + '"]'); if (i) o[k] = i.value.trim(); }); localStorage.setItem('dc_ship', JSON.stringify(o)); }

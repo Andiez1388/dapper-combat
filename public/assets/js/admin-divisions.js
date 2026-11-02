@@ -89,6 +89,7 @@
     S.busy = true; refresh();
     A.api('/admin/ranking/divisions', { method: 'PUT', body: { resort: S.resort, divisions: S.draft.map(function (x) { return { id: x.id, vi: x.vi.trim(), max: Number(x.max) }; }) } }).then(function (r) {
       S.busy = false;
+      if (A.rankingStale) A.rankingStale();
       A.toast('Đã lưu hạng cân' + (r.moved ? ' — ' + r.moved + ' võ sĩ đã chuyển sang đúng hạng' : ''));
       return load().then(function () { if (A.view() === VIEW) render(); });
     }, function (e) { S.busy = false; refresh(); if (box) { box.hidden = false; box.textContent = (e && e.message) || 'Không lưu được'; } });

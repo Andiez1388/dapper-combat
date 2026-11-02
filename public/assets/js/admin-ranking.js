@@ -42,7 +42,8 @@
 
   // ═══ Tải dữ liệu ═══════════════════════════════════════════════════════════
   function load(force) {
-    if (R.loading) return R.loading;
+    // đang tải dở mà cần bản mới (vừa lưu) → đợi lượt đang tải xong rồi tải lại, không dùng dữ liệu cũ
+    if (R.loading) return force ? R.loading.then(function () { return load(true); }) : R.loading;
     if (R.d && !force) return Promise.resolve(R.d);
     R.loading = A.api('/admin/ranking').then(function (d) {
       if (!d || !Array.isArray(d.fighters) || !Array.isArray(d.events) || !d.computed) throw { message: 'Máy chủ trả về dữ liệu xếp hạng không hợp lệ.' };
@@ -1038,7 +1039,8 @@
   function delBout(btn) {
     var b = bByEl(btn); if (!b) return;
     var i = ED.d.bouts.indexOf(b);
-    var go = function () { ED.d.bouts.splice(ED.d.bouts.indexOf(b), 1); renderBouts(); futureWarn(); bar(); var a = $('[data-rk-badd]'); if (a) a.focus(); };
+    var ed = ED;
+    var go = function () { var k = ED === ed ? ED.d.bouts.indexOf(b) : -1; if (k < 0) return; ED.d.bouts.splice(k, 1); renderBouts(); futureWarn(); bar(); var a = $('[data-rk-badd]'); if (a) a.focus(); };
     if (!b.a && !b.b && !b.result) { go(); return; }
     A.confirmDialog({ title: 'Bỏ trận ' + (i + 1) + '?', body: (b.result ? 'Kết quả của trận này sẽ bị xóa khi bấm Lưu và điểm hai võ sĩ được tính lại. ' : '') + 'Trận sẽ biến mất khỏi sự kiện sau khi bấm Lưu.', ok: 'Bỏ trận', cancel: 'Quay lại' })
       .then(function (yes) { if (yes) go(); });
@@ -1197,6 +1199,9 @@
       var b = $('[data-savebar="rk"]:not([hidden]) [data-rk-save]'); if (b && !b.disabled) b.click();
     }
   });
+
+  // màn Hạng cân (admin-divisions.js) lưu xong → bỏ dữ liệu đang nhớ (tên hạng, hạng của võ sĩ có thể đã đổi)
+  A.rankingStale = function () { R.d = null; R.err = ''; };
 
   // ═══ Đăng ký màn hình ══════════════════════════════════════════════════════
   // staff: true = HLV (tài khoản nhân viên) dùng được — máy chủ đã cho phép (staffOk); A.register đưa vào danh sách màn nhân viên

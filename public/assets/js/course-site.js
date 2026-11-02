@@ -14,9 +14,11 @@ function DCcourseSubmit() {
     email: CV3.f.email, date: CV3.f.date, note: CV3.f.note, lang: DC.lang(),
   }).then(function (res) {
     CV3.sending = false;
-    CV3.done.id = res.code;
-    CV3.done.slip = res.slip;
-    CV3.step = 3; cv3Render();
+    // khách đóng / mở lại khung đăng ký trong lúc đang gửi (CV3.done bị đặt lại) → vẫn hiện đúng mã đăng ký vừa tạo
+    d.id = res.code;
+    d.slip = res.slip;
+    CV3.done = d; CV3.step = 3; cv3Render();
+    if (!CV3.open) { CV3.open = true; reg.classList.add('on'); document.getElementById('cv3Ov').classList.add('on'); document.body.style.overflow = 'hidden'; cv3Sticky(); }
   }, function (err) {
     CV3.sending = false;
     if (btn) { btn.disabled = false; btn.textContent = cv3T(DC.x("course.drawer.j93",0,'Xác nhận đăng ký'), DC.x("course.drawer.j93",1,'Confirm sign-up')); }

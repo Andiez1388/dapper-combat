@@ -95,28 +95,39 @@
     });
     return out;
   }
+  // vẽ lại màn hình mà không mất chữ đang gõ (render() dựng lại ô nhập từ S.cfg); skip = phần vừa lưu xong → hiện theo máy chủ
+  function rerender(skip) {
+    var o = {}, all = function () { return Array.prototype.slice.call(document.querySelectorAll('[data-pay-root] [data-pf]')); };
+    all().forEach(function (el) { o[el.getAttribute('data-pf')] = el.type === 'checkbox' ? el.checked : el.value; });
+    render();
+    all().forEach(function (el) {
+      var k = el.getAttribute('data-pf');
+      if (!(k in o) || (skip && k.indexOf(skip + '.') === 0)) return;
+      if (el.type === 'checkbox') el.checked = o[k]; else el.value = o[k];
+    });
+  }
   function save(p) {
-    S.busy = 'save-' + p; S.msg[p] = null; render();
-    var body = { pay: {} }; body.pay[p] = collect(p);
+    var body = { pay: {} }; body.pay[p] = collect(p);   // lấy chữ đang gõ TRƯỚC khi vẽ lại
+    S.busy = 'save-' + p; S.msg[p] = null; rerender();
     return A.api('/settings', { method: 'PUT', body: body }).then(function (d) {
       S.busy = ''; S.cfg = (d && d.pay) || S.cfg;
       if (A.settingsStore && A.settingsStore.set) A.settingsStore.set(d);
-      S.msg[p] = { ok: true, html: 'Đã lưu.' }; render();
-    }, function (e) { S.busy = ''; S.msg[p] = { ok: false, html: esc(e.message) }; render(); });
+      S.msg[p] = { ok: true, html: 'Đã lưu.' }; rerender(p);
+    }, function (e) { S.busy = ''; S.msg[p] = { ok: false, html: esc(e.message) }; rerender(); });
   }
   function test(p) {
-    S.busy = 'test-' + p; S.msg[p] = null; render();
+    S.busy = 'test-' + p; S.msg[p] = null; rerender();
     A.api('/pay/test/' + p, { method: 'POST' }).then(function (r) {
       S.busy = '';
       if (p === 'installment') {
         var amt = esc(Number(r.amount).toLocaleString('vi-VN')) + 'đ', list = (r.banks || []).map(function (b) { return esc(b.name || b.code) + ' (' + esc(b.terms.join('/')) + ' tháng)'; });
         S.msg[p] = list.length ? { ok: true, html: 'Kết nối được — ' + list.length + ' ngân hàng nhận trả góp cho khoản ' + amt + ': ' + list.join(', ') + '.' }
           : { ok: false, html: 'Đăng nhập được nhưng VNPay chưa trả ngân hàng nào cho khoản ' + amt + ' — hỏi VNPay đã mở trả góp cho tài khoản chưa.' };
-        render(); return;
+        rerender(); return;
       }
       S.msg[p] = { ok: true, html: 'Tạo được giao dịch thử — <a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">mở trang thanh toán ↗</a> (giao dịch thử không gắn với đơn nào).' };
-      render();
-    }, function (e) { S.busy = ''; S.msg[p] = { ok: false, html: esc(e.message) }; render(); });
+      rerender();
+    }, function (e) { S.busy = ''; S.msg[p] = { ok: false, html: esc(e.message) }; rerender(); });
   }
   document.addEventListener('click', function (e) {
     if (A.view() !== VIEW) return;

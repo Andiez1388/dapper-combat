@@ -204,4 +204,33 @@ module.exports = async function apiTests(env, t) {
     const moved = fs.readdirSync(env.data).filter(f => f.startsWith('consults.json.hong-'));
     t.ok(r.s === 200 && Array.isArray(r.j) && moved.length === 1, 'file dữ liệu hỏng → cất bản hỏng sang bên, không ghi đè mất');
   });
+
+  t.section('Dữ liệu lạ không làm hỏng trang');
+  await t.run('dữ liệu lạ', async () => {
+    const p = (await req('/api/admin/products', { tok: T })).j[0];
+    let r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { ...p, seoTitle: '', slug: 'gang-ky-tu-la', name: 'Găng <img src=x onerror=alert(1)> "Pro" $\' $&', img: 'javascript:alert(1)' } });
+    t.ok(r.s === 200 && !/[<>"]/.test(r.j.name) && r.j.img === p.img, 'tên sản phẩm bỏ < > "; ảnh không hợp lệ → giữ ảnh cũ', r.j && [r.j.name, r.j.img]);
+    r = await req('/shop/gang-ky-tu-la');
+    t.ok(r.s === 200 && /<title[^>]*>[^<]*\$' \$&amp;/.test(r.t) && (r.t.match(/<\/html>/gi) || []).length === 1 && !/<img src=x/.test(r.t), "tên có $' $& vẫn hiện đúng, trang sản phẩm không bị nhân đôi", { s: r.s, title: (r.t.match(/<title[^>]*>[^<]*/) || [])[0], html: (r.t.match(/<\/html>/gi) || []).length, img: /<img src=x/.test(r.t) });
+    await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { ...p, slug: p.slug || '' } });
+    r = await req('/api/orders', { method: 'POST', body: { customer: { name: 'Khách Thử', phone: '0901234567', address: '12 Đường Số 1', city: 'HCM' }, items: [null, 5], pay: 'bank', ship: 'std' } });
+    t.ok(r.s === 400, 'giỏ hàng có món rỗng → 400, không treo', r.s);
+    r = await req('/api/registrations', { method: 'POST', body: { name: 'Học Viên Lạ', phone: '0901234567', program: 'toString', lang: 'vi' } });
+    t.ok(r.s === 400 && /Chương trình/.test(r.j.error), 'đăng ký chương trình không có → 400', r.j);
+    const s = env.order.slip;
+    r = await req(`/api/slip/${s.code}?k=` + encodeURIComponent('é'.repeat(24)));
+    t.ok(r.s === 404, 'phiếu xác nhận: khóa có chữ có dấu → 404, không lỗi máy chủ', r.s);
+    const { cleanSvg } = require('../lib/cms-html');
+    const svgOut = x => { const o = cleanSvg(x); return o ? o.svg || Buffer.from(o.url.split(',')[1], 'base64').toString() : ''; };
+    const bad = [
+      '<svg><img src=x onerror=alert(1)></svg>',
+      '<svg><rect/onload=alert(1)></svg>',
+      '<svg><a href="javascript:alert(1)"><rect/></a></svg>',
+      '<svg><![CDATA[</svg><img src=x onerror=alert(1)>]]></svg>',
+      '<svg><!--<img src=x onerror=alert(1)>--><path d="M0 0"/></svg>',
+      '<svg><style>rect{}</style><foreignObject><img src=x onerror=alert(1)></foreignObject></svg>',
+    ].filter(x => /<img|\son\w+\s*=|\/on\w+\s*=|javascript:/i.test(svgOut(x)));
+    t.ok(!bad.length, 'SVG tải lên: bỏ mã chạy được (onerror, onload, javascript:, CDATA, chú thích)', bad.map(svgOut));
+    t.ok(/<path d="M0 0h10v10z" fill="#fff"\/>/.test(svgOut('<svg viewBox="0 0 10 10"><path d="M0 0h10v10z" fill="#fff"/></svg>')), 'SVG bình thường giữ nguyên hình');
+  });
 };

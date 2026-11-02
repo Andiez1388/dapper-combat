@@ -703,7 +703,7 @@
         return '<label><input type="radio" name="pay" value="' + o[0] + '"' + (o[0] === pay ? ' checked' : '') + '><span><b>' + esc(o[1]) + '</b><small>' + esc(o[2]) + '</small></span></label>';
       }).join('') + '</fieldset>' : '') +
       '<div class="tn-form-guar"><span class="tn-mini-seal" aria-hidden="true">100%</span><p><b>' + esc(t('form.guar')) + '</b>' + esc(L(P[path].out)) + '. ' + esc(t('refund.short.' + path)) + '.<small>' + esc(t('form.trial')) + '</small></p></div>' +
-      '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit" data-send>' + esc(t('send.' + pay)) + '</button></form>';
+      '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit" data-send' + (sending ? ' disabled' : '') + '>' + esc(t(sending ? 'form.sending' : 'send.' + pay)) + '</button></form>';
   }
   function okHtml(r) {
     var payNote = r.due > 0 ? '<div class="tn-paybox"><p class="tn-paybox-t">' + esc(t('ok.pay', { what: t('ok.what.' + r.pay), d: money(r.due), note: String(r.code).replace(/[^A-Za-z0-9]/g, '') })) + '</p>' +
@@ -758,7 +758,7 @@
   var sec = function (id, h, sub, body, cls) { return '<section class="tn-sec' + (cls ? ' ' + cls : '') + '" id="' + id + '"><div class="tn-in"><header class="tn-sec-h"><h2>' + h + '</h2>' + (sub ? '<p>' + sub + '</p>' : '') + '</header>' + body + '</div></section>'; };
 
   /* ─── Vẽ trang ────────────────────────────────────────────────────────── */
-  var saved = null, done = null, swT, stampNow = false;
+  var saved = null, done = null, swT, stampNow = false, sending = false;   // sending: đang gửi đăng ký (đổi ngôn ngữ / con đường giữa chừng không mở lại nút Gửi)
   function render() {
     [].forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = t(el.getAttribute('data-t'), { k: COHORT }); });
     document.title = t('title');
@@ -869,6 +869,7 @@
   });
   root.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (sending) return;
     var f = e.target, el = f.elements, err = f.querySelector('.tn-err'), btn = f.querySelector('[type=submit]');
     var fail = function (m, name) { err.textContent = m; err.hidden = false; if (name && el[name]) el[name].focus(); };
     var name = el.name.value.trim(), phone = el.phone.value.trim(), year = el.year.value.trim(), k = (f.querySelector('[name=path]:checked') || {}).value || path;
@@ -880,19 +881,26 @@
     if (!/^\d{4}$/.test(year) || !(yr >= now - 80 && yr <= now)) return fail(t('err.year'), 'year');
     var old = +YEAR - yr, rg = AGES[k], o = other(k), ro = AGES[o];
     if (old < rg[0] || old > rg[1]) return fail(t('err.age', { n: L(P[k].name), a: rg[0], b: rg[1], y: YEAR }) + (old >= ro[0] && old <= ro[1] ? ' ' + t('err.age.alt', { n: L(P[o].name), a: ro[0], b: ro[1] }) : ''), 'year');
-    err.hidden = true; btn.disabled = true; btn.textContent = t('form.sending');
+    err.hidden = true; btn.disabled = true; btn.textContent = t('form.sending'); sending = true;
     var exp = T.vi['exp.' + el.exp.value] || '';
     DC.api('/registrations', {
       name: name, phone: phone, email: el.email.value.trim(), program: k, programName: 'Truyền Nghề · ' + P[k].name.vi,
       detail: 'Khai giảng ' + startText() + (year ? ' · sinh năm ' + year : '') + ' · kinh nghiệm: ' + exp, note: el.note.value.trim(),
       pay: pay, payName: T.vi['payname.' + pay], lang: en() ? 'en' : 'vi',
     }).then(function (r) {
+      sending = false;
       var due = pay === 'full' ? priceOf(k) : pay === 'deposit' ? DEPOSIT : 0;
       done = { code: r.code, slip: r.slip, phone: phone, name: name, year: year, path: k, pay: pay, due: due };
       saved = null; path = k; stampNow = true; render();
       var box = root.querySelector('.tn-sec-apply'); if (box) box.scrollIntoView({ block: 'start' });
       dock();
-    }, function (x) { btn.disabled = false; btn.textContent = t('send.' + pay); fail(x.message); });
+    }, function (x) {
+      sending = false;
+      // form có thể đã được vẽ lại trong lúc gửi (đổi ngôn ngữ…) → lấy nút / ô lỗi đang hiện
+      var b = root.querySelector('.tn-form [data-send]'), er = root.querySelector('.tn-form .tn-err');
+      if (b) { b.disabled = false; b.textContent = t('send.' + ((root.querySelector('.tn-form [name=pay]:checked') || {}).value || pay)); }
+      if (er) { er.textContent = x.message; er.hidden = false; }
+    });
   });
   // mục menu trang chính đang tắt ở /admin → Thiết lập → Thương hiệu & menu
   [].forEach.call(document.querySelectorAll('[data-tn-site] [data-nav]'), function (li) { if (DC.navOn && !DC.navOn(li.getAttribute('data-nav'))) li.style.display = 'none'; });

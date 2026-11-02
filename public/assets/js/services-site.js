@@ -26,6 +26,8 @@ function DCsvcSubmit(name) {
     rContact(); go('contact');
   }, function (err) {
     F.sending = false;
+    // form có thể đã vẽ lại trong lúc gửi (đổi ngôn ngữ) → lấy nút đang hiện
+    form = document.getElementById('svcForm'); btn = form && form.querySelector('button[type="submit"], .btn[type="submit"]');
     if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || T(DC.x("services.contact.j45",0,'Gửi yêu cầu'), DC.x("services.contact.j45",1,'Send request')); }
     var at = btn || form;
     if (at) at.insertAdjacentHTML('afterend', '<p class="dc-form-err" id="dcSvcErr" role="alert">' + DC.esc(err.message) + '</p>');

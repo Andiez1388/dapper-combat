@@ -114,7 +114,9 @@
   function shrink(file, d, s) {
     var tw = s.w || (s.h ? Math.round(s.h * d.w / d.h) : d.w), th = s.h || Math.round(tw * d.h / d.w);
     var scale = Math.min(1, Math.max(tw / d.w, th / d.h));
-    var alpha = /png|webp/.test(file.type) && hasAlpha(d.img);
+    // giữ nền trong suốt khi vị trí cần (logo, icon) hoặc trình duyệt nén được WebP; Safari chỉ có PNG (không giảm chất lượng được)
+    // → ảnh thường có nền trong suốt dán lên nền trắng thành JPG, tránh bị thu nhỏ mãi thành ảnh mờ
+    var alpha = /png|webp/.test(file.type) && hasAlpha(d.img) && (s.alpha || webpOk());
     var type = alpha ? (webpOk() ? 'image/webp' : 'image/png') : 'image/jpeg';
     var limit = s.maxKB * KB, Q = type === 'image/png' ? [1] : [0.86, 0.8, 0.74, 0.68, 0.62];
     var round = 0;
@@ -187,10 +189,11 @@
       }
       var big = (tw && d.w > tw * 1.15 && (!th || d.h > th * 1.15)) || (!tw && th && d.h > th * 3) || size > s.maxKB * KB;
       if (!big) return { file: file, lines: lines.concat(warn), warn: warn, dims: [d.w, d.h] };
-      return shrink(file, d, s.kind === 'icon' ? { w: s.w || 256, h: s.h || 256, maxKB: Math.max(s.maxKB, 150) } : s).then(function (r) {
+      var lim = s.kind === 'icon' ? Math.max(s.maxKB, 150) : s.maxKB;   // icon: cho tới 150 KB khi tự nén (PNG không giảm chất lượng được)
+      return shrink(file, d, s.kind === 'icon' ? { w: s.w || 256, h: s.h || 256, maxKB: lim, alpha: true } : s).then(function (r) {
         if (!r || (r.file.size >= size && size <= s.maxKB * KB)) return { file: file, lines: lines.concat(warn), warn: warn, dims: [d.w, d.h] };
         lines.push('Đã tự thu nhỏ & nén: ' + num(r.w) + ' × ' + num(r.h) + ' px · ' + bytes(r.file.size));
-        if (r.file.size > s.maxKB * KB) warn.push('⚠ Vẫn nặng ' + bytes(r.file.size) + ' sau khi nén — nên chọn ảnh khác.');
+        if (r.file.size > lim * KB) warn.push('⚠ Vẫn nặng ' + bytes(r.file.size) + ' sau khi nén — nên chọn ảnh khác.');
         return { file: r.file, lines: lines.concat(warn), warn: warn, dims: [d.w, d.h] };
       });
     });

@@ -7,7 +7,7 @@
   var esc = A.esc, $ = function (s, r) { return (r || document).querySelector(s); };
   var VIEW = 'cms-ai';
   var S = { st: null, cfg: null, err: '', busy: '', test: null, timer: 0 };
-  var KIND = { cms: 'Chữ trên trang', product: 'Sản phẩm', settings: 'Thiết lập (danh mục, gói tập, lịch tập…)', page: 'Trang phụ' };
+  var KIND = { cms: 'Chữ trên trang', product: 'Sản phẩm', settings: 'Thiết lập (danh mục, gói tập, lịch tập…)', page: 'Trang phụ', ranking: 'Academy Ranking (võ sĩ, sự kiện, hạng cân)' };
 
   function load() {
     return Promise.all([A.api('/translate/status'), A.api('/settings')]).then(function (r) {
@@ -21,7 +21,7 @@
     if (!S.st || !(S.st.running || S.st.queued)) return;
     S.timer = setTimeout(function () {
       if (A.view() !== VIEW) return;
-      A.api('/translate/status').then(function (st) { S.st = st; render(); poll(); }, function () { /* thử lại lần sau */ });
+      A.api('/translate/status').then(function (st) { S.st = st; renderStatus(); poll(); }, function () { /* thử lại lần sau */ });
     }, 2000);
   }
 
@@ -57,13 +57,15 @@
         : '<p class="form-msg" role="alert">' + esc(S.test.error) + '</p>') : '') +
       '<p class="set-note">Chi phí do Anthropic tính theo lượng chữ: mỗi lần lưu thường chỉ vài trăm đồng; dịch lại toàn bộ website khoảng dưới 50.000đ.</p>';
   }
+  // chỉ vẽ lại phần trạng thái (đang dịch thì hỏi lại mỗi 2 giây) — không đụng ô khóa API đang gõ
+  function renderStatus() { var box = $('[data-ai-status]'); if (box) box.innerHTML = statusHtml(); else render(); }
   function render() {
     var root = $('[data-ai-root]'); if (!root) return;
     if (S.err) { root.innerHTML = A.errorHtml(S.err); return; }
     root.innerHTML =
       '<div class="cms-help"><p><strong>Bạn chỉ cần sửa tiếng Việt.</strong> Khi bấm Lưu ở Chữ trên trang, Sản phẩm, Danh mục, Học phí & lịch tập hay Trang phụ, AI tự dịch phần vừa đổi sang tiếng Anh trong vài giây — khách bấm <strong>EN</strong> trên website là thấy bản dịch. ' +
         'Trong lúc chờ dịch (hoặc khi chưa có khóa), trang tiếng Anh tạm hiện chữ tiếng Việt mới thay vì chữ tiếng Anh cũ đã sai nội dung. Muốn tự viết bản tiếng Anh cho một chỗ nào đó, cứ sửa ô English của chỗ đó — AI chỉ dịch lại khi bạn đổi tiếng Việt.</p></div>' +
-      '<section class="panel set-sec"><header class="panel__head"><h2 class="panel__title">Trạng thái dịch</h2></header><div class="set-body">' + statusHtml() + '</div></section>' +
+      '<section class="panel set-sec"><header class="panel__head"><h2 class="panel__title">Trạng thái dịch</h2></header><div class="set-body" data-ai-status>' + statusHtml() + '</div></section>' +
       '<section class="panel set-sec"><header class="panel__head"><h2 class="panel__title">Khóa AI</h2></header><div class="set-body">' + keyHtml() + '</div></section>';
   }
 

@@ -79,6 +79,8 @@ module.exports = async function payTests(env, t) {
     await hook({ id: 9003, transferType: 'in', transferAmount: Math.floor(reg.due / 2), content: rc });
     let reg2 = (await req('/api/registrations', { admin: true })).j.find(x => x.id === reg.id);
     t.ok(!reg2.paid && reg2.history.some(h => /còn thiếu/.test(h.note || '')), 'chuyển thiếu → chưa tính đã trả, ghi "còn thiếu" để gọi khách', reg2.history.slice(-1));
+    const mid = await req(`/api/slip/${r.j.slip.code}?k=${r.j.slip.k}`);
+    t.ok(mid.j.pay && mid.j.pay.amount === reg.due - Math.floor(reg.due / 2), 'chuyển thiếu → mã QR trên phiếu chỉ đòi phần còn lại', mid.j.pay);
     await hook({ id: 9004, transferType: 'in', transferAmount: reg.due - Math.floor(reg.due / 2), content: rc });
     reg2 = (await req('/api/registrations', { admin: true })).j.find(x => x.id === reg.id);
     t.ok(reg2.paid === true && reg2.paidAmount === reg.due, 'chuyển nốt phần còn lại → đã nhận đủ', { paid: reg2.paid, paidAmount: reg2.paidAmount });

@@ -70,7 +70,7 @@ function sendPage(req, res, file, status = 200, head = '', edit = null) {
   const raw = fs.readFileSync(file, 'utf8');
   let body = cms.transformable(rel) ? cms.transform(rel, raw) : raw;
   if (edit) body = edit(body);
-  if (head) body = body.replace('</head>', head + '</head>');
+  if (head) body = body.replace('</head>', () => head + '</head>');
   if (rel.endsWith('.html')) body = absOg(req, body);
   const etag = '"' + crypto.createHash('sha1').update(body).digest('base64').slice(0, 22) + '"';
   res.setHeader('Cache-Control', 'no-cache');
@@ -206,12 +206,14 @@ app.get('/shop/:slug', (req, res, next) => {
     offers: { '@type': 'Offer', url: baseUrl(req) + canon, priceCurrency: 'VND', price: p.price, availability: 'https://schema.org/' + (p.stock > 0 ? 'InStock' : 'OutOfStock') },
   };
   if (p.reviews > 0 && p.rating > 0) ld.aggregateRating = { '@type': 'AggregateRating', ratingValue: p.rating, reviewCount: p.reviews };
-  html = html.replace(/(<title[^>]*>)[^<]*(<\/title>)/, `$1${title}$2`)
-    .replace(/(property="og:title" content=")[^"]*"/, `$1${title}"`)
-    .replace(/(<meta[^>]*name="description" content=")[^"]*"/, `$1${desc}"`)
-    .replace(/(property="og:description" content=")[^"]*"/, `$1${desc}"`)
-    .replace(/(property="og:image" content=")[^"]*"/, `$1${attr(abs(req, p.img))}"`)
-    .replace('</head>', seoHead(req, canon, [ld, crumbs(req, [['Cửa hàng', '/shop'], [p.name, canon]])]) + '</head>');
+  // hàm thay thế (không dùng chuỗi): tên / mô tả có $' $& không làm hỏng trang
+  const img = attr(abs(req, p.img)), head = seoHead(req, canon, [ld, crumbs(req, [['Cửa hàng', '/shop'], [p.name, canon]])]);
+  html = html.replace(/(<title[^>]*>)[^<]*(<\/title>)/, (m, a, b) => a + title + b)
+    .replace(/(property="og:title" content=")[^"]*"/, (m, a) => a + title + '"')
+    .replace(/(<meta[^>]*name="description" content=")[^"]*"/, (m, a) => a + desc + '"')
+    .replace(/(property="og:description" content=")[^"]*"/, (m, a) => a + desc + '"')
+    .replace(/(property="og:image" content=")[^"]*"/, (m, a) => a + img + '"')
+    .replace('</head>', () => head + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(html);
 });
@@ -248,10 +250,11 @@ app.get('/admin', page('admin/index.html'));
 // img = ảnh chia sẻ (ảnh võ sĩ / poster sự kiện), không có thì ảnh chia sẻ mặc định
 function rankPage(req, res, canon, title, desc, status = 200, ld = null, img = '') {
   let html = cms.transform('xep-hang.html', fs.readFileSync(path.join(PUB, 'xep-hang.html'), 'utf8'));
-  html = html.replace('<meta property="og:type"', `<meta property="og:image" content="${attr(abs(req, okImg(img) || shareImg()))}"><meta property="og:type"`);
-  if (title) html = html.replace(/<title>[^<]*<\/title>/, `<title>${attr(title)} — Dapper Combat Academy Ranking</title>`).replace('<meta property="og:type"', `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
-  if (desc) html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(desc)}"><meta property="og:description" content="${attr(desc)}">`);
-  html = html.replace('</head>', (status === 200 ? seoHead(req, canon, ld) : '<meta name="robots" content="noindex">') + '</head>');
+  html = html.replace('<meta property="og:type"', () => `<meta property="og:image" content="${attr(abs(req, okImg(img) || shareImg()))}"><meta property="og:type"`);
+  if (title) html = html.replace(/<title>[^<]*<\/title>/, () => `<title>${attr(title)} — Dapper Combat Academy Ranking</title>`).replace('<meta property="og:type"', () => `<meta property="og:title" content="${attr(title)}"><meta property="og:type"`);
+  if (desc) html = html.replace(/<meta name="description" content="[^"]*">/, () => `<meta name="description" content="${attr(desc)}"><meta property="og:description" content="${attr(desc)}">`);
+  const sh = status === 200 ? seoHead(req, canon, ld) : '<meta name="robots" content="noindex">';
+  html = html.replace('</head>', () => sh + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.status(status).type('html').send(html);
 }
@@ -296,7 +299,7 @@ const pages = require('./lib/pages');
 app.get('/trang/:slug', (req, res) => {
   const p = pages.bySlug(String(req.params.slug).toLowerCase());
   if (!p) return sendPage(req, res, path.join(PUB, '404.html'), 404);
-  const body = cms.transform(`trang/${p.slug}.html`, pages.render(p)).replace('</head>', seoHead(req, '/trang/' + p.slug) + '</head>');
+  const body = cms.transform(`trang/${p.slug}.html`, pages.render(p)).replace('</head>', () => seoHead(req, '/trang/' + p.slug) + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(body);
 });

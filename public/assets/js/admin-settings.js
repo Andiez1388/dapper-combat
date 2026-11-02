@@ -119,7 +119,7 @@
     if (ST.data && !force) return Promise.resolve(ST.data);
     ST.triedAt = Date.now();
     ST.loading = A.api('/settings').then(function (d) {
-      ST.data = d || {}; ST.err = ''; ST.loadedAt = Date.now();
+      dropClean(); ST.data = d || {}; ST.err = ''; ST.loadedAt = Date.now();
       syncCats();
       return ST.data;
     }).catch(function (e) { ST.err = (e && e.message) || 'Không tải được thiết lập'; return null; })
@@ -143,7 +143,7 @@
     data: function () { return ST.data; },
     products: function () { return ST.products; },
     // sau khi lưu ở màn khác: cập nhật dữ liệu, bản nháp Bán hàng tạo lại từ dữ liệu mới
-    set: function (d) { if (!d) return; ST.data = d; ST.loadedAt = Date.now(); delete ST.draft.shop; syncCats(); },
+    set: function (d) { if (!d) return; dropClean(); ST.data = d; ST.loadedAt = Date.now(); delete ST.draft.shop; syncCats(); },
   };
   A.settingsTokens = function () { return ST.data ? tokens(ST.data) : null; };
 
@@ -153,6 +153,9 @@
     if (g === 'notify') { d.telegramToken = ''; d.smtpPass = ''; }
     ST.draft[g] = d;
   }
+  // dữ liệu mới từ máy chủ (tải lại, lưu ở màn khác) → bỏ bản nháp chưa sửa gì, lần mở sau tạo lại từ dữ liệu mới
+  // (giữ bản nháp cũ sẽ báo nhầm "chưa lưu" và lưu đè bản tiếng Anh AI vừa dịch, số lượt dùng mã giảm giá…)
+  function dropClean() { Object.keys(ST.draft).forEach(function (g) { if (!dirtyCount(g)) delete ST.draft[g]; }); }
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
@@ -1205,7 +1208,7 @@
       update: function (main, manual) {
         if (!manual) return;
         if (dirtyCount(g)) { A.toast('Đang có thay đổi chưa lưu — hãy lưu hoặc hủy trước khi tải lại.', 'info'); return; }
-        Promise.all([load(true), g === 'shop' ? loadProducts() : null]).then(function () { initDraft(g); render(g, 'after'); });
+        Promise.all([load(true), g === 'shop' ? loadProducts() : null]).then(function () { if (ST.data) initDraft(g); render(g, 'after'); });
       },
       isDirty: function () { return dirtyCount(g) > 0; },
       dirtyText: function () { return 'Có ' + dirtyCount(g) + ' mục thiết lập chưa lưu.'; },
