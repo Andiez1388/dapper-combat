@@ -196,6 +196,9 @@
       var r = svg.getBoundingClientRect(), img = document.createElement('img');
       img.src = logo; img.alt = ''; img.className = 'nav-logo-mark dc-logo-img';
       img.style.height = (r.height || 28) + 'px'; img.style.width = 'auto'; img.style.objectFit = 'contain';
+      // logo tải lên thường đã có chữ thương hiệu → ẩn chữ đứng cạnh để không lặp, chữ đó thành alt của ảnh
+      var link = svg.parentNode, word = link && link.querySelector('[data-cms="global.brand"]');
+      if (word) { img.alt = word.textContent.trim(); word.style.display = 'none'; }
       svg.replaceWith(img);
     });
   });
