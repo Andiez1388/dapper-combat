@@ -55,6 +55,29 @@ app.use((req, res, next) => {
   next();
 });
 
+// ─── Chế độ riêng tư (/admin → Thương hiệu & menu) ───────────────────────────
+// Bật: khách (và Google) chỉ thấy trang "Sắp ra mắt". Trình duyệt đã mở trang quản trị có vé xem trước (routes/api.js) → xem như bình thường.
+// Luôn mở: trang quản trị, API (đăng nhập, cổng thanh toán báo về), CSS / JS / ảnh (trang quản trị và trang "Sắp ra mắt" cần).
+const OPEN_WHEN_PRIVATE = /^\/(admin(\/|$)|api\/|assets\/(css|js|img|media|uploads|fonts)\/|img\/|favicon)/;
+const escAttr = v => String(v || '').replace(/[&"<>]/g, c => ({ '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' }[c]));
+function comingSoon() {
+  const b = settings.all().brand, logo = b.logo ? `<img src="${escAttr(b.logo)}" alt="Dapper Combat">` : '<p class="w">DAPPER COMBAT</p>';
+  return `<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Dapper Combat — Sắp ra mắt</title>${b.favicon ? `<link rel="icon" href="${escAttr(b.favicon)}">` : ''}
+<style>html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#0b0b0b;color:#f2f2f2;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
+img{max-height:64px;max-width:80vw;margin-bottom:28px}.w{font-weight:800;letter-spacing:.18em;font-size:clamp(22px,5vw,34px);margin:0 0 24px}
+h1{font-size:clamp(28px,6vw,48px);margin:0 0 12px;letter-spacing:.04em}h1 span{color:#d6312b}p.s{color:#9a9a9a;margin:0;line-height:1.6}</style></head>
+<body><main>${logo}<h1>SẮP <span>RA MẮT</span></h1><p class="s">Website đang được hoàn thiện, hẹn gặp bạn sớm.<br>Coming soon — we're getting ready.</p></main></body></html>`;
+}
+app.use((req, res, next) => {
+  if (!settings.isPrivate() || OPEN_WHEN_PRIVATE.test(req.path) || api.canPreview(req)) return next();
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.path === '/robots.txt') return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
+  res.status(503).setHeader('Retry-After', '86400');
+  res.type('html').send(comingSoon());
+});
+
 // đường dẫn cũ / gõ tắt
 const moved = { '/index.html': '/', '/shop.html': '/shop', '/khoa-hoc.html': '/khoa-hoc', '/courses': '/khoa-hoc', '/course': '/khoa-hoc',
   '/dich-vu-setup.html': '/dich-vu-setup', '/setup': '/dich-vu-setup', '/dich-vu': '/dich-vu-setup', '/admin.html': '/admin', '/checkout': '/shop/checkout',

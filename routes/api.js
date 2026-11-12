@@ -140,6 +140,7 @@ function auth(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
   let t;
   try { t = jwt.verify(token, JWT_SECRET); } catch { return res.status(401).json({ error: 'Invalid or expired token' }); }
+  if (t.pv) return res.status(401).json({ error: 'Invalid or expired token' }); // vé xem trước (cookie) không dùng để gọi API
   const user = read('users.json', []).find(u => u.id === t.id);
   if (!user || (user.tv || 0) !== (t.tv || 0)) return res.status(401).json({ error: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại' });
   req.user = { id: user.id, email: user.email, role: user.role, mustChange: !!user.mustChange };
@@ -161,6 +162,30 @@ function adminOnly(req, res, next) {
     next();
   });
 }
+
+// ─── Chế độ riêng tư (/admin → Thương hiệu & menu) ─────────────────────────
+// Trang quản trị đăng nhập bằng token trong trình duyệt nên máy chủ không biết ai đang mở trang thường.
+// Mở trang quản trị → nhận cookie "vé xem trước" (HttpOnly, 30 ngày) → trình duyệt đó xem được website khi đang để riêng tư.
+// Vé hết hiệu lực khi đổi mật khẩu, xóa tài khoản hoặc đăng xuất.
+const PV_COOKIE = 'dc_pv';
+const pvCookie = (req, val, age) => `${PV_COOKIE}=${val}; Path=/; Max-Age=${age}; HttpOnly; SameSite=Lax` + (req.secure ? '; Secure' : '');
+function canPreview(req) {
+  const m = String(req.headers.cookie || '').match(/(?:^|;\s*)dc_pv=([^;]+)/);
+  if (!m) return false;
+  let t;
+  try { t = jwt.verify(m[1], JWT_SECRET); } catch { return false; }
+  if (!t.pv) return false;
+  const user = read('users.json', []).find(u => u.id === t.id);
+  return !!user && ROLES.includes(user.role) && !user.mustChange && (user.tv || 0) === (t.tv || 0);
+}
+router.canPreview = canPreview;
+router.post('/auth/preview', staffOk, (req, res) => {
+  const user = read('users.json', []).find(u => u.id === req.user.id);
+  const tok = jwt.sign({ id: user.id, tv: user.tv || 0, pv: 1 }, JWT_SECRET, { expiresIn: '30d' });
+  res.setHeader('Set-Cookie', pvCookie(req, tok, 30 * 86400));
+  res.json({ ok: true });
+});
+router.delete('/auth/preview', (req, res) => { res.setHeader('Set-Cookie', pvCookie(req, '', 0)); res.json({ ok: true }); });
 
 // ─── Auth Routes ────────────────────────────────────────────────────────────
 router.post('/auth/login', limit('login', 20), (req, res) => {
@@ -1524,6 +1549,9 @@ function launchItems(req) {
     'Vào search.google.com/search-console → thêm tên miền → Sơ đồ trang web → gửi ' + (siteOk ? site : 'https://<tên-miền>') + '/sitemap.xml. Xong thì đánh dấu.', 'https://search.google.com/search-console', manual('gsc'));
   add(G3, 'pixel', 'Facebook Pixel (nếu chạy quảng cáo)', st.brand.fbPixel ? true : null,
     st.brand.fbPixel ? 'Đã gắn Pixel ' + st.brand.fbPixel + '.' : 'Không bắt buộc. Dán ID Pixel khi bắt đầu chạy quảng cáo Facebook.', '#/set-brand');
+  add(G3, 'private', 'Mở website cho khách', !st.brand.private,
+    st.brand.private ? 'Đang bật chế độ riêng tư — khách chỉ thấy trang “Sắp ra mắt”, Google chưa thấy website. Làm xong các mục trên thì tắt ở Thương hiệu & menu.'
+      : 'Website đang mở cho mọi người.', '#/set-brand');
   const lastBk = Number(ld.lastBackupAt) || 0;
   add(G3, 'backup', 'Sao lưu dữ liệu trong 7 ngày qua', !!lastBk && Date.now() - lastBk < 7 * 864e5,
     (lastBk ? 'Lần tải gần nhất: ' + new Date(lastBk + 7 * 3600e3).toISOString().slice(0, 10).split('-').reverse().join('/') + '. ' : 'Chưa tải bản sao lưu lần nào. ') +

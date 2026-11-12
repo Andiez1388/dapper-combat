@@ -160,7 +160,7 @@
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
-    brand: ['logo', 'favicon', 'mapQuery', 'fbPixel', 'nav'],
+    brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
   };
   function changed(g) {
@@ -576,7 +576,10 @@
   // ═══ 3. Thương hiệu & menu ════════════════════════════════════════════════════════
   function brandHtml() {
     var d = draft('brand');
-    return '<div class="cms-help"><p>Mục trên menu, logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
+    return '<div class="cms-help"><p>Chế độ riêng tư, mục trên menu, logo trên thanh menu, biểu tượng trên tab trình duyệt và bản đồ ở Trang chủ. Bấm “Lưu” để áp dụng.</p></div>' +
+      panel('Chế độ riêng tư',
+        '<div class="ck-pay">' + switchField('brand', 'private', 'Chỉ người đã đăng nhập trang quản trị xem được website') + '</div>' +
+        '<p class="set-note">Bật = khách và Google chỉ thấy trang “Sắp ra mắt”. Trình duyệt nào đã mở trang quản trị (admin, nhân viên) vẫn xem website như bình thường — muốn xem trên điện thoại thì đăng nhập trang quản trị trên điện thoại một lần. Đăng xuất hoặc đổi mật khẩu thì trình duyệt đó cũng không xem được nữa. Mở cửa sổ ẩn danh để thấy đúng như khách. Tắt khi sẵn sàng mở website cho mọi người.</p>') +
       panel('Mục trên menu',
         '<div class="ck-pay">' + [['home', 'Trang chủ'], ['shop', 'Shop'], ['course', 'Khóa học'], ['services', 'Dịch vụ Setup'], ['ranking', 'Academy Ranking (Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ)'], ['career', 'Truyền Nghề (đào tạo coach · võ sĩ từ con số 0)']].map(function (m) { return switchField('brand', 'nav.' + m[0], m[1]); }).join('') + '</div>' +
         '<p class="set-note">Tắt = ẩn mục đó khỏi menu trên cùng và menu điện thoại ở mọi trang. Trang vẫn còn nguyên (mở bằng đường dẫn được), bật lại là hiện ngay. Link ở chân trang sửa ở <a href="#/cms-text">Chữ trên trang</a>.</p>') +
@@ -1233,7 +1236,7 @@
     if (gtMin === Infinity) gtMin = 0;
     var courseTxt = ok ? 'Foundation ' + money(s.course.foundPrice) + ' · GT từ ' + money(gtMin) + '/tháng' : '…';
     var navOff = ok && s.brand.nav ? Object.keys(s.brand.nav).filter(function (k) { return !s.brand.nav[k]; }).length : 0;
-    var brandTxt = ok ? (navOff ? navOff + ' mục menu đang ẩn' : 'Menu đủ mục') + ' · ' + (s.brand.logo ? 'logo riêng' : 'logo mặc định') + ' · ' + (s.brand.mapQuery ? 'bản đồ theo địa chỉ' : 'bản đồ có sẵn') : '…';
+    var brandTxt = ok ? (s.brand.private ? 'Đang để riêng tư · ' : '') + (navOff ? navOff + ' mục menu đang ẩn' : 'Menu đủ mục') + ' · ' + (s.brand.logo ? 'logo riêng' : 'logo mặc định') + ' · ' + (s.brand.mapQuery ? 'bản đồ theo địa chỉ' : 'bản đồ có sẵn') : '…';
     var cats = ok && Array.isArray(s.shop.categories) ? s.shop.categories : [];
     var hid = cats.filter(function (c) { return c.hidden; }).length;
     var catTxt = ok ? cats.length + ' danh mục' + (hid ? ' · ' + hid + ' đang ẩn' : '') : '…';

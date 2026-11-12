@@ -2375,6 +2375,7 @@
   }
   function logout(msg) {
     S.token = ''; lsDel(TOKEN_KEY); ssDel(DEFPW_KEY);
+    fetch('/api/auth/preview', { method: 'DELETE', cache: 'no-store' }).catch(function () { /* bỏ qua */ }); // bỏ vé xem trước (chế độ riêng tư)
     resetState();
     showLogin(msg);
   }
@@ -2385,6 +2386,8 @@
 
   function startApp() {
     el.boot.hidden = true; el.login.hidden = true; el.app.hidden = false;
+    // vé xem trước: trình duyệt này xem được website khi đang bật chế độ riêng tư
+    api('/auth/preview', { method: 'POST' }).catch(function () { /* bỏ qua */ });
     applyRole();
     el.main.innerHTML = '';
     S.view = ''; S.prevHash = null;
