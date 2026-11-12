@@ -267,7 +267,13 @@ function careerLd(req) {
 app.get('/truyen-nghe', (req, res) => sendPage(req, res, path.join(PUB, 'truyen-nghe.html'), 200, seoHead(req, '/truyen-nghe', careerLd(req)),
   html => seoText(html, cms.textVi('career.title'), cms.textVi('career.seo.desc'))
     .replace(/(<meta property="og:image" content=")[^"]*/, (m, a) => a + attr(cms.mediaUrl('career.hero.coach')))));
-app.get('/admin', page('admin/index.html'));
+// logo tải ở /admin → Thương hiệu & menu: thay biểu tượng DC + chữ "Dapper Combat" ở màn đăng nhập, thanh trên, menu trái
+const ADMIN_BRAND = /<svg class="brand__mark" aria-hidden="true"><use href="#dcMark"\/><\/svg>\s*<span class="brand__word">Dapper Combat<\/span>/g;
+app.get('/admin', (req, res) => {
+  const logo = settings.all().brand.logo;
+  sendPage(req, res, path.join(PUB, 'admin/index.html'), 200, '',
+    logo ? html => html.replace(ADMIN_BRAND, () => `<img class="brand__logo" src="${escAttr(logo)}" alt="Dapper Combat">`) : null);
+});
 // Dapper Combat Academy Ranking (kiểu BoxRec): /xep-hang · /vo-si · /vo-si/<võ sĩ> · /su-kien · /su-kien/<sự kiện> · /so-sanh — chung khuôn public/xep-hang.html
 // ld = dữ liệu có cấu trúc cho Google (võ sĩ: Person, sự kiện: SportsEvent)
 // img = ảnh chia sẻ (ảnh võ sĩ / poster sự kiện), không có thì ảnh chia sẻ mặc định

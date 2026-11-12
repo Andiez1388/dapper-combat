@@ -603,7 +603,7 @@
   function logoPreview(url) {
     var src = A.safeImg(url);
     return (src ? '<img class="brand-bar__logo" src="' + esc(src) + '" alt="Logo">' : '<svg class="brand-bar__mark" aria-hidden="true"><use href="#dcMark"/></svg>') +
-      '<span class="brand__word">Dapper Combat</span><span class="brand-bar__tag">' + (src ? 'Logo riêng' : 'Logo mặc định') + '</span>';
+      (src ? '' : '<span class="brand__word">Dapper Combat</span>') + '<span class="brand-bar__tag">' + (src ? 'Logo riêng' : 'Logo mặc định') + '</span>';
   }
   function favPreview(url) {
     var src = A.safeImg(url);

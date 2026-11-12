@@ -57,4 +57,17 @@ module.exports = async function privateTests(env, t) {
     t.ok(r.status === 200, 'tắt xong → khách mở website bình thường', r.status);
   });
   await setPrivate(false).catch(() => {});
+
+  t.section('Logo riêng ở trang quản trị');
+  await t.run('logo trang quản trị', async () => {
+    const setLogo = logo => fetch(B + '/api/settings', { method: 'PUT', headers: admin, body: JSON.stringify({ brand: { logo } }) });
+    let html = await (await get('/admin')).text();
+    t.ok((html.match(/brand__mark/g) || []).length >= 3 && !/brand__logo"/.test(html), 'chưa tải logo → dùng logo mặc định');
+    const r = await setLogo('/assets/img/__test-logo.png');
+    t.ok(r.status === 200, 'lưu logo riêng', r.status);
+    html = await (await get('/admin')).text();
+    t.ok((html.match(/<img class="brand__logo" src="\/assets\/img\/__test-logo.png"/g) || []).length === 3 && !/<span class="brand__word">Dapper Combat/.test(html),
+      'có logo riêng → màn đăng nhập, thanh trên, menu trái đều dùng logo đó, bỏ chữ lặp');
+    await setLogo('');
+  });
 };

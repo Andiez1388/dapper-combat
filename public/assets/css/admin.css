@@ -74,6 +74,8 @@ h1, h2, h3, p { margin: 0; }
 /* ─── Thương hiệu ──────────────────────────────────────── */
 .brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; min-width: 0; }
 .brand__mark { display: block; flex: none; width: 34px; height: 29px; stroke: none; }
+/* logo tải lên (/admin → Thương hiệu & menu) thay biểu tượng + chữ */
+.brand__logo { display: block; flex: none; height: 30px; width: auto; max-width: 100%; object-fit: contain; }
 .brand__word {
   font-family: var(--cond); font-weight: 900; font-size: 22px; line-height: 1;
   letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
@@ -195,6 +197,7 @@ input:disabled + .switch__ui { opacity: .45; }
 .brand--login { display: flex; justify-content: center; margin-bottom: 28px; }
 .brand--login .brand__mark { width: 50px; height: 42px; }
 .brand--login .brand__word { font-size: 32px; }
+.brand--login .brand__logo { height: 48px; }
 .login__panel { padding: 36px 32px 32px; background: var(--paper); }
 .login__title { margin: 10px 0 26px; font-family: var(--title); font-size: 38px; font-weight: 500; line-height: 1.05; }
 .login__panel .btn--block { margin-top: 8px; }
@@ -276,6 +279,7 @@ input:disabled + .switch__ui { opacity: .45; }
   }
   .brand--top .brand__mark { width: 28px; height: 24px; }
   .brand--top .brand__word { font-size: 20px; }
+  .brand--top .brand__logo { height: 26px; }
   .side {
     z-index: 60; width: min(304px, 86vw);
     transform: translateX(-100%); visibility: hidden;
