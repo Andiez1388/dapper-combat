@@ -1378,6 +1378,11 @@ router.post('/notify/test', adminOnly, limit('notifytest', 10), async (req, res)
   catch (e) { res.status(500).json({ error: 'Gửi thử lỗi: ' + e.message }); }
 });
 // xem trước mẫu tin với dữ liệu mẫu (không gửi)
+// xem trước giao diện email gửi khách (HTML đầy đủ với dữ liệu mẫu, chữ ký đang sửa) — hiện trong khung ở /admin → Thông báo
+router.post('/notify/mail-preview', adminOnly, (req, res) => {
+  const b = req.body || {};
+  res.json({ html: notify.mailPreview(String(b.kind || ''), String(b.subject || '').slice(0, 200), String(b.body || '').slice(0, 4000), b.sign) });
+});
 router.post('/notify/preview', adminOnly, (req, res) => {
   const b = req.body || {};
   res.json(notify.preview(String(b.kind || ''), String(b.title || b.subject || '').slice(0, 200), String(b.body || '').slice(0, 4000)));

@@ -300,6 +300,10 @@
 .tpl-prev p { margin: 0; }
 .tpl-prev__title { font-weight: 700; margin-bottom: 8px !important; }
 .tpl-prev--mail { font-family: Arial, sans-serif; }
+/* email gửi khách: soạn bên trái, email hoàn chỉnh bên phải (khung giống hộp thư) */
+.tpl__grid--mail { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.tpl-prev--mail:has(.mail-frame) { padding: 10px; background: #efede9; }
+.mail-frame { display: block; width: 100%; min-height: 420px; border: 0; background: #efede9; border-radius: 6px; }
 
 @media (max-width: 1099.98px) {
   .pdp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

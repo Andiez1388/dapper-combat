@@ -161,7 +161,7 @@
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
     brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'nav'],
-    notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'customer'],
+    notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'sign', 'customer'],
   };
   function changed(g) {
     var d = ST.draft[g], s = ST.data && ST.data[g];
@@ -233,6 +233,10 @@
     return '<label class="field set-num"><span class="field__label">' + esc(label) + '</span>' +
       '<span class="set-affix"><input type="number" inputmode="numeric" min="' + min + '" max="' + max + '" step="1" data-int data-g="' + g + '" data-k="' + esc(k) + '" value="' + esc(v == null ? '' : v) + '">' + (unit ? '<em>' + esc(unit) + '</em>' : '') + '</span>' +
       (hint ? '<small class="field__hint">' + hint + '</small>' : '') + '</label>';
+  }
+  function signField(k, label, ph) {
+    var v = ((draft('notify') || {}).sign || {})[k];
+    return '<label class="field"><span class="field__label">' + esc(label) + '</span><input type="text" maxlength="120" data-sign="' + k + '" value="' + esc(v == null ? '' : v) + '" placeholder="' + esc(ph) + '" autocomplete="off"></label>';
   }
   function switchField(g, k, label) {
     return '<label class="check set-switch"><input type="checkbox" data-bool data-g="' + g + '" data-k="' + esc(k) + '"' + (getPath(draft(g), k) ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>' + esc(label) + '</span></label>';
@@ -720,6 +724,14 @@
           text('notifyEmail', 'Email nhận thông báo', 'chu-shop@gmail.com', 'Email sẽ nhận tin báo đơn mới.', 'email', ' inputmode="email"') +
         '</div>') +
       panel('Mẫu tin báo cho chủ shop', '<p class="set-note">Tin gửi qua Telegram và email ở trên mỗi khi có đơn hàng, đăng ký khóa học hoặc yêu cầu tư vấn mới.</p><div data-tpl-box="templates"></div>') +
+      panel('Chữ ký email gửi khách',
+        '<div class="ck-pay">' + switchField('notify', 'sign.on', 'Thêm chữ ký cuối email gửi khách') + '</div>' +
+        '<div class="set-grid3">' + signField('closing', 'Lời chào cuối', 'Trân trọng,') + signField('name', 'Người / bộ phận ký tên', 'Đội ngũ Dapper Combat') +
+        signField('tagline', 'Khẩu hiệu (chữ đỏ nhỏ dưới tên)', 'Fight your best fight') + '</div>' +
+        '<div class="set-grid2">' + signField('closingEn', 'Lời chào cuối — bản tiếng Anh', 'Best regards,') + signField('nameEn', 'Người ký — bản tiếng Anh', 'The Dapper Combat team') + '</div>' +
+        '<p class="set-note">Chân email (nền đen) tự lấy <strong>hotline, email, website, địa chỉ, Facebook / Instagram / Zalo / YouTube, tên doanh nghiệp + MST</strong> từ ' +
+        '<a href="#/cms-contact">Nội dung website → Liên hệ &amp; MXH</a> — sửa ở đó là email đổi theo. Logo đầu email là logo ở <a href="#/set-brand">Thương hiệu &amp; menu</a>. ' +
+        'Xem trước email hoàn chỉnh ở khung bên dưới.</p>') +
       panel('Email xác nhận gửi khách', '<p class="set-note">Chỉ gửi khi đã cài Email (SMTP) ở trên <strong>và</strong> khách có nhập email — mặc định đang tắt. Khách không có email vẫn tự tải được phiếu xác nhận ở màn hình đặt hàng thành công.</p>' +
         '<p class="set-note" data-slip-warn hidden><span class="set-warn">Biến {slip} (link phiếu xác nhận) cần điền “Địa chỉ website” ở trên — nếu trống, dòng có {slip} sẽ bị bỏ.</span></p>' +
         '<div data-tpl-box="customer"></div>');
@@ -809,7 +821,7 @@
           (sameTpl(d, def) ? '' : '<span class="badge badge--mid">Đã sửa</span>') + '<span class="spacer"></span>' +
           '<button class="btn btn--line btn--sm" type="button" data-tpl-test>Gửi thử mẫu này</button>' +
           (sameTpl(d, def) ? '' : '<button class="btn btn--quiet btn--sm" type="button" data-tpl-reset>Khôi phục mẫu gốc</button>') + '</div>' +
-        '<div class="tpl__grid"><div class="tpl__edit">' +
+        '<div class="tpl__grid' + (G === 'customer' ? ' tpl__grid--mail' : '') + '"><div class="tpl__edit">' +
           '<label class="field"><span class="field__label">' + (G === 'templates' ? 'Tiêu đề tin' : 'Tiêu đề email') + '</span>' +
             '<input type="text" maxlength="200" data-tpl-f="' + f1 + '" value="' + esc(d[f1] || '') + '" autocomplete="off"></label>' +
           '<label class="field"><span class="field__label">Nội dung</span><textarea rows="11" maxlength="4000" data-tpl-f="body" spellcheck="false">' + esc(d.body || '') + '</textarea></label>' +
@@ -823,7 +835,7 @@
             var hint = VAR_HINT[v] || '';
             return '<button type="button" class="tpl-var" data-tpl-var="' + esc(v) + '" title="' + esc(hint + (v === 'slip' ? ' — cần “Địa chỉ website”' : '')) + '">{' + esc(v) + '}' + (hint ? '<small>' + esc(hint) + '</small>' : '') + '</button>';
           }).join('') : '<span class="field__hint">Đang tải danh sách biến…</span>') + '</div></div>' +
-        '</div><div class="tpl__prev"><p class="field__label">Xem trước với dữ liệu mẫu (không gửi)</p><div class="tpl-prev' + (G === 'customer' ? ' tpl-prev--mail' : '') + '" data-tpl-prev aria-live="polite"><p class="field__hint">Đang tạo bản xem trước…</p></div></div></div>' +
+        '</div><div class="tpl__prev"><p class="field__label">' + (G === 'customer' ? 'Xem trước email khách nhận (dữ liệu mẫu, không gửi)' : 'Xem trước với dữ liệu mẫu (không gửi)') + '</p><div class="tpl-prev' + (G === 'customer' ? ' tpl-prev--mail' : '') + '" data-tpl-prev aria-live="polite"><p class="field__hint">Đang tạo bản xem trước…</p></div></div></div>' +
         '<div class="set-msg" data-tpl-msg role="status" hidden></div>' +
       '</div>';
     tplPreview(G, true);
@@ -835,6 +847,22 @@
       var box = $('[data-tpl="' + G + '"]'); if (!box) return;
       var tab = box.getAttribute('data-kind'), d = (draft('notify')[G] || {})[tab] || {}, f1 = tplField(G), seq = ++prevSeq;
       var body = { kind: tab, body: d.body || '' }; body[f1] = d[f1] || '';
+      if (G === 'customer') {
+        // email hoàn chỉnh (logo, bảng thông tin, nút, chữ ký, chân thư) đúng như khách nhận
+        body.sign = draft('notify').sign || {};
+        A.api('/notify/mail-preview', { method: 'POST', body: body }).then(function (r) {
+          var box2 = $('[data-tpl="customer"][data-kind="' + tab + '"] [data-tpl-prev]'); if (!box2 || seq < (box2._seq || 0)) return;
+          box2._seq = seq;
+          var fr = $('iframe', box2);
+          if (!fr) { box2.innerHTML = '<p class="tpl-prev__title" data-mail-subj></p><iframe class="mail-frame" title="Xem trước email gửi khách" sandbox="allow-same-origin allow-popups"></iframe>'; fr = $('iframe', box2); }
+          $('[data-mail-subj]', box2).textContent = 'Tiêu đề: ' + (body.subject ? body.subject.replace(/\{code\}/g, '#DC-…') : '(chưa có tiêu đề)');
+          var fit = function () { try { fr.style.height = Math.max(420, fr.contentDocument.documentElement.scrollHeight) + 'px'; } catch (e) { /* bỏ qua */ } };
+          fr.onload = fit; fr.srcdoc = (r && r.html) || '<p style="font-family:Arial;padding:20px">Không có nội dung.</p>';
+        }, function (e) {
+          var box2 = $('[data-tpl="customer"] [data-tpl-prev]'); if (box2 && e && e.status !== 401) box2.innerHTML = '<p class="set-warn">Không xem trước được: ' + esc(e.message) + '</p>';
+        });
+        return;
+      }
       A.api('/notify/preview', { method: 'POST', body: body }).then(function (r) {
         var box2 = $('[data-tpl="' + G + '"][data-kind="' + tab + '"] [data-tpl-prev]'); if (!box2 || seq < (box2._seq || 0)) return;
         box2._seq = seq;
@@ -991,7 +1019,7 @@
   document.addEventListener('change', function (e) {
     var t = e.target; if (!(t instanceof Element)) return;
     var g = screenOf(); if (!g || !$('[data-set-root]') || !$('[data-set-root]').contains(t)) return;
-    if (t.matches('[data-bool]')) setDraft(t.getAttribute('data-g'), t.getAttribute('data-k'), t.checked);
+    if (t.matches('[data-bool]')) { setDraft(t.getAttribute('data-g'), t.getAttribute('data-k'), t.checked); if (/^sign\./.test(t.getAttribute('data-k') || '')) tplPreview('customer'); }
     else if (t.matches('[data-brand-file]')) { onBrandFile(t); return; }
     else if (t.closest('[data-promo]') && t.matches('[data-pf]')) {
       var row = t.closest('[data-promo]'), p = draft('shop').promos[+row.getAttribute('data-promo')], f = t.getAttribute('data-pf');
@@ -1084,6 +1112,9 @@
       setPath(draft('notify'), G + '.' + kind + '.' + t.getAttribute('data-tpl-f'), t.value);
       t.classList.remove('is-invalid');
       tplPreview(G); refreshBar('notify');
+    } else if (g === 'notify' && t.matches('[data-sign]')) {
+      setPath(draft('notify'), 'sign.' + t.getAttribute('data-sign'), t.value);
+      tplPreview('customer'); refreshBar('notify');
     } else if (g === 'notify' && t.matches('[data-k="siteUrl"]')) slipWarn();
   });
   document.addEventListener('focusin', function (e) {

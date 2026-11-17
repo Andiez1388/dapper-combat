@@ -74,4 +74,20 @@ module.exports = async function mailTests(env, t) {
     t.ok(c && c.email === 'consult-vi@example.com' && c.confirm && c.confirm.email && c.confirm.email.status === 'sent', 'yêu cầu tư vấn lưu email khách + trạng thái đã gửi', c && c.confirm);
     await req('/api/settings', { method: 'PUT', body: { notify: { customer: { consult: null } } } });
   });
+
+  t.section('Giao diện email + chữ ký');
+  await t.run('giao diện email', async () => {
+    const st = (await req('/api/settings')).j.notify;
+    t.ok(st.sign && st.sign.on === true && st.sign.name, 'mặc định có chữ ký', st.sign);
+    let r = await req('/api/notify/mail-preview', { method: 'POST', body: { kind: 'order', subject: st.customer.order.subject, body: st.customer.order.body } });
+    const h = (r.j && r.j.html) || '';
+    t.ok(/Xác nhận đơn hàng/.test(h) && /#DC-123456/.test(h) && /Đội ngũ Dapper Combat/.test(h) && /Tổng cộng/.test(h), 'xem trước: email có đầu thư, mã đơn, bảng thông tin, chữ ký', h.slice(0, 200));
+    t.ok(/<a href="https?:\/\/[^"]+\/phieu\/[^"]+"[^>]*>Xem \/ tải phiếu xác nhận/.test(h) || !/phieu/.test(h), 'link phiếu thành nút bấm');
+    await req('/api/settings', { method: 'PUT', body: { notify: { sign: { on: false } } } });
+    r = await req('/api/notify/mail-preview', { method: 'POST', body: { kind: 'consult', subject: 'x', body: st.customer.consult.body, sign: { on: false } } });
+    t.ok(!/Đội ngũ Dapper Combat/.test(r.j.html) && /Yêu cầu tư vấn/.test(r.j.html), 'tắt chữ ký → email không có chữ ký');
+    await req('/api/settings', { method: 'PUT', body: { notify: { sign: { on: true, name: 'Phong Dapper' } } } });
+    t.ok((await req('/api/settings')).j.notify.sign.name === 'Phong Dapper', 'sửa người ký → lưu được');
+    await req('/api/settings', { method: 'PUT', body: { notify: { sign: { name: 'Đội ngũ Dapper Combat' } } } });
+  });
 };
