@@ -703,6 +703,7 @@
         return '<label><input type="radio" name="pay" value="' + o[0] + '"' + (o[0] === pay ? ' checked' : '') + '><span><b>' + esc(o[1]) + '</b><small>' + esc(o[2]) + '</small></span></label>';
       }).join('') + '</fieldset>' : '') +
       '<div class="tn-form-guar"><span class="tn-mini-seal" aria-hidden="true">100%</span><p><b>' + esc(t('form.guar')) + '</b>' + esc(L(P[path].out)) + '. ' + esc(t('refund.short.' + path)) + '.<small>' + esc(t('form.trial')) + '</small></p></div>' +
+      (DC.consent ? DC.consent.html('dc-consent--tn') : '') +
       '<p class="tn-err" role="alert" hidden></p><button class="tn-btn" type="submit" data-send' + (sending ? ' disabled' : '') + '>' + esc(t(sending ? 'form.sending' : 'send.' + pay)) + '</button></form>';
   }
   function okHtml(r) {

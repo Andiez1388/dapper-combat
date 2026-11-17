@@ -71,6 +71,36 @@ module.exports = async function privateTests(env, t) {
     await setLogo('');
   });
 
+  t.section('Pháp lý: thông tin doanh nghiệp, chính sách, đồng ý, xác minh Google');
+  await t.run('pháp lý', async () => {
+    const put = (url, body) => fetch(B + url, { method: 'PUT', headers: admin, body: JSON.stringify(body) });
+    let r = await put('/api/cms', { contact: { company: 'CÔNG TY CỔ PHẦN THỬ', taxId: '0318379975', email: 'cskh@example.com', bizDate: '29/03/2024',
+      regAddr: '27/13 đường số 13, Tam Bình', legalRep: 'Nguyễn Văn A', moitUrl: 'https://evil.example.com/x', moitImg: 'http://online.gov.vn/logo.png' } });
+    t.ok(r.status === 200, 'lưu thông tin doanh nghiệp', r.status);
+    const cj = await (await get('/assets/data/cms.js')).text();
+    t.ok(/0318379975/.test(cj) && /27\/13 đường số 13/.test(cj) && !/evil\.example/.test(cj) && /online\.gov\.vn/.test(cj), 'trang nhận MST, trụ sở; link logo Bộ Công Thương chỉ nhận tên miền .gov.vn');
+    // trang chính sách dùng biến {biz.*}
+    const list = await (await fetch(B + '/api/pages', { headers: admin })).json();
+    const pg = list.find(p => p.slug === 'chinh-sach-bao-mat');
+    r = await put('/api/pages/' + pg.id, { ...pg, published: true, body: { vi: '<p>{biz.name} — MST {biz.tax} — <a href="mailto:{biz.email}">mail</a> <a href="tel:{biz.phone}">gọi</a></p>', en: '<p>{biz.name} open {hours.days}</p>' } });
+    t.ok(r.status === 200, 'lưu trang chính sách', r.status);
+    const html = await (await get('/trang/chinh-sach-bao-mat')).text();
+    t.ok(/CÔNG TY CỔ PHẦN THỬ — MST 0318379975/.test(html) && /href="mailto:cskh@example.com"/.test(html) && /href="tel:/.test(html), 'trang chính sách tự điền tên công ty, MST, email, link gọi', html.match(/<article data-lang-body="vi">[\s\S]{0,300}/));
+    t.ok(/data-lang-body="en"[^>]*>[^<]*<p>CÔNG TY CỔ PHẦN THỬ open (Mon|Every)/.test(html), 'bản tiếng Anh điền biến bằng tiếng Anh');
+    await put('/api/pages/' + pg.id, { ...pg });
+    // đồng ý chính sách → lưu thời điểm
+    r = await fetch(B + '/api/consults', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '10.9.9.9' }, body: JSON.stringify({ type: 'gym', name: 'Khách Đồng Ý', phone: '0912000444', consent: true }) });
+    const id = (await r.json()).id;
+    const c = (await (await fetch(B + '/api/consults', { headers: admin })).json()).find(x => x.id === id);
+    t.ok(c && c.consentAt > 0, 'yêu cầu tư vấn lưu thời điểm khách đồng ý chính sách bảo mật', c);
+    // mã xác minh Google / Bing
+    r = await put('/api/settings', { brand: { verifyGoogle: '<meta name="google-site-verification" content="abcDEF123_-xyz" />', verifyBing: 'B1C2D3E4F5' } });
+    const home = await (await get('/')).text();
+    t.ok(/<meta name="google-site-verification" content="abcDEF123_-xyz">/.test(home) && /<meta name="msvalidate.01" content="B1C2D3E4F5">/.test(home), 'dán thẻ meta Google / mã Bing → trang có thẻ xác minh');
+    await put('/api/settings', { brand: { verifyGoogle: '', verifyBing: '' } });
+    await put('/api/cms', { contact: { company: null, taxId: null, email: null, bizDate: null, regAddr: null, legalRep: null, moitUrl: null, moitImg: null } });
+  });
+
   t.section('Mã phiên bản cho CSS / JS');
   await t.run('mã phiên bản', async () => {
     for (const url of ['/', '/shop', '/admin', '/khoa-hoc']) {

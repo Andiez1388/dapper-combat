@@ -774,7 +774,7 @@
         var c = cust(o);
         var addr = [c.address, c.ward, c.city].filter(Boolean).join(', ');
         return sec('Khách hàng', kv([
-          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Địa chỉ', addr],
+          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Địa chỉ', addr], ['Đồng ý chính sách bảo mật', o.consentAt ? fmtDate(o.consentAt) : ''],
         ]) + (c.note ? quote('Ghi chú của khách', c.note) : '')) +
           sec('Sản phẩm · ' + qtyOf(o) + ' món', itemsHtml(o.items) + totalsHtml(o)) +
           sec('Thanh toán & giao hàng', kv([
@@ -806,7 +806,7 @@
       ],
       detail: function (r) {
         return sec('Học viên', kv([
-          ['Họ tên', r.name], ['Điện thoại', r.phone], ['Email', r.email], ['Ngôn ngữ', label(LANG, r.lang)],
+          ['Họ tên', r.name], ['Điện thoại', r.phone], ['Email', r.email], ['Ngôn ngữ', label(LANG, r.lang)], ['Đồng ý chính sách bảo mật', r.consentAt ? fmtDate(r.consentAt) : ''],
         ])) +
           sec('Đăng ký', kv([
             ['Chương trình', programName(r)], ['Chi tiết', r.detail], ['Gói', r.pkg ? (/^\d+$/.test(r.pkg) ? r.pkg + ' tháng' : r.pkg) : ''],
@@ -845,7 +845,7 @@
       detail: function (c) {
         var svc = Array.isArray(c.svc) ? c.svc.filter(Boolean) : [];
         return sec('Khách hàng', kv([
-          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Tỉnh / thành', c.city], ['Ngôn ngữ', label(LANG, c.lang)],
+          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Tỉnh / thành', c.city], ['Ngôn ngữ', label(LANG, c.lang)], ['Đồng ý chính sách bảo mật', c.consentAt ? fmtDate(c.consentAt) : ''],
         ])) +
           sec('Dự án', kv([
             ['Loại hình', (c.typeName || label(BIZ, c.type))], ['Diện tích', (c.areaName || label(AREA, c.area))], ['Ngân sách', c.budgetName || c.budget],

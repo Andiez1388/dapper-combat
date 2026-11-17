@@ -16,7 +16,42 @@
   };
 
   // lỗi trả về có err.status: mã HTTP (vd 404), 0 = mất mạng
+  /* ô "đồng ý chính sách bảo mật" (Luật Bảo vệ dữ liệu cá nhân 2025) cho form đặt hàng, đăng ký khóa học, tư vấn:
+     DC.consent.html() vẽ ô (giữ trạng thái khi form vẽ lại); DC.api chặn gửi nếu ô đang hiện mà chưa tick, có tick thì gửi kèm consent: true */
+  var CONSENT_PATHS = { '/orders': 1, '/registrations': 1, '/consults': 1 };
+  DC.consent = {
+    on: false,
+    html: function (cls) {
+      var en = DC.lang() === 'en';
+      return '<label class="dc-consent' + (cls ? ' ' + cls : '') + '"><input type="checkbox" data-dc-consent' + (DC.consent.on ? ' checked' : '') + '><span>' +
+        DC.tx('global.consent.1', 'Tôi đã đọc và đồng ý với ', 'I have read and agree to the ') +
+        '<a href="/trang/chinh-sach-bao-mat" target="_blank" rel="noopener">' + DC.tx('global.consent.2', 'Chính sách bảo mật', 'Privacy policy') + '</a>' +
+        DC.tx('global.consent.3', ' và ', ' and ') +
+        '<a href="/trang/dieu-khoan-su-dung" target="_blank" rel="noopener">' + DC.tx('global.consent.4', 'Điều khoản sử dụng', 'Terms of use') + '</a>' +
+        DC.tx('global.consent.5', ' của Dapper Combat.', '.') + '</span></label>';
+    },
+    // ô đang hiện trên trang (form đang mở)
+    box: function () { return [].filter.call(document.querySelectorAll('[data-dc-consent]'), function (b) { return b.offsetParent !== null || b.getClientRects().length; })[0] || null; },
+  };
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t && t.matches && t.matches('[data-dc-consent]')) {
+      DC.consent.on = t.checked;
+      [].forEach.call(document.querySelectorAll('[data-dc-consent]'), function (b) { b.checked = t.checked; b.closest('.dc-consent').classList.remove('is-err'); });
+    }
+  });
   DC.api = function (path, body, method) {
+    if (body && !method && CONSENT_PATHS[path]) {
+      var box = DC.consent.box();
+      if (box && !box.checked) {
+        var lab = box.closest('.dc-consent'); lab.classList.add('is-err');
+        try { lab.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { /* bỏ qua */ }
+        var ce = new Error(DC.tx('global.consent.err', 'Vui lòng tick ô đồng ý với Chính sách bảo mật để tiếp tục.', 'Please tick the box to agree to the Privacy policy.'));
+        ce.status = 400; ce.consent = true;
+        return Promise.reject(ce);
+      }
+      if (box) body.consent = true;
+    }
     return fetch('/api' + path, {
       method: method || (body ? 'POST' : 'GET'),
       headers: { 'Content-Type': 'application/json' },
@@ -85,7 +120,13 @@
   DC.tok = function (text, en) {
     if (typeof text !== 'string' || text.indexOf('{') < 0) return text;
     var sched = null;
-    return text.replace(/\{((?:found|gt|hssv|mem|ship|promo|hours|sched)\.[A-Za-z0-9.-]+)\}/g, function (m, k) {
+    return text.replace(/\{((?:found|gt|hssv|mem|ship|promo|hours|sched|biz)\.[A-Za-z0-9.-]+)\}/g, function (m, k) {
+      if (k.indexOf('biz.') === 0) {
+        var gym = [DC.cfg('addr1', ''), DC.cfg('addr2', '')].filter(Boolean).join(', ');
+        var B = { name: DC.cfg('company', '') || 'Dapper Combat', tax: DC.cfg('taxId', ''), date: DC.cfg('bizDate', ''), office: DC.cfg('regAddr', '') || gym, gym: gym,
+          rep: DC.cfg('legalRep', ''), phone: DC.cfg('phone', ''), email: DC.cfg('email', ''), zalo: DC.cfg('zalo', ''), site: location.host };
+        return B[k.slice(4)] != null ? DC.esc(B[k.slice(4)]) : '';
+      }
       if (k === 'hssv.months') return String(DC.setting('course.hssvMonths', 3));
       if (k === 'promo.codes') return '';                       // mã giảm giá không còn công khai (kiểm tra qua /api/promo)
       if (k === 'found.start') { var d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(DC.setting('course.foundStart', ''))); return d ? d[3] + '.' + d[2] + '.' + d[1] : ''; }
@@ -274,9 +315,16 @@
   DC.bizLine = function () {
     var c = cms().c || {}, en = DC.lang() === 'en', esc = DC.esc;
     var company = String(c.company || '').trim(), tax = String(c.taxId || '').trim(), mail = String(c.email || '').trim();
-    var html = !company && !tax ? '' : [company ? esc(company) : '', tax ? esc(DC.x('global.biz.tax', en ? 1 : 0, en ? 'Tax ID: ' : 'MST: ') + tax) : '',
-      esc([c.addr1, c.addr2].filter(Boolean).join(', ')), c.phone ? '<a href="tel:' + esc(String(c.phone).replace(/[^\d+]/g, '')) + '">' + esc(c.phone) + '</a>' : '',
+    var date = String(c.bizDate || '').trim(), office = String(c.regAddr || '').trim(), rep = String(c.legalRep || '').trim();
+    var html = !company && !tax ? '' : [company ? esc(company) : '',
+      tax ? esc(DC.x('global.biz.tax', en ? 1 : 0, en ? 'Tax ID: ' : 'MST: ') + tax + (date ? (en ? ', issued ' : ', cấp ngày ') + date : '')) : '',
+      office ? esc((en ? 'Registered office: ' : 'Trụ sở: ') + office) : esc([c.addr1, c.addr2].filter(Boolean).join(', ')),
+      rep ? esc((en ? 'Legal representative: ' : 'Người đại diện: ') + rep) : '',
+      c.phone ? '<a href="tel:' + esc(String(c.phone).replace(/[^\d+]/g, '')) + '">' + esc(c.phone) + '</a>' : '',
       mail ? '<a href="mailto:' + esc(mail) + '">' + esc(mail) + '</a>' : ''].filter(Boolean).join(' · ');
+    // logo "Đã thông báo Bộ Công Thương" (chỉ có sau khi được xác nhận)
+    if (html && /^https?:\/\/([\w-]+\.)*gov\.vn\//i.test(c.moitUrl || '') && /^https?:\/\/([\w-]+\.)*gov\.vn\//i.test(c.moitImg || ''))
+      html += '<br><a class="dc-moit" href="' + esc(c.moitUrl) + '" target="_blank" rel="noopener"><img src="' + esc(c.moitImg) + '" alt="' + (en ? 'Notified to the Ministry of Industry and Trade' : 'Đã thông báo Bộ Công Thương') + '" height="44" loading="lazy"></a>';
     document.querySelectorAll('[data-dc-biz]').forEach(function (el) { el.innerHTML = html; el.hidden = !html; });
     return html;
   };

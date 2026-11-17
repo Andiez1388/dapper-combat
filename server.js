@@ -63,7 +63,7 @@ const escAttr = v => String(v || '').replace(/[&"<>]/g, c => ({ '&': '&amp;', '"
 function comingSoon() {
   const b = settings.all().brand, logo = b.logo ? `<img src="${escAttr(b.logo)}" alt="Dapper Combat">` : '<p class="w">DAPPER COMBAT</p>';
   return `<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><title>Dapper Combat — Sắp ra mắt</title>${b.favicon ? `<link rel="icon" href="${escAttr(b.favicon)}">` : ''}
+<meta name="robots" content="noindex,nofollow">${b.verifyGoogle ? `<meta name="google-site-verification" content="${escAttr(b.verifyGoogle)}">` : ''}${b.verifyBing ? `<meta name="msvalidate.01" content="${escAttr(b.verifyBing)}">` : ''}<title>Dapper Combat — Sắp ra mắt</title>${b.favicon ? `<link rel="icon" href="${escAttr(b.favicon)}">` : ''}
 <style>html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#0b0b0b;color:#f2f2f2;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
 img{max-height:64px;max-width:80vw;margin-bottom:28px}.w{font-weight:800;letter-spacing:.18em;font-size:clamp(22px,5vw,34px);margin:0 0 24px}
 h1{font-size:clamp(28px,6vw,48px);margin:0 0 12px;letter-spacing:.04em}h1 span{color:#d6312b}p.s{color:#9a9a9a;margin:0;line-height:1.6}</style></head>
@@ -92,6 +92,10 @@ app.get('/trang.html', (req, res) => sendPage(req, res, path.join(PUB, '404.html
 // → trình duyệt tự giữ bản cũ nhiều ngày sau khi cập nhật. Mã = dấu thời gian sửa file → file đổi thì đường dẫn đổi, tải bản mới.
 const assetVer = new Map();
 function versioned(html) {
+  // mã xác minh Google Search Console / Bing (/admin → Thương hiệu & menu)
+  const br = settings.all().brand, ver = (br.verifyGoogle ? `<meta name="google-site-verification" content="${escAttr(br.verifyGoogle)}">` : '') +
+    (br.verifyBing ? `<meta name="msvalidate.01" content="${escAttr(br.verifyBing)}">` : '');
+  if (ver) html = html.replace('</head>', () => ver + '</head>');
   return html.replace(/((?:src|href)=")(\/assets\/(?:js|css)\/[\w.-]+\.(?:js|css))"/g, (m, a, url) => {
     let st;
     try { st = fs.statSync(path.join(PUB, url)); } catch { return m; }

@@ -19,6 +19,13 @@ DC.cart.onChange(function (o) { dcLoadCart(o); _dcSync(); });
 
 /* ---- đặt hàng ---- */
 var DCS = { busy: false };
+// ô đồng ý chính sách bảo mật ngay trên nút "Đặt hàng"
+(function () {
+  var put = function () { var po = document.getElementById('placeOrder'); if (po && !document.querySelector('#placeOrder ~ .dc-consent, .dc-consent + #placeOrder')) po.insertAdjacentHTML('beforebegin', DC.consent.html('dc-consent--shop')); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', put); else put();
+  // đổi ngôn ngữ → vẽ lại chữ của ô
+  if (window.MutationObserver) new MutationObserver(function () { var o = document.querySelector('.dc-consent--shop'); if (o) { o.outerHTML = DC.consent.html('dc-consent--shop'); } }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+})();
 function dcOrderErr(msg) {
   var po = document.getElementById('placeOrder'), el = document.getElementById('dcOrderErr');
   if (!el && po) { po.insertAdjacentHTML('afterend', '<p class="dc-form-err" id="dcOrderErr" role="alert"></p>'); el = document.getElementById('dcOrderErr'); }

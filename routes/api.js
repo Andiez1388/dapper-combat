@@ -690,6 +690,8 @@ router.post('/orders', limit('order', 10), async (req, res) => {
   const order = {
     id: genId('ord'), code: makeCode('#DC-', 6, orders), createdAt: Date.now(), status: 'new',
     customer, pay: b.pay, lang: b.lang === 'en' ? 'en' : 'vi',
+    // khách tick ô đồng ý Chính sách bảo mật (Luật Bảo vệ dữ liệu cá nhân) → lưu thời điểm làm bằng chứng
+    ...(b.consent === true ? { consentAt: Date.now() } : {}),
     ...priced, adminNote: '', history: [{ at: Date.now(), status: 'new' }], confirm: newConfirm(), stockReturned: false,
   };
   // trừ tồn kho (theo size / màu nếu sản phẩm chia tồn kho theo biến thể) + đếm lượt dùng mã giảm giá
@@ -733,6 +735,7 @@ router.post('/registrations', limit('reg', 10), (req, res) => {
     pkg: str(b.pkg, 10), opt: str(b.opt, 10), pay: str(b.pay, 20), payName: str(b.payName, 80),
     total: int(b.total, 0, 1e9), due: int(b.due, 0, 1e9), date: str(b.date, 20), note: str(b.note, 500),
     lang: b.lang === 'en' ? 'en' : 'vi',
+    ...(b.consent === true ? { consentAt: Date.now() } : {}),
   };
   const bad = (vi, en) => res.status(400).json({ error: msg(req, vi, en) });
   if (reg.name.length < 2) return bad('Vui lòng nhập họ tên', 'Please enter your name');
@@ -1050,6 +1053,7 @@ router.post('/consults', limit('consult', 10), (req, res) => {
     typeName: str(b.typeName, 80), areaName: str(b.areaName, 80), budgetName: str(b.budgetName, 80),
     svcNames: Array.isArray(b.svcNames) ? b.svcNames.slice(0, 6).map(s => str(s, 80)) : [],
     lang: b.lang === 'en' ? 'en' : 'vi',
+    ...(b.consent === true ? { consentAt: Date.now() } : {}),
   };
   if (c.name.length < 2) return res.status(400).json({ error: msg(req, 'Vui lòng nhập họ tên', 'Please enter your name') });
   if (!phoneOk(c.phone)) return res.status(400).json({ error: msg(req, 'Số điện thoại chưa đúng', 'Please enter a valid phone number') });

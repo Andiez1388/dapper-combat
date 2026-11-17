@@ -143,6 +143,7 @@ function cv3Render(){
     h+='<div class="cv3-field"><label>Email</label><input id="cv3Email" type="email" autocomplete="email" value="'+f.email.replace(/"/g,"&quot;")+'"></div></div>';
     if(CV3.prog!=="found")h+='<div class="cv3-field"><label>'+(CV3.prog==="trial"?cv3T(DC.x("course.drawer.j50",0,"Ngày muốn tập thử"),DC.x("course.drawer.j50",1,"Preferred date")):cv3T(DC.x("course.drawer.j51",0,"Ngày muốn bắt đầu"),DC.x("course.drawer.j51",1,"Preferred start date")))+'</label><input id="cv3Date" type="date" min="'+cv3Today()+'" value="'+f.date+'"></div>';
     h+='<div class="cv3-field"><label>'+cv3T(DC.x("course.drawer.j52",0,"Ghi chú cho HLV"),DC.x("course.drawer.j52",1,"Note for the coach"))+'</label><textarea id="cv3Note" rows="2" placeholder="'+cv3T(DC.x("course.drawer.j53",0,"Mục tiêu, chấn thương, kinh nghiệm…"),DC.x("course.drawer.j53",1,"Goals, injuries, experience…"))+'">'+f.note.replace(/</g,"&lt;")+'</textarea></div>';
+    if(window.DC&&DC.consent)h+=DC.consent.html('dc-consent--course');
     var pl=cv3PayList();
     if(pl.length){h+='<div class="cv3-lab">'+cv3T(DC.x("course.drawer.j54",0,"Hình thức thanh toán"),DC.x("course.drawer.j54",1,"Payment"))+'</div><div class="cv3-pays">';
       pl.forEach(function(x){h+='<button type="button" class="cv3-pay'+(CV3.pay===x.id?" on":"")+'" data-cv3="pay" data-v="'+x.id+'"><i></i><div><b>'+cv3L(x.t)+'</b><small>'+cv3L(x.s)+'</small></div><span>'+(x.amt?cv3Fmt(x.amt):"0đ")+'</span></button>';});

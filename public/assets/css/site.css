@@ -212,3 +212,12 @@ button[disabled]{cursor:progress;opacity:0.75;}
   .dc-qs-view{position:relative;}
   .dc-qs-view::before{content:'';position:absolute;left:-4px;right:-4px;top:-12px;bottom:-12px;}
 }
+.dc-biz .dc-moit{display:inline-block;margin-top:.7rem;text-decoration:none;}
+.dc-biz .dc-moit img{display:block;height:44px;width:auto;}
+
+/* ô đồng ý chính sách bảo mật (form đặt hàng / đăng ký / tư vấn) */
+.dc-consent{display:flex;gap:.6em;align-items:flex-start;margin:.9rem 0;font-size:.82rem;line-height:1.5;text-align:left;cursor:pointer;}
+.dc-consent input{flex:none;width:1.05em;height:1.05em;margin:.18em 0 0;accent-color:#d6312b;cursor:pointer;}
+.dc-consent a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-weight:600;}
+.dc-consent.is-err{color:#d6312b;}
+.dc-consent.is-err input{outline:2px solid #d6312b;outline-offset:2px;}

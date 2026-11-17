@@ -1411,6 +1411,7 @@
     if (!v) return '';
     if (/[<>"]/.test(v)) return 'Không dùng các ký tự < > "';
     if (c.type === 'url' && !/^https:\/\/[^\s"'<>`]+$/.test(v)) return 'Link phải bắt đầu bằng https:// và không có khoảng trắng.';
+    if (c.type === 'gov' && !/^https?:\/\/([\w-]+\.)*gov\.vn(\/[^\s"'<>`]*)?$/i.test(v)) return 'Chỉ nhận link của Bộ Công Thương (tên miền .gov.vn) — lấy trong đoạn mã logo được cấp sau khi hồ sơ được xác nhận.';
     if (c.type === 'time' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) return 'Giờ có dạng HH:MM, ví dụ 06:00.';
     if (c.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return 'Email chưa đúng định dạng, ví dụ lienhe@dappervietnam.com.';
     if (c.type === 'select' && !optionsOf(c).some(function (o) { return o.v === v; })) return 'Chọn một mục trong danh sách.';
@@ -1460,7 +1461,7 @@
     } else if (c.type === 'time') {
       input = '<input id="' + esc(id) + '" type="time" step="300" value="' + esc(v || c.def || '') + '" data-fk>';
     } else {
-      var t = c.type === 'url' ? 'url' : c.type === 'phone' ? 'tel' : c.type === 'email' ? 'email' : 'text';
+      var t = c.type === 'url' || c.type === 'gov' ? 'url' : c.type === 'phone' ? 'tel' : c.type === 'email' ? 'email' : 'text';
       var extra = c.type === 'url' ? ' inputmode="url"' : c.key === 'bankAccount' ? ' inputmode="numeric"' : '';
       if (c.key === 'bankHolder') extra += ' autocapitalize="characters"';
       input = '<input id="' + esc(id) + '" type="' + t + '"' + extra + ' value="' + esc(v) + '"' + (c.def ? ' placeholder="' + esc(c.def) + '"' : '') +

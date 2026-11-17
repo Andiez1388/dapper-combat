@@ -160,7 +160,7 @@
   var KEYS = {
     shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
-    brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'nav'],
+    brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'verifyGoogle', 'verifyBing', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'sign', 'customer'],
   };
   function changed(g) {
@@ -598,6 +598,14 @@
         '<input type="text" maxlength="200" data-text data-g="brand" data-k="mapQuery" value="' + esc(d.mapQuery || '') + '" placeholder="VD: 30 Đường 128, Phước Long, TP. Thủ Đức, TP. Hồ Chí Minh" autocomplete="off">' +
         '<small class="field__hint">Để trống = dùng bản đồ có sẵn của Trang chủ.</small></label>' +
         '<div class="map-prev" data-map-prev></div>') +
+      panel('Xác minh website với Google / Bing',
+        '<label class="field"><span class="field__label">Mã xác minh Google Search Console</span>' +
+        '<input type="text" maxlength="300" data-vcode data-k="verifyGoogle" value="' + esc(d.verifyGoogle || '') + '" placeholder="Dán thẻ <meta name=&quot;google-site-verification&quot; …> hoặc chỉ phần mã" autocomplete="off" spellcheck="false">' +
+        '<small class="field__hint">Search Console → Thêm tài sản → loại “Tiền tố URL” → https://dappervietnam.com → phương thức “Thẻ HTML” → sao chép thẻ meta, dán vào đây, bấm Lưu rồi quay lại bấm “Xác minh”.</small></label>' +
+        '<label class="field"><span class="field__label">Mã xác minh Bing Webmaster Tools</span>' +
+        '<input type="text" maxlength="300" data-vcode data-k="verifyBing" value="' + esc(d.verifyBing || '') + '" placeholder="Dán thẻ <meta name=&quot;msvalidate.01&quot; …> hoặc chỉ phần mã" autocomplete="off" spellcheck="false">' +
+        '<small class="field__hint">Không bắt buộc nếu bạn nhập website vào Bing từ Search Console (Bing có nút “Import from Google Search Console”).</small></label>' +
+        '<p class="set-note">Sau khi xác minh: Search Console → Sơ đồ trang web → gửi <strong>sitemap.xml</strong>. Nhớ <strong>tắt Chế độ riêng tư</strong> trước, nếu không Google không đọc được website.</p>') +
       panel('Facebook Pixel (quảng cáo Facebook)',
         '<label class="field"><span class="field__label">ID Pixel</span>' +
         '<input type="text" maxlength="4000" inputmode="numeric" data-text data-g="brand" data-k="fbPixel" value="' + esc(d.fbPixel || '') + '" placeholder="VD: 123456789012345" autocomplete="off" spellcheck="false">' +
@@ -1112,6 +1120,10 @@
       setPath(draft('notify'), G + '.' + kind + '.' + t.getAttribute('data-tpl-f'), t.value);
       t.classList.remove('is-invalid');
       tplPreview(G); refreshBar('notify');
+    } else if (t.matches('[data-vcode]')) {
+      var mm = t.value.match(/content=["']([\w.-]{8,120})["']/);
+      setDraft('brand', t.getAttribute('data-k'), mm ? mm[1] : t.value.trim());
+      refreshBar('brand');
     } else if (g === 'notify' && t.matches('[data-sign]')) {
       setPath(draft('notify'), 'sign.' + t.getAttribute('data-sign'), t.value);
       tplPreview('customer'); refreshBar('notify');
