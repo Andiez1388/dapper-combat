@@ -70,4 +70,15 @@ module.exports = async function privateTests(env, t) {
       'có logo riêng → màn đăng nhập, thanh trên, menu trái đều dùng logo đó, bỏ chữ lặp');
     await setLogo('');
   });
+
+  t.section('Mã phiên bản cho CSS / JS');
+  await t.run('mã phiên bản', async () => {
+    for (const url of ['/', '/shop', '/admin', '/khoa-hoc']) {
+      const html = await (await get(url)).text();
+      const plain = html.match(/(?:src|href)="\/assets\/(?:js|css)\/[\w.-]+\.(?:js|css)"/g);
+      t.ok(/\/assets\/js\/[\w.-]+\.js\?v=[0-9a-f]{10}"/.test(html) && !plain, url + ': mọi file CSS / JS có ?v=… (cập nhật xong khách tải bản mới ngay)', plain);
+    }
+    const r = await get('/assets/js/site.js?v=abc');
+    t.ok(r.status === 200, 'file có ?v= vẫn tải được', r.status);
+  });
 };

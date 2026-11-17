@@ -88,13 +88,26 @@ app.get('/trang.html', (req, res) => sendPage(req, res, path.join(PUB, '404.html
 
 // Trang + CSS/JS của trang: áp nội dung tùy chỉnh từ /admin (chữ, ảnh/video, màu, liên hệ) trước khi gửi
 // head = thẻ thêm vào <head> (link chuẩn cho Google, dữ liệu có cấu trúc) · edit = sửa thêm trên HTML (vd tiêu đề tab)
+// Gắn mã phiên bản vào CSS / JS trong trang (/assets/js/site.js?v=…): hosting có thể trả file tĩnh không kèm Cache-Control
+// → trình duyệt tự giữ bản cũ nhiều ngày sau khi cập nhật. Mã = dấu thời gian sửa file → file đổi thì đường dẫn đổi, tải bản mới.
+const assetVer = new Map();
+function versioned(html) {
+  return html.replace(/((?:src|href)=")(\/assets\/(?:js|css)\/[\w.-]+\.(?:js|css))"/g, (m, a, url) => {
+    let st;
+    try { st = fs.statSync(path.join(PUB, url)); } catch { return m; }
+    // file được điền nội dung sửa trong /admin (cms.transformable) → đổi mã khi nội dung đổi
+    const key = url + '|' + st.mtimeMs + '|' + st.size + (cms.transformable(url.slice(1)) ? '|' + cms.version() : '');
+    if (!assetVer.has(key)) assetVer.set(key, crypto.createHash('sha1').update(key).digest('hex').slice(0, 10));
+    return a + url + '?v=' + assetVer.get(key) + '"';
+  });
+}
 function sendPage(req, res, file, status = 200, head = '', edit = null) {
   const rel = path.relative(PUB, file).split(path.sep).join('/');
   const raw = fs.readFileSync(file, 'utf8');
   let body = cms.transformable(rel) ? cms.transform(rel, raw) : raw;
   if (edit) body = edit(body);
   if (head) body = body.replace('</head>', () => head + '</head>');
-  if (rel.endsWith('.html')) body = absOg(req, body);
+  if (rel.endsWith('.html')) body = versioned(absOg(req, body));
   const etag = '"' + crypto.createHash('sha1').update(body).digest('base64').slice(0, 22) + '"';
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('ETag', etag);
@@ -238,13 +251,13 @@ app.get('/shop/:slug', (req, res, next) => {
     .replace(/(property="og:image" content=")[^"]*"/, (m, a) => a + img + '"')
     .replace('</head>', () => head + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
-  res.type('html').send(html);
+  res.type('html').send(versioned(html));
 });
 // trang thanh toán: không cho Google lập chỉ mục (trùng nội dung /shop)
 app.get('/shop/checkout', (req, res) => {
   const html = absOg(req, cms.transform('shop.html', fs.readFileSync(path.join(PUB, 'shop.html'), 'utf8')).replace('</head>', '<meta name="robots" content="noindex"></head>'));
   res.setHeader('Cache-Control', 'no-cache');
-  res.type('html').send(html);
+  res.type('html').send(versioned(html));
 });
 app.get('/shop', page('shop.html', '/shop', req => [crumbs(req, [['Cửa hàng', '/shop']]), { '@context': 'https://schema.org', '@type': 'ItemList', name: 'Cửa hàng Dapper Combat',
   itemListElement: api.publicProducts().map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: baseUrl(req) + '/shop/' + api.productSlug(p) })) }]));
@@ -330,7 +343,7 @@ app.get('/trang/:slug', (req, res) => {
   if (!p) return sendPage(req, res, path.join(PUB, '404.html'), 404);
   const body = cms.transform(`trang/${p.slug}.html`, pages.render(p)).replace('</head>', () => seoHead(req, '/trang/' + p.slug) + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
-  res.type('html').send(body);
+  res.type('html').send(versioned(body));
 });
 
 app.use((req, res) => sendPage(req, res, path.join(PUB, '404.html'), 404));
