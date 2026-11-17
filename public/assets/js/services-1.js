@@ -133,6 +133,7 @@ function rContact(){
       '<label class="fl">'+T(DC.x("services.contact.j22",0,"Dịch vụ quan tâm"),DC.x("services.contact.j22",1,"Services you need"))+'</label>'+chips("svc",DC.list("services.contact.svcs",function($k){return [[$k.v("design"),T(DC.x($k("services.contact.j23"),0,"Tư vấn & thiết kế"),DC.x($k("services.contact.j23"),1,"Design"))],[$k.v("equip"),T(DC.x($k("services.contact.j24"),0,"Cung cấp thiết bị"),DC.x($k("services.contact.j24"),1,"Equipment"))],[$k.v("turnkey"),T(DC.x($k("services.contact.j25"),0,"Setup trọn gói"),DC.x($k("services.contact.j25"),1,"Turnkey"))]];}),true)+
       '<div class="row2"><div><label class="fl" for="fName">'+T(DC.x("services.contact.j26",0,"Họ và tên *"),DC.x("services.contact.j26",1,"Full name *"))+'</label><input class="inp" id="fName" autocomplete="name"></div><div><label class="fl" for="fPhone">'+T(DC.x("services.contact.j27",0,"Số điện thoại *"),DC.x("services.contact.j27",1,"Phone *"))+'</label><input class="inp" id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx"></div></div>'+
       '<div class="row2"><div><label class="fl" for="fCity">'+T(DC.x("services.contact.j28",0,"Tỉnh / thành phố"),DC.x("services.contact.j28",1,"City / province"))+'</label><input class="inp" id="fCity" autocomplete="address-level1" placeholder="TP. Hồ Chí Minh"></div><div><label class="fl" for="fBudget">'+T(DC.x("services.contact.j29",0,"Ngân sách dự kiến"),DC.x("services.contact.j29",1,"Estimated budget"))+'</label><select class="inp" id="fBudget">'+DC.list("services.contact.budgets",function($k){return [[$k.v(""),T(DC.x($k("services.contact.j30"),0,"Chưa rõ"),DC.x($k("services.contact.j30"),1,"Not sure yet"))],[$k.v("lt100"),T(DC.x($k("services.contact.j31"),0,"Dưới 100 triệu"),DC.x($k("services.contact.j31"),1,"Under 100M VND"))],[$k.v("100-300"),T(DC.x($k("services.contact.j32"),0,"100–300 triệu"),DC.x($k("services.contact.j32"),1,"100–300M VND"))],[$k.v("300-500"),T(DC.x($k("services.contact.j33"),0,"300–500 triệu"),DC.x($k("services.contact.j33"),1,"300–500M VND"))],[$k.v("gt500"),T(DC.x($k("services.contact.j34"),0,"Trên 500 triệu"),DC.x($k("services.contact.j34"),1,"Over 500M VND"))]];}).map(o=>'<option value="'+o[0]+'"'+(F.budget===o[0]?' selected':'')+'>'+o[1]+'</option>').join("")+'</select></div></div>'+
+      '<label class="fl" for="fEmail">'+T(DC.x("services.contact.j46",0,"Email (không bắt buộc)"),DC.x("services.contact.j46",1,"Email (optional)"))+'</label><input class="inp" id="fEmail" type="email" inputmode="email" autocomplete="email" placeholder="'+T(DC.x("services.contact.j47",0,"Nhập để nhận email xác nhận"),DC.x("services.contact.j47",1,"To receive a confirmation email"))+'">'+
       '<label class="fl" for="fNote">'+T(DC.x("services.contact.j35",0,"Mô tả thêm"),DC.x("services.contact.j35",1,"Anything else"))+'</label><textarea class="inp" id="fNote" placeholder="'+T(DC.x("services.contact.j36",0,"Ví dụ: tầng trệt, trần 3,5m, muốn khai trương tháng 3…"),DC.x("services.contact.j36",1,"e.g. ground floor, 3.5m ceiling, opening in March…"))+'"></textarea>'+
       '<button class="btn red" type="submit">'+T(DC.x("services.contact.j37",0,"Gửi yêu cầu tư vấn"),DC.x("services.contact.j37",1,"Send request"))+'</button><p class="form-note">'+T(DC.x("services.contact.j38",0,"Thông tin chỉ dùng để liên hệ tư vấn dự án."),DC.x("services.contact.j38",1,"Your details are only used to contact you about this project."))+'</p></form>';
   }
@@ -163,6 +164,7 @@ function submitForm(){
   const tc=document.querySelector('[data-chips="type"]');tc.classList.toggle("err",!F.type);if(!F.type){tc.insertAdjacentHTML("afterend",'<small class="err-msg">'+T(DC.x("services.contact.j39",0,"Chọn loại hình"),DC.x("services.contact.j39",1,"Choose a type"))+'</small>');first=first||tc;}
   mark($("fName"),name.length>1,T(DC.x("services.contact.j40",0,"Vui lòng nhập họ tên"),DC.x("services.contact.j40",1,"Please enter your name")));
   mark($("fPhone"),/^(0|\+?84)\d{9}$/.test(phone),T(DC.x("services.contact.j41",0,"Số điện thoại chưa đúng"),DC.x("services.contact.j41",1,"Enter a valid phone number")));
+  const email=$("fEmail").value.trim();mark($("fEmail"),!email||/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email),T(DC.x("services.contact.j48",0,"Email chưa đúng định dạng"),DC.x("services.contact.j48",1,"Please enter a valid email")));
   if(first){try{first.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){first.scrollIntoView();}return;}
   F.budget=$("fBudget").value;
   DCsvcSubmit(name);
@@ -178,19 +180,19 @@ document.addEventListener("click",e=>{
   const p=e.target.closest("[data-pkg]");if(p){prefillPkg(p.dataset.pkg);return;}
   const c=e.target.closest("[data-chip]");
   if(c){const n=c.dataset.chip,v=c.dataset.v;
-    const keep={name:$("fName")&&$("fName").value,phone:$("fPhone")&&$("fPhone").value,city:$("fCity")&&$("fCity").value,note:$("fNote")&&$("fNote").value,budget:$("fBudget")&&$("fBudget").value};
+    const keep={name:$("fName")&&$("fName").value,phone:$("fPhone")&&$("fPhone").value,city:$("fCity")&&$("fCity").value,email:$("fEmail")&&$("fEmail").value,note:$("fNote")&&$("fNote").value,budget:$("fBudget")&&$("fBudget").value};
     if(n==="svc"){F.svc=F.svc.includes(v)?F.svc.filter(x=>x!==v):F.svc.concat(v);}else F[n]=F[n]===v?"":v;
     F.budget=keep.budget||F.budget;rContact();
-    if($("fName")){$("fName").value=keep.name||"";$("fPhone").value=keep.phone||"";$("fCity").value=keep.city||"";$("fNote").value=keep.note||"";}
+    if($("fName")){$("fName").value=keep.name||"";$("fPhone").value=keep.phone||"";$("fCity").value=keep.city||"";$("fEmail").value=keep.email||"";$("fNote").value=keep.note||"";}
     return;}
   if(e.target.closest("[data-reset]")){F.done=null;F.type="";F.area="";F.svc=[];F.budget="";rContact();}
 });
 document.addEventListener("submit",e=>{if(e.target.id==="svcForm"){e.preventDefault();submitForm();}});
 document.addEventListener("input",e=>{if(e.target.id==="fPhone"){const d=e.target.value.replace(/\D/g,"").slice(0,11);e.target.value=d.length>7?d.slice(0,4)+" "+d.slice(4,7)+" "+d.slice(7):d.length>4?d.slice(0,4)+" "+d.slice(4):d;}if(e.target.classList.contains("err")){e.target.classList.remove("err");const m=e.target.nextElementSibling;if(m&&m.classList.contains("err-msg"))m.remove();}});
 document.querySelector(".lang-switch").addEventListener("click",e=>{const b=e.target.closest("[data-lang]");if(!b)return;
-  const keep={name:$("fName")&&$("fName").value,phone:$("fPhone")&&$("fPhone").value,city:$("fCity")&&$("fCity").value,note:$("fNote")&&$("fNote").value};
+  const keep={name:$("fName")&&$("fName").value,phone:$("fPhone")&&$("fPhone").value,city:$("fCity")&&$("fCity").value,email:$("fEmail")&&$("fEmail").value,note:$("fNote")&&$("fNote").value};
   lang=b.dataset.lang;document.documentElement.lang=lang;document.querySelectorAll(".lang-switch button").forEach(x=>x.classList.toggle("on",x.dataset.lang===lang));renderAll();
-  if($("fName")){$("fName").value=keep.name||"";$("fPhone").value=keep.phone||"";$("fCity").value=keep.city||"";$("fNote").value=keep.note||"";}});
+  if($("fName")){$("fName").value=keep.name||"";$("fPhone").value=keep.phone||"";$("fCity").value=keep.city||"";$("fEmail").value=keep.email||"";$("fNote").value=keep.note||"";}});
 window.addEventListener("scroll",spy,{passive:true});window.addEventListener("resize",spy);
 renderAll();
 var MNAV={cur:"services",home:"/",shop:"/shop",course:"/khoa-hoc",services:"#",zalo:"https://zalo.me/dappercombat",fb:"https://facebook.com/dappercombat"};

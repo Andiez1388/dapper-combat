@@ -19,7 +19,7 @@ function DCsvcSubmit(name) {
   DC.api('/consults', {
     type: F.type, area: F.area, svc: F.svc, budget: F.budget,
     typeName: chipNames('type')[0] || '', areaName: chipNames('area')[0] || '', svcNames: chipNames('svc'), budgetName: budgetName(),
-    name: name, phone: phone, city: val('fCity'), note: val('fNote'), lang: DC.lang(),
+    name: name, phone: phone, email: val('fEmail'), city: val('fCity'), note: val('fNote'), lang: DC.lang(),
   }).then(function (res) {
     F.sending = false;
     F.done = { id: res.code, name: name, phone: phone };

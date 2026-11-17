@@ -845,7 +845,7 @@
       detail: function (c) {
         var svc = Array.isArray(c.svc) ? c.svc.filter(Boolean) : [];
         return sec('Khách hàng', kv([
-          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Tỉnh / thành', c.city], ['Ngôn ngữ', label(LANG, c.lang)],
+          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Tỉnh / thành', c.city], ['Ngôn ngữ', label(LANG, c.lang)],
         ])) +
           sec('Dự án', kv([
             ['Loại hình', (c.typeName || label(BIZ, c.type))], ['Diện tích', (c.areaName || label(AREA, c.area))], ['Ngân sách', c.budgetName || c.budget],
@@ -1136,10 +1136,10 @@
           r.startDate ? fmtWhen(r.startDate) : '', r.endDate ? fmtWhen(r.endDate) : '', r.note, r.adminNote];
       } },
     consults: { file: 'tu-van-setup',
-      head: ['Mã yêu cầu', 'Ngày gửi', 'Trạng thái', 'Khách hàng', 'Số điện thoại', 'Tỉnh / thành', 'Loại hình', 'Diện tích', 'Ngân sách', 'Dịch vụ quan tâm', 'Ghi chú của khách', 'Ghi chú nội bộ'],
+      head: ['Mã yêu cầu', 'Ngày gửi', 'Trạng thái', 'Khách hàng', 'Số điện thoại', 'Email', 'Tỉnh / thành', 'Loại hình', 'Diện tích', 'Ngân sách', 'Dịch vụ quan tâm', 'Ghi chú của khách', 'Ghi chú nội bộ'],
       row: function (c) {
         var svc = (Array.isArray(c.svc) ? c.svc : []).map(function (s, i) { return (c.svcNames && c.svcNames[i]) || label(SVC, s); }).join('; ');
-        return [c.code || c.id, fmtDate(c.createdAt), statusLabel('consults', c.status), c.name, csvPhone(c.phone), c.city, c.typeName || label(BIZ, c.type), c.areaName || label(AREA, c.area), c.budgetName || c.budget, svc, c.note, c.adminNote];
+        return [c.code || c.id, fmtDate(c.createdAt), statusLabel('consults', c.status), c.name, csvPhone(c.phone), c.email || '', c.city, c.typeName || label(BIZ, c.type), c.areaName || label(AREA, c.area), c.budgetName || c.budget, svc, c.note, c.adminNote];
       } },
   };
   // xuất đúng danh sách đang thấy (bộ lọc trạng thái + thời gian + tìm kiếm), mọi dòng — không chỉ 50 dòng đầu

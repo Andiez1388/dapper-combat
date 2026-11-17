@@ -55,4 +55,23 @@ module.exports = async function mailTests(env, t) {
     t.ok(m && /^Đơn #DC-\d+ đã nhận/.test(m.subject), 'chưa có bản tiếng Anh → tạm gửi bản tiếng Việt (không gửi bản tiếng Anh cũ sai nội dung)', m && m.subject);
     await req('/api/settings', { method: 'PUT', body: { ai: { enabled: true }, notify: { customer: { order: null, registration: { on: false } } } } });
   });
+
+  t.section('Email xác nhận yêu cầu tư vấn');
+  await t.run('email tư vấn', async () => {
+    const consult = body => req('/api/consults', { method: 'POST', pub: true, body: { type: 'gym', typeName: 'Phòng gym', name: 'Khách Setup', phone: '0912000333', ...body } });
+    let r = await consult({ email: 'sai-dinh-dang' });
+    t.ok(r.s === 400, 'email tư vấn sai định dạng → báo lỗi', r.j);
+    r = await consult({});
+    t.ok(r.s === 201, 'không nhập email vẫn gửi được yêu cầu (email không bắt buộc)', r.j);
+    r = await consult({ email: 'consult-off@example.com' });
+    await new Promise(res => setTimeout(res, 400));
+    t.ok(!(await mailTo('consult-off@example.com', 600)), 'mẫu tư vấn đang tắt → không gửi email cho khách');
+    await req('/api/settings', { method: 'PUT', body: { notify: { customer: { consult: { on: true } } } } });
+    r = await consult({ email: 'consult-vi@example.com', note: 'Tầng trệt' });
+    const m = await mailTo('consult-vi@example.com');
+    t.ok(m && /đã nhận yêu cầu tư vấn #DC-SVC-\d+/.test(m.subject) && /Loại hình: Phòng gym/.test(m.text) && /Tầng trệt/.test(m.text), 'bật mẫu → khách nhận email xác nhận tư vấn', m && { subject: m.subject, text: m.text.slice(0, 300) });
+    const c = (await req('/api/consults')).j.find(x => x.id === r.j.id);
+    t.ok(c && c.email === 'consult-vi@example.com' && c.confirm && c.confirm.email && c.confirm.email.status === 'sent', 'yêu cầu tư vấn lưu email khách + trạng thái đã gửi', c && c.confirm);
+    await req('/api/settings', { method: 'PUT', body: { notify: { customer: { consult: null } } } });
+  });
 };

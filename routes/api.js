@@ -1043,7 +1043,7 @@ const CONSULT_STATUS = ['new', 'contacted', 'surveyed', 'quoted', 'won', 'lost']
 router.post('/consults', limit('consult', 10), (req, res) => {
   const b = req.body || {};
   const c = {
-    name: str(b.name, 80), phone: str(b.phone, 20), city: str(b.city, 80), note: str(b.note, 800),
+    name: str(b.name, 80), phone: str(b.phone, 20), email: str(b.email, 120), city: str(b.city, 80), note: str(b.note, 800),
     type: str(b.type, 40), area: str(b.area, 40), budget: str(b.budget, 40),
     svc: Array.isArray(b.svc) ? b.svc.slice(0, 6).map(s => str(s, 40)) : [],
     // tên lựa chọn đúng như trên trang (lựa chọn có thể sửa / thêm trong /admin)
@@ -1053,11 +1053,12 @@ router.post('/consults', limit('consult', 10), (req, res) => {
   };
   if (c.name.length < 2) return res.status(400).json({ error: msg(req, 'Vui lòng nhập họ tên', 'Please enter your name') });
   if (!phoneOk(c.phone)) return res.status(400).json({ error: msg(req, 'Số điện thoại chưa đúng', 'Please enter a valid phone number') });
+  if (c.email && !EMAIL_RE.test(c.email)) return res.status(400).json({ error: msg(req, 'Email chưa đúng định dạng', 'Please enter a valid email') });
   const list = read('consults.json', []);
   const entry = { id: genId('svc'), code: makeCode('#DC-SVC-', 5, list), createdAt: Date.now(), status: 'new', ...c, adminNote: '' };
   list.unshift(entry);
   writeFile('consults.json', list);
-  notify.consult(entry);
+  notify.consult(entry, r => setConfirm('consults.json', entry.id, { email: r }));
   res.status(201).json({ id: entry.id, code: entry.code });
 });
 

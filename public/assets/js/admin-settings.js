@@ -25,7 +25,7 @@
   var PDP = [['videos', 'Video trong bộ ảnh'], ['trust', 'Dòng cam kết (giao toàn quốc, đổi trả…)'], ['pay', 'Logo phương thức thanh toán'], ['fit', 'Gợi ý chọn size'],
     ['stock', 'Báo “chỉ còn N sản phẩm”'], ['ship', 'Ngày giao dự kiến'], ['feats', 'Điểm nổi bật'], ['set', 'Gợi ý “Hoàn thiện bộ trang phục”'], ['faq', 'Câu hỏi thường gặp'],
     ['article', 'Bài viết “Về sản phẩm”'], ['reviews', 'Đánh giá của khách (ẩn cả sao cạnh tên)'], ['related', '“Khách hàng cũng mua”'], ['seen', '“Bạn đã xem gần đây”'], ['news', 'Đăng ký nhận tin (Dapper Combat Club)']];
-  var TPL_KINDS = { templates: [['order', 'Đơn hàng'], ['registration', 'Đăng ký khóa học'], ['consult', 'Tư vấn setup']], customer: [['order', 'Đơn hàng'], ['registration', 'Đăng ký khóa học']] };
+  var TPL_KINDS = { templates: [['order', 'Đơn hàng'], ['registration', 'Đăng ký khóa học'], ['consult', 'Tư vấn setup']], customer: [['order', 'Đơn hàng'], ['registration', 'Đăng ký khóa học'], ['consult', 'Tư vấn setup']] };
   var VAR_HINT = {
     code: 'mã', total: 'tổng tiền', subtotal: 'tạm tính', discount: 'giảm giá', shipping: 'phí giao', name: 'họ tên', phone: 'số điện thoại', email: 'email',
     address: 'địa chỉ đầy đủ', items: 'danh sách sản phẩm', pay: 'cách thanh toán', ship: 'cách giao', note: 'ghi chú', promo: 'mã giảm giá', date: 'ngày',
