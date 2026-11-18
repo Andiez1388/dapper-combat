@@ -204,6 +204,12 @@
   /* thanh toán online (/admin → Thanh toán online) đã bật + cấu hình: vnpay = thẻ, installment = trả góp VNPay (từ installmentMin đồng),
      auto = chuyển khoản tự xác nhận (SePay) */
   DC.payOnline = function () { var o = DC.setting('shop.payOnline', null) || {}; return { vnpay: !!o.vnpay, installment: !!o.installment, installmentMin: Number(o.installmentMin) || 0, auto: !!o.auto }; };
+  // chưa cài tài khoản nhận tiền (/admin → Thanh toán): KHÔNG vẽ mã QR mẫu (khách có thể tưởng là mã thật) → báo sẽ gửi thông tin chuyển khoản sau
+  DC.payPending = function () {
+    return '<div class="dc-qr-wait" role="note"><b>' + DC.tx('global.qr.wait.t', 'Thông tin chuyển khoản', 'Bank transfer details') + '</b><span>' +
+      DC.tx('global.qr.wait.d', 'Dapper Combat sẽ gửi số tài khoản và mã QR khi gọi xác nhận. Vui lòng chưa chuyển khoản trước khi được xác nhận.',
+        'Dapper Combat will send the account number and QR code when we call to confirm. Please do not transfer before confirmation.') + '</span></div>';
+  };
   DC.payQr = function (ref, amount) {
     var p = DC.pay();
     if (!p) return null;

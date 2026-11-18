@@ -174,7 +174,7 @@ document.addEventListener('click', function (e) {
 
 /* ---- mã QR chuyển khoản: VietQR thật nếu đã cài tài khoản trong /admin, không thì giữ mã minh họa ---- */
 var _dcQr = dcQr;
-dcQr = function (ref, amount) { return DC.payQr(ref, amount) || _dcQr(ref); };
+dcQr = function (ref, amount) { return DC.payQr(ref, amount) || DC.payPending(); };  // _dcQr (mã QR vẽ mẫu) không dùng nữa
 var _dcOkRender = v3okRender;
 v3okRender = function () {
   _dcOkRender.apply(this, arguments);

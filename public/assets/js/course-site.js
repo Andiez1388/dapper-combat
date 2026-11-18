@@ -29,7 +29,7 @@ function DCcourseSubmit() {
 
 /* mã QR đặt cọc / học phí: VietQR thật nếu đã cài tài khoản trong /admin */
 var _cv3Qr = cv3Qr;
-cv3Qr = function (ref, amount) { return DC.payQr(ref, amount) || _cv3Qr(ref); };
+cv3Qr = function (ref, amount) { return DC.payQr(ref, amount) || DC.payPending(); };  // _cv3Qr (mã QR vẽ mẫu) không dùng nữa
 var _dcCv3Render = cv3Render;
 cv3Render = function () {
   _dcCv3Render.apply(this, arguments);

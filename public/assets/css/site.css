@@ -221,3 +221,7 @@ button[disabled]{cursor:progress;opacity:0.75;}
 .dc-consent a{color:inherit;text-decoration:underline;text-underline-offset:2px;font-weight:600;}
 .dc-consent.is-err{color:#d6312b;}
 .dc-consent.is-err input{outline:2px solid #d6312b;outline-offset:2px;}
+
+/* chưa cài tài khoản nhận tiền: khung báo thay cho mã QR */
+.dc-qr-wait{display:flex;flex-direction:column;justify-content:center;gap:.4em;width:100%;height:100%;min-height:150px;padding:14px;box-sizing:border-box;border:1.5px dashed #c9c4bb;border-radius:10px;background:#faf9f6;color:#3b3833;font-size:.8rem;line-height:1.45;text-align:left;}
+.dc-qr-wait b{font-size:.86rem;color:#141414;}
