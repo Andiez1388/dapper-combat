@@ -72,6 +72,12 @@ module.exports = async function browserTests(env, t, browser) {
     await page.eval(`(() => { document.getElementById('promoInput').value = 'DAPPER10'; document.getElementById('promoApply').click(); return 1; })()`);
     const promo = await page.until(`(document.getElementById('promoMsg').textContent.includes('DAPPER10')) && document.getElementById('promoMsg').textContent`);
     t.ok(promo, 'áp dụng mã DAPPER10 (server kiểm tra)', promo);
+    // chưa tick ô đồng ý Chính sách bảo mật → không gửi được, báo lỗi ngay ô đó
+    const before0 = (await api('/api/orders')).length;
+    await page.eval(`document.getElementById('placeOrder').click(); 1`);
+    const blocked = await page.until(`document.querySelector('.dc-consent.is-err') && (document.getElementById('dcOrderErr') || {}).textContent`, 5000);
+    t.ok(blocked && /đồng ý/i.test(blocked) && (await api('/api/orders')).length === before0, 'chưa tick ô đồng ý chính sách bảo mật → không đặt được, báo lỗi', blocked);
+    await page.eval(`(() => { document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); return 1; })()`);
     await page.eval(`document.getElementById('placeOrder').click(); 1`);
     const box = await page.until(`document.querySelector('.dc-slipbox') ? document.querySelector('.dc-slip-view').getAttribute('href') : ''`, 10000);
     t.ok(box, 'đặt hàng xong → hiện ô tải / xem phiếu xác nhận', await page.eval(`document.body.innerText.slice(0, 400)`));
@@ -202,6 +208,7 @@ module.exports = async function browserTests(env, t, browser) {
         const set = (n, v) => { const el = f.elements[n]; if (!el) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
         set('name', 'Nguyễn Trả Góp'); set('phone', '0912345679'); set('email', ''); set('address', '45 Lê Lợi'); set('city', 'TP. Hồ Chí Minh');
         f.querySelector('input[name=pay][value=installment]').click();
+        document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); 
         document.getElementById('placeOrder').click(); return 1;
       })()`);
       const banks = await page.until(`document.querySelectorAll('#dcIsp [data-isp-bank]').length`, 10000);
@@ -235,10 +242,10 @@ module.exports = async function browserTests(env, t, browser) {
       const hasForm = await page.eval(`!!document.getElementById('cv3Name')`);
       if (hasForm) {
         await page.eval(`(() => { const set = (id, v) => { const el = document.getElementById(id); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; set('cv3Name', 'Học Viên Trình Duyệt'); set('cv3Phone', '0987654321'); return 1; })()`);
-        await page.eval(`document.querySelector('#cv3Reg [data-cv3="next"]').click(); 1`);
+        await page.eval(`(() => { document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); document.querySelector('#cv3Reg [data-cv3="next"]').click(); return 1; })()`);
         break;
       }
-      await page.eval(`(document.querySelector('#cv3Reg [data-cv3="next"]') || {}).click && document.querySelector('#cv3Reg [data-cv3="next"]').click(); 1`);
+      await page.eval(`(() => { document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); const b = document.querySelector('#cv3Reg [data-cv3="next"]'); if (b) b.click(); return 1; })()`);
       await sleep(300);
     }
     const ok = await page.until(`!!document.querySelector('#cv3Reg .dc-slipbox')`, 10000);
@@ -286,7 +293,7 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ h1: document.querySelector('.tn-hero h1').textContent, name: document.querySelector('.tn-form').elements.name.value, phone: document.querySelector('.tn-form').elements.phone.value, out: document.querySelector('.tn-bell b').textContent })`);
     t.ok(st.h1 === 'Pro Pathways' && st.out === '100% fighting in The Corner colours' && st.name === 'Võ Sĩ Trình Duyệt' && st.phone === '0912 345 678', 'tiếng Anh: đổi chữ, giữ thông tin đã gõ', st);
     const before = (await api('/api/registrations')).length;
-    await page.eval(`document.querySelector('.tn-form [type=submit]').click(); 1`);
+    await page.eval(`(() => { document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); document.querySelector('.tn-form [type=submit]').click(); return 1; })()`);
     const ok = await page.until(`!!document.querySelector('.tn-ok')`, 8000);
     t.ok(ok && /DC-REG-/.test(await page.eval(`document.querySelector('.tn-ok').textContent`)), 'gửi đăng ký → hiện mã đăng ký');
     const regs = await api('/api/registrations');
@@ -328,7 +335,7 @@ module.exports = async function browserTests(env, t, browser) {
     st = await page.eval(`({ path: document.body.dataset.path, pay: (document.querySelector('.tn-form [name=pay]:checked') || {}).value, full: document.querySelector('.tn-form [name=pay][value=full] + span b').textContent })`);
     t.ok(st.path === 'coach' && st.pay === 'deposit' && st.full === 'Đóng đủ 85.000.000đ', 'thẻ khóa Coach → bấm đặt cọc: chọn khóa Coach + đặt cọc, đóng đủ theo giá Coach', st);
     await page.eval(`document.querySelector('.tn-seg .fighter').click(); 1`);
-    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.elements.year.value = '2005'; f.querySelector('[type=submit]').click(); return 1; })()`);
+    await page.eval(`(() => { const f = document.querySelector('.tn-form'); f.elements.name.value = 'Học Viên Đặt Cọc'; f.elements.phone.value = '0933 111 222'; f.elements.year.value = '2005'; document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); f.querySelector('[type=submit]').click(); return 1; })()`);
     await page.until(`!!document.querySelector('.tn-ok')`, 8000);
     st = await page.eval(`({ box: !!document.querySelector('.tn-paybox'), qr: (document.querySelector('.tn-paybox .dc-vietqr') || {}).src || '', text: (document.querySelector('.tn-paybox-t') || {}).textContent })`);
     const dep = (await api('/api/registrations'))[0];
@@ -408,7 +415,7 @@ module.exports = async function browserTests(env, t, browser) {
       const chip = document.querySelector('[data-chips="type"] button, [data-chips="type"] [data-v], [data-chips="type"] > *'); if (chip) chip.click();
       const set = (id, v) => { const el = document.getElementById(id); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); };
       set('fName', 'Chủ Phòng Tập'); set('fPhone', '0909888777');
-      const f = document.getElementById('svcForm'); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true }));
+      document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); const f = document.getElementById('svcForm'); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true }));
       return 1;
     })()`);
     const code = await page.until(`(document.body.innerText.match(/#DC-SVC-\\d+/) || [])[0]`, 10000);

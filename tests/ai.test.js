@@ -11,7 +11,8 @@ module.exports = async function aiTests(env, t) {
   };
   // chờ hàng đợi dịch trên máy chủ chạy xong
   const settle = async () => {
-    for (let i = 0; i < 100; i++) {
+    // tối đa ~30 giây: hàng đợi dịch dài dần theo nội dung sửa được (mẫu email, chữ ký, trang phụ…)
+    for (let i = 0; i < 500; i++) {
       await new Promise(r => setTimeout(r, 60));
       const st = (await req('/api/translate/status')).j;
       if (st && !st.running && !st.queued) return st;
