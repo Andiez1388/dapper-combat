@@ -108,7 +108,6 @@
   // groin guard: cùng khuôn với mô hình 3D (custom3d.js)
   function groinSvg(col) {
     var P = window.DCX3D.paths, o = '';
-    [P.strapL, P.strapR].forEach(function (d) { o += '<path d="' + d + '" fill="' + col('strap') + '"/>'; });
     o += '<clipPath id="cxBodyClip"><path d="' + P.body + '"/></clipPath><g clip-path="url(#cxBodyClip)">' +
       '<rect width="210" height="380" fill="' + col('left') + '"/><rect x="210" width="210" height="380" fill="' + col('right') + '"/>' +
       '<path d="' + P.cup + '" fill="' + col('cup') + '"/><path d="' + P.band + '" fill="' + col('belt') + '"/>' +
@@ -165,7 +164,7 @@
     var g = {};
     (p.custom.groups || []).forEach(function (x) { g[x.id] = x.multi ? [] : (x.required ? x.choices[0].id : ''); });
     return { pid: p.id, mode: 'std', zones: z, text: { value: '', font: p.custom.text.fonts[0], method: 'print', spot: p.custom.template === 'groin' ? 'belt' : t.spots[0][0] },
-      logo: { url: '', method: 'print', spot: p.custom.template === 'groin' ? 'cup' : (t.spots[1] || t.spots[0])[0], name: '' }, groups: g, note: '', agree: false, open: 'color' };
+      logo: { url: '', method: 'print', spot: p.custom.template === 'groin' ? 'cup' : (t.spots[1] || t.spots[0])[0], name: '' }, zoneOpen: p.custom.zones[0], groups: g, note: '', agree: false, open: 'color' };
   }
   function spec() {
     var o = { zones: S.zones, groups: {} };
@@ -216,11 +215,19 @@
     var presets = [['black', 'red'], ['white', 'gold'], ['navy', 'silver'], ['red', 'white'], ['pink', 'white'], ['black', 'gold']].filter(function (x) { return cfg.palette.indexOf(x[0]) !== -1 && cfg.palette.indexOf(x[1]) !== -1; });
     var colBody = (presets.length ? '<div class="cx-presets"><span>' + T('Phối nhanh', 'Quick combos') + '</span>' + presets.map(function (x) {
       return '<button type="button" data-cx-preset="' + x[0] + '|' + x[1] + '" title="' + esc(colName(pick(D.palette, x[0])) + ' / ' + colName(pick(D.palette, x[1]))) + '"><i style="background:' + hexOf(x[0]) + '"></i><i style="background:' + hexOf(x[1]) + '"></i></button>';
-    }).join('') + '</div>' : '') + cfg.zones.map(function (zid) {
-      var z = pick(t.zones, zid), cur = S.zones[zid];
-      return '<div class="cx-zone"><div class="cx-zone-h"><b>' + esc(zoneName(z)) + '</b><span>' + esc(colName(pick(D.palette, cur))) + '</span></div><div class="cx-sw">' +
-        cfg.palette.map(function (cid) { var cc = pick(D.palette, cid); return '<button type="button" class="' + (cid === cur ? 'sel' : '') + '" data-cx-zone="' + zid + '" data-cx-col="' + cid + '" style="--c:' + cc[1] + '" aria-label="' + esc(zoneName(z) + ': ' + colName(cc)) + '" aria-pressed="' + (cid === cur) + '"></button>'; }).join('') + '</div></div>';
-    }).join('');
+    }).join('') + '</div>' : '');
+    var FACES = [['front', T('Mặt trước', 'Front')], ['back', T('Mặt sau', 'Back')], ['straps', T('Dây đùi', 'Leg straps')], ['', '']];
+    FACES.forEach(function (f) {
+      var list = cfg.zones.filter(function (zid) { var z = pick(t.zones, zid); return (z[4] || '') === f[0]; });
+      if (!list.length) return;
+      if (f[0]) colBody += '<div class="cx-face"><span>' + f[1] + '</span>' + (use3d(p) ? '<button type="button" data-cx-view="' + (f[0] === 'straps' ? 'under' : f[0]) + '">' + T('Xem', 'View') + ' ↻</button>' : '') + '</div>';
+      colBody += list.map(function (zid) {
+        var z = pick(t.zones, zid), cur = S.zones[zid], open = S.zoneOpen === zid, cc = pick(D.palette, cur);
+        return '<div class="cx-zone' + (open ? ' open' : '') + '"><button type="button" class="cx-zrow" data-cx-zopen="' + zid + '" aria-expanded="' + open + '">' +
+          '<i style="background:' + (cc ? cc[1] : '#111') + '"></i><b>' + esc(zoneName(z)) + '</b><span>' + esc(cc ? colName(cc) : '') + '</span><em aria-hidden="true">' + (open ? '−' : '+') + '</em></button>' +
+          (open ? '<div class="cx-sw">' + cfg.palette.map(function (cid) { var q = pick(D.palette, cid); return '<button type="button" class="' + (cid === cur ? 'sel' : '') + '" data-cx-zone="' + zid + '" data-cx-col="' + cid + '" style="--c:' + q[1] + '" title="' + esc(colName(q)) + '" aria-label="' + esc(zoneName(z) + ': ' + colName(q)) + '" aria-pressed="' + (cid === cur) + '"></button>'; }).join('') + '</div>' : '') + '</div>';
+      }).join('');
+    });
     h += sec('color', 1, T('Màu từng phần', 'Panel colours'), cfg.zones.length + ' ' + T('phần', 'panels') + ' · ' + cfg.palette.length + ' ' + T('màu', 'colours'), colBody);
     var n = 2;
     // 2. chữ
@@ -268,14 +275,17 @@
     pdpPrice(p, c.fee);
   }
   /* ─── xem trước 3D (custom3d.js) ─── */
+  function faceOf(zid) { var p = product(); if (!V.api || !p) return; var z = pick((D.templates[p.custom.template] || D.templates.groin).zones, zid); var f = z && z[4]; if (f) V.api.view(f === 'straps' ? 'under' : f === 'back' ? (zid === 'lining' ? 'top' : 'back') : 'front'); }
+  function spotView(sp) { if (V.api) V.api.view(/^back/.test(sp) ? 'back' : 'front'); }
   var V = { api: null, loading: false, failed: false, snap: '' };
   function use3d(p) { return p.custom.template === 'groin' && window.DCX3D && window.DCX3D.ok() && !V.failed; }
   function state3d(p) {
     var t = D.templates.groin, col = {}, g = S.groups || {};
     t.zones.forEach(function (z) { col[z[0]] = zcol(p, S, z[0]); });
-    var contrast = [].concat(g.extra || []).indexOf('stitch') !== -1;
+    // chỉ may: khách chọn màu riêng nếu shop mở phần "Chỉ may", không thì theo tùy chọn "chỉ màu tương phản"
+    if (!S.zones.thread) col.thread = [].concat(g.extra || []).indexOf('stitch') !== -1 ? (ink(col.left) === '#fff' ? '#f2c12e' : '#c8102e') : col.trim;
     var f = pick(D.fonts, S.text.font) || D.fonts[0];
-    return { col: col, stitch: contrast ? (ink(col.left) === '#fff' ? '#f2c12e' : '#c8102e') : col.trim, finish: g.finish, material: g.material,
+    return { col: col, closure: g.closure, finish: g.finish, material: g.material,
       text: S.text.value.trim() ? { value: S.text.value.trim(), font: f[3], method: S.text.method, spot: S.text.spot } : null,
       logo: S.logo.url ? { url: S.logo.url, method: S.logo.method, spot: S.logo.spot } : null };
   }
@@ -284,17 +294,22 @@
     if (st.getAttribute('data-lang') !== lang) {
       st.setAttribute('data-lang', lang);
       st.innerHTML = '<div class="cx-stage-in"><div class="cx-3d" hidden></div><div class="cx-flat"></div>' +
-        '<p class="cx-hint" hidden>⟲ ' + T('Kéo để xoay · nhấn đúp để về mặt trước', 'Drag to rotate · double-click to reset') + '</p>' +
+        '<div class="cx-views" hidden><button type="button" data-cx-view="front">' + T('Trước', 'Front') + '</button><button type="button" data-cx-view="side">' + T('Bên', 'Side') + '</button>' +
+        '<button type="button" data-cx-view="back">' + T('Sau', 'Back') + '</button><button type="button" data-cx-view="under">' + T('Dưới', 'Below') + '</button>' +
+        '<button type="button" data-cx-spin aria-pressed="false">⟳ ' + T('Tự xoay', 'Spin') + '</button></div>' +
+        '<p class="cx-hint" hidden>' + T('Kéo để xoay 360° · nhấn đúp để về mặt trước', 'Drag to rotate 360° · double-click to reset') + '</p>' +
         '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
       if (V.api) st.querySelector('.cx-3d').appendChild(V.cv);
     }
-    var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint');
+    var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint'), views = st.querySelector('.cx-views');
+    views.hidden = !(use3d(p) && V.api);
     if (use3d(p) && V.api) { box.hidden = false; flat.hidden = true; hint.hidden = false; V.api.update(state3d(p)); return; }
     box.hidden = true; hint.hidden = true; flat.hidden = false; flat.innerHTML = preview(p, S);
     if (use3d(p) && !V.loading) {
       V.loading = true;
       window.DCX3D.create(box).then(function (api) {
         V.api = api; V.cv = box.querySelector('canvas'); V.loading = false;
+        api.onspin = function (on) { var b = document.querySelector('[data-cx-spin]'); if (b) b.setAttribute('aria-pressed', String(on)); };
         api.onframe = function () { V.snap = api.snapshot(); var m = document.querySelector('.cx-mini'); if (m && V.snap) m.innerHTML = '<img alt="" src="' + V.snap + '">'; };
         var q = product(); if (q && S && S.mode === 'cx') drawStage(q);
       }, function (er) { V.failed = true; V.loading = false; if (window.console) console.warn('[custom3d]', er); });
@@ -314,25 +329,30 @@
 
   /* ─── thao tác ─── */
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-cx-mode],[data-cx-zone],[data-cx-preset],[data-cx-font],[data-cx-tmethod],[data-cx-tspot],[data-cx-lmethod],[data-cx-lspot],[data-cx-g],[data-cx-logo-del],.cx-sec-h');
+    var b = e.target.closest('[data-cx-view],[data-cx-spin],[data-cx-zopen],[data-cx-mode],[data-cx-zone],[data-cx-preset],[data-cx-font],[data-cx-tmethod],[data-cx-tspot],[data-cx-lmethod],[data-cx-lspot],[data-cx-g],[data-cx-logo-del],.cx-sec-h');
     if (!b || !S) return;
     if (b.matches('[data-cx-mode]')) { S.mode = b.getAttribute('data-cx-mode'); mount(); return; }
+    if (b.matches('[data-cx-view]')) { if (V.api) V.api.view(b.getAttribute('data-cx-view')); return; }
+    if (b.matches('[data-cx-spin]')) { if (V.api) V.api.spin(); return; }
+    if (b.matches('[data-cx-zopen]')) { var zid = b.getAttribute('data-cx-zopen'); S.zoneOpen = S.zoneOpen === zid ? '' : zid; faceOf(zid); rerender(); return; }
     if (b.matches('.cx-sec-h')) { var id = b.parentNode.getAttribute('data-cx-sec'); S.open = S.open === id ? '' : id; rerender(); return; }
     if (b.matches('[data-cx-zone]')) S.zones[b.getAttribute('data-cx-zone')] = b.getAttribute('data-cx-col');
     else if (b.matches('[data-cx-preset]')) {
       var pr = b.getAttribute('data-cx-preset').split('|');
-      Object.keys(S.zones).forEach(function (z) { S.zones[z] = z === 'trim' || z === 'panel' || z === 'lace' || z === 'bar' ? pr[1] : pr[0]; });
+      var ACC = ['trim', 'panel', 'bar', 'thread', 'lacepanel', 'tab'], KEEP = ['lace', 'eyelet', 'elastic', 'lining', 'strap'];
+      Object.keys(S.zones).forEach(function (z) { if (KEEP.indexOf(z) === -1 || product().custom.template !== 'groin') S.zones[z] = ACC.indexOf(z) !== -1 || (z === 'lace' && product().custom.template !== 'groin') ? pr[1] : pr[0]; });
     }
     else if (b.matches('[data-cx-font]')) S.text.font = b.getAttribute('data-cx-font');
     else if (b.matches('[data-cx-tmethod]')) S.text.method = b.getAttribute('data-cx-tmethod');
-    else if (b.matches('[data-cx-tspot]')) S.text.spot = b.getAttribute('data-cx-tspot');
+    else if (b.matches('[data-cx-tspot]')) { S.text.spot = b.getAttribute('data-cx-tspot'); spotView(S.text.spot); }
     else if (b.matches('[data-cx-lmethod]')) S.logo.method = b.getAttribute('data-cx-lmethod');
-    else if (b.matches('[data-cx-lspot]')) S.logo.spot = b.getAttribute('data-cx-lspot');
+    else if (b.matches('[data-cx-lspot]')) { S.logo.spot = b.getAttribute('data-cx-lspot'); spotView(S.logo.spot); }
     else if (b.matches('[data-cx-logo-del]')) { S.logo.url = ''; S.logo.name = ''; }
     else if (b.matches('[data-cx-g]')) {
       var p = product(), gid = b.getAttribute('data-cx-g'), cid = b.getAttribute('data-cx-c'), g = p.custom.groups.filter(function (x) { return x.id === gid; })[0];
       if (g.multi) { var a = S.groups[gid] || []; var i = a.indexOf(cid); if (i === -1) a.push(cid); else a.splice(i, 1); S.groups[gid] = a; }
       else S.groups[gid] = !g.required && S.groups[gid] === cid ? '' : cid;
+      if (gid === 'closure' && V.api) V.api.view('back');
     }
     rerender();
   });

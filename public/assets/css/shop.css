@@ -1711,3 +1711,19 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 .cx-hint{margin:.2rem 0 0;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);text-align:center;}
 .cx-mini img{display:block;height:210px;max-width:100%;margin:0 auto;object-fit:contain;background:radial-gradient(120% 90% at 50% 20%,#fbfaf7 0,#ecebe6 70%);border-radius:6px;}
 @media(max-width:900px){.cx-3d{max-height:360px;}}
+/* màu từng phần: nhóm theo mặt, mở bảng màu từng phần */
+.cx-face{display:flex;align-items:center;justify-content:space-between;margin:1.1rem 0 .4rem;padding-bottom:.35rem;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.cx-face button{padding:.2rem .55rem;border:1px solid var(--line-2);border-radius:999px;background:#fff;font:inherit;letter-spacing:.08em;color:var(--ink);cursor:pointer;}
+.cx-zone{margin:0;}
+.cx-zrow{display:flex;align-items:center;gap:.7rem;width:100%;padding:.55rem .2rem;border:0;border-bottom:1px dashed var(--line);background:none;cursor:pointer;text-align:left;color:var(--ink);font-size:.82rem;}
+.cx-zrow i{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.18);box-shadow:inset 0 -3px 6px rgba(0,0,0,.18);}
+.cx-zrow b{flex:1;font-weight:600;}
+.cx-zrow span{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);}
+.cx-zrow em{font-style:normal;width:14px;text-align:center;color:var(--muted);}
+.cx-zone.open .cx-zrow{border-bottom-color:transparent;}
+.cx-zone.open .cx-sw{padding:.2rem 0 .8rem 2rem;border-bottom:1px dashed var(--line);}
+/* góc nhìn 3D */
+.cx-views{display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem;margin:.3rem 0 0;}
+.cx-views button{padding:.38rem .8rem;border:1px solid var(--line-2);border-radius:999px;background:rgba(255,255,255,.8);font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;}
+.cx-views button:hover{border-color:var(--ink);}
+.cx-views button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
