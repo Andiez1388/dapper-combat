@@ -1181,6 +1181,7 @@
       return '<li class="item">' + thumb(it.img, '') +
         '<span class="item__info"><span class="item__name">' + esc(it.name || it.id || 'Sản phẩm') + '</span>' +
         (opts ? '<span class="item__opts">' + esc(opts) + '</span>' : '') +
+        (it.custom && window.DCAdminCustom ? window.DCAdminCustom.itemHtml(it) : '') +
         '<span class="item__qty">' + esc(it.qty) + ' × ' + esc(money(it.price)) + '</span></span>' +
         '<span class="item__line">' + esc(money(line)) + '</span></li>';
     }).join('') + '</ul>';
@@ -1516,10 +1517,11 @@
       var sizes = p && Array.isArray(p.sizes) ? p.sizes : [], colors = p && Array.isArray(p.colors) ? p.colors : [];
       var sizeSel = sizes.length > 1 ? '<label class="ed-sel"><span class="sr">Size</span><select data-ed-f="size"' + di + '>' + optsHtml(sizes.map(function (s) { return [s, s]; }).concat(sizes.indexOf(it.size) < 0 && it.size ? [[it.size, it.size + ' (cũ)']] : []), it.size) + '</select></label>'
         : it.size ? '<span class="ed-fixed">' + esc(it.size) + '</span>' : '';
-      var colorSel = colors.length > 1 ? '<label class="ed-sel"><span class="sr">Màu</span><select data-ed-f="color"' + di + '>' + optsHtml(colors.map(function (c) { return [c[0], c[2] || colorName(c[0])]; }).concat(!colors.some(function (c) { return c[0] === it.color; }) && it.color ? [[it.color, (it.colorName || colorName(it.color)) + ' (cũ)']] : []), it.color) + '</select></label>'
+      var isCx = /^cx-/.test(String(it.color || ''));
+      var colorSel = isCx ? '<span class="ed-fixed">✦ ' + esc(it.colorName || 'Thiết kế riêng') + '</span>' : colors.length > 1 ? '<label class="ed-sel"><span class="sr">Màu</span><select data-ed-f="color"' + di + '>' + optsHtml(colors.map(function (c) { return [c[0], c[2] || colorName(c[0])]; }).concat(!colors.some(function (c) { return c[0] === it.color; }) && it.color ? [[it.color, (it.colorName || colorName(it.color)) + ' (cũ)']] : []), it.color) + '</select></label>'
         : it.color ? '<span class="ed-fixed">' + esc(it.colorName || colorLabel(p, it.color)) + '</span>' : '';
       var avail = availOf(p, it.size, it.color), need = p ? edNeed(p, it.size, it.color) : 0;
-      var warn = !p ? 'Sản phẩm đã bị xóa khỏi mục Sản phẩm — chỉ đổi số lượng hoặc bỏ được.' : need > avail ? 'Kho chỉ còn ' + avail + (p.stockBy ? ' cho size / màu này' : '') + ' — bớt số lượng hoặc nhập thêm hàng ở mục Sản phẩm.' : '';
+      var warn = isCx ? '' : !p ? 'Sản phẩm đã bị xóa khỏi mục Sản phẩm — chỉ đổi số lượng hoặc bỏ được.' : need > avail ? 'Kho chỉ còn ' + avail + (p.stockBy ? ' cho size / màu này' : '') + ' — bớt số lượng hoặc nhập thêm hàng ở mục Sản phẩm.' : '';
       return '<li class="ed-line' + (warn && p ? ' is-short' : '') + '"' + di + '>' + thumb(it.img, '') +
         '<div class="ed-line__main"><span class="item__name">' + esc(it.name) + '</span>' +
           (sizeSel || colorSel ? '<span class="ed-line__opts">' + sizeSel + colorSel + '</span>' : '') +
@@ -2093,6 +2095,7 @@
         '<div class="vstock" data-vs><label class="check set-switch"><input type="checkbox" data-vs-on><span class="switch__ui" aria-hidden="true"></span><span><strong>Tồn kho theo size / màu</strong></span></label>' +
         '<p class="field__hint">Bật khi mỗi size / màu có số lượng riêng: khách không đặt được size / màu đã hết, ô “Tồn kho” phía trên tự cộng.</p>' +
         '<p class="set-err" data-vs-warn role="status" hidden></p><div data-vs-grid hidden></div></div>') +
+      (window.DCAdminCustom ? sec('Thiết kế riêng (khách tự custom)', window.DCAdminCustom.html(p.custom)) : '') +
       sec('Điểm nổi bật (trang chi tiết)',
         '<p class="field__hint">Mỗi dòng một ý, tối đa ' + MAX_FEATS + '. Để trống = dùng 4 điểm chung ở <a href="#/cms-text">Chữ trên trang</a>.</p>' +
         '<div class="feats" data-feats>' + feats.map(featRowHtml).join('') + '</div>' +
@@ -2177,9 +2180,12 @@
     var badCell = $$('[data-vs-key]', form).filter(function (i) { var v = Number(i.value); return VS && VS.on && (i.value === '' || !Number.isInteger(v) || v < 0); })[0];
     if (badCell) return formError(form, 'Tồn kho từng size / màu phải là số nguyên ≥ 0.', badCell);
     var stockBy = vsCollect(form);
+    var cx = window.DCAdminCustom ? window.DCAdminCustom.read(form) : undefined;
+    if (cx && cx.error) return formError(form, cx.error, cx.el);
     if (stockBy) stock = Object.keys(stockBy).reduce(function (s, k) { return s + stockBy[k]; }, 0);
     return {
       stockBy: stockBy, stockByWas: stockBy && VS.was ? VS.was : undefined,
+      custom: cx ? cx.value : undefined,
       name: name, cat: get('cat'), price: price, old: old || null, stock: stock,
       visible: !!F(form, 'visible').checked, sizes: sizes, colors: colors,
       desc: { vi: get('desc_vi'), en: get('desc_en') }, full: { vi: get('full_vi'), en: get('full_en') },

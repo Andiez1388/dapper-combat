@@ -1599,3 +1599,107 @@ footer .footer-bottom{padding-top:1.2rem;border-top:1px solid var(--line);}
 .v3c .v3c-badge.sale{background:#fff;color:var(--accent);font-weight:700;}
 .v3c .v3c-badge.v3-out-badge{background:rgba(255,255,255,.92);color:#6b6b6b;}
 @media(max-width:600px){.v3c .v3c-badge{height:20px;font-size:.56rem;letter-spacing:.12em;padding:0 .45rem;top:8px;left:8px;}}
+
+/* ════════ Tự thiết kế sản phẩm (custom.js) ════════ */
+.cx-mode{margin:1.3rem 0 .4rem;}
+.cx-mode-h{margin:0 0 .55rem;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.cx-seg{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.cx-seg button{display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;padding:.8rem .9rem;border:1.5px solid var(--line-2);border-radius:4px;background:#fff;color:var(--ink);
+  font-family:var(--f-mono);font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-align:left;cursor:pointer;transition:border-color .15s,background .15s;}
+.cx-seg button small{font-family:var(--f-body);font-size:.7rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);line-height:1.35;}
+.cx-seg button[aria-selected="true"]{border-color:var(--ink);background:var(--ink);color:#fff;}
+.cx-seg button[aria-selected="true"] small{color:rgba(255,255,255,.7);}
+.cx-seg .cx-star{color:var(--accent);}
+body.cx-on .pdp-info .opt-color,body.cx-on .v3-gal,body.cx-on .v3-more{display:none!important;}
+
+/* xem trước */
+.cx-stage{position:sticky;top:88px;margin-bottom:1rem;}
+.cx-stage-in{background:radial-gradient(120% 90% at 50% 20%,#fbfaf7 0,#ecebe6 70%);border:1px solid var(--line);border-radius:6px;padding:2.2rem 1.6rem 1.1rem;}
+.cx-svg{display:block;width:100%;height:auto;max-height:560px;}
+.cx-svg path,.cx-svg text{transition:fill .25s ease;}
+.cx-stage-cap{margin:.9rem 0 0;font-size:.72rem;line-height:1.5;color:var(--muted);text-align:center;}
+.cx-mini{display:none;}
+
+/* bảng chọn */
+.cx-panel{margin:.6rem 0 1rem;border-top:1px solid var(--line-2);}
+.cx-sec{border-bottom:1px solid var(--line-2);}
+.cx-sec-h{display:flex;align-items:center;gap:.85rem;width:100%;padding:1rem 0;background:none;border:0;cursor:pointer;text-align:left;color:var(--ink);}
+.cx-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink);font-family:var(--f-mono);font-size:.72rem;font-weight:700;}
+.cx-sec.open .cx-n{background:var(--ink);color:#fff;}
+.cx-t{flex:1;display:flex;flex-direction:column;gap:.15rem;font-family:var(--f-mono);font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.cx-t small{font-family:var(--f-body);font-size:.74rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);}
+.cx-chev{font-size:1.3rem;line-height:1;color:var(--muted);transition:transform .2s;}
+.cx-sec.open .cx-chev{transform:rotate(45deg);color:var(--ink);}
+.cx-sec-b{display:none;padding:0 0 1.2rem 2.4rem;}
+.cx-sec.open .cx-sec-b{display:block;}
+
+.cx-presets{display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;margin:0 0 1rem;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.cx-presets span{margin-right:.2rem;}
+.cx-presets button{display:inline-flex;padding:3px;border:1.5px solid var(--line-2);border-radius:999px;background:#fff;cursor:pointer;}
+.cx-presets button:hover{border-color:var(--ink);}
+.cx-presets i{display:block;width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.12);}
+.cx-presets i+i{margin-left:-5px;}
+.cx-zone{margin:0 0 .95rem;}
+.cx-zone-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.45rem;font-size:.82rem;}
+.cx-zone-h b{font-weight:600;}
+.cx-zone-h span{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;color:var(--muted);}
+.cx-sw{display:flex;flex-wrap:wrap;gap:.4rem;}
+.cx-sw button{width:28px;height:28px;padding:0;border-radius:50%;background:var(--c);border:1px solid rgba(0,0,0,.15);cursor:pointer;position:relative;transition:transform .12s;}
+.cx-sw button:hover{transform:scale(1.1);}
+.cx-sw button.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink);}
+
+.cx-in{display:block;margin:0 0 .9rem;}
+.cx-in span{display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.8rem;font-weight:600;}
+.cx-in em{font-style:normal;font-family:var(--f-mono);font-size:.7rem;color:var(--muted);font-weight:400;}
+.cx-in input,.cx-panel textarea{width:100%;box-sizing:border-box;padding:.75rem .85rem;border:1.5px solid var(--line-2);border-radius:4px;font:inherit;font-size:.92rem;background:#fff;color:var(--ink);}
+.cx-in input:focus,.cx-panel textarea:focus{outline:none;border-color:var(--ink);}
+.cx-lab{margin:.85rem 0 .45rem;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
+.cx-lab em{font-style:normal;color:var(--muted);letter-spacing:.04em;text-transform:none;}
+.cx-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+.cx-chips button{display:inline-flex;align-items:center;gap:.4em;min-height:36px;padding:.45rem .8rem;border:1.5px solid var(--line-2);border-radius:4px;background:#fff;color:var(--ink);font-size:.8rem;cursor:pointer;transition:border-color .15s;}
+.cx-chips button:hover{border-color:var(--ink-soft);}
+.cx-chips button.sel{border-color:var(--ink);background:var(--ink);color:#fff;}
+.cx-chips button em{font-style:normal;font-family:var(--f-mono);font-size:.7rem;color:var(--accent);}
+.cx-chips button.sel em{color:#ffb3ad;}
+.cx-fonts button{flex-direction:column;align-items:flex-start;gap:.1rem;min-width:110px;font-size:1.05rem;line-height:1.1;}
+.cx-fonts button small{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65;}
+
+.cx-up{display:flex;flex-direction:column;gap:.25rem;padding:1.1rem;border:1.5px dashed var(--line-2);border-radius:6px;cursor:pointer;text-align:center;}
+.cx-up:hover{border-color:var(--ink);}
+.cx-up b{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;}
+.cx-up span{font-size:.74rem;color:var(--muted);}
+.cx-up-msg{margin:.4rem 0 0;font-size:.76rem;color:var(--accent);}
+.cx-up-msg:empty{display:none;}
+.cx-logo{display:flex;align-items:center;gap:.9rem;padding:.7rem;border:1px solid var(--line-2);border-radius:6px;}
+.cx-logo img{width:64px;height:64px;object-fit:contain;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/12px 12px;border-radius:4px;}
+.cx-logo b{display:block;font-size:.82rem;margin-bottom:.3rem;word-break:break-all;}
+.cx-logo button{padding:0;border:0;background:none;color:var(--accent);font-size:.76rem;text-decoration:underline;cursor:pointer;}
+.cx-fine{margin:.8rem 0 0;font-size:.72rem;color:var(--muted);}
+
+.cx-sum{margin:1.1rem 0 .2rem;padding:1rem 1.1rem;background:#f6f5f2;border-radius:6px;}
+.cx-sum-r{display:flex;justify-content:space-between;gap:1rem;padding:.3rem 0;font-size:.8rem;}
+.cx-sum-r b{font-family:var(--f-mono);font-weight:600;white-space:nowrap;}
+.cx-sum-f span{color:var(--ink-soft);}
+.cx-sum-f b{color:var(--accent);}
+.cx-sum-t{margin-top:.4rem;padding-top:.7rem;border-top:1px solid var(--line-2);font-size:.9rem;font-weight:600;}
+.cx-sum-t b{font-size:1.05rem;}
+.cx-lead{margin:.7rem 0 .2rem;font-size:.76rem;color:var(--ink-soft);}
+.cx-agree{display:flex;gap:.6rem;align-items:flex-start;margin-top:.8rem;font-size:.74rem;line-height:1.5;color:var(--ink-soft);cursor:pointer;}
+.cx-agree input{flex:none;width:16px;height:16px;margin-top:.15rem;accent-color:var(--accent);}
+.cx-err{margin:.6rem 0 0;font-size:.78rem;font-weight:600;color:var(--accent);}
+
+@media(max-width:900px){
+  .cx-stage-in{padding:1.2rem 1rem .8rem;border-radius:0;border-left:0;border-right:0;}
+  .cx-svg{max-height:320px;margin:0 auto;}
+  .cx-mini{display:block;position:sticky;top:64px;z-index:5;margin:0 -1rem .6rem;padding:.6rem 1rem;background:linear-gradient(#fff 85%,rgba(255,255,255,0));}
+  .cx-mini .cx-svg{max-height:210px;margin:0 auto;background:radial-gradient(120% 90% at 50% 20%,#fbfaf7 0,#ecebe6 70%);border-radius:6px;}
+  .cx-sec-b{padding-left:0;}
+  .cx-sw button{width:32px;height:32px;}
+}
+.cx-mode{order:6;}.cx-panel{order:7;}
+/* hàng làm theo đơn: ẩn dòng "còn hàng · gửi trong 24 giờ" & ngày giao dự kiến (thời gian làm đã ghi trong bảng giá) */
+body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
+@media(min-width:901px){
+  body.cx-on .pdp-gallery{align-self:stretch;}
+  body.cx-on .cx-stage{position:sticky;top:84px;}
+}

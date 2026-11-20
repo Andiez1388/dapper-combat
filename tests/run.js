@@ -25,6 +25,7 @@ const smtp = require('./lib/smtp');
     console.log('Máy chủ thử: ' + env.base + ' (dữ liệu tạm ' + env.data + ')');
     await require('./api.test')(env, t);
     await require('./private.test')(env, t);
+    await require('./custom.test')(env, t);
     await require('./ops.test')(env, t);
     await require('./ai.test')(env, t);
     await require('./mail.test')(env, t);

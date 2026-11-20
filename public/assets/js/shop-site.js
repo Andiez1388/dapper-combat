@@ -40,7 +40,10 @@ function DCshopSubmit(ok, fail) {
   dcOrderErr('');
   var f = document.getElementById('checkoutForm');
   var v = function (n) { var i = f && f.querySelector('[name="' + n + '"]'); return i ? i.value.trim() : ''; };
-  var items = Object.keys(cart).map(function (k) { var a = k.split('::'); return { id: a[0], size: a[1], color: a[2], qty: cart[k] }; });
+  var items = Object.keys(cart).map(function (k) {
+    var a = k.split('::'), d = DC.cx && DC.cx.is(a[2]) ? DC.cx.get(a[2]) : null;
+    return d ? { id: a[0], size: a[1], color: 'custom', custom: d.spec, qty: cart[k] } : { id: a[0], size: a[1], color: a[2], qty: cart[k] };
+  });
   DC.api('/orders', {
     items: items,
     customer: { name: v('name'), phone: v('phone'), email: v('email'), address: v('address'), ward: v('ward'), city: v('city'), note: v('note') },

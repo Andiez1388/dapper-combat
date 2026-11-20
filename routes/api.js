@@ -18,6 +18,7 @@ const translate = require('../lib/translate');
 
 // thư mục dữ liệu / ảnh tải lên: đổi được bằng DC_DATA_DIR, DC_UPLOAD_DIR (lib/paths.js); dữ liệu gốc luôn ở data/seed của repo
 const { DATA_DIR, SEED_DIR, UPLOAD_DIR } = require('../lib/paths');
+const custom = require('../lib/custom');   // sản phẩm tự thiết kế (Boxing Equipment)
 const SEED_PRODUCTS = path.join(SEED_DIR, 'products.json');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -301,7 +302,7 @@ router.productSlug = productSlug;
 router.get('/products', (req, res) => { res.json(publicProducts()); });
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
-const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible'];
+const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
 // chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
 const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
@@ -341,6 +342,9 @@ function cleanProduct(body, base = {}) {
   if (p.slug === 'checkout') p.slug = '';
   p.badge = ['new', 'best', 'none'].includes(p.badge) ? p.badge : '';
   p.visible = p.visible !== false;
+  // khách tự thiết kế (lib/custom.js): null = bỏ
+  if (p.custom === null) delete p.custom;
+  else if (p.custom !== undefined) { const cx = custom.cleanConfig(p.custom); if (cx) p.custom = cx; else delete p.custom; }
   // tồn kho theo size × màu (không bắt buộc): { "<size>::<mã màu>": số } — có thì stock = tổng
   if (body.stockBy === null) delete p.stockBy;
   else {
@@ -467,6 +471,24 @@ router.post('/uploads', staffOk, (req, res) => {
   res.status(201).json({ url: '/assets/uploads/' + name });
 });
 
+// logo khách tải lên khi tự thiết kế sản phẩm (trang Shop, không cần đăng nhập): PNG / JPG / WEBP ≤ 4MB, kiểm tra chữ ký đầu file
+router.post('/custom/logo', limit('cxlogo', 20), (req, res) => {
+  const m = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String((req.body || {}).dataUrl || ''));
+  if (!m) return res.status(400).json({ error: msg(req, 'Logo cần là ảnh PNG, JPG hoặc WEBP.', 'The logo must be a PNG, JPG or WEBP image.') });
+  const buf = Buffer.from(m[2], 'base64');
+  if (buf.length > 4 * 1024 * 1024) return res.status(413).json({ error: msg(req, 'Logo tối đa 4MB.', 'The logo must be 4MB or smaller.') });
+  const sig = buf.slice(0, 12), ext = m[1] === 'jpeg' ? 'jpg' : m[1];
+  const ok = ext === 'png' ? sig.slice(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])) : ext === 'jpg' ? sig[0] === 0xff && sig[1] === 0xd8 : sig.slice(0, 4).toString('latin1') === 'RIFF' && sig.slice(8, 12).toString('latin1') === 'WEBP';
+  if (!ok) return res.status(400).json({ error: msg(req, 'File logo bị lỗi hoặc không đúng định dạng.', 'The logo file is damaged or not a supported image.') });
+  const dir = path.join(UPLOAD_DIR, 'custom');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const name = crypto.createHash('sha1').update(buf).digest('hex').slice(0, 20) + '.' + ext;
+  fs.writeFileSync(path.join(dir, name), buf);
+  res.status(201).json({ url: '/assets/uploads/custom/' + name });
+});
+// cấu hình mặc định khi chủ shop bật "Cho khách tự thiết kế" cho một sản phẩm
+router.get('/custom/defaults', staffOk, (req, res) => res.json({ config: custom.defaults(String(req.query.template || 'groin')), defs: custom.publicDefs() }));
+
 // ảnh/video tải lên dạng nhị phân (dùng cho mục Hình ảnh & video trong quản trị)
 const UPLOAD_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm' };
 // phông chữ tự tải (mục Phông chữ): kiểm tra chữ ký đầu file
@@ -579,7 +601,7 @@ router.post('/promo', limit('promo', 30), (req, res) => {
 function needOf(items) {
   const m = {};
   for (const it of items || []) {
-    if (!it || !it.id) continue;
+    if (!it || !it.id || it.custom) continue;   // thiết kế riêng: làm theo đơn, không lấy từ kho
     const e = m[it.id] = m[it.id] || { total: 0, by: {} };
     const q = Number(it.qty) || 0, k = VKEY(it.size, it.color);
     e.total += q; e.by[k] = (e.by[k] || 0) + q;
@@ -629,8 +651,18 @@ function priceOrder(body, req) {
     if (!p) return { error: L('Một sản phẩm trong giỏ không còn bán. Vui lòng tải lại trang.', 'An item in your cart is no longer available. Please reload the page.') };
     const qty = int(it.qty, 1, 50, 1);
     const size = p.sizes.includes(it.size) ? it.size : p.sizes[0];
+    // thiết kế riêng: máy chủ kiểm tra từng lựa chọn + tự tính phụ phí theo cấu hình sản phẩm (không tin giá trình duyệt gửi)
+    if (it.custom) {
+      const cx = custom.priceSpec(p.custom, it.custom);
+      if (cx.error) return { error: L(cx.error[0], cx.error[1]) };
+      const ref = 'cx-' + crypto.createHash('sha1').update(JSON.stringify(cx.spec)).digest('hex').slice(0, 10);
+      const price = p.price + cx.fee;
+      items.push({ id: p.id, name: p.name, img: p.img, size, color: ref, colorName: 'Thiết kế riêng', qty: Math.min(qty, 20), price, line: price * Math.min(qty, 20),
+        custom: { spec: cx.spec, lines: cx.lines, fee: cx.fee, base: p.price, lead: (p.custom.lead || {}).vi || '' } });
+      continue;
+    }
     const pc = p.colors.find(c => c[0] === it.color) || p.colors[0], color = pc[0];
-    const same = items.find(x => x.id === p.id && x.size === size && x.color === color);
+    const same = items.find(x => x.id === p.id && x.size === size && x.color === color && !x.custom);
     // dòng trùng gộp lại — vẫn tối đa 50 cái mỗi loại (không để một đơn ảo giữ hết tồn kho)
     if (same) { same.qty = Math.min(50, same.qty + qty); same.line = same.qty * same.price; continue; }
     // tên màu tự đặt (nếu có) lưu kèm đơn — đơn cũ vẫn đọc đúng khi sau này đổi màu sản phẩm
@@ -1215,11 +1247,15 @@ function staffItems(raw, old) {
   for (const it of (Array.isArray(raw) ? raw.slice(0, 60) : [])) {
     if (!it || !it.id) continue;
     const p = catalog.find(x => x.id === it.id), was = old.filter(x => x.id === it.id);
-    const exact = was.find(x => x.size === it.size && x.color === it.color);
+    const exact = was.find(x => x.size === it.size && x.color === it.color) || (/^cx-/.test(String(it.color)) ? was.find(x => x.color === it.color && x.custom) : null);
     if (!p && !exact) return { error: 'Không tìm thấy sản phẩm "' + str(it.name || it.id, 80) + '" — có thể đã bị xóa khỏi mục Sản phẩm.' };
     const qty = int(it.qty, 1, 999, 1);
     let line;
-    if (p) {
+    if (exact && exact.custom) {
+      // thiết kế riêng: giữ nguyên bản thiết kế + giá lúc đặt, chỉ đổi số lượng / size
+      const size = p && p.sizes.includes(it.size) ? it.size : exact.size;
+      line = { id: exact.id, name: exact.name, img: exact.img, size, color: exact.color, colorName: exact.colorName, price: exact.price, custom: exact.custom };
+    } else if (p) {
       // size / màu đã bỏ khỏi sản phẩm nhưng dòng cũ đang dùng → giữ nguyên như lúc đặt
       const size = p.sizes.includes(it.size) ? it.size : exact ? exact.size : p.sizes[0];
       const pc = p.colors.find(c => c[0] === it.color), keep = !pc && exact && exact.color === it.color;

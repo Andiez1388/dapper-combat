@@ -203,3 +203,22 @@ input[readonly].is-auto { background: var(--grey); color: var(--ink); }
 .ops-ack { align-items: flex-start; font-size: 13px; line-height: 1.5; }
 .ops-ack .switch__ui { margin-top: 2px; }
 [data-bk-root] code, [data-us-root] code { font-family: var(--mono); font-size: 12px; padding: 1px 4px; background: var(--grey); overflow-wrap: anywhere; }
+
+/* Sản phẩm → Thiết kế riêng (admin-custom.js) */
+.cxa .cxa-body{display:flex;flex-direction:column;gap:.9rem;margin-top:.8rem;padding-top:.9rem;border-top:1px dashed var(--line,#ddd);}
+.cxa-chips{display:flex;flex-wrap:wrap;gap:.4rem;}
+.cxa-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .65rem;border:1px solid var(--line,#ddd);border-radius:999px;font-size:.82rem;cursor:pointer;}
+.cxa-chip:has(input:checked){border-color:currentColor;background:rgba(212,55,46,.07);}
+.cxa-pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:.35rem;}
+.cxa-col{display:flex;align-items:center;gap:.45rem;padding:.3rem .45rem;border:1px solid var(--line,#ddd);border-radius:6px;font-size:.78rem;cursor:pointer;}
+.cxa-col i{flex:none;width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.18);}
+.cxa-col:has(input:not(:checked)){opacity:.5;}
+.cxa-col input,.cxa-chip input{margin:0;}
+.cxa-box{border:1px solid var(--line,#ddd);border-radius:8px;padding:.6rem .9rem .9rem;margin:0;}
+.cxa-box legend{padding:0 .3rem;font-weight:600;}
+.cxa textarea[data-cxa-f="groups"]{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;line-height:1.6;}
+.cxa-gprev{display:flex;flex-direction:column;gap:.25rem;margin-top:.5rem;font-size:.8rem;}
+.cxa-gprev em,.cxa-ord em{font-style:normal;color:#c0392b;}
+.cxa-ord{display:flex;flex-direction:column;gap:.3rem;margin:.35rem 0;padding:.55rem .7rem;background:rgba(212,55,46,.06);border-left:3px solid #d4372e;border-radius:4px;font-size:.78rem;line-height:1.5;}
+.cxa-ord-logo{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;}
+.cxa-ord-logo img{width:40px;height:40px;object-fit:contain;background:#fff;border:1px solid var(--line,#ddd);border-radius:4px;}

@@ -78,15 +78,15 @@ const t=k=>T[lang][k]||k;
 const pd=o=>o?(o[lang]||o.vi||""):"";
 /* tên sản phẩm theo ngôn ngữ (nameEn khi xem tiếng Anh), tên màu (tên riêng của sản phẩm → tên màu chung → mã màu) */
 const pn=p=>DC.pname(p,lang==="en");
-const cn=(p,k)=>DC.colorName(p,k,lang==="en");
+const cn=(p,k)=>DC.cx&&DC.cx.is(k)?"✦ "+DC.cx.label():DC.colorName(p,k,lang==="en");
 /* điểm nổi bật: của riêng sản phẩm (sửa ở /admin → Sản phẩm), không có thì dùng 4 dòng chung */
 function featsOf(p){const f=(Array.isArray(p&&p.features)?p.features:[]).filter(x=>x&&(x.vi||x.en));return f.length?f.map(x=>DC.esc(lang==="en"?(x.en||x.vi):(x.vi||x.en))):["feat.1","feat.2","feat.3","feat.4"].map(k=>t(k));}
 /* video trang sản phẩm: video riêng của sản phẩm thay cho 2 video chung; tắt ở Thiết lập → không có video */
 function vidsOf(p){if(DC.setting("shop.pdp.videos",true)===false)return [];return p&&p.video?[p.video]:VIDS.filter(Boolean);}
 /* tồn kho: số còn có thể thêm vào giỏ (đã trừ phần đang nằm trong giỏ, mọi size / màu) */
-function inCart(id){return Object.keys(cart).reduce((s,k)=>s+(k.split("::")[0]===id?cart[k]:0),0);}
+function inCart(id){return Object.keys(cart).reduce((s,k)=>{const a=k.split("::");return s+(a[0]===id&&!(DC.cx&&DC.cx.is(a[2]))?cart[k]:0);},0);}
 function canAdd(id){const p=PRODUCTS.find(x=>x.id===id);return p?Math.max(0,DC.stock(p)-inCart(id)):0;}
-function roomOf(id,size,color){const p=PRODUCTS.find(x=>x.id===id);if(!p)return 0;const all=canAdd(id);return DC.hasVariants(p)?Math.min(all,Math.max(0,DC.vstock(p,size,color)-(cart[id+"::"+size+"::"+color]||0))):all;}
+function roomOf(id,size,color){const p=PRODUCTS.find(x=>x.id===id);if(!p)return 0;if(DC.cx&&DC.cx.is(color))return Math.max(0,20-(cart[id+"::"+size+"::"+color]||0));const all=canAdd(id);return DC.hasVariants(p)?Math.min(all,Math.max(0,DC.vstock(p,size,color)-(cart[id+"::"+size+"::"+color]||0))):all;}
 /* biến thể chọn sẵn: size / màu đầu tiên còn hàng */
 function colorFor(p,size){if(!DC.hasVariants(p))return p.colors[0][0];const c=p.colors.find(c=>DC.vstock(p,size,c[0])>0);return c?c[0]:null;}
 const soldTxt=()=>v3T(DC.x("shop.stock.out",0,"Hết hàng"),DC.x("shop.stock.out",1,"Sold out"));
@@ -208,7 +208,7 @@ $("crumbCat").onclick=()=>{const p=PRODUCTS.find(x=>x.id===detailId);if(!p)retur
 
 /* CART keyed id::size::color */
 const key=(id,s,c)=>id+"::"+s+"::"+c;
-function parseKey(k){const a=k.split("::");return{p:PRODUCTS.find(x=>x.id===a[0]),size:a[1],color:a[2]};}
+function parseKey(k){const a=k.split("::"),p=PRODUCTS.find(x=>x.id===a[0]);if(p&&DC.cx&&DC.cx.is(a[2])){const d=DC.cx.get(a[2]);return{p:Object.assign({},p,{price:p.price+(d?DC.cx.fee(p,d.spec):0)}),size:a[1],color:a[2],custom:d?d.spec:null};}return{p:p,size:a[1],color:a[2]};}
 /* thêm vào giỏ: không vượt quá số còn trong kho (server cũng kiểm tra lại khi đặt hàng) */
 function addToCart(id,size,color,qty){const n=Math.min(qty,roomOf(id,size,color));if(n<=0){sync();return 0;}const k=key(id,size,color);cart[k]=(cart[k]||0)+n;sync();const pp=PRODUCTS.find(x=>x.id===id);DC.track("AddToCart",{content_ids:[id],content_type:"product",value:(pp?pp.price:0)*n,currency:"VND"});return n;}
 function count(){return Object.values(cart).reduce((a,b)=>a+b,0);}

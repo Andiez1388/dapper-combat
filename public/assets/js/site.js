@@ -381,7 +381,9 @@
       Object.keys(o).forEach(function (k) {
         var p = find(k.split('::')[0]);
         if (!p) return;
-        var a = k.split('::'), left = DC.stock(p) - (used[p.id] || 0);
+        var a = k.split('::');
+        if (/^cx-/.test(a[2] || '')) { if (!DC.cx) return; if (!DC.cx.get(a[2]) || !(p.custom && p.custom.on)) { delete o[k]; changed = true; } else if (o[k] > 20) { o[k] = 20; changed = true; } return; }   // thiết kế riêng: làm theo đơn
+        var left = DC.stock(p) - (used[p.id] || 0);
         if (DC.hasVariants(p)) left = Math.min(left, DC.vstock(p, a[1], a[2]));     // tồn kho theo size × màu
         var q = Math.min(o[k], left);
         if (q < o[k]) changed = true;
