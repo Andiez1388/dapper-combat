@@ -24,14 +24,14 @@ module.exports = async function customTests(env, t) {
     t.ok(r.s === 200 || r.s === 201, 'tạo sản phẩm có thiết kế riêng', r.j);
     t.ok(p.custom && p.custom.on && !p.custom.palette.includes('evil') && p.custom.groups.length === d.j.config.groups.length, 'máy chủ làm sạch cấu hình (bỏ màu lạ, nhóm rỗng)', p.custom);
 
-    const spec = { zones: { cup: 'white', trim: 'gold', left: 'red' }, text: { value: 'PHONG', font: 'script', method: 'embroid', spot: 'belt' }, groups: { material: 'cow', extra: ['flag', 'nope'] }, note: 'chữ nghiêng' };
+    const spec = { zones: { right: 'white', trim: 'gold', left: 'red' }, text: { value: 'PHONG', font: 'script', method: 'embroid', spot: 'belt' }, groups: { material: 'cow', extra: ['flag', 'nope'] }, note: 'chữ nghiêng' };
     r = await req('/api/orders', { method: 'POST', pub: true, body: { customer: cust, pay: 'bank', ship: 'std', items: [{ id: p.id, size: 'M', color: 'x', qty: 5, custom: spec }, { id: p.id, size: 'L', color: 'black', qty: 1 }] } });
     t.ok(r.s === 200 || r.s === 201, 'đặt 5 cái thiết kế riêng dù kho chỉ còn 3 (làm theo đơn)', r.j);
     const ord = (await req('/api/orders')).j.find(o => o.code === r.j.code || o.id === r.j.id) || {};
     const cx = (ord.items || []).find(i => i.custom), std = (ord.items || []).find(i => !i.custom);
     // 900k + 200k phí + 100k thêu chữ + 600k da bò + 80k cờ ("nope" bị bỏ); vàng gold không có trong bảng màu → về màu mặc định
     t.ok(cx && cx.price === 1880000 && cx.qty === 5, 'máy chủ tự tính giá thiết kế riêng', cx && cx.price);
-    t.ok(cx && /^cx-/.test(cx.color) && cx.custom.spec.zones.trim !== 'gold' && cx.custom.spec.zones.cup === 'white', 'màu ngoài bảng màu bị bỏ', cx && cx.custom.spec.zones);
+    t.ok(cx && /^cx-/.test(cx.color) && cx.custom.spec.zones.trim !== 'gold' && cx.custom.spec.zones.right === 'white', 'màu ngoài bảng màu bị bỏ', cx && cx.custom.spec.zones);
     t.ok(std && std.price === 900000, 'dòng mẫu có sẵn giữ giá thường');
     const after = (await req('/api/products')).j.find(x => x.id === p.id);
     t.ok(after.stock === 2, 'chỉ dòng mẫu có sẵn trừ tồn kho', after.stock);

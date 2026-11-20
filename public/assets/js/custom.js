@@ -105,19 +105,8 @@
     var t = D.templates[p.custom.template] || D.templates.groin, z = (s.zones || {})[zid];
     if (z) return hexOf(z); var def = pick(t.zones, zid); return hexOf(def ? def[3] : 'black');
   }
-  // groin guard: cùng khuôn với mô hình 3D (custom3d.js)
-  function groinSvg(col) {
-    var P = window.DCX3D.paths, o = '';
-    o += '<clipPath id="cxBodyClip"><path d="' + P.body + '"/></clipPath><g clip-path="url(#cxBodyClip)">' +
-      '<rect width="210" height="380" fill="' + col('left') + '"/><rect x="210" width="210" height="380" fill="' + col('right') + '"/>' +
-      '<path d="' + P.cup + '" fill="' + col('cup') + '"/><path d="' + P.band + '" fill="' + col('belt') + '"/>' +
-      '<rect width="420" height="380" fill="url(#cxSh)"/><ellipse cx="210" cy="296" rx="52" ry="58" fill="url(#cxHi)"/>' +
-      '<path d="' + P.bandLine + '" fill="none" stroke="' + col('trim') + '" stroke-width="2.5"/></g>' +
-      '<path d="' + P.body + '" fill="none" stroke="' + col('trim') + '" stroke-width="5"/>' +
-      '<path d="' + P.seam + '" stroke="rgba(0,0,0,.28)" stroke-width="1.6"/>' +
-      '<path d="' + P.patch + '" fill="' + col('panel') + '" stroke="' + col('trim') + '" stroke-width="2.5"/>';
-    return o;
-  }
+  // groin guard: chiếu cùng rập với mô hình 3D (custom3d.js)
+  function groinSvg(col) { return window.DCX3D.svg(col); }
   var SVGN = 0;
   function preview(p, s) {
     var u = 'x' + (++SVGN);
@@ -127,7 +116,7 @@
     var cfg = p.custom, t = D.templates[cfg.template] || D.templates.groin;
     var groin = cfg.template === 'groin' || !SHAPES[cfg.template];
     if (groin && !window.DCX3D) return '';
-    var sh = groin ? { box: '0 0 420 380', parts: [], stitch: [], spots: window.DCX3D.spots } : SHAPES[cfg.template];
+    var sh = groin ? { box: '0 0 420 390', parts: [], stitch: [], spots: window.DCX3D.spots2d() } : SHAPES[cfg.template];
     var col = function (zid) { return zcol(p, s, zid); };
     var trim = col('trim'), out = '<svg class="cx-svg" viewBox="' + sh.box + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(T('Xem trước thiết kế', 'Design preview')) + '">' + SHADE + '<g filter="url(#cxDrop)">' + (groin ? groinSvg(col) : '');
     sh.parts.forEach(function (pt) {
