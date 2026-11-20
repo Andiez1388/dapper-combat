@@ -518,7 +518,7 @@ function v3lCard(p){
     var qa=out?'<button type="button" disabled>'+soldTxt()+'</button>':free?(colorFor(p,p.sizes[0])?'<button type="button" data-qa="'+p.id+'|'+p.sizes[0]+'">'+v3T(DC.x("shop.list.j8",0,"THÊM VÀO GIỎ"),DC.x("shop.list.j8",1,"ADD TO CART"))+'</button>':'<button type="button" disabled>'+soldTxt()+'</button>'):
     p.sizes.map(function(s){return colorFor(p,s)?'<button type="button" data-qa="'+p.id+'|'+s+'">'+s+'</button>':'<button type="button" class="oos" disabled title="'+soldTxt()+'">'+s+'</button>';}).join("");
   return '<div class="v3c'+(out?' v3c-out':'')+'" data-open="'+p.id+'"><div class="v3c-media">'+
-    (out?'<span class="v3c-badge v3-out-badge">'+soldTxt()+'</span>':badge?'<span class="v3c-badge'+(sale?' sale':'')+'">'+badge+'</span>':'')+
+    (out?'<span class="v3c-badge v3-out-badge">'+soldTxt()+'</span>':badge?'<span class="v3c-badge'+(sale?' sale':p.badge==='best'?' hot':p.badge==='new'?' new':'')+'">'+badge+'</span>':'')+
     '<button type="button" class="v3c-heart'+(w?' on':'')+'" data-v3h="'+p.id+'" aria-label="'+v3T(DC.x("shop.list.fav",0,"Yêu thích"),DC.x("shop.list.fav",1,"Favourites"))+'" aria-pressed="'+w+'">'+(w?"♥":"♡")+'</button>'+
     '<img src="'+IMG[p.img]+'" alt="'+DC.esc(pn(p))+'">'+
     '<div class="v3c-qa"><span>'+(out?soldTxt():free?v3T(DC.x("shop.list.j9",0,"THÊM NHANH"),DC.x("shop.list.j9",1,"QUICK ADD")):v3T(DC.x("shop.list.j10",0,"CHỌN SIZE"),DC.x("shop.list.j10",1,"CHOOSE SIZE")))+'</span><div>'+qa+'</div></div></div>'+

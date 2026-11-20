@@ -172,7 +172,11 @@
       var link = card.querySelector('.pc-img-link'); if (link) link.setAttribute('href', plink(p));
       var pr = card.querySelector('.product-price'); if (pr) pr.innerHTML = fmt(p.price) + (p.old ? ' <s>' + fmt(p.old) + '</s>' : '');
       var out = DC.soldOut(p);
-      var tags = card.querySelector('.product-tags'); if (tags) tags.innerHTML = '<span class="product-tag">' + DC.esc(catName(p.cat)) + '</span>' + (out ? '<span class="product-badge soldout">' + DC.esc(soldTxt()) + '</span>' : homeBadge(p));
+      // trên ảnh: chỉ 1 nhãn trạng thái (hết hàng / giảm giá / bán chạy / mới); tên danh mục là dòng chữ nhỏ trên tên sản phẩm
+      var tags = card.querySelector('.product-tags'); if (tags) { tags.innerHTML = out ? '<span class="product-badge soldout">' + DC.esc(soldTxt()) + '</span>' : homeBadge(p); tags.hidden = !tags.innerHTML; }
+      var info = card.querySelector('.product-info'), cat = info && info.querySelector('.product-cat');
+      if (info && !cat) { cat = document.createElement('div'); cat.className = 'product-cat'; info.insertBefore(cat, info.firstChild); }
+      if (cat) cat.textContent = catName(p.cat) || '';
       // hết hàng: khóa nút thêm vào giỏ
       card.classList.toggle('dc-out', out);
       var btn = card.querySelector('.product-addbtn'), lab = btn && btn.querySelector('span');

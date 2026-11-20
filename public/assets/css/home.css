@@ -2123,3 +2123,19 @@ footer .dc-biz{max-width:1100px;color:rgba(247,244,240,0.6);opacity:1;}
   .footer-bottom{padding-right:3.5rem;}
 }
 @media(max-width:400px){.hero-eyebrow{gap:0.5rem;}.hero-eyebrow::before{width:18px;}}
+
+/* ── Thẻ sản phẩm (Trang chủ): 1 nhãn trạng thái gọn trên ảnh + tên danh mục nhỏ trên tên sản phẩm ── */
+.product-card .product-tags{top:.85rem!important;left:.85rem!important;gap:0!important;}
+.product-card .product-tags[hidden],.product-card .product-tags .product-tag{display:none!important;}
+.product-card .product-badge{display:inline-flex!important;align-items:center;gap:.45em;height:24px;padding:0 .6rem!important;border-radius:2px!important;box-shadow:none!important;
+  font-family:var(--f-mono)!important;font-weight:600!important;font-size:.64rem!important;letter-spacing:.14em!important;line-height:1;text-transform:uppercase;
+  background:rgba(11,11,11,.78)!important;color:#fff!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.product-card .product-badge.hot{background:var(--accent)!important;}
+.product-card .product-badge.hot::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;}
+.product-card .product-badge.sale{background:#fff!important;color:var(--accent)!important;font-weight:700!important;}
+.product-card .product-badge.soldout{background:rgba(255,255,255,.92)!important;color:#6b6b6b!important;}
+.product-card .product-cat{font-family:var(--f-mono);font-size:.62rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#8d8a84;margin:0 0 .4rem;}
+@media(max-width:600px){
+  .product-card .product-badge{height:20px;font-size:.56rem!important;padding:0 .45rem!important;}
+  .product-card .product-cat{font-size:.58rem;letter-spacing:.12em;margin-bottom:.3rem;}
+}

@@ -1589,3 +1589,13 @@ footer .footer-bottom{padding-top:1.2rem;border-top:1px solid var(--line);}
 @media (max-width:1199px){
   .v3-announce,.footer-col h4,.footer-badge{font-size:0.75rem;}
 }
+
+/* ── Nhãn trên thẻ sản phẩm: cùng kiểu với Trang chủ (gọn, 1 nhãn) ── */
+.v3c .v3c-badge{display:inline-flex;align-items:center;gap:.45em;height:24px;top:12px;left:12px;padding:0 .6rem;border-radius:2px;box-shadow:none;
+  font-family:var(--f-mono);font-weight:600;font-size:.64rem;letter-spacing:.14em;line-height:1;text-transform:uppercase;
+  background:rgba(11,11,11,.78);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.v3c .v3c-badge.hot{background:var(--accent);}
+.v3c .v3c-badge.hot::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;}
+.v3c .v3c-badge.sale{background:#fff;color:var(--accent);font-weight:700;}
+.v3c .v3c-badge.v3-out-badge{background:rgba(255,255,255,.92);color:#6b6b6b;}
+@media(max-width:600px){.v3c .v3c-badge{height:20px;font-size:.56rem;letter-spacing:.12em;padding:0 .45rem;top:8px;left:8px;}}
