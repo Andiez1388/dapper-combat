@@ -22,8 +22,9 @@
   var BT = 6, BH = 94;                              // đai sau: từ y = 6, cao 94
 
   var P = {
-    body: 'M2 6 Q300 0 598 6 L598 160 Q598 180 576 184 Q520 198 470 198 C452 198 446 140 412 144 C400 162 384 222 362 272 C346 310 322 336 300 336 ' +
-      'C278 336 254 310 238 272 C216 222 200 162 188 144 C154 140 148 198 130 198 Q80 198 24 184 Q2 180 2 160 Z',
+    body: 'M2 6 Q300 0 598 6 L598 96 Q598 114 582 120 C552 132 528 156 512 180 C502 198 488 206 472 204 C454 202 446 140 412 144 ' +
+      'C400 162 384 222 362 272 C346 310 322 336 300 336 C278 336 254 310 238 272 C216 222 200 162 188 144 ' +
+      'C154 140 146 202 128 204 C112 206 98 198 88 180 C72 156 48 132 18 120 Q2 114 2 96 Z',
     band: 'M0 0 L600 0 L600 24 Q300 19 0 24 Z',
     bandLine: 'M2 24 Q300 19 598 24',
     cupLine: 'M196 194 Q300 234 404 194',
@@ -336,7 +337,7 @@
     var strapMat = new THREE.MeshStandardMaterial({ map: ribTex, roughness: 0.85, side: THREE.DoubleSide });
     var tabP = A(X0, 330, -5), axis = function (p) { return new V3(p.x, 0, p.z + EB).normalize(); };
     [1, -1].forEach(function (sx) {
-      var a = A(sx > 0 ? 584 : 16, 174, -4);
+      var a = A(sx > 0 ? 576 : 24, 116, -4);
       var m1 = a.clone().lerp(tabP, 0.33).add(new V3(sx * 8, -26, -10)), m2 = a.clone().lerp(tabP, 0.7).add(new V3(sx * 4, -22, -6));
       var c = new THREE.CatmullRomCurve3([a, m1, m2, tabP.clone().add(new V3(sx * 6, 2, 0))], false, 'centripetal');
       root.add(new THREE.Mesh(strip(function (u, v) {
