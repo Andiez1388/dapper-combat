@@ -1703,3 +1703,11 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
   body.cx-on .pdp-gallery{align-self:stretch;}
   body.cx-on .cx-stage{position:sticky;top:84px;}
 }
+/* xem trước 3D (custom3d.js) */
+.cx-3d{position:relative;width:100%;aspect-ratio:420/400;max-height:600px;margin:-1rem 0 0;}
+.cx-3d::after{content:"";position:absolute;left:22%;right:22%;bottom:2%;height:6%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.22),rgba(0,0,0,0));z-index:0;pointer-events:none;}
+.cx-3d-cv{position:relative;z-index:1;display:block;width:100%!important;height:100%!important;cursor:grab;touch-action:pan-y;}
+.cx-grab .cx-3d-cv{cursor:grabbing;}
+.cx-hint{margin:.2rem 0 0;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);text-align:center;}
+.cx-mini img{display:block;height:210px;max-width:100%;margin:0 auto;object-fit:contain;background:radial-gradient(120% 90% at 50% 20%,#fbfaf7 0,#ecebe6 70%);border-radius:6px;}
+@media(max-width:900px){.cx-3d{max-height:360px;}}

@@ -76,18 +76,6 @@
     '<radialGradient id="cxHi" cx=".35" cy=".25" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>' +
     '<filter id="cxDrop" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity=".22"/></filter></defs>';
   var SHAPES = {
-    groin: {
-      box: '0 0 420 380',
-      parts: [
-        ['belt', 'M28 52 Q210 20 392 52 L392 104 Q210 74 28 104 Z'],
-        ['left', 'M28 104 Q120 90 168 96 L176 236 Q110 214 58 162 Q36 138 28 104 Z'],
-        ['right', 'M392 104 Q300 90 252 96 L244 236 Q310 214 362 162 Q384 138 392 104 Z'],
-        ['cup', 'M160 92 Q210 84 260 92 Q276 170 252 262 Q236 330 210 352 Q184 330 168 262 Q144 170 160 92 Z'],
-        ['panel', 'M178 132 Q210 124 242 132 Q248 172 236 206 Q222 222 210 226 Q198 222 184 206 Q172 172 178 132 Z'],
-      ],
-      stitch: ['M40 64 Q210 36 380 64', 'M40 92 Q210 64 380 92', 'M170 104 Q210 97 250 104 Q262 172 242 256 Q228 318 210 336 Q192 318 178 256 Q158 172 170 104'],
-      spots: { belt: [210, 72, 260, 34], cup: [210, 178, 64, 56], left: [112, 150, 92, 46], right: [308, 150, 92, 46] },
-    },
     gloves: {
       box: '0 0 420 380',
       parts: [
@@ -113,10 +101,36 @@
       spots: { front: [210, 104, 150, 44], cheek: [120, 236, 52, 40], back: [210, 64, 120, 30] },
     },
   };
+  function zcol(p, s, zid) {
+    var t = D.templates[p.custom.template] || D.templates.groin, z = (s.zones || {})[zid];
+    if (z) return hexOf(z); var def = pick(t.zones, zid); return hexOf(def ? def[3] : 'black');
+  }
+  // groin guard: cùng khuôn với mô hình 3D (custom3d.js)
+  function groinSvg(col) {
+    var P = window.DCX3D.paths, o = '';
+    [P.strapL, P.strapR].forEach(function (d) { o += '<path d="' + d + '" fill="' + col('strap') + '"/>'; });
+    o += '<clipPath id="cxBodyClip"><path d="' + P.body + '"/></clipPath><g clip-path="url(#cxBodyClip)">' +
+      '<rect width="210" height="380" fill="' + col('left') + '"/><rect x="210" width="210" height="380" fill="' + col('right') + '"/>' +
+      '<path d="' + P.cup + '" fill="' + col('cup') + '"/><path d="' + P.band + '" fill="' + col('belt') + '"/>' +
+      '<rect width="420" height="380" fill="url(#cxSh)"/><ellipse cx="210" cy="296" rx="52" ry="58" fill="url(#cxHi)"/>' +
+      '<path d="' + P.bandLine + '" fill="none" stroke="' + col('trim') + '" stroke-width="2.5"/></g>' +
+      '<path d="' + P.body + '" fill="none" stroke="' + col('trim') + '" stroke-width="5"/>' +
+      '<path d="' + P.seam + '" stroke="rgba(0,0,0,.28)" stroke-width="1.6"/>' +
+      '<path d="' + P.patch + '" fill="' + col('panel') + '" stroke="' + col('trim') + '" stroke-width="2.5"/>';
+    return o;
+  }
+  var SVGN = 0;
   function preview(p, s) {
-    var cfg = p.custom, sh = SHAPES[cfg.template] || SHAPES.groin, t = D.templates[cfg.template] || D.templates.groin;
-    var col = function (zid) { var z = (s.zones || {})[zid]; if (z) return hexOf(z); var def = pick(t.zones, zid); return hexOf(def ? def[3] : 'black'); };
-    var trim = col('trim'), out = '<svg class="cx-svg" viewBox="' + sh.box + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(T('Xem trước thiết kế', 'Design preview')) + '">' + SHADE + '<g filter="url(#cxDrop)">';
+    var u = 'x' + (++SVGN);
+    return previewRaw(p, s).replace(/id="(cx\w+)"/g, 'id="$1' + u + '"').replace(/url\(#(cx\w+)\)/g, 'url(#$1' + u + ')');
+  }
+  function previewRaw(p, s) {
+    var cfg = p.custom, t = D.templates[cfg.template] || D.templates.groin;
+    var groin = cfg.template === 'groin' || !SHAPES[cfg.template];
+    if (groin && !window.DCX3D) return '';
+    var sh = groin ? { box: '0 0 420 380', parts: [], stitch: [], spots: window.DCX3D.spots } : SHAPES[cfg.template];
+    var col = function (zid) { return zcol(p, s, zid); };
+    var trim = col('trim'), out = '<svg class="cx-svg" viewBox="' + sh.box + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(T('Xem trước thiết kế', 'Design preview')) + '">' + SHADE + '<g filter="url(#cxDrop)">' + (groin ? groinSvg(col) : '');
     sh.parts.forEach(function (pt) {
       var zid = pt[0];
       if (cfg.zones.indexOf(zid) === -1 && zid !== 'panel') zid = zid; // vùng không cho chọn vẫn vẽ bằng màu mặc định
@@ -135,7 +149,7 @@
     // chữ
     var tx = s.text || {};
     if (tx.value && sh.spots[tx.spot]) {
-      var P = sh.spots[tx.spot], f = pick(D.fonts, tx.font) || D.fonts[0], zoneCol = col(tx.spot === 'belt' ? 'belt' : tx.spot === 'cup' ? 'panel' : tx.spot);
+      var P = sh.spots[tx.spot], f = pick(D.fonts, tx.font) || D.fonts[0], zoneCol = col(P[4] || tx.spot);
       var size = Math.max(14, Math.min(P[3] * 0.72, (P[2] * 1.7) / Math.max(3, tx.value.length)));
       out += '<text x="' + P[0] + '" y="' + P[1] + '" text-anchor="middle" dominant-baseline="central" font-family="' + esc(f[3]) + '" font-size="' + size.toFixed(1) + '" font-weight="700" letter-spacing="1" fill="' + ink(zoneCol) + '"' +
         (tx.method === 'embroid' ? ' stroke="' + (ink(zoneCol) === '#fff' ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.35)') + '" stroke-width="1.2" paint-order="stroke"' : '') + '>' + esc(tx.value) + '</text>';
@@ -150,8 +164,8 @@
     p.custom.zones.forEach(function (zid) { var d = pick(t.zones, zid); z[zid] = p.custom.palette.indexOf(d[3]) !== -1 ? d[3] : p.custom.palette[0]; });
     var g = {};
     (p.custom.groups || []).forEach(function (x) { g[x.id] = x.multi ? [] : (x.required ? x.choices[0].id : ''); });
-    return { pid: p.id, mode: 'std', zones: z, text: { value: '', font: p.custom.text.fonts[0], method: 'print', spot: t.spots[0][0] },
-      logo: { url: '', method: 'print', spot: (t.spots[1] || t.spots[0])[0], name: '' }, groups: g, note: '', agree: false, open: 'color' };
+    return { pid: p.id, mode: 'std', zones: z, text: { value: '', font: p.custom.text.fonts[0], method: 'print', spot: p.custom.template === 'groin' ? 'belt' : t.spots[0][0] },
+      logo: { url: '', method: 'print', spot: p.custom.template === 'groin' ? 'cup' : (t.spots[1] || t.spots[0])[0], name: '' }, groups: g, note: '', agree: false, open: 'color' };
   }
   function spec() {
     var o = { zones: S.zones, groups: {} };
@@ -196,8 +210,8 @@
   }
   function render(p) {
     var cfg = p.custom, t = D.templates[cfg.template] || D.templates.groin, c = calc(cfg, spec());
-    $('cxStage').innerHTML = '<div class="cx-stage-in">' + preview(p, S) + '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
-    var h = '<div class="cx-mini">' + preview(p, S) + '</div>';
+    drawStage(p);
+    var h = '<div class="cx-mini">' + (use3d(p) && V.snap ? '<img alt="" src="' + V.snap + '">' : preview(p, S)) + '</div>';
     // 1. màu
     var presets = [['black', 'red'], ['white', 'gold'], ['navy', 'silver'], ['red', 'white'], ['pink', 'white'], ['black', 'gold']].filter(function (x) { return cfg.palette.indexOf(x[0]) !== -1 && cfg.palette.indexOf(x[1]) !== -1; });
     var colBody = (presets.length ? '<div class="cx-presets"><span>' + T('Phối nhanh', 'Quick combos') + '</span>' + presets.map(function (x) {
@@ -252,6 +266,39 @@
       '<label class="cx-agree"><input type="checkbox" data-cx-agree' + (S.agree ? ' checked' : '') + '><span>' + esc(nm(cfg.terms)) + '</span></label><p class="cx-err" data-cx-err role="alert" hidden></p></div>';
     $('cxPanel').innerHTML = h;
     pdpPrice(p, c.fee);
+  }
+  /* ─── xem trước 3D (custom3d.js) ─── */
+  var V = { api: null, loading: false, failed: false, snap: '' };
+  function use3d(p) { return p.custom.template === 'groin' && window.DCX3D && window.DCX3D.ok() && !V.failed; }
+  function state3d(p) {
+    var t = D.templates.groin, col = {}, g = S.groups || {};
+    t.zones.forEach(function (z) { col[z[0]] = zcol(p, S, z[0]); });
+    var contrast = [].concat(g.extra || []).indexOf('stitch') !== -1;
+    var f = pick(D.fonts, S.text.font) || D.fonts[0];
+    return { col: col, stitch: contrast ? (ink(col.left) === '#fff' ? '#f2c12e' : '#c8102e') : col.trim, finish: g.finish, material: g.material,
+      text: S.text.value.trim() ? { value: S.text.value.trim(), font: f[3], method: S.text.method, spot: S.text.spot } : null,
+      logo: S.logo.url ? { url: S.logo.url, method: S.logo.method, spot: S.logo.spot } : null };
+  }
+  function drawStage(p) {
+    var st = $('cxStage'), lang = DC.lang();
+    if (st.getAttribute('data-lang') !== lang) {
+      st.setAttribute('data-lang', lang);
+      st.innerHTML = '<div class="cx-stage-in"><div class="cx-3d" hidden></div><div class="cx-flat"></div>' +
+        '<p class="cx-hint" hidden>⟲ ' + T('Kéo để xoay · nhấn đúp để về mặt trước', 'Drag to rotate · double-click to reset') + '</p>' +
+        '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
+      if (V.api) st.querySelector('.cx-3d').appendChild(V.cv);
+    }
+    var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint');
+    if (use3d(p) && V.api) { box.hidden = false; flat.hidden = true; hint.hidden = false; V.api.update(state3d(p)); return; }
+    box.hidden = true; hint.hidden = true; flat.hidden = false; flat.innerHTML = preview(p, S);
+    if (use3d(p) && !V.loading) {
+      V.loading = true;
+      window.DCX3D.create(box).then(function (api) {
+        V.api = api; V.cv = box.querySelector('canvas'); V.loading = false;
+        api.onframe = function () { V.snap = api.snapshot(); var m = document.querySelector('.cx-mini'); if (m && V.snap) m.innerHTML = '<img alt="" src="' + V.snap + '">'; };
+        var q = product(); if (q && S && S.mode === 'cx') drawStage(q);
+      }, function (er) { V.failed = true; V.loading = false; if (window.console) console.warn('[custom3d]', er); });
+    }
   }
   // giá + chữ nút theo chế độ
   function pdpPrice(p, fee) {
