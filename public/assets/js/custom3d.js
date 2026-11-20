@@ -18,16 +18,16 @@
   var CELL = 2, GX = PW / CELL + 1, GY = PH / CELL + 1;
   var TS = 2, TB = 2.2;                            // px / đơn vị ảnh phủ: thân · đai sau
   var R = 150, EA = 196, EB = 128;                  // quấn: x → góc = (x - 300) / R, elip ngang EA × sâu EB
-  var VB = 205, RB = 115;                           // cup bẻ cong xuống dưới từ y = VB, bán kính RB
+  var VB = 232, RB = 230;                           // cup bẻ cong xuống dưới từ y = VB, bán kính RB
   var BT = 6, BH = 94;                              // đai sau: từ y = 6, cao 94
 
   var P = {
     body: 'M2 6 Q300 0 598 6 L598 96 Q598 114 582 120 C552 132 528 156 512 180 C502 198 488 206 472 204 C454 202 446 140 412 144 ' +
-      'C400 162 384 222 362 272 C346 310 322 336 300 336 C278 336 254 310 238 272 C216 222 200 162 188 144 ' +
+      'C406 154 398 176 388 196 L322 318 C315 331 308 338 300 338 C292 338 285 331 278 318 L212 196 C202 176 194 154 188 144 ' +
       'C154 140 146 202 128 204 C112 206 98 198 88 180 C72 156 48 132 18 120 Q2 114 2 96 Z',
     band: 'M0 0 L600 0 L600 24 Q300 19 0 24 Z',
     bandLine: 'M2 24 Q300 19 598 24',
-    cupLine: 'M196 194 Q300 234 404 194',
+    cupLine: 'M222 230 Q264 196 300 182 Q336 196 378 230',
     seam: 'M300 20 L300 336',
     patch: 'M270 66 L330 66 Q336 66 336 72 L336 112 Q336 118 330 118 L270 118 Q264 118 264 112 L264 72 Q264 66 270 66 Z',
   };
@@ -35,9 +35,15 @@
   var SPOTS = { cup: [300, 92, 62, 42, 'panel'], belt: [300, 12, 150, 11, 'belt'], left: [190, 110, 96, 46, 'left'], right: [410, 110, 96, 46, 'right'], tip: [300, 258, 66, 38, 'right'] };
   var BACK = { backL: 0.28, backR: 0.72 };          // ô trên đai sau (tỉ lệ dọc đai, nhìn từ sau: trái → phải)
 
+  // kiểm tra WebGL đúng 1 lần (mỗi lần getContext tạo thêm 1 ngữ cảnh — trình duyệt chỉ cho ~16, quá thì mất hình 3D)
+  var OK = null;
   function ok() {
-    try { var c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); }
-    catch (e) { return false; }
+    if (OK !== null) return OK;
+    try {
+      var c = document.createElement('canvas'), g = window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'));
+      OK = !!g; var lose = g && g.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    } catch (e) { OK = false; }
+    return OK;
   }
   var ss = function (a, b, v) { var t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
   function luma(hex) { var n = parseInt(String(hex).slice(1), 16); return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255); }
@@ -79,7 +85,7 @@
     for (var j = 0; j < GY; j++) for (var i = 0; i < GX; i++) {
       var k = j * GX + i, x = i * CELL, y = j * CELL, hb = Math.pow(ss(0.4, 0.97, body[k]), 0.7);
       if (!hb) continue;
-      var dome = Math.exp(-(Math.pow(x - X0, 2) / (2 * 74 * 74) + Math.pow(y - 262, 2) / (2 * 60 * 60)));
+      var dome = Math.exp(-(Math.pow(x - X0, 2) / (2 * 46 * 46) + Math.pow(y - 252, 2) / (2 * 58 * 58)));
       var roll = 5 * (1 - ss(14, 26, y));           // viền cuộn mép trên dày hơn
       h[k] = hb * (11 + 22 * dome + roll - 3.6 * groove[k]) + 1.1 * patch[k];
     }
@@ -284,7 +290,7 @@
     var low = new THREE.DirectionalLight(0xffffff, 0.5); low.position.set(0, -600, -200); scene.add(low);
     var cam = new THREE.PerspectiveCamera(26, 1, 10, 8000);
     var grp = new THREE.Group(), root = new THREE.Group(); grp.add(root); scene.add(grp);
-    root.position.set(0, 150, EB - 6);
+    root.position.set(0, 172, EB - 6);
     var maxAni = renderer.capabilities.getMaxAnisotropy();
     function ctex(c) { var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAni; return t; }
     var bump = new THREE.CanvasTexture(grain()); bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.set(12, 8);
@@ -398,7 +404,7 @@
     function size() {
       var w = el.clientWidth || 400, hh = el.clientHeight || 380;
       renderer.setSize(w, hh, false); cam.aspect = w / hh;
-      var fit = Math.max(205, 225 / cam.aspect);
+      var fit = Math.max(222, 232 / cam.aspect);
       cam.position.set(0, 0, fit / Math.tan(THREE.MathUtils.degToRad(13))); cam.lookAt(0, 0, 0); cam.updateProjectionMatrix(); dirty = true; loop();
     }
     function loop() {
@@ -423,6 +429,9 @@
     var up = function () { drag = null; el.classList.remove('cx-grab'); loop(); };
     cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
     cv.addEventListener('dblclick', function () { api.view('front'); });
+    // trình duyệt thu hồi ngữ cảnh WebGL (nhiều tab 3D, máy yếu…) → khi trả lại thì vẽ lại toàn bộ
+    cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); });
+    cv.addEventListener('webglcontextrestored', function () { hwKind = ''; if (last) api.update(last); });
     if (window.ResizeObserver) new ResizeObserver(size).observe(el); else window.addEventListener('resize', size);
 
     var VIEWS = { front: [0.2, 0.08], side: [1.5, 0.08], back: [Math.PI + 0.3, 0.16], top: [Math.PI + 0.25, 0.72], under: [Math.PI + 0.35, -0.55] };
