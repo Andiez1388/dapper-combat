@@ -491,7 +491,7 @@ router.post('/custom/logo', limit('cxlogo', 20), (req, res) => {
 router.get('/custom/defaults', staffOk, (req, res) => res.json({ config: custom.defaults(String(req.query.template || 'groin')), defs: custom.publicDefs() }));
 
 // ảnh/video tải lên dạng nhị phân (dùng cho mục Hình ảnh & video trong quản trị)
-const UPLOAD_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm' };
+const UPLOAD_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm', 'model/gltf-binary': 'glb' };
 // phông chữ tự tải (mục Phông chữ): kiểm tra chữ ký đầu file
 const FONT_TYPES = { 'font/woff2': ['woff2', 'wOF2'], 'font/woff': ['woff', 'wOFF'], 'font/ttf': ['ttf', '\0\x01\0\0'], 'font/otf': ['otf', 'OTTO'] };
 router.post('/uploads/file', staffOk, express.raw({ type: () => true, limit: '80mb' }), (req, res) => {
@@ -502,7 +502,9 @@ router.post('/uploads/file', staffOk, express.raw({ type: () => true, limit: '80
   const buf = req.body;
   if (!Buffer.isBuffer(buf) || !buf.length) return res.status(400).json({ error: 'File trống' });
   if (font && (buf.length > 5 * 1024 * 1024 || !(buf.slice(0, 4).toString('latin1') === font[1] || (ext === 'ttf' && buf.slice(0, 4).toString('latin1') === 'true')))) return res.status(400).json({ error: 'File phông chữ không hợp lệ (tối đa 5MB)' });
-  if (ext !== 'mp4' && ext !== 'webm' && buf.length > 10 * 1024 * 1024) return res.status(413).json({ error: 'Ảnh tối đa 10MB' });
+  if (ext === 'glb' && buf.slice(0, 4).toString('latin1') !== 'glTF') return res.status(400).json({ error: 'File 3D cần đúng định dạng .glb (glTF binary)' });
+  if (ext === 'glb' && buf.length > 40 * 1024 * 1024) return res.status(413).json({ error: 'File 3D tối đa 40MB — giảm số đa giác / nén texture rồi xuất lại' });
+  if (ext !== 'mp4' && ext !== 'webm' && ext !== 'glb' && buf.length > 10 * 1024 * 1024) return res.status(413).json({ error: 'Ảnh tối đa 10MB' });
   if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   const name = crypto.createHash('sha1').update(buf).digest('hex').slice(0, 16) + '.' + ext;
   fs.writeFileSync(path.join(UPLOAD_DIR, name), buf);

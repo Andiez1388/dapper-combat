@@ -2681,7 +2681,7 @@
     register: function (id, def) { PLUGINS[id] = def; VIEWS[id] = def.title; if (def.staff) STAFF_VIEWS[id] = 1; },
     // opts.staff = thẻ cũng hiện cho tài khoản nhân viên
     addDashboard: function (fn, opts) { DASH_HOOKS.push({ fn: fn, staff: !!(opts && opts.staff) }); },
-    api: api, apiFail: apiFail, toast: toast, confirmDialog: confirmDialog,
+    api: api, apiFail: apiFail, toast: toast, confirmDialog: confirmDialog, uploadRaw: uploadRaw,
     setBusy: setBusy, setMsg: setMsg, esc: esc, norm: norm, has: has,
     safeImg: safeImg, safeHex: safeHex, fmtDate: fmtDate, fmtTime: fmtTime,
     pageHead: pageHead, loadingHtml: loadingHtml, errorHtml: errorHtml, emptyHtml: emptyHtml,

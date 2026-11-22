@@ -222,3 +222,12 @@ input[readonly].is-auto { background: var(--grey); color: var(--ink); }
 .cxa-ord{display:flex;flex-direction:column;gap:.3rem;margin:.35rem 0;padding:.55rem .7rem;background:rgba(212,55,46,.06);border-left:3px solid #d4372e;border-radius:4px;font-size:.78rem;line-height:1.5;}
 .cxa-ord-logo{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;}
 .cxa-ord-logo img{width:40px;height:40px;object-fit:contain;background:#fff;border:1px solid var(--line,#ddd);border-radius:4px;}
+.cxa-model{display:flex;flex-direction:column;gap:.7rem;}
+.cxa-model-row{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;font-size:.82rem;}
+.cxa-model-body{display:flex;flex-direction:column;gap:.7rem;}
+.cxa-model-prev{border:1px solid var(--line,#ddd);border-radius:8px;background:radial-gradient(120% 90% at 50% 20%,#fbfaf7 0,#ecebe6 70%);padding:.5rem;}
+.cxa-model-cv{width:100%;aspect-ratio:4/3;max-height:420px;}
+.cxa-model-cv canvas{width:100%!important;height:100%!important;display:block;cursor:grab;}
+.cxa-model-prev p{margin:.4rem 0 0;font-size:.78rem;text-align:center;}
+.cxa-model-prev p button{padding:.15rem .5rem;border:1px solid var(--line,#ddd);border-radius:999px;background:#fff;cursor:pointer;font-size:.74rem;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;}

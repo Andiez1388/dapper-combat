@@ -94,6 +94,7 @@
       '<div class="grid2">' + num('logo_fee', c.logo.fee, 'Phí in logo') + num('logo_embroid', c.logo.embroid, 'Cộng thêm nếu chọn thêu') + '</div>' +
       '<small class="field__hint">Logo khách tải lên lưu ở /assets/uploads/custom/ — link mở được trong chi tiết đơn hàng.</small></fieldset>' +
 
+      (c.template === 'strap' ? modelBox(c.model) : '') +
       '<label class="field"><span class="field__label">Nhóm tùy chọn (chất liệu, đệm, khóa…)</span><textarea rows="7" data-cxa-f="groups" spellcheck="false">' + esc(toText(c.groups)) + '</textarea>' +
       '<small class="field__hint">Mỗi dòng một nhóm: <code>Tên nhóm / English: Lựa chọn / English ; Lựa chọn 2 / English +250000</code>. ' +
       'Ghi <code>[nhiều]</code> sau tên nhóm để khách chọn nhiều, <code>[tùy chọn]</code> để được bỏ trống; không ghi = bắt buộc (mặc định lựa chọn đầu). Phụ phí ghi <code>+250000</code> hoặc <code>+250k</code>.</small>' +
@@ -112,9 +113,92 @@
 
   // container chứa cấu hình gốc (để giữ mã nhóm / lựa chọn khi sửa chữ)
   var BOXES = new WeakMap();
+  /* ─── găng 3D thật (.glb) làm mockup cho dây dán ─── */
+  function modelBox(m) {
+    m = m || {};
+    var rot = function (k, lbl) {
+      return '<label class="field"><span class="field__label">' + lbl + '</span><select data-cxm="' + k + '">' + [0, 90, 180, 270].map(function (d) { return '<option value="' + d + '"' + (Number(m[k] || 0) === d ? ' selected' : '') + '>' + d + '°</option>'; }).join('') + '</select></label>';
+    };
+    var rng = function (k, lbl, min, max, step, dflt, unit) {
+      var v = m[k] != null ? m[k] : dflt;
+      return '<label class="field"><span class="field__label">' + lbl + ' <em data-cxm-out="' + k + '">' + v + (unit || '') + '</em></span><input type="range" data-cxm="' + k + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + v + '"></label>';
+    };
+    return '<fieldset class="cxa-box cxa-model"><legend>Găng 3D làm mockup (file .glb)</legend>' +
+      '<input type="hidden" data-cxm="url" value="' + esc(m.url || '') + '">' +
+      '<p class="field__hint">Mặc định web dùng găng dựng sẵn. Tải file găng 3D thật (designer làm hoặc mua mẫu có quyền thương mại, định dạng <b>.glb</b>, tối đa 40MB) — dây dán tự dò cổ găng và quấn lên. ' +
+      'Chỉ cần <b>1 chiếc găng</b> — web tự soi gương thành đôi.</p>' +
+      '<div class="cxa-model-row"><label class="btn btn--ghost btn--sm"><input type="file" accept=".glb,model/gltf-binary" data-cxm-file hidden>' + (m.url ? 'Đổi file .glb' : 'Tải file .glb lên') + '</label>' +
+      '<span data-cxm-name>' + (m.url ? esc(m.url.split('/').pop()) : 'Chưa có — đang dùng găng dựng sẵn') + '</span>' +
+      (m.url ? '<button type="button" class="btn btn--ghost btn--sm" data-cxm-del>Bỏ, dùng găng dựng sẵn</button>' : '') + '</div>' +
+      '<div class="cxa-model-body"' + (m.url ? '' : ' hidden') + '>' +
+      '<div class="cxa-model-prev" data-cxm-prev><p class="muted">Xem trước sẽ hiện ở đây…</p></div>' +
+      '<p class="field__hint">Chỉnh cho găng <b>dựng đứng, cổ găng ở dưới, mu bàn tay quay ra trước</b>, rồi chỉnh dây cho nằm đúng chỗ.</p>' +
+      '<div class="grid3">' + rot('rx', 'Xoay trục X') + rot('ry', 'Xoay trục Y') + rot('rz', 'Xoay trục Z') + '</div>' +
+      '<div class="grid2">' + rng('y', 'Độ cao dây (so với chiều cao găng)', 0.02, 0.6, 0.01, 0.22) + rng('fit', 'Độ ôm của dây', 0.8, 1.4, 0.01, 1) + '</div>' +
+      '<div class="grid2">' + rng('turn', 'Xoay vị trí logo quanh cổ găng', -180, 180, 1, 0, '°') +
+      '<div class="field"><label class="check"><input type="checkbox" data-cxm="flip"' + (m.flip ? ' checked' : '') + '><span>File là găng tay trái (lật lại)</span></label>' +
+      '<label class="check"><input type="checkbox" data-cxm="tint"' + (m.tint ? ' checked' : '') + '><span>Cho khách đổi màu găng xem thử</span></label></div></div>' +
+      '</div></fieldset>';
+  }
+  function readModel(box) {
+    var g = function (k) { return box.querySelector('[data-cxm="' + k + '"]'); };
+    if (!g('url') || !g('url').value) return null;
+    return { url: g('url').value, rx: +g('rx').value, ry: +g('ry').value, rz: +g('rz').value, y: +g('y').value, fit: +g('fit').value, turn: +g('turn').value, flip: g('flip').checked, tint: g('tint').checked };
+  }
+  // xem trước trong admin: tạo lại cảnh 3D khi đổi thông số (găng .glb nhớ sẵn, không tải lại)
+  var PV = { api: null, t: 0 };
+  function previewModel(box) {
+    var el = box.querySelector('[data-cxm-prev]'), m = readModel(box);
+    if (!el || !m) return;
+    clearTimeout(PV.t);
+    PV.t = setTimeout(function () {
+      var go = function () {
+        if (PV.api) { PV.api.dispose(); PV.api = null; }
+        el.innerHTML = '<div class="cxa-model-cv"></div><p class="muted" data-cxm-st>Đang tải găng 3D…</p>';
+        var cv = el.firstChild, t = DEFS.templates.strap, col = {};
+        t.zones.forEach(function (z) { var p = DEFS.palette.filter(function (x) { return x[0] === z[3]; })[0]; col[z[0]] = p ? p[1] : '#111'; });
+        window.DCX3D.create(cv, 'strap', { model: m }).then(function (api) {
+          PV.api = api; api.update({ col: col, groups: {}, glove: '#1c1c1c', text: { value: 'DAPPER', font: 'Arial, sans-serif', method: 'print', spot: 'hook' } });
+          api.view('gloves');
+          var st = el.querySelector('[data-cxm-st]');
+          st.innerHTML = api.real ? 'Kéo để xoay. Nút: <button type="button" data-cxm-view="gloves">Cả đôi</button> <button type="button" data-cxm-view="close">Cận cảnh</button> <button type="button" data-cxm-view="palm">Mặt lòng</button>'
+            : '⚠ Không đọc được file .glb — đang hiện găng dựng sẵn. Thử xuất lại file (glTF binary).';
+        }, function (er) { el.innerHTML = '<p class="set-err">Không mở được xem trước 3D: ' + esc((er && er.message) || er) + '</p>'; });
+      };
+      if (window.DCX3D) go();
+      else { var sc = document.createElement('script'); sc.src = '/assets/js/custom3d.js'; sc.onload = go; document.head.appendChild(sc); }
+    }, 350);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-cxm-view],[data-cxm-del]'); if (!b) return;
+    if (b.matches('[data-cxm-view]')) { if (PV.api) PV.api.view(b.getAttribute('data-cxm-view')); return; }
+    var box = b.closest('[data-cxa]'), fs = b.closest('.cxa-model');
+    if (PV.api) { PV.api.dispose(); PV.api = null; }
+    fs.outerHTML = modelBox(null);
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target; if (!t.matches || !t.matches('[data-cxm-file]') || !t.files[0]) return;
+    var file = t.files[0], fs = t.closest('.cxa-model'), name = fs.querySelector('[data-cxm-name]');
+    if (!/\.glb$/i.test(file.name)) { name.textContent = 'Cần file đuôi .glb (glTF binary). File .gltf / .fbx / .obj hãy xuất lại sang .glb.'; return; }
+    if (file.size > 40 * 1024 * 1024) { name.textContent = 'File quá 40MB — giảm số đa giác hoặc nén texture rồi xuất lại.'; return; }
+    name.textContent = 'Đang tải lên ' + file.name + '…';
+    A().uploadRaw(new File([file], file.name, { type: 'model/gltf-binary' })).then(function (d) {
+      var old = readModel(fs.closest('[data-cxa]')) || {};
+      fs.outerHTML = modelBox(Object.assign(old, { url: d.url }));
+      var box = document.querySelector('[data-cxa][data-ready]'); previewModel(box);
+      A().toast('Đã tải găng 3D lên — chỉnh hướng & vị trí dây rồi bấm Lưu sản phẩm.');
+    }, function (er) { name.textContent = (er && er.message) || 'Tải lên thất bại.'; });
+  });
+  document.addEventListener('input', function (e) {
+    var t = e.target; if (!t.matches || !t.matches('[data-cxm]')) return;
+    var o = t.closest('.cxa-model').querySelector('[data-cxm-out="' + t.getAttribute('data-cxm') + '"]'); if (o) o.textContent = t.value + (t.getAttribute('data-cxm') === 'turn' ? '°' : '');
+    previewModel(t.closest('[data-cxa]'));
+  });
+
   function fill(box, cfg) {
     BOXES.set(box, { cfg: cfg, had: box.getAttribute('data-had') === '1' });
     box.innerHTML = body(cfg); box.setAttribute('data-ready', '1');
+    if (cfg.model && cfg.model.url) previewModel(box);
   }
   function fillPending() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-cxa]:not([data-ready])'), function (box) {
@@ -151,7 +235,7 @@
         zones: zones, palette: palette,
         text: { on: f('text_on').checked, max: Math.min(30, Math.max(1, n('text_max') || 14)), fee: n('text_fee'), embroid: n('text_embroid'), fonts: all('[data-cxa-font]', 'data-cxa-font') },
         logo: { on: f('logo_on').checked, fee: n('logo_fee'), embroid: n('logo_embroid') },
-        groups: g.groups, terms: { vi: f('terms_vi').value.trim(), en: f('terms_en').value.trim() },
+        groups: g.groups, terms: { vi: f('terms_vi').value.trim(), en: f('terms_en').value.trim() }, model: readModel(box),
       } };
     },
     _parse: fromText, _text: toText,

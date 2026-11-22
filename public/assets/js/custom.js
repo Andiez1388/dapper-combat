@@ -395,22 +395,22 @@
       '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
   }
   function drawStage(p) {
-    var st = $('cxStage'), tpl = p.custom.template, sig = DC.lang() + '|' + tpl;
-    // đổi sản phẩm sang mẫu 3D khác → bỏ cảnh cũ
-    if (V.api && V.tpl !== tpl) { V.api.dispose(); V.api = null; V.snap = ''; }
+    var st = $('cxStage'), tpl = p.custom.template, mk = JSON.stringify(p.custom.model || null), sig = DC.lang() + '|' + tpl + '|' + mk;
+    // đổi sản phẩm sang mẫu 3D / găng 3D khác → bỏ cảnh cũ
+    if (V.api && (V.tpl !== tpl || V.mk !== mk)) { V.api.dispose(); V.api = null; V.snap = ''; }
     if (st.getAttribute('data-sig') !== sig) {
       st.setAttribute('data-sig', sig); st.innerHTML = stageHtml(tpl);
       if (V.api) st.querySelector('.cx-3d').appendChild(V.cv);
     }
     var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint'), views = st.querySelector('.cx-views'), gl = st.querySelector('.cx-glove');
     var live = use3d(p) && V.api;
-    views.hidden = !live; if (gl) gl.hidden = !live;
+    views.hidden = !live; if (gl) gl.hidden = !live || (V.api.real && !(p.custom.model && p.custom.model.tint));
     if (live) { box.hidden = false; flat.hidden = true; hint.hidden = false; V.api.update(state3d(p)); return; }
     box.hidden = true; hint.hidden = true; flat.hidden = false; flat.innerHTML = preview(p, S);
     if (use3d(p) && !V.loading) {
       V.loading = true;
-      window.DCX3D.create(box, tpl).then(function (api) {
-        V.api = api; V.tpl = tpl; V.cv = box.querySelector('canvas'); V.loading = false;
+      window.DCX3D.create(box, tpl, { model: p.custom.model }).then(function (api) {
+        V.api = api; V.tpl = tpl; V.mk = mk; V.cv = box.querySelector('canvas'); V.loading = false;
         api.onspin = function (on) { var b = document.querySelector('[data-cx-spin]'); if (b) b.setAttribute('aria-pressed', String(on)); };
         api.onframe = function () { V.snap = api.snapshot(); var m = document.querySelector('.cx-mini'); if (m && V.snap) m.innerHTML = '<img alt="" src="' + V.snap + '">'; };
         var q = product(); if (q && S && S.mode === 'cx') drawStage(q);
