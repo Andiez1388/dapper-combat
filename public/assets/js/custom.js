@@ -360,16 +360,16 @@
   // nút góc nhìn theo từng mẫu
   var VIEWBTN = {
     groin: [['front', 'Trước', 'Front'], ['side', 'Bên', 'Side'], ['back', 'Sau', 'Back'], ['under', 'Dưới', 'Below']],
-    strap: [['front', 'Cận cảnh', 'Close-up'], ['back', 'Lòng găng', 'Palm side'], ['whole', 'Toàn găng', 'Whole glove'], ['flat', 'Trải phẳng', 'Laid flat']],
+    strap: [['front', 'Sản phẩm (1 đôi)', 'Product (pair)'], ['gloves', 'Trên găng', 'On gloves'], ['close', 'Cận cảnh', 'Close-up'], ['palm', 'Mặt lòng găng', 'Palm side'], ['flat', 'Trải phẳng', 'Laid flat']],
   };
   // mặt của từng phần → góc nhìn khi khách bấm chọn màu phần đó
-  var FACEVIEW = { front: 'front', back: 'back', straps: 'under', outer: 'front', inner: 'flat' };
+  var FACEVIEW = { front: 'front', back: 'back', straps: 'under', outer: 'close', inner: 'flat' };
   function faceOf(zid) {
     var p = product(); if (!V.api || !p) return;
     var z = pick((D.templates[p.custom.template] || D.templates.groin).zones, zid), f = z && z[4];
     if (f) V.api.view(zid === 'lining' ? 'top' : FACEVIEW[f] || 'front');
   }
-  function spotView(sp) { if (V.api) V.api.view(/^back/.test(sp) ? 'back' : sp === 'loop' ? 'flat' : 'front'); }
+  function spotView(sp) { var p = product(); if (V.api) V.api.view(/^back/.test(sp) ? 'back' : p && p.custom.template === 'strap' ? 'close' : 'front'); }
   var V = { api: null, tpl: '', loading: false, failed: false, snap: '', glove: '#1c1c1c' };
   var GLOVES = [['#1c1c1c', 'Đen', 'Black'], ['#efece6', 'Trắng', 'White'], ['#b3121f', 'Đỏ', 'Red'], ['#1d2c5a', 'Navy', 'Navy'], ['#c9a227', 'Vàng', 'Gold']];
   function use3d(p) { return !!(window.DCX3D && window.DCX3D.has(p.custom.template) && window.DCX3D.ok() && !V.failed); }

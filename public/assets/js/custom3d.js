@@ -406,147 +406,246 @@
    * Chế độ "trải phẳng": 2 dải dây — mặt ngoài (trên) và mặt trong (dưới). */
   var SEC = [['loop', 0, 0.47], ['elastic', 0.47, 0.6], ['hook', 0.6, 0.93], ['grip', 0.93, 1]];
   var STRAP_SPOTS = { hook: 0.765, loop: 0.24, grip: 0.965 };
-  // mirror: dải dây quấn trên găng có trục dọc ngược chiều ảnh phủ → vẽ chữ / logo lật dọc sẵn cho đúng chiều
-  function strapCanvas(c, s, L, W, inner, redraw, mirror) {
-    var k = 4, x = c.getContext('2d'), col = s.col, r = W * 0.45;
-    if (c.width !== Math.round(L * k)) { c.width = Math.round(L * k); c.height = Math.round(W * k); }
+  var CORNER = 0.22;   // bo góc 2 đầu dây (tỉ lệ bề rộng)
+  function strapCanvas(c, s, L, W, inner, redraw) {
+    var k = 4, x = c.getContext('2d'), col = s.col, r = W * CORNER;
+    if (c.width !== Math.round(L * k) || c.height !== Math.round(W * k)) { c.width = Math.round(L * k); c.height = Math.round(W * k); }
     x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); x.setTransform(k, 0, 0, k, 0, 0);
-    // khung dây bo tròn 2 đầu (ngoài khung trong suốt → cắt bằng alphaTest)
     var shape = new Path2D(); shape.moveTo(r, 0); shape.lineTo(L - r, 0); shape.quadraticCurveTo(L, 0, L, r); shape.lineTo(L, W - r); shape.quadraticCurveTo(L, W, L - r, W);
     shape.lineTo(r, W); shape.quadraticCurveTo(0, W, 0, W - r); shape.lineTo(0, r); shape.quadraticCurveTo(0, 0, r, 0); shape.closePath();
+    x.fillStyle = col.edge; x.fillRect(0, 0, L, W);
     x.save(); x.clip(shape);
     SEC.forEach(function (sc) {
-      var a = sc[1] * L, b = sc[2] * L, id = sc[0], base = id === 'loop' && inner ? col.cover : id === 'hook' && inner ? shade(col.hook, 0.8) : col[id];
+      var a = sc[1] * L, b = sc[2] * L, id = sc[0], base = inner ? (id === 'hook' ? shade(col.hook, 0.82) : id === 'grip' ? col.grip : col.cover) : col[id];
       x.fillStyle = base; x.fillRect(a, 0, b - a, W);
-      var lt = luma(base) > 140;
-      if (id === 'loop' && !inner) { x.fillStyle = lt ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.08)'; for (var i = 0; i < 700; i++) x.fillRect(a + ((i * 37.3) % (b - a)), (i * 13.7) % W, 0.5, 0.5); }
-      if (id === 'hook' && inner) { x.fillStyle = lt ? 'rgba(0,0,0,.22)' : 'rgba(255,255,255,.16)'; for (var hx = a + 1; hx < b; hx += 1.6) for (var hy = 1; hy < W; hy += 1.6) x.fillRect(hx, hy, 0.6, 0.6); }
-      if (id === 'elastic') { x.strokeStyle = lt ? 'rgba(0,0,0,.14)' : 'rgba(255,255,255,.12)'; x.lineWidth = 0.5; for (var e = a; e < b; e += 1.4) { x.beginPath(); x.moveTo(e, 0); x.lineTo(e, W); x.stroke(); } }
-      if (id === 'loop' && inner) { x.fillStyle = 'rgba(0,0,0,.06)'; for (var n = 0; n < 300; n++) x.fillRect(a + ((n * 29.1) % (b - a)), (n * 7.3) % W, 1.2, 1.2); }
+      var lt = luma(base) > 140, i;
+      if (!inner && id === 'loop') { x.fillStyle = lt ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.07)'; for (i = 0; i < 1400; i++) x.fillRect(a + ((i * 37.3) % (b - a)), (i * 13.7) % W, 0.5, 0.5); }
+      if (inner && id === 'hook') { x.fillStyle = lt ? 'rgba(0,0,0,.22)' : 'rgba(255,255,255,.16)'; for (var hx = a + 1; hx < b; hx += 1.5) for (var hy = 1; hy < W; hy += 1.5) x.fillRect(hx, hy, 0.6, 0.6); }
+      if (id === 'elastic') { x.strokeStyle = lt ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.12)'; x.lineWidth = 0.5; for (var e = a; e < b; e += 1.3) { x.beginPath(); x.moveTo(e, 0); x.lineTo(e, W); x.stroke(); } }
+      if (inner && id !== 'hook' && id !== 'grip') { x.fillStyle = 'rgba(0,0,0,.07)'; for (i = 0; i < 600; i++) x.fillRect(a + ((i * 29.1) % (b - a)), (i * 7.3) % W, 1.1, 1.1); }
+      if (id === 'grip') { x.strokeStyle = lt ? 'rgba(0,0,0,.12)' : 'rgba(255,255,255,.08)'; x.lineWidth = 0.4; for (var g = 0; g < W; g += 1.1) { x.beginPath(); x.moveTo(a, g); x.lineTo(b, g); x.stroke(); } }
     });
-    // viền mép 2 bên
-    x.fillStyle = col.edge; x.fillRect(0, 0, L, 2.4); x.fillRect(0, W - 2.4, L, 2.4);
-    // chỉ may: 2 đường dọc mép + ô chữ X ở mỗi chỗ nối đoạn
+    // chỉ may dọc 2 mép + ô chữ X ở mỗi chỗ nối đoạn
     x.strokeStyle = s.reflect ? '#e8f0f3' : col.thread; x.lineWidth = 0.55; x.setLineDash([2, 1.4]);
-    x.beginPath(); x.moveTo(r * 0.6, 3.6); x.lineTo(L - r * 0.6, 3.6); x.moveTo(r * 0.6, W - 3.6); x.lineTo(L - r * 0.6, W - 3.6); x.stroke();
-    SEC.slice(1).forEach(function (sc) {
-      var j = sc[1] * L, bx = [j - 4, 4.6, 8, W - 9.2];
-      x.strokeRect(bx[0], bx[1], bx[2], bx[3]); x.beginPath(); x.moveTo(bx[0], bx[1]); x.lineTo(bx[0] + bx[2], bx[1] + bx[3]); x.moveTo(bx[0] + bx[2], bx[1]); x.lineTo(bx[0], bx[1] + bx[3]); x.stroke();
-    });
+    x.beginPath(); x.moveTo(r * 0.5, 3.4); x.lineTo(L - r * 0.5, 3.4); x.moveTo(r * 0.5, W - 3.4); x.lineTo(L - r * 0.5, W - 3.4); x.stroke();
+    var xbox = function (a0, w0) { var y0 = 4.6, h0 = W - 9.2; x.strokeRect(a0, y0, w0, h0); x.beginPath(); x.moveTo(a0, y0); x.lineTo(a0 + w0, y0 + h0); x.moveTo(a0 + w0, y0); x.lineTo(a0, y0 + h0); x.stroke(); };
+    xbox(SEC[1][1] * L - 4, 8); xbox(SEC[2][1] * L - 4, 8);
+    // đầu dán: miếng vuông gắn trên mặt ngoài cuối đoạn hook (khâu ô chữ X) — như hàng thật
+    var pa = SEC[2][2] * L - W * 1.05;
+    if (!inner) {
+      x.setLineDash([]); x.fillStyle = luma(col.hook) > 140 ? shade(col.hook, 0.9) : shade(col.hook, 1.35); x.fillRect(pa, 2.2, W * 1.05, W - 4.4);
+      x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(pa, 2.2, 0.8, W - 4.4);
+      x.setLineDash([2, 1.4]); xbox(pa + 3, W * 1.05 - 6);
+    } else xbox(SEC[3][1] * L - 4, 8);
     x.setLineDash([]);
-    if (inner) { // lỗ khoen ở đầu đoạn loop
-      x.fillStyle = 'rgba(0,0,0,.75)'; x.beginPath(); x.arc(14, W / 2, 3.2, 0, 7); x.fill();
-    } else {
-      // tab kéo: gờ nổi + chữ PULL
-      x.fillStyle = 'rgba(0,0,0,.12)'; x.fillRect(SEC[3][1] * L, 0, 1.2, W);
-      ['hook', 'loop', 'grip'].forEach(function (sp) {
-        var cxp = STRAP_SPOTS[sp] * L, secW = sp === 'grip' ? (SEC[3][2] - SEC[3][1]) * L * 0.8 : sp === 'hook' ? (SEC[2][2] - SEC[2][1]) * L * 0.8 : (SEC[0][2] - SEC[0][1]) * L * 0.6;
-        var box = [cxp, W / 2, secW, W * 0.56], bg = col[sp === 'grip' ? 'grip' : sp];
-        x.save(); if (mirror) { x.translate(0, W); x.scale(1, -1); }
-        if (s.logo && s.logo.spot === sp) drawLogo(x, s.logo, box, redraw);
-        if (s.text && s.text.spot === sp) drawText(x, s.text, box, bg);
-        x.restore();
-      });
-    }
+    if (inner) { x.fillStyle = 'rgba(0,0,0,.8)'; x.beginPath(); x.arc(14, W / 2, 3.3, 0, 7); x.fill(); }
+    else ['hook', 'loop', 'grip'].forEach(function (sp) {
+      var cxp = sp === 'hook' ? (SEC[2][1] * L + pa) / 2 : STRAP_SPOTS[sp] * L;
+      var secW = sp === 'grip' ? (SEC[3][2] - SEC[3][1]) * L * 0.8 : sp === 'hook' ? (pa - SEC[2][1] * L) * 0.86 : (SEC[0][2] - SEC[0][1]) * L * 0.6;
+      var box = [cxp, W / 2, secW, W * 0.56];
+      if (s.logo && s.logo.spot === sp) drawLogo(x, s.logo, box, redraw);
+      if (s.text && s.text.spot === sp) drawText(x, s.text, box, col[sp]);
+    });
     x.restore();
   }
+  /* găng boxing điêu khắc bằng hàm khoảng cách (SDF): cổ găng + lòng bàn tay + cuộn ngón + đệm mu bàn tay + ngón cái
+   * hoà vào nhau (smooth-union), có đường may hông & đường nối cổ găng; lưới tạo bằng Marching Cubes rồi "nắn" đỉnh về đúng mặt.
+   * Toạ độ mm, đáy cổ găng y = 0, mu bàn tay hướng +z, lòng bàn tay −z, ngón cái phía −x (găng phải). */
+  var GRX = 52, GRZ = 46, GCH = 128;
+  function gTaper(y) { return 1 + 0.06 * Math.min(Math.max(y, 0), GCH) / GCH; }
+  function gloveSDF(x, y, z) {
+    var smin = function (a, b, k) { var h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; };
+    var ell = function (px, py, pz, rx, ry, rz) {
+      var k0 = Math.sqrt(px * px / (rx * rx) + py * py / (ry * ry) + pz * pz / (rz * rz)), k1 = Math.sqrt(px * px / (rx * rx * rx * rx) + py * py / (ry * ry * ry * ry) + pz * pz / (rz * rz * rz * rz));
+      return k1 > 1e-6 ? k0 * (k0 - 1) / k1 : -Math.min(rx, ry, rz);
+    };
+    // cổ găng: trụ elip bo mép đáy
+    var f = gTaper(y), rr = 5, rx = GRX * f - rr, rz = GRZ * f - rr, e = (Math.sqrt(x * x / (rx * rx) + z * z / (rz * rz)) - 1) * Math.min(rx, rz), yc = Math.max(rr - y, y - GCH);
+    var cuff = Math.min(Math.max(e, yc), 0) + Math.hypot(Math.max(e, 0), Math.max(yc, 0)) - rr;
+    var palm = ell(x, y - 184, z - 2, 80, 80, 62);
+    var roll = ell(x, y - 246, z - 18, 78, 64, 66);
+    var pad = ell(x, y - 200, z - 30, 70, 72, 48);
+    var hand = smin(smin(palm, roll, 34), pad, 30);
+    // ngón cái: khối thon tách nhẹ khỏi thân
+    var ax = -74, ay = 140, az = 22, bx = -72, by = 222, bz = 36, px = x - ax, py = y - ay, pz = z - az, dx = bx - ax, dy = by - ay, dz = bz - az;
+    var t = Math.max(0, Math.min(1, (px * dx + py * dy + pz * dz) / (dx * dx + dy * dy + dz * dz)));
+    var thumb = Math.hypot(px - dx * t, py - dy * t, pz - dz * t) - (21 + 3 * Math.sin(Math.PI * t));
+    hand = smin(hand, thumb, 9);
+    var d = smin(cuff, hand, 36);
+    // mép đáy cổ găng cuộn dày
+    var lipR = 4.5, le = (Math.sqrt(x * x / ((GRX - 1) * (GRX - 1)) + z * z / ((GRZ - 1) * (GRZ - 1))) - 1) * Math.min(GRX, GRZ);
+    d = smin(d, Math.hypot(le, y - lipR) - lipR, 4);
+    // đường may hông (chạy quanh mép giữa mu và lòng tay) + đường nối cổ găng
+    var handMask = ss(130, 155, y) * (1 - ss(300, 312, y));
+    d += 1.3 * Math.exp(-(z - 2) * (z - 2) / 6) * handMask;
+    d += 1.6 * Math.exp(-(y - GCH + 2) * (y - GCH + 2) / 5);
+    return d;
+  }
+  var GLOVE_GEO = null;
+  function gloveGeometry(THREE, MarchingCubes) {
+    if (GLOVE_GEO) return GLOVE_GEO;
+    var N = 116, S = 172, C = [-8, 158, 18], mc = new MarchingCubes(N, new THREE.MeshBasicMaterial(), false, false, 160000);
+    mc.isolation = 0;
+    for (var zi = 0; zi < N; zi++) for (var yi = 0; yi < N; yi++) for (var xi = 0; xi < N; xi++) {
+      mc.field[xi + yi * N + zi * N * N] = -gloveSDF(C[0] + S * (xi - N / 2) / (N / 2), C[1] + S * (yi - N / 2) / (N / 2), C[2] + S * (zi - N / 2) / (N / 2));
+    }
+    mc.update();
+    var src = mc.geometry.attributes.position.array, n = mc.count, P3 = new Float32Array(n * 3), NR = new Float32Array(n * 3), UV = new Float32Array(n * 2), h = 0.6;
+    for (var i = 0; i < n; i++) {
+      var x = C[0] + src[i * 3] * S, y = C[1] + src[i * 3 + 1] * S, z = C[2] + src[i * 3 + 2] * S, gx, gy, gz, gl, d;
+      for (var it = 0; it < 2; it++) {   // nắn đỉnh về đúng mặt (Newton)
+        d = gloveSDF(x, y, z);
+        gx = gloveSDF(x + h, y, z) - gloveSDF(x - h, y, z); gy = gloveSDF(x, y + h, z) - gloveSDF(x, y - h, z); gz = gloveSDF(x, y, z + h) - gloveSDF(x, y, z - h);
+        gl = Math.hypot(gx, gy, gz) || 1; x -= d * gx / gl; y -= d * gy / gl; z -= d * gz / gl;
+      }
+      gx = gloveSDF(x + h, y, z) - gloveSDF(x - h, y, z); gy = gloveSDF(x, y + h, z) - gloveSDF(x, y - h, z); gz = gloveSDF(x, y, z + h) - gloveSDF(x, y, z - h); gl = Math.hypot(gx, gy, gz) || 1;
+      P3[i * 3] = x; P3[i * 3 + 1] = y; P3[i * 3 + 2] = z; NR[i * 3] = gx / gl; NR[i * 3 + 1] = gy / gl; NR[i * 3 + 2] = gz / gl;
+      UV[i * 2] = Math.atan2(x, z) / (2 * Math.PI) + 0.5; UV[i * 2 + 1] = y / 315;
+    }
+    mc.geometry.dispose();
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(P3, 3)); g.setAttribute('normal', new THREE.BufferAttribute(NR, 3)); g.setAttribute('uv', new THREE.BufferAttribute(UV, 2));
+    GLOVE_GEO = g; return g;
+  }
+
+  /* dải dây có độ dày: mặt ngoài phồng nhẹ (đệm), mặt trong phẳng, viền bọc mép là ống chạy quanh chu vi.
+   * frame(s) → { p: điểm giữa, n: pháp tuyến mặt ngoài, b: hướng bề rộng (lên trên ảnh phủ) }, s = 0..L */
+  function ribbon(THREE, frame, L, W, T, mats, noEdge) {
+    var NU = Math.max(140, Math.round(L / 1.4)), NV = 10, r = W * CORNER, V3 = THREE.Vector3;
+    var half = function (sv) { var d = Math.min(sv, L - sv); return d < r ? W / 2 - r + Math.sqrt(Math.max(0, r * r - (r - d) * (r - d))) : W / 2; };
+    var F = [], i, j;
+    for (i = 0; i <= NU; i++) { var sv = L * i / NU; F.push([frame(sv), half(sv), sv]); }
+    var face = function (sg) {
+      var P3 = [], UV = [], I = [];
+      F.forEach(function (f) {
+        for (j = 0; j <= NV; j++) {
+          var u = -1 + 2 * j / NV, off = f[1] * u, h = sg > 0 ? T / 2 * (1 + 0.45 * (1 - Math.pow(Math.abs(u), 4))) : -T / 2, fr = f[0];
+          P3.push(fr.p.x + fr.b.x * off + fr.n.x * h, fr.p.y + fr.b.y * off + fr.n.y * h, fr.p.z + fr.b.z * off + fr.n.z * h); UV.push(f[2] / L, 0.5 + off / W);
+        }
+      });
+      for (i = 0; i < NU; i++) for (j = 0; j < NV; j++) { var a = i * (NV + 1) + j, b = a + 1, c = a + NV + 1, d = c + 1; I.push(a, c, b, b, c, d); }
+      var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P3, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); g.setIndex(I); g.computeVertexNormals(); return g;
+    };
+    var grp = new THREE.Group();
+    grp.add(new THREE.Mesh(face(1), mats.outer), new THREE.Mesh(face(-1), mats.inner));
+    if (!noEdge) {
+      var ring = [];
+      F.forEach(function (f) { ring.push(f[0].p.clone().add(f[0].b.clone().multiplyScalar(f[1]))); });
+      for (i = F.length - 1; i >= 0; i--) ring.push(F[i][0].p.clone().add(F[i][0].b.clone().multiplyScalar(-F[i][1])));
+      grp.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(ring, true, 'centripetal'), ring.length * 2, T * 0.62, 8, true), mats.edge));
+    }
+    return grp;
+  }
+  /* quấn xoắn ốc quanh 1 vành (cổ găng / vòng tròn): mỗi vòng dày thêm 1 lớp; tab kéo cuối dây bật thẳng ra ngoài như hàng thật.
+   * ptAt(th, off) · nAt(th): điểm & pháp tuyến vành ở góc th; faceS đặt ở góc faceTh (quay ra trước) */
+  function wrapFrame(V3, ptAt, nAt, L, T, faceS, faceTh, tabFrom) {
+    var tab, start = 0;
+    for (var pass = 0; pass < 2; pass++) {
+      tab = []; var acc = 0, prev = null;
+      for (var th = start; acc < L + 4; th += 0.004) {
+        var off = 1 + T * 1.15 * (th - start) / (2 * Math.PI) + T / 2, p = ptAt(th, off);
+        if (prev) acc += p.distanceTo(prev); tab.push([acc, th, off]); prev = p;
+      }
+      var hit = tab.filter(function (t) { return t[0] >= faceS; })[0][1]; start += faceTh - hit;
+    }
+    var spiral = function (sv) {
+      var lo = 0, hi = tab.length - 1; while (hi - lo > 1) { var m = (lo + hi) >> 1; if (tab[m][0] < sv) lo = m; else hi = m; }
+      var a = tab[lo], b = tab[hi], k = (sv - a[0]) / ((b[0] - a[0]) || 1), t2 = a[1] + (b[1] - a[1]) * k;
+      return { p: ptAt(t2, a[2] + (b[2] - a[2]) * k), n: nAt(t2), b: new V3(0, 1, 0) };
+    };
+    var f0 = spiral(tabFrom), t0 = spiral(tabFrom + 0.5).p.sub(spiral(tabFrom - 0.5).p).normalize(), K = 0.018;
+    return function (sv) {
+      if (sv <= tabFrom) return spiral(sv);
+      var d = sv - tabFrom, tg = t0.clone().add(f0.n.clone().multiplyScalar(2 * K * d)).normalize();
+      return { p: f0.p.clone().add(t0.clone().multiplyScalar(d)).add(f0.n.clone().multiplyScalar(K * d * d)), n: f0.n.clone().sub(t0.clone().multiplyScalar(2 * K * d)).normalize(), b: new V3(0, 1, 0), tg: tg };
+    };
+  }
+
   function strapModel(ctx) {
     var THREE = ctx.THREE, V3 = ctx.V3, root = ctx.root, leather = ctx.leather, ctex = ctx.ctex;
-    var gloveGrp = new THREE.Group(), flatGrp = new THREE.Group(); root.add(gloveGrp, flatGrp); flatGrp.visible = false;
-    var gloveMat = leather({ color: 0x1c1c1c });
-    // găng liền một khối: cổ găng (elip, hơi loe) → phình thành nắm tay (mu bàn tay độn dày phía trước, ngón cuộn về phía lòng) → bo tròn đỉnh
-    var RX = 46, RZ = 40, CH = 122, GH = 345, taper = function (y) { return 1 + 0.07 * (Math.min(y, CH) / CH); };
-    var sm = function (a, b, v) { return ss(a, b, v); };
-    var body = new THREE.CylinderGeometry(1, 1, GH, 72, 90, true), bp = body.attributes.position;
-    for (var i = 0; i < bp.count; i++) {
-      var y = bp.getY(i) + GH / 2, ux = bp.getX(i), uz = bp.getZ(i), f = taper(y);
-      var hand = sm(118, 188, y), top = y > 290 ? Math.sqrt(Math.max(0, 1 - Math.pow((y - 290) / 55, 2))) : 1;
-      var rx = (RX * f) * (1 - hand) + 72 * hand, rz = (RZ * f) * (1 - hand) + (uz > 0 ? 74 : 60) * hand;
-      var zo = 10 * hand - 16 * sm(250, 345, y);           // mu bàn tay nhô ra trước, đầu ngón cuộn về lòng
-      bp.setXYZ(i, ux * rx * Math.max(top, 0.02), y, uz * rz * Math.max(top, 0.02) + zo);
-    }
-    body.computeVertexNormals();
-    gloveGrp.add(new THREE.Mesh(body, Object.assign(gloveMat, { side: THREE.DoubleSide })));
-    // gờ nối giữa cổ găng và thân găng + mép miệng găng
-    var seam = new THREE.Mesh(new THREE.TorusGeometry(1, 0.05, 10, 72), gloveMat); seam.rotation.x = Math.PI / 2; seam.scale.set(RX * 1.07 + 3, RZ * 1.07 + 3, 1); seam.position.y = CH; gloveGrp.add(seam);
-    var lip = new THREE.Mesh(new THREE.TorusGeometry(1, 0.075, 12, 64), gloveMat); lip.rotation.x = Math.PI / 2; lip.scale.set(RX, RZ, RX); gloveGrp.add(lip);
-    // ngón cái ôm sát bên hông, đường ngón cuộn ngang mặt trước
-    var thumb = new THREE.Mesh(new THREE.CapsuleGeometry(19, 62, 10, 24), gloveMat); thumb.position.set(-64, 200, 18); thumb.rotation.set(-0.15, 0, 0.18); gloveGrp.add(thumb);
-    var crease = new THREE.Mesh(new THREE.TorusGeometry(1, 0.035, 8, 64, Math.PI * 0.9), gloveMat); crease.rotation.set(Math.PI / 2 + 0.25, 0, Math.PI * 0.05); crease.scale.set(70, 70, 1); crease.position.set(0, 262, 6); gloveGrp.add(crease);
-    // dây buộc găng mặt lòng bàn tay (−z): khoen + dây chéo
-    var cuffPt = function (th, y, off) { var f = taper(y); return new V3((RX * f + off) * Math.sin(th), y, (RZ * f + off) * Math.cos(th)); };
-    var metal = new THREE.MeshStandardMaterial({ metalness: 0.95, roughness: 0.28, color: 0xc3c6ca });
+    var prodGrp = new THREE.Group(), pairGrp = new THREE.Group(), flatGrp = new THREE.Group(); root.add(prodGrp, pairGrp, flatGrp);
+    var gloveMat = leather({ color: 0x1c1c1c, roughness: 0.4, clearcoat: 0.6 }), gGeo = gloveGeometry(THREE, ctx.MarchingCubes);
+    var metal = new THREE.MeshStandardMaterial({ metalness: 0.95, roughness: 0.25, color: 0xc3c6ca });
     var laceMat = new THREE.MeshStandardMaterial({ color: 0xf2f2f2, roughness: 0.8 });
-    var rows = [70, 84, 98, 112], E = [];
-    rows.forEach(function (y) { [-1, 1].forEach(function (sd) {
-      var th = Math.PI + sd * 0.2, p = cuffPt(th, y, 0.6), r = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.8, 8, 16), metal);
-      r.position.copy(p); r.lookAt(cuffPt(th, y, 10)); gloveGrp.add(r); E.push({ th: th, y: y });
-    }); });
-    var lace = function (pts) { return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 60, 1.15, 8, false), laceMat); };
-    gloveGrp.add(lace([cuffPt(Math.PI - 0.2, 112, 1.4), cuffPt(Math.PI, 113, 3), cuffPt(Math.PI + 0.2, 112, 1.4)]));
-    [[-1, 3.2], [1, 2.2]].forEach(function (c) {
-      var pts = [], sd = c[0];
-      for (var k = rows.length - 1; k > 0; k--) { var a = cuffPt(Math.PI + sd * 0.2, rows[k], 1.4), b = cuffPt(Math.PI - sd * 0.2, rows[k - 1], 1.4); pts.push(a, a.clone().lerp(b, 0.5).add(new V3(0, 0, -c[1]))); sd = -sd; }
-      pts.push(cuffPt(Math.PI + sd * 0.2, rows[0], 1.4), cuffPt(Math.PI + sd * 0.1, 58, 2.4));
-      gloveGrp.add(lace(pts));
+    var outC = document.createElement('canvas'), inC = document.createElement('canvas'), outT = ctex(outC), inT = ctex(inC);
+    var mats = {
+      outer: new THREE.MeshPhysicalMaterial({ map: outT, roughness: 0.78, sheen: 0.6, sheenRoughness: 0.6, side: THREE.DoubleSide }),
+      inner: new THREE.MeshStandardMaterial({ map: inT, roughness: 0.92, side: THREE.DoubleSide }),
+      edge: new THREE.MeshPhysicalMaterial({ roughness: 0.6, sheen: 0.5, sheenRoughness: 0.5 }),
+    };
+    var cuffAt = function (th, y, off) { var f = gTaper(y); return new V3((GRX * f + off) * Math.sin(th), y, (GRZ * f + off) * Math.cos(th)); };
+    var cuffN = function (th, y) { var f = gTaper(y); return new V3(Math.sin(th) / (GRX * f), 0, Math.cos(th) / (GRZ * f)).normalize(); };
+    var Y0 = 92;   // dây nằm sát dưới nắm tay như ảnh thật
+
+    // 2 găng (phải / trái soi gương) — dựng 1 lần; dây buộc chạy trên & dưới dây dán
+    var gloves = [1, -1].map(function (side) {
+      var g = new THREE.Group(), body = new THREE.Mesh(gGeo, gloveMat); body.scale.x = side; g.add(body);
+      var rows = [22, 42, 62, 118];
+      rows.forEach(function (y) { [-1, 1].forEach(function (sd) {
+        var th = Math.PI + sd * 0.22, p = cuffAt(th, y, 0.4), rg = new THREE.Mesh(new THREE.TorusGeometry(2.6, 0.85, 8, 16), metal);
+        rg.position.copy(p); rg.lookAt(p.clone().add(cuffN(th, y))); g.add(rg);
+      }); });
+      var lace = function (pts) { return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 90, 1.25, 8, false), laceMat); };
+      g.add(lace([cuffAt(Math.PI - 0.22, 118, 1.4), cuffAt(Math.PI, 119, 3), cuffAt(Math.PI + 0.22, 118, 1.4)]));
+      [[-1, 3.2], [1, 2.2]].forEach(function (c) {
+        var pts = [], sd = c[0];
+        for (var k = rows.length - 1; k > 0; k--) {
+          var a = cuffAt(Math.PI + sd * 0.22, rows[k], 1.4), b = cuffAt(Math.PI - sd * 0.22, rows[k - 1], 1.4), m = a.clone().lerp(b, 0.5);
+          var under = Math.abs(m.y - Y0) < 26 ? 0 : 1;   // đoạn chui dưới dây dán: sát mặt găng
+          pts.push(a, m.add(cuffN(Math.PI, m.y).multiplyScalar(c[1] * under))); sd = -sd;
+        }
+        pts.push(cuffAt(Math.PI + sd * 0.22, rows[0], 1.4), cuffAt(Math.PI + sd * 0.12, 8, 3));
+        g.add(lace(pts));
+      });
+      g.position.set(side * 104, 0, 0); g.rotation.y = -side * 0.16;
+      pairGrp.add(g); return g;
     });
 
-    // dây dán quấn quanh cổ găng
-    var strapMesh = null, flatMeshes = [], outC = document.createElement('canvas'), inC = document.createElement('canvas'), outF = document.createElement('canvas'), inF = document.createElement('canvas');
-    var outT = ctex(outC), inT = ctex(inC), outFT = ctex(outF), inFT = ctex(inF);
-    var outMat = new THREE.MeshPhysicalMaterial({ map: outT, roughness: 0.82, sheen: 0.5, sheenRoughness: 0.7, alphaTest: 0.5 });
-    var inMat = new THREE.MeshStandardMaterial({ map: inT, roughness: 0.9, alphaTest: 0.5 });
-    var eyeFlat = new THREE.Mesh(new THREE.TorusGeometry(3.4, 1.1, 10, 20), metal);
-    var key = '', L = 380, W = 32;
-    function strapGeo(width) {
-      var turns = 1.35, TOT = turns * 2 * Math.PI, th0 = 0.22 - 0.765 * TOT, yc = 40, pts = [];
-      for (var q = 0; q <= 240; q++) { var th = th0 + (q / 240) * TOT, d = 1.6 + 2.8 * (q / 240) * turns; pts.push(cuffPt(th, yc, d)); }
-      var curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), len = curve.getLength();
-      var g = new THREE.BufferGeometry(), P3 = [], UV = [], I = [], nu = 300, nv = 4, a, b, c, d2, ii, jj;
-      for (jj = 0; jj <= nv; jj++) for (ii = 0; ii <= nu; ii++) {
-        var p = curve.getPointAt(ii / nu), yy = yc + (jj / nv - 0.5) * width;
-        // dây hơi "phồng" giữa bản + mép cụp vào cổ găng
-        var bulge = 0.9 * Math.sin(Math.PI * jj / nv), out = new V3(p.x, 0, p.z).normalize();
-        P3.push(p.x + out.x * bulge, yy, p.z + out.z * bulge); UV.push(ii / nu, 1 - jj / nv);
-      }
-      for (jj = 0; jj < nv; jj++) for (ii = 0; ii < nu; ii++) { a = jj * (nu + 1) + ii; b = a + 1; c = a + nu + 1; d2 = c + 1; I.push(a, c, b, b, c, d2); }
-      g.setAttribute('position', new THREE.Float32BufferAttribute(P3, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); g.setIndex(I); g.computeVertexNormals();
-      var n = g.attributes.normal, mid = 2 * (nu + 1) + nu / 2, pm = curve.getPointAt(0.5);
-      var outward = new V3(n.getX(mid), 0, n.getZ(mid)).dot(new V3(pm.x, 0, pm.z)) > 0;
-      return { g: g, len: len, outward: outward };
+    var built = '', L = 380, W = 32, TH = 3.2, strapObjs = [];
+    function eyelet(fr, flip) {
+      var e = new THREE.Mesh(new THREE.TorusGeometry(3.4, 1.15, 10, 20), metal);
+      e.position.copy(fr.p.clone().add(fr.n.clone().multiplyScalar((flip ? -1 : 1) * (TH / 2 + 0.3)))); e.lookAt(e.position.clone().add(fr.n)); return e;
     }
-    function rebuild(width) {
-      if (strapMesh) { gloveGrp.remove(strapMesh[0], strapMesh[1]); strapMesh[0].geometry.dispose(); }
-      var r = strapGeo(width); L = r.len; W = width;
-      outMat.side = r.outward ? THREE.FrontSide : THREE.BackSide; inMat.side = r.outward ? THREE.BackSide : THREE.FrontSide;
-      strapMesh = [new THREE.Mesh(r.g, outMat), new THREE.Mesh(r.g, inMat)]; gloveGrp.add(strapMesh[0], strapMesh[1]);
-      // trải phẳng: mặt ngoài (trên), mặt trong (dưới)
-      flatMeshes.forEach(function (m) { flatGrp.remove(m); m.geometry.dispose(); }); flatMeshes = [];
-      var pg = function () { return new THREE.PlaneGeometry(L, W, 60, 4); };
-      var o = new THREE.Mesh(pg(), outMat.clone()); o.material.map = outFT; o.material.side = THREE.DoubleSide; o.position.set(0, 160, 0);
-      var iM = new THREE.Mesh(pg(), inMat.clone()); iM.material.map = inFT; iM.material.side = THREE.DoubleSide; iM.position.set(0, 160 - W - 26, 0);
-      flatMeshes = [o, iM]; flatGrp.add(o, iM);
-      eyeFlat.position.set(-L / 2 + 14, iM.position.y, 1); if (!eyeFlat.parent) flatGrp.add(eyeFlat);
+    function rebuild() {
+      strapObjs.forEach(function (o) { o.parent.remove(o); o.traverse(function (m) { if (m.geometry && m.geometry !== gGeo) m.geometry.dispose(); }); }); strapObjs = [];
+      var logoS = (SEC[2][1] * L + SEC[2][2] * L - W * 1.05) / 2, tabS = SEC[3][1] * L + 2;
+      // ── trên găng: chữ / logo quay ra mu bàn tay, tab kéo bật ra bên hông
+      var onGlove = wrapFrame(V3, function (th, off) { return cuffAt(th, Y0, off); }, function (th) { return cuffN(th, Y0); }, L, TH, logoS, 0, tabS);
+      gloves.forEach(function (g) { var rb = ribbon(THREE, onGlove, L, W, TH, mats); g.add(rb); strapObjs.push(rb); });
+      // ── sản phẩm: 1 đôi cuộn tròn (như khi bán), xếp chồng
+      var RA = 56, RB = 40;
+      var ringAt = function (th, off) { return new V3((RA + off) * Math.sin(th), 0, (RB + off) * Math.cos(th)); };
+      var ringN = function (th) { return new V3(Math.sin(th) / RA, 0, Math.cos(th) / RB).normalize(); };
+      var coil = wrapFrame(V3, ringAt, ringN, L, TH, logoS, -0.12, tabS);
+      [0, 1].forEach(function (k) {
+        var g = new THREE.Group(); g.add(ribbon(THREE, coil, L, W, TH, mats));
+        g.position.set(k ? 10 : -6, k ? -W / 2 - 5 : W / 2 + 5, k ? 6 : 0); g.rotation.y = k ? 0.18 : -0.06;
+        prodGrp.add(g); strapObjs.push(g);
+      });
+      // ── trải phẳng: mặt ngoài (trên) · mặt trong có khoen (dưới)
+      var flat = function (sv) { return { p: new V3(sv - L / 2, 0, 0), n: new V3(0, 0, 1), b: new V3(0, 1, 0) }; };
+      var fo = ribbon(THREE, flat, L, W, TH, mats); fo.position.y = W * 0.85;
+      var fi = ribbon(THREE, flat, L, W, TH, mats); fi.rotation.y = Math.PI; fi.position.y = -W * 0.85;
+      fi.add(eyelet(flat(14), true));
+      flatGrp.add(fo, fi); strapObjs.push(fo, fi);
     }
-    var last = null;
     return {
-      fit: [178, 192],
-      views: { front: [-0.3, 0.14], whole: [0.2, 0.16], side: [1.45, 0.1], back: [Math.PI - 0.2, 0.1], flat: [0, 0] },
-      // cận cảnh: phóng to vùng cổ găng có dây dán; "toàn găng" / "trải phẳng": cỡ thường
+      fit: [178, 196],
+      views: { front: [-0.05, 0.42], gloves: [0, 0.1], close: [0.2, 0.24], palm: [Math.PI, 0.12], flat: [0, 0] },
       onview: function (name) {
-        var flat = name === 'flat', close = !flat && name !== 'whole';
-        gloveGrp.visible = !flat; flatGrp.visible = flat;
-        root.scale.setScalar(close ? 2.05 : 1); root.position.set(0, close ? -66 * 2.05 : -158, 0);
+        var prod = name === 'front', fl = name === 'flat';
+        prodGrp.visible = prod; flatGrp.visible = fl; pairGrp.visible = !prod && !fl; gloves[1].visible = name !== 'close';
+        var sc = prod ? 1.55 : fl ? 0.95 : name === 'close' ? 2.3 : 0.94;
+        root.scale.setScalar(sc);
+        root.position.set(name === 'close' ? -104 * sc : 0, prod || fl ? 0 : name === 'close' ? -Y0 * sc : -150, name === 'close' ? -10 : 0);
       },
-      reset: function () { key = ''; },
+      reset: function () { built = ''; },
       update: function (s, redraw) {
-        last = s;
-        var width = s.groups && s.groups.width === 'w38' ? 38 : 32;
-        if (key !== String(width)) { key = String(width); rebuild(width); }
-        strapCanvas(outC, s, L, W, false, redraw, true); strapCanvas(inC, s, L, W, true, redraw, true);
-        strapCanvas(outF, s, L, W, false, redraw, false); strapCanvas(inF, s, L, W, true, redraw, false);
-        outT.needsUpdate = inT.needsUpdate = outFT.needsUpdate = inFT.needsUpdate = true;
-        metal.color.set(s.col.eyelet); eyeFlat.material = metal;
+        var nL = s.groups && s.groups.length === 'long' ? 430 : 380, nW = s.groups && s.groups.width === 'w38' ? 38 : 32;
+        if (built !== nL + 'x' + nW) { built = nL + 'x' + nW; L = nL; W = nW; rebuild(); }
+        strapCanvas(outC, s, L, W, false, redraw); strapCanvas(inC, s, L, W, true, redraw);
+        outT.needsUpdate = inT.needsUpdate = true;
+        mats.edge.color.set(s.col.edge); metal.color.set(s.col.eyelet);
         gloveMat.color.set(s.glove || '#1c1c1c');
         laceMat.color.set(s.laces ? s.col.hook : '#f2f2f2');
       },
@@ -554,7 +653,7 @@
   }
 
   /* ─── cảnh 3D ─── */
-  function build(THREE, RoomEnvironment, el, tpl) {
+  function build(THREE, RoomEnvironment, el, tpl, MarchingCubes) {
     var V3 = THREE.Vector3;
     var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -572,7 +671,7 @@
     function ctex(c) { var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAni; return t; }
     var bump = new THREE.CanvasTexture(grain()); bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.set(12, 8);
     var leather = function (o) { return new THREE.MeshPhysicalMaterial(Object.assign({ bumpMap: bump, bumpScale: 0.5, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.3 }, o)); };
-    var M = (MODELS[tpl] || MODELS.groin)({ THREE: THREE, V3: V3, root: root, leather: leather, ctex: ctex, bump: bump });
+    var M = (MODELS[tpl] || MODELS.groin)({ THREE: THREE, V3: V3, root: root, leather: leather, ctex: ctex, bump: bump, MarchingCubes: MarchingCubes });
 
     // xoay
     var yaw = M.views.front[0] - 0.8, pitch = M.views.front[1], want = { yaw: M.views.front[0], pitch: M.views.front[1] }, dirty = true, raf = 0, last = null, was = false, spin = false, drag = null;
@@ -642,7 +741,9 @@
     has: function (tpl) { return !!MODELS[tpl]; },
     create: function (el, tpl) {
       return import(BASE + 'three-r170.module.min.js').then(function (THREE) {
-        return import(BASE + 'RoomEnvironment-r170.js').then(function (m) { return build(THREE, m.RoomEnvironment, el, tpl || 'groin'); });
+        return Promise.all([import(BASE + 'RoomEnvironment-r170.js'), tpl === 'strap' ? import(BASE + 'MarchingCubes-r170.js') : null]).then(function (m) {
+          return build(THREE, m[0].RoomEnvironment, el, tpl || 'groin', m[1] && m[1].MarchingCubes);
+        });
       });
     },
   };
