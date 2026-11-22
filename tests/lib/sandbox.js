@@ -27,7 +27,7 @@ async function start(extraEnv = {}) {
   fs.cpSync(path.join(ROOT, 'data', 'seed'), path.join(data, 'seed'), { recursive: true });
   const port = await freePort();
   const env = {
-    ...process.env, PORT: String(port), NODE_ENV: 'test', DC_DATA_DIR: data, DC_UPLOAD_DIR: uploads,
+    ...process.env, PORT: String(port), NODE_ENV: 'test', DC_TODAY: '2026-11-01', DC_DATA_DIR: data, DC_UPLOAD_DIR: uploads,
     // để trống (dotenv không ghi đè biến đã có) → không gửi tin thật, khóa đăng nhập tự tạo trong thư mục tạm
     JWT_SECRET: '', SITE_URL: '', TRUST_PROXY: '', TELEGRAM_BOT_TOKEN: '', TELEGRAM_CHAT_ID: '', SMTP_HOST: '', SMTP_USER: '', SMTP_PASS: '', NOTIFY_EMAIL: '',
     // dịch tự động: dịch giả "[EN] …", không gọi AI thật (không tốn tiền, không cần khóa)

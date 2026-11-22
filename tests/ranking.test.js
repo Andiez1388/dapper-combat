@@ -126,8 +126,8 @@ module.exports = async function rankingTests(env, t) {
     t.ok(r.s === 400 && /Ngày chấm phải từ/.test(r.j.error), 'ngày chấm lùi trước lần chấm gần nhất → báo lỗi', r.j);
     r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { weight: 500, skills: { ...sk, power: 120 } } });
     t.ok(r.s === 400 && /Cân nặng/.test(r.j.error), 'số đo / điểm ngoài khoảng → báo lỗi (không tự bỏ)', r.j);
-    r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { skills: { ...sk, power: 90 }, assessDate: ranking.vnToday(), assessNote: 'Tiến bộ sức mạnh' } });
-    t.ok(r.j.assessments.length === 2 && r.j.assessments[1].date === ranking.vnToday() && r.j.assessments[1].note === 'Tiến bộ sức mạnh', 'đổi điểm kỹ năng → thêm lần chấm (ngày + ghi chú)', r.j.assessments);
+    r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { skills: { ...sk, power: 90 }, assessDate: '2026-11-01', assessNote: 'Tiến bộ sức mạnh' } });
+    t.ok(r.j.assessments.length === 2 && r.j.assessments[1].date === '2026-11-01' && r.j.assessments[1].note === 'Tiến bộ sức mạnh', 'đổi điểm kỹ năng → thêm lần chấm (ngày + ghi chú)', r.j.assessments);
     // hồ sơ mở rộng (phiếu A3–A5, B2–B3): lưu được; liên hệ + sức khỏe không bao giờ ra trang công khai
     r = await req('/api/fighters/' + nf.id, { method: 'PUT', body: { evalStrong: { vi: 'Đấm nặng\nBền sức' }, evalNote: { vi: 'Tập chăm' }, started: '2024-03', idol: 'Muhammad Ali', otherArts: 'Karate',
       moves: { ult: { name: { vi: 'Móc trái hạ màn' }, desc: { vi: 'Sau cú jab' } }, power: { name: { vi: '' }, desc: { vi: '' } } }, private: { phone: '0909 000 111', health: 'Đau vai phải' } } });
@@ -154,7 +154,7 @@ module.exports = async function rankingTests(env, t) {
     r = await req('/api/auth/login', { method: 'POST', tok: false, body: { email: 'hlv-rank@example.com', password: tmp } });
     r = await req('/api/auth/change-password', { method: 'POST', tok: r.j.token, body: { currentPassword: tmp, newPassword: 'HlvRank-' + Date.now() } });
     const S = r.j.token;
-    t.ok((await req('/api/fighters/' + nf.id, { method: 'PUT', tok: S, body: { skills: { ...sk, speed: 80 } } })).s === 200, 'HLV (nhân viên) chấm điểm kỹ năng được');
+    { const rr = await req('/api/fighters/' + nf.id, { method: 'PUT', tok: S, body: { skills: { ...sk, speed: 80 } } }); t.ok(rr.s === 200, 'HLV (nhân viên) chấm điểm kỹ năng được', rr.j); }
     t.ok((await req('/api/fighters/' + nf.id, { method: 'DELETE', tok: S })).s === 403 && (await req('/api/events/' + evt.id, { method: 'DELETE', tok: S })).s === 403, 'HLV không xóa được võ sĩ / sự kiện');
     r = await req('/api/fighters/' + nf.id, { method: 'DELETE' });
     t.ok(r.s === 409 && /đã có 1 trận/.test(r.j.error), 'võ sĩ đã có trận → không xóa được (gợi ý ẩn / nghỉ thi đấu)', r.j);
