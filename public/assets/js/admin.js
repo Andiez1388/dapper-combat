@@ -2072,6 +2072,9 @@
         '<small class="field__hint">Có video riêng thì trang chi tiết hiện video này thay cho 2 video chung.</small></div>') +
       sec('Thông tin bán hàng',
         field('Tên sản phẩm', '<input type="text" name="name" value="' + esc(p.name || '') + '" maxlength="120" required autocomplete="off">') +
+        field('Thương hiệu', '<input type="text" name="brand" value="' + esc(p.brand || 'Dapper Combat') + '" maxlength="40" list="brandList" autocomplete="off">' +
+          '<datalist id="brandList"><option value="Dapper Combat"><option value="Dapper Dudes"></datalist>',
+          'Hiện trên trang sản phẩm (trên tên) và trong dữ liệu sản phẩm gửi Google.') +
         field('Tên sản phẩm · English (AI tự dịch)', '<input type="text" name="nameEn" value="' + esc(p.nameEn || '') + '" maxlength="120" autocomplete="off" placeholder="AI tự dịch khi lưu — không cần nhập">') +
         '<div class="grid2">' +
         field('Danh mục', '<select name="cat">' + catOpts + '</select>', isAdmin() ? 'Thêm / sửa danh mục ở <a href="#/categories">Danh mục sản phẩm</a>.' : '') +
@@ -2192,7 +2195,7 @@
       rating: Math.round(rating * 10) / 10, reviews: reviews, img: img,
       images: $$('[data-gal-url]', form).map(function (n) { return n.getAttribute('data-gal-url'); }).filter(function (u) { return !!safeImg(u); }).slice(0, MAX_GALLERY),
       badge: (F(form, 'badge') && F(form, 'badge').value) || '',
-      nameEn: get('nameEn'), video: get('video'), seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
+      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
       features: $$('[data-feat]', form).map(function (r) { return { vi: $('[data-feat-vi]', r).value.trim(), en: $('[data-feat-en]', r).value.trim() }; })
         .filter(function (f) { return f.vi; }).slice(0, MAX_FEATS),
       // số tồn kho lúc mở form: không sửa ô này thì server giữ số hiện tại (có thể vừa bị trừ bởi đơn mới)

@@ -137,7 +137,7 @@ function renderDetail(){
   curMedia=mediaOf(p);showMedia(0,IMG[p.img]);
   const bd=$("dBadge");if(p.old){bd.style.display="block";bd.textContent="-"+Math.round((1-p.price/p.old)*100)+"%";}else bd.style.display="none";
   $("dWish").textContent=wish.has(p.id)?"♥":"♡";$("dWish").classList.toggle("on",wish.has(p.id));
-  $("dCat").textContent=t("cat."+p.cat);$("crumbCat").textContent=t("cat."+p.cat);$("crumbName").textContent=pn(p);$("dName").textContent=pn(p);
+  $("dCat").textContent=(p.brand?p.brand+" · ":"")+t("cat."+p.cat);$("crumbCat").textContent=t("cat."+p.cat);$("crumbName").textContent=pn(p);$("dName").textContent=pn(p);
   $("dStars").textContent=stars(p.rating);$("dRating").textContent=p.rating.toFixed(1)+" · "+p.reviews+" "+t("detail.reviews");
   /* dòng "★ 4.9 · N đánh giá": chỉ hiện khi sản phẩm có số đánh giá thật */
   const rt=document.querySelector("#detailView .pdp-rating");if(rt)rt.style.display=p.reviews>0?"":"none";

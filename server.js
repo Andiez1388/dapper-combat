@@ -242,7 +242,7 @@ app.get('/shop/:slug', (req, res, next) => {
   const ld = {
     '@context': 'https://schema.org', '@type': 'Product', name: p.name, sku: p.id, description: rawDesc,
     image: [p.img].concat(p.images || []).filter(Boolean).map(u => abs(req, u)),
-    brand: { '@type': 'Brand', name: 'Dapper Combat' },
+    brand: { '@type': 'Brand', name: p.brand || 'Dapper Combat' },
     offers: { '@type': 'Offer', url: baseUrl(req) + canon, priceCurrency: 'VND', price: p.price, availability: 'https://schema.org/' + (p.stock > 0 ? 'InStock' : 'OutOfStock') },
   };
   if (p.reviews > 0 && p.rating > 0) ld.aggregateRating = { '@type': 'AggregateRating', ratingValue: p.rating, reviewCount: p.reviews };

@@ -275,26 +275,10 @@
       '<polygon points="' + f.patch + '" fill="' + col('panel') + '" stroke="' + col('trim') + '" stroke-width="2.4"/>';
   }
 
-  /* ─── cảnh 3D ─── */
-  function build(THREE, RoomEnvironment, el) {
-    var V3 = THREE.Vector3;
-    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
-    var cv = renderer.domElement; cv.className = 'cx-3d-cv'; el.appendChild(cv);
-    var scene = new THREE.Scene(), pm = new THREE.PMREMGenerator(renderer);
-    scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.85;
-    var key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-320, 420, 620); scene.add(key);
-    var fill = new THREE.DirectionalLight(0xfff4e8, 0.45); fill.position.set(420, -80, 300); scene.add(fill);
-    var rim = new THREE.DirectionalLight(0xffffff, 1.1); rim.position.set(260, 380, -700); scene.add(rim);
-    var low = new THREE.DirectionalLight(0xffffff, 0.5); low.position.set(0, -600, -200); scene.add(low);
-    var cam = new THREE.PerspectiveCamera(26, 1, 10, 8000);
-    var grp = new THREE.Group(), root = new THREE.Group(); grp.add(root); scene.add(grp);
+  /* ─── mô hình: groin guard ─── */
+  function groinModel(ctx) {
+    var THREE = ctx.THREE, V3 = ctx.V3, root = ctx.root, leather = ctx.leather, ctex = ctx.ctex, bump = ctx.bump;
     root.position.set(0, 172, EB - 6);
-    var maxAni = renderer.capabilities.getMaxAnisotropy();
-    function ctex(c) { var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAni; return t; }
-    var bump = new THREE.CanvasTexture(grain()); bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.set(12, 8);
-    var leather = function (o) { return new THREE.MeshPhysicalMaterial(Object.assign({ bumpMap: bump, bumpScale: 0.5, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.3 }, o)); };
     var A = function (x, y, h) { var p = at(x, y, h); return new V3(p[0], p[1], p[2]); };
 
     // thân: lưới theo rập → quấn + phồng
@@ -399,12 +383,203 @@
       });
     }
 
+    return {
+      fit: [222, 232],
+      views: { front: [0.2, 0.08], side: [1.5, 0.08], back: [Math.PI + 0.3, 0.16], top: [Math.PI + 0.25, 0.72], under: [Math.PI + 0.35, -0.55] },
+      reset: function () { hwKind = ''; },
+      update: function (s, redraw) {
+        paintFront(fc, s, redraw); fTex.needsUpdate = true;
+        paintLining(lc, s); lTex.needsUpdate = true;
+        paintBelt(bc, s, L, redraw); bTex.needsUpdate = true;
+        hardware(s.closure || 'lace');
+        trimMat.color.set(s.col.trim); tabMat.color.set(s.col.tab); strapMat.color.set(s.col.strap); laceMat.color.set(s.col.lace); metalMat.color.set(s.col.eyelet);
+        beltIn.color.set(shade(s.col.elastic, 0.7));
+        var gloss = s.finish !== 'matte';
+        [frontMat, trimMat, tabMat].forEach(function (m) { m.roughness = gloss ? 0.34 : 0.74; m.clearcoat = gloss ? 0.6 : 0.05; m.clearcoatRoughness = gloss ? 0.25 : 0.6; m.bumpScale = s.material === 'cow' ? 1.1 : s.material === 'micro' ? 0.25 : 0.5; });
+      },
+    };
+  }
+
+  /* ─── mô hình: dây dán găng (Lace N Loop) ───
+   * Đơn vị ~ mm. Găng buộc dây minh hoạ (dựng đứng: cổ găng dưới, nắm tay trên), dây dán quấn ~1,35 vòng quanh cổ găng:
+   * đầu trong = đoạn loop (có khoen giữ đầu dây buộc, mặt trong lót êm) → đoạn thun → đoạn hook (mặt ngoài in logo) → tab kéo ở ngoài cùng.
+   * Chế độ "trải phẳng": 2 dải dây — mặt ngoài (trên) và mặt trong (dưới). */
+  var SEC = [['loop', 0, 0.47], ['elastic', 0.47, 0.6], ['hook', 0.6, 0.93], ['grip', 0.93, 1]];
+  var STRAP_SPOTS = { hook: 0.765, loop: 0.24, grip: 0.965 };
+  // mirror: dải dây quấn trên găng có trục dọc ngược chiều ảnh phủ → vẽ chữ / logo lật dọc sẵn cho đúng chiều
+  function strapCanvas(c, s, L, W, inner, redraw, mirror) {
+    var k = 4, x = c.getContext('2d'), col = s.col, r = W * 0.45;
+    if (c.width !== Math.round(L * k)) { c.width = Math.round(L * k); c.height = Math.round(W * k); }
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); x.setTransform(k, 0, 0, k, 0, 0);
+    // khung dây bo tròn 2 đầu (ngoài khung trong suốt → cắt bằng alphaTest)
+    var shape = new Path2D(); shape.moveTo(r, 0); shape.lineTo(L - r, 0); shape.quadraticCurveTo(L, 0, L, r); shape.lineTo(L, W - r); shape.quadraticCurveTo(L, W, L - r, W);
+    shape.lineTo(r, W); shape.quadraticCurveTo(0, W, 0, W - r); shape.lineTo(0, r); shape.quadraticCurveTo(0, 0, r, 0); shape.closePath();
+    x.save(); x.clip(shape);
+    SEC.forEach(function (sc) {
+      var a = sc[1] * L, b = sc[2] * L, id = sc[0], base = id === 'loop' && inner ? col.cover : id === 'hook' && inner ? shade(col.hook, 0.8) : col[id];
+      x.fillStyle = base; x.fillRect(a, 0, b - a, W);
+      var lt = luma(base) > 140;
+      if (id === 'loop' && !inner) { x.fillStyle = lt ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.08)'; for (var i = 0; i < 700; i++) x.fillRect(a + ((i * 37.3) % (b - a)), (i * 13.7) % W, 0.5, 0.5); }
+      if (id === 'hook' && inner) { x.fillStyle = lt ? 'rgba(0,0,0,.22)' : 'rgba(255,255,255,.16)'; for (var hx = a + 1; hx < b; hx += 1.6) for (var hy = 1; hy < W; hy += 1.6) x.fillRect(hx, hy, 0.6, 0.6); }
+      if (id === 'elastic') { x.strokeStyle = lt ? 'rgba(0,0,0,.14)' : 'rgba(255,255,255,.12)'; x.lineWidth = 0.5; for (var e = a; e < b; e += 1.4) { x.beginPath(); x.moveTo(e, 0); x.lineTo(e, W); x.stroke(); } }
+      if (id === 'loop' && inner) { x.fillStyle = 'rgba(0,0,0,.06)'; for (var n = 0; n < 300; n++) x.fillRect(a + ((n * 29.1) % (b - a)), (n * 7.3) % W, 1.2, 1.2); }
+    });
+    // viền mép 2 bên
+    x.fillStyle = col.edge; x.fillRect(0, 0, L, 2.4); x.fillRect(0, W - 2.4, L, 2.4);
+    // chỉ may: 2 đường dọc mép + ô chữ X ở mỗi chỗ nối đoạn
+    x.strokeStyle = s.reflect ? '#e8f0f3' : col.thread; x.lineWidth = 0.55; x.setLineDash([2, 1.4]);
+    x.beginPath(); x.moveTo(r * 0.6, 3.6); x.lineTo(L - r * 0.6, 3.6); x.moveTo(r * 0.6, W - 3.6); x.lineTo(L - r * 0.6, W - 3.6); x.stroke();
+    SEC.slice(1).forEach(function (sc) {
+      var j = sc[1] * L, bx = [j - 4, 4.6, 8, W - 9.2];
+      x.strokeRect(bx[0], bx[1], bx[2], bx[3]); x.beginPath(); x.moveTo(bx[0], bx[1]); x.lineTo(bx[0] + bx[2], bx[1] + bx[3]); x.moveTo(bx[0] + bx[2], bx[1]); x.lineTo(bx[0], bx[1] + bx[3]); x.stroke();
+    });
+    x.setLineDash([]);
+    if (inner) { // lỗ khoen ở đầu đoạn loop
+      x.fillStyle = 'rgba(0,0,0,.75)'; x.beginPath(); x.arc(14, W / 2, 3.2, 0, 7); x.fill();
+    } else {
+      // tab kéo: gờ nổi + chữ PULL
+      x.fillStyle = 'rgba(0,0,0,.12)'; x.fillRect(SEC[3][1] * L, 0, 1.2, W);
+      ['hook', 'loop', 'grip'].forEach(function (sp) {
+        var cxp = STRAP_SPOTS[sp] * L, secW = sp === 'grip' ? (SEC[3][2] - SEC[3][1]) * L * 0.8 : sp === 'hook' ? (SEC[2][2] - SEC[2][1]) * L * 0.8 : (SEC[0][2] - SEC[0][1]) * L * 0.6;
+        var box = [cxp, W / 2, secW, W * 0.56], bg = col[sp === 'grip' ? 'grip' : sp];
+        x.save(); if (mirror) { x.translate(0, W); x.scale(1, -1); }
+        if (s.logo && s.logo.spot === sp) drawLogo(x, s.logo, box, redraw);
+        if (s.text && s.text.spot === sp) drawText(x, s.text, box, bg);
+        x.restore();
+      });
+    }
+    x.restore();
+  }
+  function strapModel(ctx) {
+    var THREE = ctx.THREE, V3 = ctx.V3, root = ctx.root, leather = ctx.leather, ctex = ctx.ctex;
+    var gloveGrp = new THREE.Group(), flatGrp = new THREE.Group(); root.add(gloveGrp, flatGrp); flatGrp.visible = false;
+    var gloveMat = leather({ color: 0x1c1c1c });
+    // găng liền một khối: cổ găng (elip, hơi loe) → phình thành nắm tay (mu bàn tay độn dày phía trước, ngón cuộn về phía lòng) → bo tròn đỉnh
+    var RX = 46, RZ = 40, CH = 122, GH = 345, taper = function (y) { return 1 + 0.07 * (Math.min(y, CH) / CH); };
+    var sm = function (a, b, v) { return ss(a, b, v); };
+    var body = new THREE.CylinderGeometry(1, 1, GH, 72, 90, true), bp = body.attributes.position;
+    for (var i = 0; i < bp.count; i++) {
+      var y = bp.getY(i) + GH / 2, ux = bp.getX(i), uz = bp.getZ(i), f = taper(y);
+      var hand = sm(118, 188, y), top = y > 290 ? Math.sqrt(Math.max(0, 1 - Math.pow((y - 290) / 55, 2))) : 1;
+      var rx = (RX * f) * (1 - hand) + 72 * hand, rz = (RZ * f) * (1 - hand) + (uz > 0 ? 74 : 60) * hand;
+      var zo = 10 * hand - 16 * sm(250, 345, y);           // mu bàn tay nhô ra trước, đầu ngón cuộn về lòng
+      bp.setXYZ(i, ux * rx * Math.max(top, 0.02), y, uz * rz * Math.max(top, 0.02) + zo);
+    }
+    body.computeVertexNormals();
+    gloveGrp.add(new THREE.Mesh(body, Object.assign(gloveMat, { side: THREE.DoubleSide })));
+    // gờ nối giữa cổ găng và thân găng + mép miệng găng
+    var seam = new THREE.Mesh(new THREE.TorusGeometry(1, 0.05, 10, 72), gloveMat); seam.rotation.x = Math.PI / 2; seam.scale.set(RX * 1.07 + 3, RZ * 1.07 + 3, 1); seam.position.y = CH; gloveGrp.add(seam);
+    var lip = new THREE.Mesh(new THREE.TorusGeometry(1, 0.075, 12, 64), gloveMat); lip.rotation.x = Math.PI / 2; lip.scale.set(RX, RZ, RX); gloveGrp.add(lip);
+    // ngón cái ôm sát bên hông, đường ngón cuộn ngang mặt trước
+    var thumb = new THREE.Mesh(new THREE.CapsuleGeometry(19, 62, 10, 24), gloveMat); thumb.position.set(-64, 200, 18); thumb.rotation.set(-0.15, 0, 0.18); gloveGrp.add(thumb);
+    var crease = new THREE.Mesh(new THREE.TorusGeometry(1, 0.035, 8, 64, Math.PI * 0.9), gloveMat); crease.rotation.set(Math.PI / 2 + 0.25, 0, Math.PI * 0.05); crease.scale.set(70, 70, 1); crease.position.set(0, 262, 6); gloveGrp.add(crease);
+    // dây buộc găng mặt lòng bàn tay (−z): khoen + dây chéo
+    var cuffPt = function (th, y, off) { var f = taper(y); return new V3((RX * f + off) * Math.sin(th), y, (RZ * f + off) * Math.cos(th)); };
+    var metal = new THREE.MeshStandardMaterial({ metalness: 0.95, roughness: 0.28, color: 0xc3c6ca });
+    var laceMat = new THREE.MeshStandardMaterial({ color: 0xf2f2f2, roughness: 0.8 });
+    var rows = [70, 84, 98, 112], E = [];
+    rows.forEach(function (y) { [-1, 1].forEach(function (sd) {
+      var th = Math.PI + sd * 0.2, p = cuffPt(th, y, 0.6), r = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.8, 8, 16), metal);
+      r.position.copy(p); r.lookAt(cuffPt(th, y, 10)); gloveGrp.add(r); E.push({ th: th, y: y });
+    }); });
+    var lace = function (pts) { return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), 60, 1.15, 8, false), laceMat); };
+    gloveGrp.add(lace([cuffPt(Math.PI - 0.2, 112, 1.4), cuffPt(Math.PI, 113, 3), cuffPt(Math.PI + 0.2, 112, 1.4)]));
+    [[-1, 3.2], [1, 2.2]].forEach(function (c) {
+      var pts = [], sd = c[0];
+      for (var k = rows.length - 1; k > 0; k--) { var a = cuffPt(Math.PI + sd * 0.2, rows[k], 1.4), b = cuffPt(Math.PI - sd * 0.2, rows[k - 1], 1.4); pts.push(a, a.clone().lerp(b, 0.5).add(new V3(0, 0, -c[1]))); sd = -sd; }
+      pts.push(cuffPt(Math.PI + sd * 0.2, rows[0], 1.4), cuffPt(Math.PI + sd * 0.1, 58, 2.4));
+      gloveGrp.add(lace(pts));
+    });
+
+    // dây dán quấn quanh cổ găng
+    var strapMesh = null, flatMeshes = [], outC = document.createElement('canvas'), inC = document.createElement('canvas'), outF = document.createElement('canvas'), inF = document.createElement('canvas');
+    var outT = ctex(outC), inT = ctex(inC), outFT = ctex(outF), inFT = ctex(inF);
+    var outMat = new THREE.MeshPhysicalMaterial({ map: outT, roughness: 0.82, sheen: 0.5, sheenRoughness: 0.7, alphaTest: 0.5 });
+    var inMat = new THREE.MeshStandardMaterial({ map: inT, roughness: 0.9, alphaTest: 0.5 });
+    var eyeFlat = new THREE.Mesh(new THREE.TorusGeometry(3.4, 1.1, 10, 20), metal);
+    var key = '', L = 380, W = 32;
+    function strapGeo(width) {
+      var turns = 1.35, TOT = turns * 2 * Math.PI, th0 = 0.22 - 0.765 * TOT, yc = 40, pts = [];
+      for (var q = 0; q <= 240; q++) { var th = th0 + (q / 240) * TOT, d = 1.6 + 2.8 * (q / 240) * turns; pts.push(cuffPt(th, yc, d)); }
+      var curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal'), len = curve.getLength();
+      var g = new THREE.BufferGeometry(), P3 = [], UV = [], I = [], nu = 300, nv = 4, a, b, c, d2, ii, jj;
+      for (jj = 0; jj <= nv; jj++) for (ii = 0; ii <= nu; ii++) {
+        var p = curve.getPointAt(ii / nu), yy = yc + (jj / nv - 0.5) * width;
+        // dây hơi "phồng" giữa bản + mép cụp vào cổ găng
+        var bulge = 0.9 * Math.sin(Math.PI * jj / nv), out = new V3(p.x, 0, p.z).normalize();
+        P3.push(p.x + out.x * bulge, yy, p.z + out.z * bulge); UV.push(ii / nu, 1 - jj / nv);
+      }
+      for (jj = 0; jj < nv; jj++) for (ii = 0; ii < nu; ii++) { a = jj * (nu + 1) + ii; b = a + 1; c = a + nu + 1; d2 = c + 1; I.push(a, c, b, b, c, d2); }
+      g.setAttribute('position', new THREE.Float32BufferAttribute(P3, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); g.setIndex(I); g.computeVertexNormals();
+      var n = g.attributes.normal, mid = 2 * (nu + 1) + nu / 2, pm = curve.getPointAt(0.5);
+      var outward = new V3(n.getX(mid), 0, n.getZ(mid)).dot(new V3(pm.x, 0, pm.z)) > 0;
+      return { g: g, len: len, outward: outward };
+    }
+    function rebuild(width) {
+      if (strapMesh) { gloveGrp.remove(strapMesh[0], strapMesh[1]); strapMesh[0].geometry.dispose(); }
+      var r = strapGeo(width); L = r.len; W = width;
+      outMat.side = r.outward ? THREE.FrontSide : THREE.BackSide; inMat.side = r.outward ? THREE.BackSide : THREE.FrontSide;
+      strapMesh = [new THREE.Mesh(r.g, outMat), new THREE.Mesh(r.g, inMat)]; gloveGrp.add(strapMesh[0], strapMesh[1]);
+      // trải phẳng: mặt ngoài (trên), mặt trong (dưới)
+      flatMeshes.forEach(function (m) { flatGrp.remove(m); m.geometry.dispose(); }); flatMeshes = [];
+      var pg = function () { return new THREE.PlaneGeometry(L, W, 60, 4); };
+      var o = new THREE.Mesh(pg(), outMat.clone()); o.material.map = outFT; o.material.side = THREE.DoubleSide; o.position.set(0, 160, 0);
+      var iM = new THREE.Mesh(pg(), inMat.clone()); iM.material.map = inFT; iM.material.side = THREE.DoubleSide; iM.position.set(0, 160 - W - 26, 0);
+      flatMeshes = [o, iM]; flatGrp.add(o, iM);
+      eyeFlat.position.set(-L / 2 + 14, iM.position.y, 1); if (!eyeFlat.parent) flatGrp.add(eyeFlat);
+    }
+    var last = null;
+    return {
+      fit: [178, 192],
+      views: { front: [-0.3, 0.14], whole: [0.2, 0.16], side: [1.45, 0.1], back: [Math.PI - 0.2, 0.1], flat: [0, 0] },
+      // cận cảnh: phóng to vùng cổ găng có dây dán; "toàn găng" / "trải phẳng": cỡ thường
+      onview: function (name) {
+        var flat = name === 'flat', close = !flat && name !== 'whole';
+        gloveGrp.visible = !flat; flatGrp.visible = flat;
+        root.scale.setScalar(close ? 2.05 : 1); root.position.set(0, close ? -66 * 2.05 : -158, 0);
+      },
+      reset: function () { key = ''; },
+      update: function (s, redraw) {
+        last = s;
+        var width = s.groups && s.groups.width === 'w38' ? 38 : 32;
+        if (key !== String(width)) { key = String(width); rebuild(width); }
+        strapCanvas(outC, s, L, W, false, redraw, true); strapCanvas(inC, s, L, W, true, redraw, true);
+        strapCanvas(outF, s, L, W, false, redraw, false); strapCanvas(inF, s, L, W, true, redraw, false);
+        outT.needsUpdate = inT.needsUpdate = outFT.needsUpdate = inFT.needsUpdate = true;
+        metal.color.set(s.col.eyelet); eyeFlat.material = metal;
+        gloveMat.color.set(s.glove || '#1c1c1c');
+        laceMat.color.set(s.laces ? s.col.hook : '#f2f2f2');
+      },
+    };
+  }
+
+  /* ─── cảnh 3D ─── */
+  function build(THREE, RoomEnvironment, el, tpl) {
+    var V3 = THREE.Vector3;
+    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+    var cv = renderer.domElement; cv.className = 'cx-3d-cv'; el.appendChild(cv);
+    var scene = new THREE.Scene(), pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.85;
+    var key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-320, 420, 620); scene.add(key);
+    var fill = new THREE.DirectionalLight(0xfff4e8, 0.45); fill.position.set(420, -80, 300); scene.add(fill);
+    var rim = new THREE.DirectionalLight(0xffffff, 1.1); rim.position.set(260, 380, -700); scene.add(rim);
+    var low = new THREE.DirectionalLight(0xffffff, 0.5); low.position.set(0, -600, -200); scene.add(low);
+    var cam = new THREE.PerspectiveCamera(26, 1, 10, 8000);
+    var grp = new THREE.Group(), root = new THREE.Group(); grp.add(root); scene.add(grp);
+    var maxAni = renderer.capabilities.getMaxAnisotropy();
+    function ctex(c) { var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAni; return t; }
+    var bump = new THREE.CanvasTexture(grain()); bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.set(12, 8);
+    var leather = function (o) { return new THREE.MeshPhysicalMaterial(Object.assign({ bumpMap: bump, bumpScale: 0.5, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.3 }, o)); };
+    var M = (MODELS[tpl] || MODELS.groin)({ THREE: THREE, V3: V3, root: root, leather: leather, ctex: ctex, bump: bump });
+
     // xoay
-    var yaw = -0.6, pitch = 0.08, want = { yaw: 0.2, pitch: 0.08 }, dirty = true, raf = 0, last = null, was = false, spin = false, drag = null;
+    var yaw = M.views.front[0] - 0.8, pitch = M.views.front[1], want = { yaw: M.views.front[0], pitch: M.views.front[1] }, dirty = true, raf = 0, last = null, was = false, spin = false, drag = null;
     function size() {
       var w = el.clientWidth || 400, hh = el.clientHeight || 380;
       renderer.setSize(w, hh, false); cam.aspect = w / hh;
-      var fit = Math.max(222, 232 / cam.aspect);
+      var fit = Math.max(M.fit[0], M.fit[1] / cam.aspect);
       cam.position.set(0, 0, fit / Math.tan(THREE.MathUtils.degToRad(13))); cam.lookAt(0, 0, 0); cam.updateProjectionMatrix(); dirty = true; loop();
     }
     function loop() {
@@ -431,43 +606,43 @@
     cv.addEventListener('dblclick', function () { api.view('front'); });
     // trình duyệt thu hồi ngữ cảnh WebGL (nhiều tab 3D, máy yếu…) → khi trả lại thì vẽ lại toàn bộ
     cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); });
-    cv.addEventListener('webglcontextrestored', function () { hwKind = ''; if (last) api.update(last); });
+    cv.addEventListener('webglcontextrestored', function () { if (M.reset) M.reset(); if (last) api.update(last); });
     if (window.ResizeObserver) new ResizeObserver(size).observe(el); else window.addEventListener('resize', size);
 
-    var VIEWS = { front: [0.2, 0.08], side: [1.5, 0.08], back: [Math.PI + 0.3, 0.16], top: [Math.PI + 0.25, 0.72], under: [Math.PI + 0.35, -0.55] };
+    var VIEWS = M.views;
     var api = {
       update: function (s) {
         last = s;
         var redraw = function () { if (last) api.update(last); };
-        paintFront(fc, s, redraw); fTex.needsUpdate = true;
-        paintLining(lc, s); lTex.needsUpdate = true;
-        paintBelt(bc, s, L, redraw); bTex.needsUpdate = true;
-        hardware(s.closure || 'lace');
-        trimMat.color.set(s.col.trim); tabMat.color.set(s.col.tab); strapMat.color.set(s.col.strap); laceMat.color.set(s.col.lace); metalMat.color.set(s.col.eyelet);
-        beltIn.color.set(shade(s.col.elastic, 0.7));
-        var gloss = s.finish !== 'matte';
-        [frontMat, trimMat, tabMat].forEach(function (m) { m.roughness = gloss ? 0.34 : 0.74; m.clearcoat = gloss ? 0.6 : 0.05; m.clearcoatRoughness = gloss ? 0.25 : 0.6; m.bumpScale = s.material === 'cow' ? 1.1 : s.material === 'micro' ? 0.25 : 0.5; });
+        M.update(s, redraw);
         dirty = true; loop();
       },
       view: function (name) {
         var v = VIEWS[name] || VIEWS.front, t = v[0], n = Math.round((want.yaw - t) / (2 * Math.PI));
-        spin = false; if (api.onspin) api.onspin(false); want.yaw = t + n * 2 * Math.PI; want.pitch = v[1]; loop();
+        spin = false; if (api.onspin) api.onspin(false); want.yaw = t + n * 2 * Math.PI; want.pitch = v[1];
+        if (M.onview) M.onview(name);
+        dirty = true; loop();
       },
       spin: function (on) { spin = on === undefined ? !spin : !!on; if (api.onspin) api.onspin(spin); loop(); return spin; },
-      snapshot: function () { try { return cv.toDataURL('image/webp', 0.82); } catch (e) { return ''; } },
+      snapshot: function (type) { try { if (type) { renderer.render(scene, cam); return cv.toDataURL(type); } return cv.toDataURL('image/webp', 0.82); } catch (e) { return ''; } },
+      dispose: function () { try { renderer.dispose(); renderer.forceContextLoss(); } catch (e) { /* bỏ qua */ } if (cv.parentNode) cv.parentNode.removeChild(cv); },
       onframe: null, onspin: null,
     };
+    if (M.onview) M.onview('front');
     size();
     return api;
   }
+
+  var MODELS = { groin: groinModel, strap: function (ctx) { return strapModel(ctx); } };
 
   window.DCX3D = {
     ok: ok,
     svg: svg,
     spots2d: function () { return flatGeo().spots; },
-    create: function (el) {
+    has: function (tpl) { return !!MODELS[tpl]; },
+    create: function (el, tpl) {
       return import(BASE + 'three-r170.module.min.js').then(function (THREE) {
-        return import(BASE + 'RoomEnvironment-r170.js').then(function (m) { return build(THREE, m.RoomEnvironment, el); });
+        return import(BASE + 'RoomEnvironment-r170.js').then(function (m) { return build(THREE, m.RoomEnvironment, el, tpl || 'groin'); });
       });
     },
   };

@@ -302,7 +302,7 @@ router.productSlug = productSlug;
 router.get('/products', (req, res) => { res.json(publicProducts()); });
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
-const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom'];
+const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
 // chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
 const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
@@ -311,6 +311,7 @@ function cleanProduct(body, base = {}) {
   for (const k of PRODUCT_FIELDS) if (body[k] !== undefined) p[k] = body[k];
   p.name = plain(p.name, 120) || 'Sản phẩm mới';
   p.nameEn = plain(p.nameEn, 120);
+  p.brand = plain(p.brand, 40) || 'Dapper Combat';            // thương hiệu: Dapper Combat (tự sản xuất) · Dapper Dudes …
   const cats = settings.categoryIds();                      // danh mục sửa ở /admin → Danh mục sản phẩm
   p.cat = cats.includes(str(p.cat, 30)) ? str(p.cat, 30) : (cats.includes(base.cat) ? base.cat : cats[0]);
   p.price = int(p.price, 0, 1e9);

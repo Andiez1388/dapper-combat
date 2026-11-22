@@ -1727,3 +1727,34 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 .cx-views button{padding:.38rem .8rem;border:1px solid var(--line-2);border-radius:999px;background:rgba(255,255,255,.8);font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;}
 .cx-views button:hover{border-color:var(--ink);}
 .cx-views button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
+/* dây dán: chọn màu găng xem thử */
+.cx-glove{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.4rem;margin:.55rem 0 0;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.cx-glove button{width:20px;height:20px;padding:0;border-radius:50%;background:var(--c);border:1px solid rgba(0,0,0,.2);cursor:pointer;}
+.cx-glove button[aria-pressed="true"]{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ink);}
+.cx-glove em{font-style:normal;letter-spacing:.04em;text-transform:none;}
+/* công cụ thiết kế: chia sẻ / tải ảnh */
+.cx-tools{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:.75rem 0 0;}
+.cx-tools button{padding:.45rem .8rem;border:1px solid var(--line-2);border-radius:999px;background:#fff;font-size:.76rem;color:var(--ink);cursor:pointer;}
+.cx-tools button:hover{border-color:var(--ink);}
+.cx-tools span{flex-basis:100%;font-size:.72rem;color:var(--ink-soft);}
+.cx-tools span:empty{display:none;}
+/* thông tin dưới nút mua */
+.cx-info{order:11;margin-bottom:1.8rem;margin:1.6rem 0 0;display:flex;flex-direction:column;gap:1.6rem;}
+.cx-info h3{margin:0 0 .8rem;font-family:var(--f-mono);font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;}
+.cx-how ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.cx-how li{display:flex;flex-direction:column;gap:.3rem;padding:.85rem;border:1px solid var(--line);border-radius:6px;background:#fbfaf8;}
+.cx-how b{display:flex;align-items:center;gap:.5rem;font-size:.82rem;}
+.cx-how i,.cx-flow i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--f-mono);font-size:.7rem;}
+.cx-how span{font-size:.76rem;line-height:1.5;color:var(--ink-soft);}
+.cx-flow ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;position:relative;}
+.cx-flow li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.3rem;}
+.cx-flow i{background:var(--ink);}
+.cx-flow b{font-size:.78rem;}
+.cx-flow span{font-size:.7rem;line-height:1.4;color:var(--muted);}
+.cx-faq-i{border-bottom:1px solid var(--line);}
+.cx-faq-i button{display:flex;justify-content:space-between;align-items:center;gap:1rem;width:100%;padding:.8rem 0;border:0;background:none;text-align:left;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer;}
+.cx-faq-i em{font-style:normal;color:var(--muted);transition:transform .2s;}
+.cx-faq-i.open em{transform:rotate(45deg);}
+.cx-faq-i p{display:none;margin:0 0 .9rem;font-size:.8rem;line-height:1.6;color:var(--ink-soft);}
+.cx-faq-i.open p{display:block;}
+@media(max-width:600px){.cx-how ol{grid-template-columns:1fr}.cx-flow ol{grid-template-columns:1fr 1fr;row-gap:1rem}}

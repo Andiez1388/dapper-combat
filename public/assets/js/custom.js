@@ -107,6 +107,17 @@
   }
   // groin guard: chiếu cùng rập với mô hình 3D (custom3d.js)
   function groinSvg(col) { return window.DCX3D.svg(col); }
+  // dây dán: hình phẳng 2 mặt (máy không có WebGL)
+  function strapSvg(col) {
+    var row = function (y, inner) {
+      var secs = [['loop', 0, 0.47], ['elastic', 0.47, 0.6], ['hook', 0.6, 0.93], ['grip', 0.93, 1]], o = '';
+      secs.forEach(function (sc) { var id = sc[0], c = inner && id === 'loop' ? col('cover') : col(id); o += '<rect x="' + (20 + sc[1] * 380) + '" y="' + y + '" width="' + ((sc[2] - sc[1]) * 380) + '" height="44" fill="' + c + '"/>'; });
+      return '<g clip-path="url(#cxStrapClip' + y + ')">' + o + '<rect x="20" y="' + y + '" width="380" height="4" fill="' + col('edge') + '"/><rect x="20" y="' + (y + 40) + '" width="380" height="4" fill="' + col('edge') + '"/></g>' +
+        '<clipPath id="cxStrapClip' + y + '"><rect x="20" y="' + y + '" width="380" height="44" rx="18"/></clipPath>' +
+        (inner ? '<circle cx="40" cy="' + (y + 22) + '" r="6" fill="none" stroke="' + col('eyelet') + '" stroke-width="3"/>' : '');
+    };
+    return '<svg class="cx-svg" viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + esc(T('Xem trước thiết kế', 'Design preview')) + '">' + row(70, false) + row(150, true) + '</svg>';
+  }
   var SVGN = 0;
   function preview(p, s) {
     var u = 'x' + (++SVGN);
@@ -114,6 +125,7 @@
   }
   function previewRaw(p, s) {
     var cfg = p.custom, t = D.templates[cfg.template] || D.templates.groin;
+    if (cfg.template === 'strap') return strapSvg(function (zid) { return zcol(p, s, zid); });
     var groin = cfg.template === 'groin' || !SHAPES[cfg.template];
     if (groin && !window.DCX3D) return '';
     var sh = groin ? { box: '0 0 420 390', parts: [], stitch: [], spots: window.DCX3D.spots2d() } : SHAPES[cfg.template];
@@ -170,10 +182,10 @@
     var p = product(), info = document.querySelector('.pdp-info'), gal = document.querySelector('.pdp-gallery');
     var mode = $('cxMode'), panel = $('cxPanel'), stage = $('cxStage');
     if (!p || !p.custom || !p.custom.on) {
-      if (mode) mode.hidden = true; if (panel) panel.hidden = true; if (stage) stage.hidden = true;
+      if (mode) mode.hidden = true; if (panel) panel.hidden = true; if (stage) stage.hidden = true; if ($('cxInfo')) $('cxInfo').hidden = true;
       document.body.classList.remove('cx-on'); S = null; return;
     }
-    if (!S || S.pid !== p.id) S = fresh(p);
+    if (!S || S.pid !== p.id) { S = fresh(p); fromLink(p); }
     if (!mode) {
       mode = document.createElement('div'); mode.id = 'cxMode'; mode.className = 'cx-mode';
       var colorRow = info.querySelector('.opt-color'); info.insertBefore(mode, colorRow);
@@ -181,6 +193,8 @@
       info.insertBefore(panel, info.querySelector('.pdp-buy'));
       stage = document.createElement('div'); stage.id = 'cxStage'; stage.className = 'cx-stage';
       gal.insertBefore(stage, gal.firstChild);
+      var inf = document.createElement('div'); inf.id = 'cxInfo'; inf.className = 'cx-info';
+      var buy = info.querySelector('.pdp-buy'); buy.parentNode.insertBefore(inf, buy.nextSibling);
     }
     mode.hidden = false;
     mode.innerHTML = '<p class="cx-mode-h">' + T('Chọn kiểu', 'Choose') + '</p><div class="cx-seg" role="tablist">' +
@@ -189,6 +203,7 @@
     var on = S.mode === 'cx';
     document.body.classList.toggle('cx-on', on);
     panel.hidden = !on; stage.hidden = !on;
+    var cxi = $('cxInfo'); if (cxi) { cxi.hidden = false; cxi.innerHTML = infoHtml(p, on); }
     if (on) { render(p); } else { pdpPrice(p, 0); }
   }
   function sec(id, num, title, sub, body) {
@@ -201,15 +216,15 @@
     drawStage(p);
     var h = '<div class="cx-mini">' + (use3d(p) && V.snap ? '<img alt="" src="' + V.snap + '">' : preview(p, S)) + '</div>';
     // 1. màu
-    var presets = [['black', 'red'], ['white', 'gold'], ['navy', 'silver'], ['red', 'white'], ['pink', 'white'], ['black', 'gold']].filter(function (x) { return cfg.palette.indexOf(x[0]) !== -1 && cfg.palette.indexOf(x[1]) !== -1; });
+    var presets = (cfg.template === 'strap' ? [['black', 'red'], ['white', 'black'], ['red', 'white'], ['navy', 'gold'], ['black', 'gold'], ['camo', 'black'], ['pink', 'white'], ['royal', 'white']] : [['black', 'red'], ['white', 'gold'], ['navy', 'silver'], ['red', 'white'], ['pink', 'white'], ['black', 'gold']]).filter(function (x) { return cfg.palette.indexOf(x[0]) !== -1 && cfg.palette.indexOf(x[1]) !== -1; });
     var colBody = (presets.length ? '<div class="cx-presets"><span>' + T('Phối nhanh', 'Quick combos') + '</span>' + presets.map(function (x) {
       return '<button type="button" data-cx-preset="' + x[0] + '|' + x[1] + '" title="' + esc(colName(pick(D.palette, x[0])) + ' / ' + colName(pick(D.palette, x[1]))) + '"><i style="background:' + hexOf(x[0]) + '"></i><i style="background:' + hexOf(x[1]) + '"></i></button>';
     }).join('') + '</div>' : '');
-    var FACES = [['front', T('Mặt trước', 'Front')], ['back', T('Mặt sau', 'Back')], ['straps', T('Dây đùi', 'Leg straps')], ['', '']];
+    var FACES = [['front', T('Mặt trước', 'Front')], ['back', T('Mặt sau', 'Back')], ['straps', T('Dây đùi', 'Leg straps')], ['outer', T('Mặt ngoài', 'Outer side')], ['inner', T('Mặt trong & phụ kiện', 'Inner side & hardware')], ['', '']];
     FACES.forEach(function (f) {
       var list = cfg.zones.filter(function (zid) { var z = pick(t.zones, zid); return (z[4] || '') === f[0]; });
       if (!list.length) return;
-      if (f[0]) colBody += '<div class="cx-face"><span>' + f[1] + '</span>' + (use3d(p) ? '<button type="button" data-cx-view="' + (f[0] === 'straps' ? 'under' : f[0]) + '">' + T('Xem', 'View') + ' ↻</button>' : '') + '</div>';
+      if (f[0]) colBody += '<div class="cx-face"><span>' + f[1] + '</span>' + (use3d(p) ? '<button type="button" data-cx-view="' + (FACEVIEW[f[0]] || 'front') + '">' + T('Xem', 'View') + ' ↻</button>' : '') + '</div>';
       colBody += list.map(function (zid) {
         var z = pick(t.zones, zid), cur = S.zones[zid], open = S.zoneOpen === zid, cc = pick(D.palette, cur);
         return '<div class="cx-zone' + (open ? ' open' : '') + '"><button type="button" class="cx-zrow" data-cx-zopen="' + zid + '" aria-expanded="' + open + '">' +
@@ -259,45 +274,143 @@
       c.lines.filter(function (l) { return l[2]; }).map(function (l) { return '<div class="cx-sum-r cx-sum-f"><span>' + esc(l[0]) + (l[1] ? ' · ' + esc(l[1]) : '') + '</span><b>+' + money(l[2]) + '</b></div>'; }).join('') +
       '<div class="cx-sum-r cx-sum-t"><span>' + T('Giá mỗi sản phẩm', 'Price per item') + '</span><b>' + money(total) + '</b></div>' +
       '<p class="cx-lead">⏱ ' + esc(nm(cfg.lead)) + '</p>' +
+      '<div class="cx-tools"><button type="button" data-cx-share>🔗 ' + T('Sao chép link thiết kế', 'Copy design link') + '</button>' +
+      (use3d(p) ? '<button type="button" data-cx-png>⬇ ' + T('Tải ảnh thiết kế', 'Download image') + '</button>' : '') + '<span data-cx-toolmsg role="status"></span></div>' +
       '<label class="cx-agree"><input type="checkbox" data-cx-agree' + (S.agree ? ' checked' : '') + '><span>' + esc(nm(cfg.terms)) + '</span></label><p class="cx-err" data-cx-err role="alert" hidden></p></div>';
     $('cxPanel').innerHTML = h;
     pdpPrice(p, c.fee);
   }
+  /* ─── chia sẻ thiết kế: ?design=<base64url JSON> — mở link là thấy đúng bản thiết kế ─── */
+  function b64e(o) { var t = btoa(unescape(encodeURIComponent(JSON.stringify(o)))); return t.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function b64d(t) { t = String(t).replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; return JSON.parse(decodeURIComponent(escape(atob(t)))); }
+  function fromLink(p) {
+    var m = /[?&]design=([A-Za-z0-9_-]{4,6000})/.exec(location.search); if (!m) return;
+    try {
+      var d = b64d(m[1]), cfg = p.custom, t = D.templates[cfg.template] || D.templates.groin;
+      Object.keys(d.z || {}).forEach(function (k) { if (cfg.zones.indexOf(k) !== -1 && cfg.palette.indexOf(d.z[k]) !== -1) S.zones[k] = d.z[k]; });
+      if (d.t && cfg.text.on) {
+        S.text.value = String(d.t.v || '').slice(0, cfg.text.max);
+        if (cfg.text.fonts.indexOf(d.t.f) !== -1) S.text.font = d.t.f;
+        if (d.t.m === 'embroid' || d.t.m === 'print') S.text.method = d.t.m;
+        if (pick(t.spots, d.t.s)) S.text.spot = d.t.s;
+      }
+      if (d.l && cfg.logo.on && /^\/assets\/uploads\/custom\/[a-f0-9]{16,40}\.(png|jpe?g|webp)$/.test(d.l.u || '')) { S.logo.url = d.l.u; S.logo.name = 'logo'; if (d.l.m === 'embroid' || d.l.m === 'print') S.logo.method = d.l.m; if (pick(t.spots, d.l.s)) S.logo.spot = d.l.s; }
+      (cfg.groups || []).forEach(function (g) {
+        var v = (d.g || {})[g.id], ok = function (id) { return g.choices.some(function (c) { return c.id === id; }); };
+        if (g.multi && Array.isArray(v)) S.groups[g.id] = v.filter(ok); else if (!g.multi && ok(v)) S.groups[g.id] = v;
+      });
+      S.mode = 'cx';
+    } catch (er) { /* link hỏng → bỏ qua */ }
+  }
+  function linkOf() {
+    var d = { z: S.zones, g: {} };
+    Object.keys(S.groups).forEach(function (k) { var v = S.groups[k]; if (Array.isArray(v) ? v.length : v) d.g[k] = v; });
+    if (S.text.value.trim()) d.t = { v: S.text.value.trim(), f: S.text.font, m: S.text.method, s: S.text.spot };
+    if (S.logo.url) d.l = { u: S.logo.url, m: S.logo.method, s: S.logo.spot };
+    return location.origin + location.pathname + '?design=' + b64e(d);
+  }
+  function toolMsg(t) { var m = document.querySelector('[data-cx-toolmsg]'); if (m) { m.textContent = t; clearTimeout(toolMsg.t); toolMsg.t = setTimeout(function () { m.textContent = ''; }, 3500); } }
+  function share() {
+    var url = linkOf(), done = function () { toolMsg(T('Đã sao chép — gửi link cho bạn bè hoặc cho Dapper qua Zalo / Messenger.', 'Copied — send it to friends or to Dapper.')); };
+    try { history.replaceState(null, '', url.slice(location.origin.length)); } catch (e) { /* bỏ qua */ }
+    if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) { navigator.share({ title: (product() || {}).name || 'Dapper Combat', url: url }).catch(function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { window.prompt(T('Sao chép link:', 'Copy link:'), url); });
+    else window.prompt(T('Sao chép link:', 'Copy link:'), url);
+  }
+  function downloadPng() {
+    if (!V.api) return;
+    var a = document.createElement('a'), p = product();
+    a.href = V.api.snapshot('image/png'); a.download = 'thiet-ke-' + ((p && p.slug) || 'dapper') + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    toolMsg(T('Đã tải ảnh — xoay hình sang góc khác rồi tải thêm nếu muốn.', 'Saved — rotate and save more angles if you like.'));
+  }
+  /* ─── khối thông tin dưới nút mua: cách dùng · quy trình đặt làm · câu hỏi thường gặp ─── */
+  function infoHtml(p, on) {
+    var strap = p.custom.template === 'strap', h = '';
+    if (strap) {
+      var steps = [
+        [T('Xỏ tay & kéo dây', 'Hand in, pull laces'), T('Xỏ tay vào găng buộc dây, kéo 2 đầu dây cho ôm chặt cổ tay.', 'Put your hand in the lace-up glove and pull both lace ends snug.')],
+        [T('Quấn dây buộc', 'Wrap the laces'), T('Quấn 2 đầu dây quanh cổ găng 1–2 vòng, luồn đầu dây qua khoen của Lace N Loop.', 'Wrap the laces 1–2 times around the cuff and thread the ends through the Lace N Loop eyelet.')],
+        [T('Quấn & dán', 'Wrap & stick'), T('Quấn dây Lace N Loop đè lên, kéo căng đoạn thun rồi dán đầu hook lại.', 'Wrap the strap over the laces, stretch the elastic and press the hook end down.')],
+        [T('Tự đeo tay còn lại', 'Do the other hand'), T('Tay đã đeo găng vẫn kéo & dán được dây cho tay kia — không cần ai buộc giúp.', 'Your gloved hand can still pull and stick the other strap — no helper needed.')]];
+      h += '<section class="cx-how"><h3>' + T('Tự đeo găng buộc dây trong 30 giây', 'Lace-up gloves on, solo, in 30 seconds') + '</h3><ol>' +
+        steps.map(function (st, i) { return '<li><b><i>' + (i + 1) + '</i>' + esc(st[0]) + '</b><span>' + esc(st[1]) + '</span></li>'; }).join('') + '</ol></section>';
+    }
+    if (on) {
+      var flow = [[T('Thiết kế', 'Design'), T('Chọn màu, tên, logo ngay trên trang', 'Pick colours, name and logo right here')],
+        [T('Duyệt mẫu', 'Approve'), T('Dapper gửi bản phác thảo qua Zalo / email để bạn duyệt', 'We send a mockup to approve')],
+        [T('Sản xuất', 'Make'), esc(nm(p.custom.lead))], [T('Giao hàng', 'Deliver'), T('Giao toàn quốc, kiểm tra trước khi nhận', 'Nationwide delivery')]];
+      h += '<section class="cx-flow"><h3>' + T('Quy trình đặt làm', 'How custom orders work') + '</h3><ol>' +
+        flow.map(function (f, i) { return '<li><i>' + (i + 1) + '</i><b>' + f[0] + '</b><span>' + f[1] + '</span></li>'; }).join('') + '</ol></section>';
+    }
+    var faq = (strap ? [
+      [T('Dùng được với găng nào?', 'Which gloves does it fit?'), T('Mọi găng boxing buộc dây (lace-up). Găng 16oz trở lên nên chọn độ dài "Dài".', 'Any lace-up boxing glove. For 16oz+ gloves choose the Long length.')],
+      [T('Có làm găng bị lỏng khi đánh không?', 'Will it loosen during rounds?'), T('Không — dây buộc vẫn giữ lực siết như buộc nút, Lace N Loop chỉ thay cho nút thắt và băng keo.', 'No — the laces keep their tension; the strap simply replaces the knot and tape.')],
+      [T('Bán theo chiếc hay theo đôi?', 'Single or pair?'), T('Theo đôi (2 dây cho 2 găng). Giá hiển thị là giá 1 đôi.', 'Sold as a pair (one for each glove). Prices are per pair.')]] : []).concat(on ? [
+      [T('Tôi có được xem mẫu trước khi làm?', 'Do I see a mockup first?'), T('Có. Dapper gửi bản phác thảo, bạn duyệt xong mới sản xuất. Muốn chỉnh màu / vị trí cứ nhắn.', 'Yes — production starts only after you approve the mockup.')],
+      [T('Logo của tôi cần file gì?', 'What logo file do you need?'), T('PNG nền trong suốt là đẹp nhất. Ảnh mờ Dapper sẽ vẽ lại và báo bạn trước.', 'A transparent PNG works best. If it is blurry we will redraw it and check with you first.')],
+      [T('Đặt số lượng cho team / CLB?', 'Team or club orders?'), T('Đặt từ 10 sản phẩm có giá riêng — bấm "Đặt làm ngay" và ghi số lượng trong ghi chú, hoặc nhắn Zalo.', 'From 10 items we offer team pricing — note the quantity or message us.')],
+      [T('Có đổi trả không?', 'Returns?'), esc(nm(p.custom.terms))]] : []);
+    if (faq.length) h += '<section class="cx-faq"><h3>' + T('Câu hỏi thường gặp', 'FAQ') + '</h3>' + faq.map(function (f) {
+      return '<div class="cx-faq-i"><button type="button" data-cx-faq aria-expanded="false">' + esc(f[0]) + '<em aria-hidden="true">+</em></button><p>' + f[1] + '</p></div>';
+    }).join('') + '</section>';
+    return h;
+  }
   /* ─── xem trước 3D (custom3d.js) ─── */
-  function faceOf(zid) { var p = product(); if (!V.api || !p) return; var z = pick((D.templates[p.custom.template] || D.templates.groin).zones, zid); var f = z && z[4]; if (f) V.api.view(f === 'straps' ? 'under' : f === 'back' ? (zid === 'lining' ? 'top' : 'back') : 'front'); }
-  function spotView(sp) { if (V.api) V.api.view(/^back/.test(sp) ? 'back' : 'front'); }
-  var V = { api: null, loading: false, failed: false, snap: '' };
-  function use3d(p) { return p.custom.template === 'groin' && window.DCX3D && window.DCX3D.ok() && !V.failed; }
+  // nút góc nhìn theo từng mẫu
+  var VIEWBTN = {
+    groin: [['front', 'Trước', 'Front'], ['side', 'Bên', 'Side'], ['back', 'Sau', 'Back'], ['under', 'Dưới', 'Below']],
+    strap: [['front', 'Cận cảnh', 'Close-up'], ['back', 'Lòng găng', 'Palm side'], ['whole', 'Toàn găng', 'Whole glove'], ['flat', 'Trải phẳng', 'Laid flat']],
+  };
+  // mặt của từng phần → góc nhìn khi khách bấm chọn màu phần đó
+  var FACEVIEW = { front: 'front', back: 'back', straps: 'under', outer: 'front', inner: 'flat' };
+  function faceOf(zid) {
+    var p = product(); if (!V.api || !p) return;
+    var z = pick((D.templates[p.custom.template] || D.templates.groin).zones, zid), f = z && z[4];
+    if (f) V.api.view(zid === 'lining' ? 'top' : FACEVIEW[f] || 'front');
+  }
+  function spotView(sp) { if (V.api) V.api.view(/^back/.test(sp) ? 'back' : sp === 'loop' ? 'flat' : 'front'); }
+  var V = { api: null, tpl: '', loading: false, failed: false, snap: '', glove: '#1c1c1c' };
+  var GLOVES = [['#1c1c1c', 'Đen', 'Black'], ['#efece6', 'Trắng', 'White'], ['#b3121f', 'Đỏ', 'Red'], ['#1d2c5a', 'Navy', 'Navy'], ['#c9a227', 'Vàng', 'Gold']];
+  function use3d(p) { return !!(window.DCX3D && window.DCX3D.has(p.custom.template) && window.DCX3D.ok() && !V.failed); }
   function state3d(p) {
-    var t = D.templates.groin, col = {}, g = S.groups || {};
+    var t = D.templates[p.custom.template] || D.templates.groin, col = {}, g = S.groups || {}, extra = [].concat(g.extra || []);
     t.zones.forEach(function (z) { col[z[0]] = zcol(p, S, z[0]); });
-    // chỉ may: khách chọn màu riêng nếu shop mở phần "Chỉ may", không thì theo tùy chọn "chỉ màu tương phản"
-    if (!S.zones.thread) col.thread = [].concat(g.extra || []).indexOf('stitch') !== -1 ? (ink(col.left) === '#fff' ? '#f2c12e' : '#c8102e') : col.trim;
+    // groin: chỉ may theo phần "Chỉ may" nếu shop mở, không thì theo tùy chọn "chỉ màu tương phản"
+    if (p.custom.template === 'groin' && !S.zones.thread) col.thread = extra.indexOf('stitch') !== -1 ? (ink(col.left) === '#fff' ? '#f2c12e' : '#c8102e') : col.trim;
     var f = pick(D.fonts, S.text.font) || D.fonts[0];
-    return { col: col, closure: g.closure, finish: g.finish, material: g.material,
+    return { col: col, groups: g, closure: g.closure, finish: g.finish, material: g.material, glove: V.glove,
+      laces: extra.indexOf('laces') !== -1, reflect: extra.indexOf('reflect') !== -1,
       text: S.text.value.trim() ? { value: S.text.value.trim(), font: f[3], method: S.text.method, spot: S.text.spot } : null,
       logo: S.logo.url ? { url: S.logo.url, method: S.logo.method, spot: S.logo.spot } : null };
   }
+  function stageHtml(tpl) {
+    var btn = (VIEWBTN[tpl] || VIEWBTN.groin).map(function (b) { return '<button type="button" data-cx-view="' + b[0] + '">' + T(b[1], b[2]) + '</button>'; }).join('');
+    return '<div class="cx-stage-in"><div class="cx-3d" hidden></div><div class="cx-flat"></div>' +
+      '<div class="cx-views" hidden>' + btn + '<button type="button" data-cx-spin aria-pressed="false">⟳ ' + T('Tự xoay', 'Spin') + '</button></div>' +
+      (tpl === 'strap' ? '<div class="cx-glove" hidden><span>' + T('Màu găng xem thử', 'Preview glove') + '</span>' + GLOVES.map(function (g) {
+        return '<button type="button" data-cx-glove="' + g[0] + '" style="--c:' + g[0] + '" title="' + esc(T(g[1], g[2])) + '" aria-pressed="' + (V.glove === g[0]) + '"></button>';
+      }).join('') + '<em>' + T('(không bán kèm găng)', '(glove not included)') + '</em></div>' : '') +
+      '<p class="cx-hint" hidden>' + T('Kéo để xoay 360° · nhấn đúp để về góc chính', 'Drag to rotate 360° · double-click to reset') + '</p>' +
+      '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
+  }
   function drawStage(p) {
-    var st = $('cxStage'), lang = DC.lang();
-    if (st.getAttribute('data-lang') !== lang) {
-      st.setAttribute('data-lang', lang);
-      st.innerHTML = '<div class="cx-stage-in"><div class="cx-3d" hidden></div><div class="cx-flat"></div>' +
-        '<div class="cx-views" hidden><button type="button" data-cx-view="front">' + T('Trước', 'Front') + '</button><button type="button" data-cx-view="side">' + T('Bên', 'Side') + '</button>' +
-        '<button type="button" data-cx-view="back">' + T('Sau', 'Back') + '</button><button type="button" data-cx-view="under">' + T('Dưới', 'Below') + '</button>' +
-        '<button type="button" data-cx-spin aria-pressed="false">⟳ ' + T('Tự xoay', 'Spin') + '</button></div>' +
-        '<p class="cx-hint" hidden>' + T('Kéo để xoay 360° · nhấn đúp để về mặt trước', 'Drag to rotate 360° · double-click to reset') + '</p>' +
-        '<p class="cx-stage-cap">' + T('Xem trước minh họa — màu thật và vị trí chính xác có trong bản phác thảo gửi bạn duyệt trước khi làm.', 'Illustrative preview — exact colours and placement come in the mockup we send you to approve before production.') + '</p></div>';
+    var st = $('cxStage'), tpl = p.custom.template, sig = DC.lang() + '|' + tpl;
+    // đổi sản phẩm sang mẫu 3D khác → bỏ cảnh cũ
+    if (V.api && V.tpl !== tpl) { V.api.dispose(); V.api = null; V.snap = ''; }
+    if (st.getAttribute('data-sig') !== sig) {
+      st.setAttribute('data-sig', sig); st.innerHTML = stageHtml(tpl);
       if (V.api) st.querySelector('.cx-3d').appendChild(V.cv);
     }
-    var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint'), views = st.querySelector('.cx-views');
-    views.hidden = !(use3d(p) && V.api);
-    if (use3d(p) && V.api) { box.hidden = false; flat.hidden = true; hint.hidden = false; V.api.update(state3d(p)); return; }
+    var box = st.querySelector('.cx-3d'), flat = st.querySelector('.cx-flat'), hint = st.querySelector('.cx-hint'), views = st.querySelector('.cx-views'), gl = st.querySelector('.cx-glove');
+    var live = use3d(p) && V.api;
+    views.hidden = !live; if (gl) gl.hidden = !live;
+    if (live) { box.hidden = false; flat.hidden = true; hint.hidden = false; V.api.update(state3d(p)); return; }
     box.hidden = true; hint.hidden = true; flat.hidden = false; flat.innerHTML = preview(p, S);
     if (use3d(p) && !V.loading) {
       V.loading = true;
-      window.DCX3D.create(box).then(function (api) {
-        V.api = api; V.cv = box.querySelector('canvas'); V.loading = false;
+      window.DCX3D.create(box, tpl).then(function (api) {
+        V.api = api; V.tpl = tpl; V.cv = box.querySelector('canvas'); V.loading = false;
         api.onspin = function (on) { var b = document.querySelector('[data-cx-spin]'); if (b) b.setAttribute('aria-pressed', String(on)); };
         api.onframe = function () { V.snap = api.snapshot(); var m = document.querySelector('.cx-mini'); if (m && V.snap) m.innerHTML = '<img alt="" src="' + V.snap + '">'; };
         var q = product(); if (q && S && S.mode === 'cx') drawStage(q);
@@ -318,17 +431,21 @@
 
   /* ─── thao tác ─── */
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-cx-view],[data-cx-spin],[data-cx-zopen],[data-cx-mode],[data-cx-zone],[data-cx-preset],[data-cx-font],[data-cx-tmethod],[data-cx-tspot],[data-cx-lmethod],[data-cx-lspot],[data-cx-g],[data-cx-logo-del],.cx-sec-h');
+    var b = e.target.closest('[data-cx-share],[data-cx-png],[data-cx-faq],[data-cx-view],[data-cx-spin],[data-cx-glove],[data-cx-zopen],[data-cx-mode],[data-cx-zone],[data-cx-preset],[data-cx-font],[data-cx-tmethod],[data-cx-tspot],[data-cx-lmethod],[data-cx-lspot],[data-cx-g],[data-cx-logo-del],.cx-sec-h');
     if (!b || !S) return;
     if (b.matches('[data-cx-mode]')) { S.mode = b.getAttribute('data-cx-mode'); mount(); return; }
     if (b.matches('[data-cx-view]')) { if (V.api) V.api.view(b.getAttribute('data-cx-view')); return; }
     if (b.matches('[data-cx-spin]')) { if (V.api) V.api.spin(); return; }
+    if (b.matches('[data-cx-share]')) { share(); return; }
+    if (b.matches('[data-cx-png]')) { downloadPng(); return; }
+    if (b.matches('[data-cx-faq]')) { var it = b.parentNode; it.classList.toggle('open'); b.setAttribute('aria-expanded', String(it.classList.contains('open'))); return; }
+    if (b.matches('[data-cx-glove]')) { V.glove = b.getAttribute('data-cx-glove'); Array.prototype.forEach.call(document.querySelectorAll('[data-cx-glove]'), function (x) { x.setAttribute('aria-pressed', String(x === b)); }); var pp = product(); if (V.api && pp) V.api.update(state3d(pp)); return; }
     if (b.matches('[data-cx-zopen]')) { var zid = b.getAttribute('data-cx-zopen'); S.zoneOpen = S.zoneOpen === zid ? '' : zid; faceOf(zid); rerender(); return; }
     if (b.matches('.cx-sec-h')) { var id = b.parentNode.getAttribute('data-cx-sec'); S.open = S.open === id ? '' : id; rerender(); return; }
     if (b.matches('[data-cx-zone]')) S.zones[b.getAttribute('data-cx-zone')] = b.getAttribute('data-cx-col');
     else if (b.matches('[data-cx-preset]')) {
       var pr = b.getAttribute('data-cx-preset').split('|');
-      var ACC = ['trim', 'panel', 'bar', 'thread', 'lacepanel', 'tab'], KEEP = ['lace', 'eyelet', 'elastic', 'lining', 'strap'];
+      var ACC = ['trim', 'panel', 'bar', 'thread', 'lacepanel', 'tab', 'grip', 'edge'], KEEP = ['lace', 'eyelet', 'elastic', 'lining', 'strap'];
       Object.keys(S.zones).forEach(function (z) { if (KEEP.indexOf(z) === -1 || product().custom.template !== 'groin') S.zones[z] = ACC.indexOf(z) !== -1 || (z === 'lace' && product().custom.template !== 'groin') ? pr[1] : pr[0]; });
     }
     else if (b.matches('[data-cx-font]')) S.text.font = b.getAttribute('data-cx-font');
