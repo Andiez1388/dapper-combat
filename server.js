@@ -168,7 +168,7 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
   const base = baseUrl(req), esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const rk = ranking.publicData();
-  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup', '/truyen-nghe', '/xep-hang', '/vo-si', '/su-kien']
+  const urls = ['/', '/shop', '/khoa-hoc', '/dich-vu-setup', '/truyen-nghe', '/xep-hang', '/vo-si', '/su-kien'].concat(require('./lib/founders').get().on ? ['/cau-chuyen-founders'] : [])
     .concat(api.publicProducts().map(p => '/shop/' + api.productSlug(p)))
     .concat(cms.livePages().map(s => '/trang/' + s))
     .concat(rk.fighters.map(f => '/vo-si/' + f.slug), rk.events.map(e => '/su-kien/' + e.slug));
@@ -346,6 +346,19 @@ app.get('/trang/:slug', (req, res) => {
   const p = pages.bySlug(String(req.params.slug).toLowerCase());
   if (!p) return sendPage(req, res, path.join(PUB, '404.html'), 404);
   const body = cms.transform(`trang/${p.slug}.html`, pages.render(p)).replace('</head>', () => seoHead(req, '/trang/' + p.slug) + '</head>');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.type('html').send(versioned(body));
+});
+
+// Câu chuyện Founders (/admin → Câu chuyện Founders) — dùng khung trang phụ, rộng hơn + ảnh
+const founders = require('./lib/founders');
+app.get('/cau-chuyen-founders', (req, res) => {
+  const p = founders.page();
+  if (!p.on) return sendPage(req, res, path.join(PUB, '404.html'), 404);
+  const og = p.image ? `<meta property="og:image" content="${baseUrl(req)}${p.image}">` : '';
+  const body = cms.transform('trang/cau-chuyen-founders.html', pages.render(p))
+    .replace('<main>', '<main class="fd-main">')
+    .replace('</head>', () => '<link rel="stylesheet" href="/assets/css/founders.css">' + og + seoHead(req, '/cau-chuyen-founders') + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(versioned(body));
 });

@@ -541,6 +541,9 @@ router.post('/cms/capture', adminOnly, (req, res) => res.json(cms.mergeCapture(r
 const pages = require('../lib/pages');
 const pageErr = (res, fn) => { try { return fn(); } catch (e) { return res.status(400).json({ error: e.message }); } };
 router.get('/pages', adminOnly, (req, res) => res.json(pages.all()));
+// Câu chuyện Founders
+router.get('/founders', adminOnly, (req, res) => res.json(require('../lib/founders').get()));
+router.put('/founders', adminOnly, (req, res) => res.json(require('../lib/founders').save(req.body || {})));
 router.post('/pages', adminOnly, (req, res) => pageErr(res, () => res.status(201).json(pages.create(req.body || {}))));
 router.put('/pages/:id', adminOnly, (req, res) => pageErr(res, () => { const p = pages.update(req.params.id, req.body || {}); return p ? res.json(p) : res.status(404).json({ error: 'Not found' }); }));
 router.delete('/pages/:id', adminOnly, (req, res) => (pages.remove(req.params.id) ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' })));

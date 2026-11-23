@@ -192,6 +192,30 @@
 
   /* mục menu (home / shop / course / services) có hiện không — bật / tắt ở /admin → Thiết lập → Thương hiệu; mục lạ (thêm ở Chữ trên trang) luôn hiện */
   DC.navOn = function (k) { var n = DC.setting('brand.nav', null); return !n || n[k] !== false; };
+  /* mục "Founders" (/cau-chuyen-founders): thêm cuối menu máy tính + menu điện thoại (bật / tắt ở Thiết lập → Thương hiệu) */
+  (function () {
+    var T = function (vi, en) { return DC.lang && DC.lang() === 'en' ? en : vi; };
+    function add() {
+      if (!DC.navOn('founders')) return;
+      var ul = document.querySelector('.nav .nav-links');
+      if (ul) {
+        var li = ul.querySelector('[data-nav-k="founders"]');
+        if (!li) { li = document.createElement('li'); li.setAttribute('data-nav-k', 'founders'); li.innerHTML = '<a href="/cau-chuyen-founders"></a>'; }
+        if (li !== ul.lastElementChild) ul.appendChild(li);        // luôn đứng cuối (sau Truyền Nghề)
+        var a = li.firstChild; if (a.textContent !== 'Founders') a.textContent = 'Founders';
+      }
+      var mn = document.querySelector('.mn-links');
+      if (mn && !mn.querySelector('[data-mn-founders]')) {
+        var n = mn.querySelectorAll('.mn-link').length + 1;
+        mn.insertAdjacentHTML('beforeend', '<a class="mn-link" data-mn-founders href="/cau-chuyen-founders"><em>' + (n < 10 ? '0' : '') + n + '</em><span><b>' + DC.esc(T('Câu chuyện Founders', 'Our founders')) +
+          '</b><small>' + DC.esc(T('Người thật · việc thật', 'Real people · real work')) + '</small></span><i>→</i></a>');
+      }
+    }
+    if (window.MutationObserver) document.addEventListener('DOMContentLoaded', function () {
+      add(); var busy = false;
+      new MutationObserver(function () { if (busy) return; busy = true; try { add(); } finally { busy = false; } }).observe(document.body, { childList: true, subtree: true });
+    });
+  })();
   /* mục "Xếp hạng" trên menu máy tính: menu thả xuống Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ (trang /su-kien, /xep-hang, /vo-si) */
   DC.navDrop = function (lang) {
     var s = lang === 'en' ? 1 : 0, cur = location.pathname;

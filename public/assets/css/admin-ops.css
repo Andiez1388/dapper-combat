@@ -231,3 +231,20 @@ input[readonly].is-auto { background: var(--grey); color: var(--ink); }
 .cxa-model-prev p{margin:.4rem 0 0;font-size:.78rem;text-align:center;}
 .cxa-model-prev p button{padding:.15rem .5rem;border:1px solid var(--line,#ddd);border-radius:999px;background:#fff;cursor:pointer;font-size:.74rem;}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;}
+
+/* Câu chuyện Founders (admin-founders.js) */
+.fd-a{display:flex;flex-direction:column;gap:.9rem;margin-bottom:1.2rem;}
+.fd-a-sec{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem;}
+.fd-a-sec span{display:flex;gap:.5rem;flex-wrap:wrap;}
+.fd-a-msg{margin:0;font-size:.82rem;font-weight:600;color:#c0392b;}
+.fd-a-msg:empty{display:none;}
+.fd-a-list{display:flex;flex-direction:column;gap:1rem;}
+.fd-a-ch{display:grid;grid-template-columns:200px 1fr;gap:1.1rem;padding:1rem;border:1px solid var(--line,#ddd);border-radius:10px;background:#fff;}
+.fd-a-pic{display:flex;flex-direction:column;gap:.5rem;}
+.fd-a-pic img,.fd-a-pic>span{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;background:#eee;color:#888;font-size:.8rem;}
+.fd-a-pic label{justify-content:center;}
+.fd-a-body{display:flex;flex-direction:column;gap:.6rem;min-width:0;}
+.fd-a-top{display:flex;justify-content:space-between;align-items:center;}
+.fd-a-top span{display:flex;gap:.25rem;}
+.fd-a-en summary{cursor:pointer;font-size:.78rem;color:#666;margin-bottom:.4rem;}
+@media(max-width:700px){.fd-a-ch{grid-template-columns:1fr;}.fd-a-pic img,.fd-a-pic>span{aspect-ratio:16/10;}}
