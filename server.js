@@ -357,7 +357,8 @@ app.get('/cau-chuyen-founders', (req, res) => {
   if (!p.on) return sendPage(req, res, path.join(PUB, '404.html'), 404);
   const og = p.image ? `<meta property="og:image" content="${baseUrl(req)}${p.image}">` : '';
   const body = cms.transform('trang/cau-chuyen-founders.html', pages.render(p))
-    .replace('<main>', '<main class="fd-main">')
+    .replace(/<main>\s*<div class="pg-eyebrow">[\s\S]*?<\/h1>/, () => p.hero + '<main class="fd-main" id="fd-story">')
+    .replace('</body>', '<script src="/assets/js/founders.js" defer></script></body>')
     .replace('</head>', () => '<link rel="stylesheet" href="/assets/css/founders.css">' + og + seoHead(req, '/cau-chuyen-founders') + '</head>');
   res.setHeader('Cache-Control', 'no-cache');
   res.type('html').send(versioned(body));

@@ -248,3 +248,4 @@ input[readonly].is-auto { background: var(--grey); color: var(--ink); }
 .fd-a-top span{display:flex;gap:.25rem;}
 .fd-a-en summary{cursor:pointer;font-size:.78rem;color:#666;margin-bottom:.4rem;}
 @media(max-width:700px){.fd-a-ch{grid-template-columns:1fr;}.fd-a-pic img,.fd-a-pic>span{aspect-ratio:16/10;}}
+.fd-a-hero{display:grid;grid-template-columns:160px 1fr;gap:1rem;align-items:center;}

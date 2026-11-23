@@ -57,6 +57,9 @@
       '<label class="check set-switch"><input type="checkbox" data-fd="on"' + (d.on ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span><strong>Hiện trang trên web</strong> · /cau-chuyen-founders</span></label>' +
       '<p class="field__hint">Mục “Founders” trên menu bật / tắt ở Thiết lập → Thương hiệu & menu.</p></div>' +
       '<div class="grid2">' + field('Tiêu đề trang', inp('title.vi', d.title.vi, 90)) + field('Title (English)', inp('title.en', d.title.en, 90)) + '</div>' +
+      '<div class="fd-a-hero"><div class="fd-a-pic">' + (d.hero ? '<img src="' + esc(d.hero) + '" alt="">' : '<span>Chưa có ảnh</span>') +
+      '<label class="btn btn--line btn--sm"><input type="file" accept="image/jpeg,image/png,image/webp" data-fd-hero hidden>' + (d.hero ? 'Đổi ảnh đầu trang' : 'Chọn ảnh đầu trang') + '</label></div>' +
+      '<p class="field__hint">Ảnh founder hiện bên phải tiêu đề, trên nền đen. Ảnh dọc (chân dung) đẹp nhất.</p></div>' +
       field('Lời mở đầu', ta('intro.vi', d.intro.vi, 800, 3)) + '<details class="fd-a-en"><summary>English</summary>' + field('Intro', ta('intro.en', d.intro.en, 800, 3)) + '</details></section>' +
       '<section class="panel fd-a"><header class="fd-a-sec"><h2 class="panel__title">Các chương · ' + d.chapters.length + '</h2>' +
       '<span><label class="btn btn--line btn--sm"><input type="file" accept="image/jpeg,image/png,image/webp" multiple data-fd-many hidden>+ Thêm nhiều ảnh</label>' +
@@ -92,6 +95,10 @@
       if (t.hasAttribute('data-fd-img') && t.files[0]) {
         var i = +t.getAttribute('data-fd-img'); msg('Đang tải ảnh lên…');
         upload(t.files[0]).then(function (url) { F.d.chapters[i].img = url; view(main); msg('Đã tải ảnh — nhớ bấm Lưu.'); }, function (er) { msg((er && er.message) || 'Tải ảnh thất bại.'); });
+      }
+      if (t.hasAttribute('data-fd-hero') && t.files[0]) {
+        msg('Đang tải ảnh đầu trang…');
+        upload(t.files[0]).then(function (url) { F.d.hero = url; view(main); A.toast('Đã tải ảnh đầu trang — nhớ bấm Lưu.'); }, function (er) { A.toast((er && er.message) || 'Tải ảnh thất bại.', 'error'); });
       }
       if (t.hasAttribute('data-fd-many') && t.files.length) {
         var files = Array.prototype.slice.call(t.files, 0, 24 - F.d.chapters.length), done = 0;

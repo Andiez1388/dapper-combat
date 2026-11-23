@@ -192,28 +192,42 @@
 
   /* mục menu (home / shop / course / services) có hiện không — bật / tắt ở /admin → Thiết lập → Thương hiệu; mục lạ (thêm ở Chữ trên trang) luôn hiện */
   DC.navOn = function (k) { var n = DC.setting('brand.nav', null); return !n || n[k] !== false; };
-  /* mục "Founders" (/cau-chuyen-founders): thêm cuối menu máy tính + menu điện thoại (bật / tắt ở Thiết lập → Thương hiệu) */
+  /* menu máy tính: chốt nhãn + ẩn / hiện THEO ĐƯỜNG DẪN của từng mục (các trang gán theo thứ tự nên lệch khi có mục bị tắt),
+     thêm mục "Founders' Story" cuối menu; menu điện thoại thêm Câu chuyện Founders. Bật / tắt ở /admin → Thiết lập → Thương hiệu & menu */
   (function () {
-    var T = function (vi, en) { return DC.lang && DC.lang() === 'en' ? en : vi; };
-    function add() {
-      if (!DC.navOn('founders')) return;
+    var en = function () { return !!(DC.lang && DC.lang() === 'en'); };
+    var NAV = {
+      '/': ['home', 'global.mnav.1', 'Trang chủ', 'Home'], '/shop': ['shop', 'global.mnav.3', 'Cửa hàng', 'Shop'],
+      '/khoa-hoc': ['course', 'global.mnav.5', 'Khóa học', 'Courses'], '/dich-vu-setup': ['services', 'global.mnav.7', 'Dịch vụ Setup', 'Gym Setup'],
+      '/xep-hang': ['ranking', 'global.mnav.15', 'Academy Ranking', 'Academy Ranking'], '/truyen-nghe': ['career', 'global.mnav.20', 'Truyền Nghề', 'Pro Pathways'],
+      '/cau-chuyen-founders': ['founders', '', 'Founders’ Story', 'Founders’ Story'],
+    };
+    function fix() {
       var ul = document.querySelector('.nav .nav-links');
       if (ul) {
         var li = ul.querySelector('[data-nav-k="founders"]');
         if (!li) { li = document.createElement('li'); li.setAttribute('data-nav-k', 'founders'); li.innerHTML = '<a href="/cau-chuyen-founders"></a>'; }
-        if (li !== ul.lastElementChild) ul.appendChild(li);        // luôn đứng cuối (sau Truyền Nghề)
-        var a = li.firstChild; if (a.textContent !== 'Founders') a.textContent = 'Founders';
+        if (li !== ul.lastElementChild) ul.appendChild(li);
+        Array.prototype.forEach.call(ul.children, function (item) {
+          var a = item.querySelector(':scope>a'); if (!a) return;
+          var m = NAV[a.getAttribute('href')]; if (!m) return;
+          var label = m[1] ? DC.x(m[1], en() ? 1 : 0, en() ? m[3] : m[2]) : (en() ? m[3] : m[2]);
+          if (m[0] === 'ranking' && /pro pathways|truyền nghề/i.test(label)) label = 'Academy Ranking';   // nhãn cũ bị gán nhầm
+          if (a.textContent !== label) a.textContent = label;
+          var show = DC.navOn(m[0]);
+          if ((item.style.display === 'none') === show) item.style.display = show ? '' : 'none';
+        });
       }
       var mn = document.querySelector('.mn-links');
-      if (mn && !mn.querySelector('[data-mn-founders]')) {
+      if (mn && DC.navOn('founders') && !mn.querySelector('[data-mn-founders]')) {
         var n = mn.querySelectorAll('.mn-link').length + 1;
-        mn.insertAdjacentHTML('beforeend', '<a class="mn-link" data-mn-founders href="/cau-chuyen-founders"><em>' + (n < 10 ? '0' : '') + n + '</em><span><b>' + DC.esc(T('Câu chuyện Founders', 'Our founders')) +
-          '</b><small>' + DC.esc(T('Người thật · việc thật', 'Real people · real work')) + '</small></span><i>→</i></a>');
+        mn.insertAdjacentHTML('beforeend', '<a class="mn-link" data-mn-founders href="/cau-chuyen-founders"><em>' + (n < 10 ? '0' : '') + n + '</em><span><b>' + DC.esc(en() ? 'Founders’ Story' : 'Câu chuyện Founders') +
+          '</b><small>' + DC.esc(en() ? 'Real people · real work' : 'Người thật · việc thật') + '</small></span><i>→</i></a>');
       }
     }
     if (window.MutationObserver) document.addEventListener('DOMContentLoaded', function () {
-      add(); var busy = false;
-      new MutationObserver(function () { if (busy) return; busy = true; try { add(); } finally { busy = false; } }).observe(document.body, { childList: true, subtree: true });
+      fix();
+      new MutationObserver(function () { fix(); }).observe(document.body, { childList: true, subtree: true, characterData: true });
     });
   })();
   /* mục "Xếp hạng" trên menu máy tính: menu thả xuống Lịch sự kiện · Ranking võ sĩ · Thông tin võ sĩ (trang /su-kien, /xep-hang, /vo-si) */
