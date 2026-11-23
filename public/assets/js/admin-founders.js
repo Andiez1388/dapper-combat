@@ -9,7 +9,7 @@
   var F = { d: null, orig: '', err: '', busy: false };
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function dirty() { return !!F.d && JSON.stringify(F.d) !== F.orig; }
-  function blank() { return { img: '', pos: 'center', year: '', title: { vi: '', en: '' }, text: { vi: '', en: '' } }; }
+  function blank() { return { img: '', pos: 'center', wide: false, year: '', title: { vi: '', en: '' }, text: { vi: '', en: '' } }; }
 
   /* thu nhỏ ảnh điện thoại (thường 4–10MB) về ≤ 1600px JPEG trước khi tải lên */
   function shrink(file) {
@@ -37,7 +37,8 @@
       '<div class="fd-a-pic">' + (c.img ? '<img src="' + esc(c.img) + '" alt="" style="object-position:' + c.pos + '">' : '<span>Chưa có ảnh</span>') +
       '<label class="btn btn--line btn--sm"><input type="file" accept="image/jpeg,image/png,image/webp" data-fd-img="' + i + '" hidden>' + (c.img ? 'Đổi ảnh' : 'Chọn ảnh') + '</label>' +
       '<select data-fd="chapters.' + i + '.pos" title="Phần ảnh được giữ khi cắt khung">' + [['center', 'Căn giữa'], ['top', 'Giữ phần trên'], ['bottom', 'Giữ phần dưới'], ['left', 'Giữ bên trái'], ['right', 'Giữ bên phải']]
-        .map(function (o) { return '<option value="' + o[0] + '"' + (c.pos === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+        .map(function (o) { return '<option value="' + o[0] + '"' + (c.pos === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select' +
+      '<label class="check"><input type="checkbox" data-fd="chapters.' + i + '.wide"' + (c.wide ? ' checked' : '') + '><span>Ảnh ngang, hiện rộng (ảnh nhóm)</span></label></div>' +
       '<div class="fd-a-body"><div class="fd-a-top"><b>Chương ' + (i + 1) + '</b><span>' +
       '<button type="button" class="btn btn--quiet btn--sm" data-fd-mv="' + i + ':-1"' + (i ? '' : ' disabled') + ' title="Đưa lên">↑</button>' +
       '<button type="button" class="btn btn--quiet btn--sm" data-fd-mv="' + i + ':1"' + (i < n - 1 ? '' : ' disabled') + ' title="Đưa xuống">↓</button>' +

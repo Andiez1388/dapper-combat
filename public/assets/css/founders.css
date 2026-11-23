@@ -29,3 +29,10 @@ main.fd-main{max-width:1120px;}
   .fd-pic::before,.fd-ch:nth-child(even) .fd-pic::before{inset:10px -10px -10px 10px;}
   .fd-pic img{aspect-ratio:4/4.4;}
 }
+/* chương ảnh ngang (ảnh nhóm): ảnh rộng trên, chữ dưới */
+.fd-ch--wide{grid-template-columns:1fr;gap:1.6rem;}
+.fd-ch--wide .fd-pic{order:0!important;}
+.fd-ch--wide .fd-pic img{aspect-ratio:16/9;}
+.fd-ch--wide .fd-copy{max-width:64ch;margin:0 auto;text-align:center;}
+.fd-ch--wide .fd-year::before{content:'';width:42px;height:1px;background:var(--red);}
+@media(max-width:760px){.fd-ch--wide .fd-pic img{aspect-ratio:4/3;}.fd-ch--wide .fd-copy{text-align:left;}.fd-ch--wide .fd-year::before{display:none;}}
