@@ -99,7 +99,7 @@ module.exports = async function browserTests(env, t, browser) {
   await t.run('menu', async () => {
     const st = await api('/api/settings');
     const n = st.brand.nav || {};
-    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && n.ranking === true && n.career === true && Object.keys(n).length === 6, 'mặc định: ẩn "Dịch vụ Setup", các mục còn lại hiện', st.brand.nav);
+    t.ok(n.home === true && n.shop === true && n.course === true && n.services === false && n.ranking === true && n.career === true && n.founders === true && Object.keys(n).length === 7, 'mặc định: ẩn "Dịch vụ Setup", các mục còn lại hiện', st.brand.nav);
     const look = async u => {
       await page.goto(B + u, { wait: 1000 });
       return page.eval(`(() => {
