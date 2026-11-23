@@ -63,6 +63,12 @@ function v3Guide(id){var c=DC.cat(id);return !c?id:c.guide==="free"?"phukien":c.
 
 /* sản phẩm lấy từ server (/admin → Sản phẩm); chưa có sản phẩm nào → trang hiện "Sản phẩm đang được cập nhật" */
 const PRODUCTS=DCProducts();
+/* ảnh riêng theo màu (Sản phẩm → Màu sắc → Ảnh màu này): chưa có ảnh chính thì lấy ảnh màu đầu tiên */
+const CIMG_OK=/^(\/assets\/(uploads|media|img)\/[\w.\/-]+|https:\/\/[^\s"'<>]+)$/;
+function cimg(p,c){const x=p&&p.colors&&p.colors.find(k=>k[0]===c);return x&&x[4]&&CIMG_OK.test(x[4])?x[4]:"";}
+function pimg(p,c){return cimg(p,c)||IMG[p.img];}
+function hasCimg(p){return !!(p&&p.colors&&p.colors.some(k=>k[4]&&CIMG_OK.test(k[4])));}
+PRODUCTS.forEach(function(p){if(p.img==="blank"&&hasCimg(p)){const c=p.colors.find(k=>cimg(p,k[0]));IMG[c[4]]=c[4];p.img=c[4];}});
 // image views (crops of same photo to simulate multiple angles)
 const REVIEWS=DC.list("shop.reviews.list",function($k){return [[DC.x($k("shop.reviews.n1"),0,"Nguyễn Minh Quân"),+DC.x($k("shop.reviews.r1"),0,"5"),[DC.x($k("shop.rv.1"),0,"Chất lượng vượt mong đợi, giao nhanh. Sẽ ủng hộ tiếp!"),DC.x($k("shop.rv.1"),1,"Quality beyond expectations, fast delivery. Will buy again!")],DC.m($k("shop.reviews.av1"),"/assets/media/d23e3c2d57c6.jpg"),DC.m($k("shop.reviews.ph1"),"/assets/media/bc3dad0ad714.jpg")],[DC.x($k("shop.reviews.n2"),0,"Đặng Thu Hà"),+DC.x($k("shop.reviews.r2"),0,"5"),[DC.x($k("shop.rv.2"),0,"Form đẹp, vải dày dặn, đúng như mô tả."),DC.x($k("shop.rv.2"),1,"Great fit, thick fabric, exactly as described.")],DC.m($k("shop.reviews.av2"),"/assets/media/0d7b90964d2f.jpg"),DC.m($k("shop.reviews.ph2"),"/assets/media/5e72dec5065d.jpg")],[DC.x($k("shop.reviews.n3"),0,"Hoàng Gia Bảo"),+DC.x($k("shop.reviews.r3"),0,"4"),[DC.x($k("shop.rv.3"),0,"Hàng ổn trong tầm giá, đóng gói cẩn thận."),DC.x($k("shop.rv.3"),1,"Solid for the price, carefully packaged.")],DC.m($k("shop.reviews.av3"),"/assets/media/ef6aa223f2d8.jpg"),DC.m($k("shop.reviews.ph3"),"/assets/media/9beb4e3b2965.jpg")],[DC.x($k("shop.reviews.n4"),0,"Trần Văn Hùng"),+DC.x($k("shop.reviews.r4"),0,"5"),[DC.x($k("shop.rv.4"),0,"Đeo cực vừa tay, đấm bao đã thật sự."),DC.x($k("shop.rv.4"),1,"Fits the hand perfectly, bag work feels great.")],DC.m($k("shop.reviews.av4"),"/assets/media/2470aa607bdf.jpg"),DC.m($k("shop.reviews.ph4"),"/assets/media/3ce28cc822e3.jpg")],[DC.x($k("shop.reviews.n5"),0,"Lê Thị Mai"),+DC.x($k("shop.reviews.r5"),0,"5"),[DC.x($k("shop.rv.5"),0,"Màu đẹp y hình, shop tư vấn nhiệt tình."),DC.x($k("shop.rv.5"),1,"Color just like the photos, super helpful shop.")],DC.m($k("shop.reviews.av5"),"/assets/media/a8deb0806ecb.jpg"),DC.m($k("shop.reviews.ph5"),"/assets/media/a406800d7ac8.jpg")],[DC.x($k("shop.reviews.n6"),0,"Phạm Quốc Anh"),+DC.x($k("shop.reviews.r6"),0,"5"),[DC.x($k("shop.rv.6"),0,"Giao nhanh trong 2 ngày, rất hài lòng."),DC.x($k("shop.rv.6"),1,"Delivered in 2 days, very happy.")],DC.m($k("shop.reviews.av6"),"/assets/media/112748d47b5b.jpg"),DC.m($k("shop.reviews.ph6"),"/assets/media/004df67b4e85.jpg")],[DC.x($k("shop.reviews.n7"),0,"Võ Thành Đạt"),+DC.x($k("shop.reviews.r7"),0,"4"),[DC.x($k("shop.rv.7"),0,"Chất vải mát, thấm hút tốt khi tập."),DC.x($k("shop.rv.7"),1,"Cool, moisture-wicking fabric for training.")],DC.m($k("shop.reviews.av7"),"/assets/media/6aba4dd7477e.jpg"),DC.m($k("shop.reviews.ph7"),"/assets/media/e5a62861c4e3.jpg")],[DC.x($k("shop.reviews.n8"),0,"Ngô Khánh Linh"),+DC.x($k("shop.reviews.r8"),0,"5"),[DC.x($k("shop.rv.8"),0,"Đường may chắc, dùng 2 tháng vẫn như mới."),DC.x($k("shop.rv.8"),1,"Strong stitching, still like new after 2 months.")],DC.m($k("shop.reviews.av8"),"/assets/media/d56ab49a7ed4.jpg"),DC.m($k("shop.reviews.ph8"),"/assets/media/54fdef235c18.jpg")],[DC.x($k("shop.reviews.n9"),0,"Bùi Tuấn Kiệt"),+DC.x($k("shop.reviews.r9"),0,"5"),[DC.x($k("shop.rv.9"),0,"Giá hợp lý, chất lượng trên cả mong đợi."),DC.x($k("shop.rv.9"),1,"Reasonable price, quality above expectations.")],DC.m($k("shop.reviews.av9"),"/assets/media/9160d736e23d.jpg"),DC.m($k("shop.reviews.ph9"),"/assets/media/bc3dad0ad714.jpg")],[DC.x($k("shop.reviews.n10"),0,"Dương Thu Trang"),+DC.x($k("shop.reviews.r10"),0,"5"),[DC.x($k("shop.rv.10"),0,"Mua lần 2 rồi, vẫn ưng như lần đầu."),DC.x($k("shop.rv.10"),1,"My second order — still love it.")],DC.m($k("shop.reviews.av10"),"/assets/media/eab248b40842.jpg"),DC.m($k("shop.reviews.ph10"),"/assets/media/a406800d7ac8.jpg")],[DC.x($k("shop.reviews.n11"),0,"Trịnh Văn Lộc"),+DC.x($k("shop.reviews.r11"),0,"4"),[DC.x($k("shop.rv.11"),0,"Size chuẩn, bảng size của shop rất chính xác."),DC.x($k("shop.rv.11"),1,"True to size, the size chart is accurate.")],DC.m($k("shop.reviews.av11"),"/assets/media/5a07520e6fd7.jpg"),DC.m($k("shop.reviews.ph11"),"/assets/media/9beb4e3b2965.jpg")],[DC.x($k("shop.reviews.n12"),0,"Phan Gia Huy"),+DC.x($k("shop.reviews.r12"),0,"5"),[DC.x($k("shop.rv.12"),0,"Đóng gói đẹp, tặng kèm sticker dễ thương."),DC.x($k("shop.rv.12"),1,"Nice packaging, cute free sticker.")],DC.m($k("shop.reviews.av12"),"/assets/media/d6f3b19b1df2.jpg"),DC.m($k("shop.reviews.ph12"),"/assets/media/3ce28cc822e3.jpg")]];});
 /* chỉ ảnh của chính sản phẩm (không lấy ảnh sản phẩm khác) + video chung */
@@ -224,7 +230,7 @@ function renderCart(){
   if(!ks.length){box.innerHTML=note+'<div class="cart-empty">'+t("cart.empty")+'</div>';foot.style.display="none";return;}
   foot.style.display="block";
   box.innerHTML=note+ks.map(k=>{const{p,size,color}=parseKey(k),q=cart[k],full=roomOf(p.id,size,color)<=0;return `
-    <div class="ci"><img class="ci-img" src="${IMG[p.img]}" alt="">
+    <div class="ci"><img class="ci-img" src="${pimg(p,color)}" alt="">
       <div><div class="ci-name">${pn(p)}</div><div class="ci-var">${cn(p,color)} · ${size}</div>
         <div class="ci-qty"><button data-q="-1" data-k="${k}" aria-label="−">−</button><span>${q}</span><button data-q="1" data-k="${k}" aria-label="+"${full?' disabled title="'+v3T(DC.x("shop.stock.max",0,"Đã đủ số lượng trong giỏ"),DC.x("shop.stock.max",1,"Max quantity in cart"))+'"':''}>+</button></div></div>
       <div class="ci-right"><span class="ci-line">${fmt(p.price*q)}</span><button class="ci-del" data-del="${k}">${t("cart.remove")}</button></div>
@@ -245,7 +251,7 @@ function showCheckout(){if(count()===0)return;closeCart();renderSummary();showVi
 $("goCheckout").onclick=showCheckout;$("backToShop").onclick=()=>showView("shop");
 function discountAmt(){if(!promo)return 0;const s=subtotal();if(promo.pct)return Math.round(s*promo.pct);if(promo.fix)return Math.min(promo.fix,s);return 0;}
 function shipFinal(){if(promo&&promo.freeship)return 0;return ship();}
-function renderSummary(){const box=$("sumItems"),ks=Object.keys(cart);const sc=$("sumCount");if(sc)sc.textContent=count()>0?"("+count()+" "+t("units")+")":"";box.innerHTML=cartNoteHtml()+ks.map(k=>{const{p,size,color}=parseKey(k),q=cart[k];return `<div class="sum-item"><img src="${IMG[p.img]}" alt=""><div><div>${pn(p)}</div><div class="si-q">${cn(p,color)} · ${size} · ${t("qtyLabel")}: ${q}</div></div><div class="si-line">${fmt(p.price*q)}</div></div>`;}).join("");const sub=subtotal(),disc=discountAmt(),shf=shipFinal();$("sumSub").textContent=fmt(sub);const dr=$("sumDiscRow");if(disc>0){dr.style.display="flex";$("sumDisc").textContent="−"+fmt(disc);}else{dr.style.display="none";}$("sumShip").textContent=shf===0?t("sum.free"):fmt(shf);$("sumTotal").textContent=fmt(Math.max(0,sub-disc)+shf);}
+function renderSummary(){const box=$("sumItems"),ks=Object.keys(cart);const sc=$("sumCount");if(sc)sc.textContent=count()>0?"("+count()+" "+t("units")+")":"";box.innerHTML=cartNoteHtml()+ks.map(k=>{const{p,size,color}=parseKey(k),q=cart[k];return `<div class="sum-item"><img src="${pimg(p,color)}" alt=""><div><div>${pn(p)}</div><div class="si-q">${cn(p,color)} · ${size} · ${t("qtyLabel")}: ${q}</div></div><div class="si-line">${fmt(p.price*q)}</div></div>`;}).join("");const sub=subtotal(),disc=discountAmt(),shf=shipFinal();$("sumSub").textContent=fmt(sub);const dr=$("sumDiscRow");if(disc>0){dr.style.display="flex";$("sumDisc").textContent="−"+fmt(disc);}else{dr.style.display="none";}$("sumShip").textContent=shf===0?t("sum.free"):fmt(shf);$("sumTotal").textContent=fmt(Math.max(0,sub-disc)+shf);}
 /* mã giảm giá: kiểm tra qua server (POST /api/promo) — danh sách mã không gửi xuống trình duyệt; server tính lại giá khi đặt hàng */
 let promoBusy=false,promoSub=null,promoT=null;
 /* giỏ đổi (thêm / bớt) sau khi đã áp mã → hỏi lại server (đơn tối thiểu, hết lượt…) */
@@ -374,8 +380,24 @@ function v3Render(){
     '<div class="v3-set-plus">+</div>'+
     '<div class="v3-set-item" data-open="'+pair.id+'"><img src="'+IMG[pair.img]+'" alt=""><span>'+pn(pair)+'</span><b>'+fmt(pair.price)+'</b></div></div>'+
     '<div class="v3-set-foot"><span>'+v3T(DC.x("shop.pdp.j32",0,"Tổng"),DC.x("shop.pdp.j32",1,"Total"))+': <b>'+fmt(p.price+pair.price)+'</b></span><button type="button" id="v3SetAdd" data-pair="'+pair.id+'">'+v3T(DC.x("shop.pdp.j33",0,"THÊM CẢ BỘ VÀO GIỎ"),DC.x("shop.pdp.j33",1,"ADD SET TO CART"))+'</button></div>'):"";
+  v3Howto(p);
   var key=p.id+"|"+lang;
   if(V3.revKey!==key){V3.revKey=key;v3Reviews(p);}
+}
+/* video hướng dẫn sử dụng (Sản phẩm → Video hướng dẫn): file MP4/WEBM hoặc link YouTube */
+function v3YtId(u){var m=String(u||"").match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i);return m?m[1]:"";}
+function v3Howto(p){
+  var box=$("v3Howto");if(!box)return;
+  var u=p.howto||"",y=v3YtId(u),k=p.id+"|"+lang+"|"+u;
+  if(box.getAttribute("data-k")===k)return;box.setAttribute("data-k",k);
+  if(!u||(!y&&!/^\/assets\/(uploads|media)\/[\w.-]+\.(mp4|webm)$|^https:\/\/[^\s"'<>]+\.(mp4|webm)$/i.test(u))){box.hidden=true;box.innerHTML="";return;}
+  var short=/\/shorts\//i.test(u);
+  var player=y?'<div class="v3-howto-frame'+(short?' is-short':'')+'"><iframe src="https://www.youtube-nocookie.com/embed/'+y+'?rel=0&modestbranding=1&playsinline=1" title="'+DC.esc(pn(p))+'" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'
+    :'<div class="v3-howto-frame"><video src="'+DC.esc(u)+'" controls playsinline preload="metadata"></video></div>';
+  box.innerHTML='<div class="v3-howto-in"><div class="v3-howto-copy"><span class="v3-howto-k">'+v3T(DC.x("shop.pdp.howto.k",0,"Hướng dẫn sử dụng"),DC.x("shop.pdp.howto.k",1,"How to use"))+'</span>'+
+    '<h3>'+v3T(DC.x("shop.pdp.howto.h",0,"Dùng đúng ngay từ lần đầu"),DC.x("shop.pdp.howto.h",1,"Get it right from day one"))+'</h3>'+
+    '<p>'+v3T(DC.x("shop.pdp.howto.p",0,"Xem video trước khi dùng để gắn đúng, dùng bền. Chỗ nào chưa rõ thì nhắn Dapper Combat qua Zalo hoặc Facebook, tụi mình chỉ thêm."),DC.x("shop.pdp.howto.p",1,"Watch this before your first session so it fits right and lasts. Anything unclear, message Dapper Combat on Zalo or Facebook and we will help."))+'</p></div>'+player+'</div>';
+  box.hidden=false;
 }
 (function(){
   var _rd=renderDetail;renderDetail=function(){_rd.apply(this,arguments);try{v3Render();}catch(e){console.error("v3",e);}};

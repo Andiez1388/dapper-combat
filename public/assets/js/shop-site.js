@@ -298,5 +298,22 @@ v3Media = function (p) {
   if (vids[1]) out.push({ type: 'video', src: vids[1] });
   return out;
 };
+/* ảnh riêng theo màu: màu đang chọn lên đầu, sau đó ảnh các màu khác, rồi ảnh chung của sản phẩm */
+var _dcMediaC = v3Media;
+v3Media = function (p) {
+  if (!hasCimg(p)) return _dcMediaC(p);
+  var seen = {}, out = [], add = function (u) { if (u && !seen[u]) { seen[u] = 1; out.push({ type: 'img', src: u }); } };
+  add(cimg(p, detailColor));
+  p.colors.forEach(function (c) { add(cimg(p, c[0])); });
+  if (p.img !== 'blank') add(IMG[p.img]);
+  (Array.isArray(p.images) ? p.images : []).forEach(add);
+  vidsOf(p).forEach(function (v, i) { if (v) out.splice(Math.min(out.length, i === 0 ? 2 : out.length), 0, { type: 'video', src: v }); });
+  return out;
+};
+// đổi màu ở trang chi tiết → dựng lại gallery để ảnh màu đó lên đầu
+document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('#dColors [data-color]');
+  if (b && typeof V3 !== 'undefined') { var p = PRODUCTS.find(function (x) { return x.id === detailId; }); if (p && hasCimg(p) && b.dataset.color !== detailColor) V3.galPid = null; }
+}, true);
 // mở thẳng /shop/<sản phẩm>: bộ ảnh đã dựng trước khi thay hàm trên → dựng lại
 if (V3.galPid) { V3.galPid = null; v3Render(); }

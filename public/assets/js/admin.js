@@ -1875,7 +1875,7 @@
   function blankProduct() {
     return { name: '', cat: (catList().filter(function (c) { return !c.hidden; })[0] || catList()[0]).id, price: '', old: '', stock: 0, visible: true, sizes: [], colors: [['black', COLORS.black[1]]],
       desc: { vi: '', en: '' }, full: { vi: '', en: '' }, rating: 0, reviews: 0, img: '', images: [], badge: '',
-      nameEn: '', features: [], video: '', seoTitle: '', seoDesc: '', slug: '' };
+      nameEn: '', features: [], video: '', howto: '', seoTitle: '', seoDesc: '', slug: '' };
   }
   // giống server (routes/api.js slugify): bỏ dấu, chữ thường, nối bằng "-"
   function slugify(v, max) {
@@ -1893,7 +1893,15 @@
     var src = safeImg(url);
     return src ? '<video src="' + esc(src) + '" muted playsinline controls preload="metadata"></video>' : '<span class="pimg__empty">Chưa có video riêng — trang chi tiết dùng 2 video chung</span>';
   }
-  function colorRowHtml(key, hex, nv, ne) {
+  // video hướng dẫn sử dụng: file tải lên hoặc link YouTube
+  function ytId(u) { var m = String(u || '').match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i); return m ? m[1] : ''; }
+  function howtoPreviewHtml(url) {
+    var y = ytId(url), src = safeImg(url);
+    if (y) return '<a href="https://www.youtube.com/watch?v=' + esc(y) + '" target="_blank" rel="noopener" class="pvid__yt"><img src="https://i.ytimg.com/vi/' + esc(y) + '/hqdefault.jpg" alt="" loading="lazy"><span>▶ YouTube</span></a>';
+    if (src && /\.(mp4|webm)$/i.test(src)) return '<video src="' + esc(src) + '" muted playsinline controls preload="metadata"></video>';
+    return '<span class="pimg__empty">Chưa có video hướng dẫn — trang chi tiết sẽ ẩn mục này</span>';
+  }
+  function colorRowHtml(key, hex, nv, ne, img) {
     var keys = Object.keys(COLORS), own = key && key !== '__new' && !has(COLORS, key);
     var h = safeHex(hex, has(COLORS, key) ? COLORS[key][1] : '#141414');
     var opt = function (k, label) { return '<option value="' + esc(k) + '"' + (k === key ? ' selected' : '') + '>' + esc(label) + '</option>'; };
@@ -1908,6 +1916,14 @@
       '<div class="crow__names">' +
         '<label><span class="sr">Tên màu · Tiếng Việt</span><input type="text" data-cname="vi" maxlength="30" value="' + esc(nv || '') + '" placeholder="' + esc(has(COLORS, key) ? COLORS[key][0] + ' (tên có sẵn)' : 'Tên màu, vd Xanh lá') + '" autocomplete="off"></label>' +
         '<label><span class="sr">Tên màu · English</span><input type="text" data-cname="en" maxlength="30" value="' + esc(ne || '') + '" placeholder="English, vd Green" autocomplete="off"></label>' +
+      '</div>' +
+      // ảnh riêng của màu này: khách bấm chọn màu ở trang chi tiết → ảnh đổi theo
+      '<div class="crow__img">' +
+        '<span class="crow__thumb" data-cimg-preview>' + (safeImg(img) ? '<img src="' + esc(safeImg(img)) + '" alt="">' : ICON.image) + '</span>' +
+        '<span class="crow__imgtxt">Ảnh màu này<small>Khách chọn màu → ảnh đổi theo</small></span>' +
+        '<label class="btn btn--line btn--sm file-btn">' + ICON.upload + '<span data-cimg-label>' + (safeImg(img) ? 'Đổi ảnh' : 'Tải ảnh') + '</span><input class="sr" type="file" accept="image/png,image/jpeg,image/webp" data-cimg-add></label>' +
+        '<button class="btn btn--quiet btn--sm" type="button" data-cimg-del' + (safeImg(img) ? '' : ' hidden') + '>Bỏ</button>' +
+        '<input type="hidden" data-cimg value="' + esc(safeImg(img) || '') + '">' +
       '</div></div>';
   }
   function imgPreviewHtml(url) {
@@ -2013,6 +2029,24 @@
     }).catch(function (e) { if (e && e.status !== 401) mnote(form, 'vid', [(e && e.message) || 'Tải video thất bại.'], true); })
       .then(function () { btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = F(form, 'video').value ? 'Đổi video' : 'Tải video lên'; });
   }
+  function uploadHowto(input) {
+    var form = input.form || $('#productForm'), file = input.files && input.files[0];
+    input.value = '';
+    if (!form || !file) return;
+    var lbl = $('[data-howto-label]', form), btn = input.closest('.file-btn'), note = $('[data-howto-note]', form);
+    var say = function (m, bad) { note.hidden = !m; note.textContent = m || ''; note.classList.toggle('is-err', !!bad); };
+    btn.classList.add('is-busy'); input.disabled = true; lbl.textContent = 'Đang tải video…'; say('');
+    (file.size > MAX_VIDEO ? Promise.reject(new ApiError('Video lớn hơn 80MB — vui lòng cắt ngắn hoặc nén lại, hoặc đăng lên YouTube rồi dán link.', 0)) : uploadRaw(file)).then(function (r) {
+      var url = r && safeImg(r.url);
+      if (!url) throw new ApiError('Tải lên thất bại.', 0);
+      if (!document.contains(form)) return;
+      F(form, 'howto').value = url;
+      $('[data-howto-preview]', form).innerHTML = howtoPreviewHtml(url);
+      $('[data-howto-del]', form).hidden = false;
+      S.dirty = true; toast('Đã tải video hướng dẫn — bấm Lưu để áp dụng');
+    }).catch(function (e) { if (e && e.status !== 401) say((e && e.message) || 'Tải video thất bại.', true); })
+      .then(function () { btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = F(form, 'howto').value && !ytId(F(form, 'howto').value) ? 'Đổi video' : 'Tải video lên'; });
+  }
   function uploadRaw(file) {
     return fetch('/api/uploads/file', { method: 'POST', headers: { Authorization: 'Bearer ' + S.token, 'Content-Type': file.type }, body: file })
       .then(function (res) {
@@ -2069,7 +2103,16 @@
         '<input type="hidden" name="video" value="' + esc(p.video || '') + '">' +
         mspec(PRODUCT_VID) +
         '<div class="set-msg" data-vid-note hidden></div>' +
-        '<small class="field__hint">Có video riêng thì trang chi tiết hiện video này thay cho 2 video chung.</small></div>') +
+        '<small class="field__hint">Có video riêng thì trang chi tiết hiện video này thay cho 2 video chung.</small></div>' +
+        '<div class="pvid pvid--howto"><span class="field__label">Video hướng dẫn sử dụng (không bắt buộc)</span>' +
+        '<div class="pvid__preview" data-howto-preview>' + howtoPreviewHtml(p.howto) + '</div>' +
+        '<div class="gal__bar"><label class="btn btn--line file-btn">' + ICON.upload + '<span data-howto-label>' + (p.howto && !ytId(p.howto) ? 'Đổi video' : 'Tải video lên') + '</span>' +
+        '<input class="sr" type="file" accept="video/mp4,video/webm" data-howto-add></label>' +
+        '<button class="btn btn--quiet btn--sm" type="button" data-howto-del' + (p.howto ? '' : ' hidden') + '>Bỏ video</button></div>' +
+        '<label class="field__label" for="pf-howto" style="margin-top:.7rem">Hoặc dán link YouTube</label>' +
+        '<input type="url" id="pf-howto" name="howto" value="' + esc(p.howto || '') + '" maxlength="300" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off" data-howto-url>' +
+        '<div class="set-msg" data-howto-note hidden></div>' +
+        '<small class="field__hint">Hiện thành mục “Hướng dẫn sử dụng” ở trang chi tiết sản phẩm. Nhận file MP4 / WEBM tải lên hoặc link YouTube (kể cả Shorts).</small></div>') +
       sec('Thông tin bán hàng',
         field('Tên sản phẩm', '<input type="text" name="name" value="' + esc(p.name || '') + '" maxlength="120" required autocomplete="off">') +
         field('Thương hiệu', '<input type="text" name="brand" value="' + esc(p.brand || 'Dapper Combat') + '" maxlength="40" list="brandList" autocomplete="off">' +
@@ -2092,7 +2135,7 @@
         field('Kích cỡ', '<input type="text" name="sizes" value="' + esc(Array.isArray(p.sizes) ? p.sizes.join(', ') : '') + '" placeholder="VD: 10oz, 12oz, 14oz" autocomplete="off" spellcheck="false">',
           'Phân cách bằng dấu phẩy. Để trống = “One size”.') +
         '<div class="field"><span class="field__label" id="colorsLabel">Màu sắc</span>' +
-        '<div class="crows" data-crows role="group" aria-labelledby="colorsLabel">' + colors.map(function (c) { return Array.isArray(c) ? colorRowHtml(c[0], c[1], c[2], c[3]) : colorRowHtml('', ''); }).join('') + '</div>' +
+        '<div class="crows" data-crows role="group" aria-labelledby="colorsLabel">' + colors.map(function (c) { return Array.isArray(c) ? colorRowHtml(c[0], c[1], c[2], c[3], c[4]) : colorRowHtml('', ''); }).join('') + '</div>' +
         '<button class="btn btn--ghost btn--sm" type="button" data-crow-add>' + ICON.plus + '<span>Thêm màu</span></button>' +
         '<small class="field__hint">Chọn màu có sẵn hoặc “Màu khác” rồi đặt tên. Ô tên để trống = dùng tên có sẵn.</small></div>' +
         '<div class="vstock" data-vs><label class="check set-switch"><input type="checkbox" data-vs-on><span class="switch__ui" aria-hidden="true"></span><span><strong>Tồn kho theo size / màu</strong></span></label>' +
@@ -2175,7 +2218,8 @@
       }
       if (keysSeen[key]) { bad = [$('[data-ckey]', row), 'Mỗi màu chỉ nên chọn một lần.']; return; }
       keysSeen[key] = 1;
-      colors.push(nv || ne ? [key, hex, nv, ne] : [key, hex]);
+      var cimg = $('[data-cimg]', row) ? safeImg($('[data-cimg]', row).value) : '';
+      colors.push(cimg ? [key, hex, nv, ne, cimg] : nv || ne ? [key, hex, nv, ne] : [key, hex]);
     });
     if (bad) return formError(form, bad[1], bad[0]);
     if (!colors.length) return formError(form, 'Cần ít nhất một màu.', $('[data-crow-add]', form));
@@ -2195,7 +2239,7 @@
       rating: Math.round(rating * 10) / 10, reviews: reviews, img: img,
       images: $$('[data-gal-url]', form).map(function (n) { return n.getAttribute('data-gal-url'); }).filter(function (u) { return !!safeImg(u); }).slice(0, MAX_GALLERY),
       badge: (F(form, 'badge') && F(form, 'badge').value) || '',
-      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
+      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), howto: get('howto'), seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
       features: $$('[data-feat]', form).map(function (r) { return { vi: $('[data-feat-vi]', r).value.trim(), en: $('[data-feat-en]', r).value.trim() }; })
         .filter(function (f) { return f.vi; }).slice(0, MAX_FEATS),
       // số tồn kho lúc mở form: không sửa ô này thì server giữ số hiện tại (có thể vừa bị trừ bởi đơn mới)
@@ -2224,6 +2268,26 @@
     });
   }
 
+  function uploadColorImage(input) {
+    var file = input.files && input.files[0], row = input.closest('[data-crow]'), form = input.form || $('#productForm');
+    input.value = '';
+    if (!file || !row) return;
+    var lbl = $('[data-cimg-label]', row), btn = input.closest('.file-btn');
+    btn.classList.add('is-busy'); lbl.textContent = 'Đang tải…'; input.disabled = true;
+    var done = function () { btn.classList.remove('is-busy'); input.disabled = false; lbl.textContent = $('[data-cimg]', row).value ? 'Đổi ảnh' : 'Tải ảnh'; };
+    mprep(file, PRODUCT_IMG).then(function (p) {
+      if (p.file.size > MAX_UPLOAD) throw new ApiError('Ảnh lớn hơn 8MB — vui lòng nén hoặc thu nhỏ ảnh rồi thử lại.', 0);
+      return new Promise(function (ok, no) { var r = new FileReader(); r.onerror = function () { no(new ApiError('Không đọc được file ảnh.', 0)); }; r.onload = function () { ok(String(r.result || '')); }; r.readAsDataURL(p.file); });
+    }).then(function (dataUrl) { return api('/uploads', { method: 'POST', body: { dataUrl: dataUrl } }); }).then(function (r) {
+      var url = r && safeImg(r.url);
+      if (!url) throw new ApiError('Máy chủ trả về đường dẫn ảnh không hợp lệ.', 0);
+      if (!document.contains(row)) return;
+      $('[data-cimg]', row).value = url;
+      $('[data-cimg-preview]', row).innerHTML = '<img src="' + esc(url) + '" alt="">';
+      $('[data-cimg-del]', row).hidden = false;
+      S.dirty = true; done(); toast('Đã tải ảnh màu — bấm Lưu để áp dụng');
+    }).catch(function (e) { done(); if (e && e.status !== 401 && e.status !== 403) formError(form, (e && e.message) || 'Tải ảnh thất bại.'); });
+  }
   function uploadImage(input) {
     var file = input.files && input.files[0];
     var form = input.form || $('#productForm');
@@ -2509,6 +2573,18 @@
       var fadd = $('[data-feat-add]', fform); if (fadd) fadd.disabled = false;
       return;
     }
+    if ((n = t.closest('[data-cimg-del]'))) {
+      var crow = n.closest('[data-crow]');
+      $('[data-cimg]', crow).value = ''; $('[data-cimg-preview]', crow).innerHTML = ICON.image; $('[data-cimg-label]', crow).textContent = 'Tải ảnh';
+      n.hidden = true; S.dirty = true;
+      return;
+    }
+    if ((n = t.closest('[data-howto-del]'))) {
+      var hform = n.closest('form');
+      F(hform, 'howto').value = ''; $('[data-howto-preview]', hform).innerHTML = howtoPreviewHtml('');
+      $('[data-howto-label]', hform).textContent = 'Tải video lên'; n.hidden = true; S.dirty = true;
+      return;
+    }
     if ((n = t.closest('[data-vid-del]'))) {
       var vform = n.closest('form');
       F(vform, 'video').value = ''; $('[data-vid-preview]', vform).innerHTML = vidPreviewHtml('');
@@ -2555,6 +2631,7 @@
     S.dirty = true;
     if (t.classList.contains('is-invalid')) { t.classList.remove('is-invalid'); t.removeAttribute('aria-invalid'); }
     if (t.matches('[data-money]')) fmtMoneyInput(t);
+    if (t.matches('[data-howto-url]')) { var hf = t.form; $('[data-howto-preview]', hf).innerHTML = howtoPreviewHtml(t.value.trim()); $('[data-howto-del]', hf).hidden = !t.value.trim(); }
     // sửa đơn / tạo đơn
     if (ED && t.closest('#orderEdit')) {
       if (t.matches('[data-ed-f="qty"]')) {
@@ -2587,6 +2664,8 @@
     if (t.matches('[data-upload]')) { uploadImage(t); return; }
     if (t.matches('[data-gal-add]')) { uploadGallery(t); return; }
     if (t.matches('[data-vid-add]')) { uploadVideo(t); return; }
+    if (t.matches('[data-howto-add]')) { uploadHowto(t); return; }
+    if (t.matches('[data-cimg-add]')) { uploadColorImage(t); return; }
     if (!t.closest('form')) return;
     S.dirty = true;
     // "Đã nhận tiền": hiện ô số tiền; bật lần đầu thì điền sẵn số cần thu

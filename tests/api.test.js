@@ -102,6 +102,12 @@ module.exports = async function apiTests(env, t) {
     let r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { ...p, nameEn: 'Test EN', features: [{ vi: 'Điểm 1', en: 'Point 1' }, { vi: '' }], video: '/assets/uploads/x.mp4', seoTitle: 'Tiêu đề SEO', seoDesc: 'Mô tả SEO', slug: 'Đường Dẫn Mới!', colors: [[p.colors[0][0], p.colors[0][1]], ['__x', 'sai', 'Xanh lá', 'Green']] } });
     t.ok(r.s === 200 && r.j.nameEn === 'Test EN' && r.j.features.length === 1 && r.j.slug === 'duong-dan-moi' && r.j.video === '/assets/uploads/x.mp4', 'lưu tên EN, điểm nổi bật, video, đường dẫn (tự bỏ dấu)', r.j);
     t.ok(JSON.stringify(r.j.colors[1]) === JSON.stringify(['x', '#141414', 'Xanh lá', 'Green']), 'màu tự đặt tên', r.j.colors);
+    r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { colors: [['black', '#111111', '', '', '/assets/uploads/den.jpg'], ['red', '#c8102e', 'Đỏ', 'Red', 'javascript:x'], ['navy', '#18264a']] } });
+    t.ok(r.s === 200 && r.j.colors[0][4] === '/assets/uploads/den.jpg' && r.j.colors[0].length === 5 && r.j.colors[1].length === 4 && r.j.colors[2].length === 2, 'ảnh riêng từng màu: nhận link hợp lệ, bỏ link lạ', r.j.colors);
+    for (const [u, ok] of [['/assets/uploads/hd.mp4', true], ['https://youtu.be/dQw4w9WgXcQ', true], ['https://www.youtube.com/shorts/abc123XYZ', true], ['https://evil.example/x.html', false], ['javascript:alert(1)', false]]) {
+      r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { howto: u } });
+      t.ok(r.s === 200 && r.j.howto === (ok ? u : ''), 'video hướng dẫn: ' + u + (ok ? ' được nhận' : ' bị bỏ'), r.j.howto);
+    }
     r = await req('/shop/' + old);
     t.ok(r.s === 301 && r.h.get('location') === '/shop/duong-dan-moi', 'đường dẫn cũ → chuyển 301 sang đường dẫn mới', r.s);
     r = await req('/shop/duong-dan-moi');

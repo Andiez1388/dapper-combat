@@ -302,7 +302,7 @@ router.productSlug = productSlug;
 router.get('/products', (req, res) => { res.json(publicProducts()); });
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
-const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand'];
+const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
 // chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
 const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
@@ -320,10 +320,12 @@ function cleanProduct(body, base = {}) {
   p.reviews = int(p.reviews, 0, 1e6);
   p.rating = p.reviews ? Math.min(5, Math.max(0, Number(p.rating) || 0)) : 0; // chưa có đánh giá → không hiện sao
   p.sizes = Array.isArray(p.sizes) && p.sizes.length ? p.sizes.map(s => plain(s, 20)).filter(Boolean) : ['One size'];
-  // màu: [mã, mã màu HEX, tên tiếng Việt, tên tiếng Anh] — tên trống = dùng tên có sẵn theo mã (Đỏ, Đen…)
+  // màu: [mã, mã màu HEX, tên tiếng Việt, tên tiếng Anh, ảnh riêng?] — tên trống = dùng tên có sẵn theo mã (Đỏ, Đen…)
   p.colors = Array.isArray(p.colors) && p.colors.length ? p.colors.filter(c => Array.isArray(c) && c[0]).slice(0, 12).map(c => {
     const key = slugify(str(c[0], 30)).slice(0, 20) || 'mau', hex = /^#[0-9a-f]{6}$/i.test(str(c[1], 7)) ? str(c[1], 7) : '#141414';
-    const vi = plain(c[2], 30), en = plain(c[3], 30);
+    const vi = plain(c[2], 30), en = plain(c[3], 30), img = str(c[4], 300);
+    // ảnh riêng của màu (tùy chọn): khách chọn màu ở trang chi tiết → ảnh đổi theo
+    if (img && MEDIA_URL.test(img)) return [key, hex, vi, en, img];
     return vi || en ? [key, hex, vi, en] : [key, hex];
   }) : [['black', '#141414']];
   for (const k of ['desc', 'full']) p[k] = { vi: plain(p[k] && p[k].vi, 2000), en: plain(p[k] && p[k].en, 2000) };
@@ -336,6 +338,9 @@ function cleanProduct(body, base = {}) {
   // video riêng (MP4 / WEBM) thay cho 2 video chung ở trang chi tiết
   p.video = str(p.video, 300);
   if (p.video && !(MEDIA_URL.test(p.video) && (/^https:/.test(p.video) || /\.(mp4|webm)$/i.test(p.video)))) p.video = '';
+  // video hướng dẫn sử dụng: file MP4 / WEBM tải lên, hoặc link YouTube
+  p.howto = str(p.howto, 300);
+  if (p.howto && !(MEDIA_URL.test(p.howto) && (/\.(mp4|webm)$/i.test(p.howto) || /^https:\/\/(www\.|m\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(p.howto)))) p.howto = '';
   // SEO riêng (trống = tự lấy tên + mô tả) và đường dẫn tự đặt (trống = tự tạo từ tên)
   p.seoTitle = plain(p.seoTitle, 70);
   p.seoDesc = plain(p.seoDesc, 200);
