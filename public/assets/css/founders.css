@@ -36,3 +36,11 @@ main.fd-main{max-width:1120px;}
 .fd-ch--wide .fd-copy{max-width:64ch;margin:0 auto;text-align:center;}
 .fd-ch--wide .fd-year::before{content:'';width:42px;height:1px;background:var(--red);}
 @media(max-width:760px){.fd-ch--wide .fd-pic img{aspect-ratio:4/3;}.fd-ch--wide .fd-copy{text-align:left;}.fd-ch--wide .fd-year::before{display:none;}}
+/* câu châm ngôn giữa trang */
+.fd-motto{position:relative;margin:0;padding:clamp(3.5rem,8vw,6rem) clamp(1rem,6vw,5rem);text-align:center;border-top:1px solid #d9d4cc;border-bottom:1px solid #d9d4cc;
+  background:radial-gradient(60% 80% at 50% 50%,rgba(212,55,46,.06),transparent 70%);}
+.fd-motto-mark{position:absolute;left:50%;top:-.05em;transform:translateX(-50%);font-family:var(--f-head);font-size:clamp(7rem,16vw,12rem);line-height:1;color:var(--red);opacity:.18;pointer-events:none;}
+.fd-main article .fd-motto blockquote{position:relative;margin:0 auto;padding:0;border:0;max-width:20ch;font-family:var(--f-display);font-weight:900;font-size:clamp(2.2rem,6vw,4.4rem);line-height:1.02;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);}
+.fd-motto figcaption{margin-top:1.6rem;display:inline-flex;align-items:center;gap:.8rem;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);}
+.fd-motto figcaption::before,.fd-motto figcaption::after{content:'';width:32px;height:1px;background:var(--red);}
+@media(max-width:600px){.fd-motto figcaption::before,.fd-motto figcaption::after{width:18px;}.fd-motto figcaption{letter-spacing:.12em;}}

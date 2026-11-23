@@ -64,6 +64,8 @@
       '<p class="field__hint">Mỗi chương = 1 ảnh + 1 đoạn kể. Trên web ảnh và chữ xếp so le trái / phải theo thứ tự này. Chọn nhiều ảnh cùng lúc → mỗi ảnh thành 1 chương mới.</p>' +
       '<p class="fd-a-msg" data-fd-msg role="status"></p>' +
       '<div class="fd-a-list">' + d.chapters.map(function (c, i) { return chapter(c, i, d.chapters.length); }).join('') + '</div></section>' +
+      '<section class="panel fd-a"><h2 class="panel__title">Câu châm ngôn (khối trang trí giữa trang, sau chương 3)</h2>' +
+      field('Câu châm ngôn', ta('motto.vi', (d.motto || {}).vi, 200, 2)) + '<div class="grid2">' + field('Motto (English)', inp('motto.en', (d.motto || {}).en, 200)) + field('Người nói', inp('mottoBy', d.mottoBy, 80)) + '</div></section>' +
       '<section class="panel fd-a"><h2 class="panel__title">Câu trích dẫn cuối trang</h2>' +
       field('Câu trích dẫn', ta('quote.vi', d.quote.vi, 300, 2)) + '<div class="grid2">' + field('Quote (English)', inp('quote.en', d.quote.en, 300)) + field('Người nói', inp('quoteBy', d.quoteBy, 80, 'VD: Duy & Phong · Founders')) + '</div></section>';
     main.innerHTML = html;
@@ -77,7 +79,7 @@
   function syncSave() { var b = document.querySelector('[data-fd-save]'); if (b) b.disabled = !dirty() || F.busy; }
   function load(main) {
     F.err = ''; view(main);
-    A.api('/founders').then(function (d) { F.d = d; F.orig = JSON.stringify(d); view(main); }, function (e) { F.err = (e && e.message) || 'Không tải được.'; view(main); });
+    A.api('/founders').then(function (d) { if (!d.motto) d.motto = { vi: '', en: '' }; F.d = d; F.orig = JSON.stringify(d); view(main); }, function (e) { F.err = (e && e.message) || 'Không tải được.'; view(main); });
   }
   var BOUND = new WeakSet();
   function bind(main) {
