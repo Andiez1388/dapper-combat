@@ -51,7 +51,7 @@
   function view(main) {
     var d = F.d;
     var html = A.pageHead('Câu chuyện Founders', { eyebrow: 'Nội dung', count: false, stamp: false, refresh: false,
-      actions: '<a class="btn btn--ghost" href="/cau-chuyen-founders" target="_blank" rel="noopener">Xem trang ↗</a><button class="btn btn--primary" type="button" data-fd-save' + (dirty() ? '' : ' disabled') + '>Lưu</button>' });
+      actions: '<button class="btn btn--ghost" type="button" data-fd-reset title="Bỏ nội dung đã sửa, dùng lại nội dung mẫu">Khôi phục mẫu</button><a class="btn btn--ghost" href="/cau-chuyen-founders" target="_blank" rel="noopener">Xem trang ↗</a><button class="btn btn--primary" type="button" data-fd-save' + (dirty() ? '' : ' disabled') + '>Lưu</button>' });
     if (!d) { main.innerHTML = html + (F.err ? A.errorHtml(F.err) : A.loadingHtml()); return; }
     html += '<section class="panel fd-a"><div class="fd-a-head">' +
       '<label class="check set-switch"><input type="checkbox" data-fd="on"' + (d.on ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span><strong>Hiện trang trên web</strong> · /cau-chuyen-founders</span></label>' +
@@ -117,6 +117,13 @@
       }
     });
     main.addEventListener('click', function (e) {
+      var rs = e.target.closest('[data-fd-reset]');
+      if (rs) {
+        A.confirmDialog({ title: 'Khôi phục nội dung mẫu?', body: 'Mọi chỉnh sửa trên trang Câu chuyện Founders sẽ bị thay bằng nội dung mẫu.', ok: 'Khôi phục', cancel: 'Thôi' }).then(function (yes) {
+          if (yes) A.api('/founders/reset', { method: 'POST', body: {} }).then(function (d) { F.d = d; F.orig = JSON.stringify(d); view(main); A.toast('Đã khôi phục nội dung mẫu.'); }, A.apiFail);
+        });
+        return;
+      }
       var b = e.target.closest('[data-fd-save],[data-fd-add],[data-fd-del],[data-fd-mv]'); if (!b || !F.d) return;
       if (b.hasAttribute('data-fd-add')) { F.d.chapters.push(blank()); view(main); return; }
       if (b.hasAttribute('data-fd-del')) {
