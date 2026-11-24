@@ -213,10 +213,27 @@
           var m = NAV[a.getAttribute('href')]; if (!m) return;
           var label = m[1] ? DC.x(m[1], en() ? 1 : 0, en() ? m[3] : m[2]) : (en() ? m[3] : m[2]);
           if (m[0] === 'ranking' && /pro pathways|truyền nghề/i.test(label)) label = 'Academy Ranking';   // nhãn cũ bị gán nhầm
-          if (a.textContent !== label) a.textContent = label;
+          if (m[0] === 'career') {
+            // Truyền Nghề / Pro Pathways: chữ đỏ + dấu nhỏ "Độc quyền / Exclusive" bên dưới (chữ sửa ở Chữ trên trang: global.navpro.b)
+            var badge = DC.x('global.navpro.b', en() ? 1 : 0, en() ? 'Exclusive' : 'Độc quyền'), sig = label + '|' + badge;
+            if (a.getAttribute('data-pro') !== sig) {
+              a.setAttribute('data-pro', sig); a.classList.add('nav-pro');
+              a.innerHTML = '<span class="nav-pro-t">' + DC.esc(label) + '</span><span class="nav-pro-b" aria-hidden="true">' + DC.esc(badge) + '</span>';
+            }
+          } else if (a.textContent !== label) a.textContent = label;
           var show = DC.navOn(m[0]);
           if ((item.style.display === 'none') === show) item.style.display = show ? '' : 'none';
         });
+      }
+      // trang /truyen-nghe có menu riêng (.tn-site, chữ do trang tự đổi) → dấu vẽ bằng CSS từ thuộc tính data-pro-b
+      var tp = document.querySelector('.tn-site a[href="/truyen-nghe"]');
+      if (tp) { var tb = DC.x('global.navpro.b', en() ? 1 : 0, en() ? 'Exclusive' : 'Độc quyền'); if (tp.getAttribute('data-pro-b') !== tb) tp.setAttribute('data-pro-b', tb); if (!tp.classList.contains('tn-pro')) tp.classList.add('tn-pro'); }
+      // menu điện thoại: mục Truyền Nghề cũng đỏ + dấu "Độc quyền"
+      var mp = document.querySelector('.mn-links a[href="/truyen-nghe"]');
+      if (mp && !mp.classList.contains('mn-pro')) {
+        mp.classList.add('mn-pro');
+        var mb = mp.querySelector('b');
+        if (mb) mb.insertAdjacentHTML('afterend', '<span class="nav-pro-b mn-pro-b">' + DC.esc(DC.x('global.navpro.b', en() ? 1 : 0, en() ? 'Exclusive' : 'Độc quyền')) + '</span>');
       }
       var mn = document.querySelector('.mn-links');
       if (mn && DC.navOn('founders') && !mn.querySelector('[data-mn-founders]')) {

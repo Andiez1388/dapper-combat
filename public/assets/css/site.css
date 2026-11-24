@@ -225,3 +225,22 @@ button[disabled]{cursor:progress;opacity:0.75;}
 /* chưa cài tài khoản nhận tiền: khung báo thay cho mã QR */
 .dc-qr-wait{display:flex;flex-direction:column;justify-content:center;gap:.4em;width:100%;height:100%;min-height:150px;padding:14px;box-sizing:border-box;border:1.5px dashed #c9c4bb;border-radius:10px;background:#faf9f6;color:#3b3833;font-size:.8rem;line-height:1.45;text-align:left;}
 .dc-qr-wait b{font-size:.86rem;color:#141414;}
+
+/* ── Menu: Truyền Nghề / Pro Pathways nổi bật — chữ đỏ + dấu "Độc quyền / Exclusive" nhỏ bên dưới ── */
+.nav-links a.nav-pro{position:relative;color:#ff4b3e!important;}
+.nav-links a.nav-pro:hover{color:#ff6a5f!important;}
+.nav-links a.nav-pro .nav-pro-t{position:relative;}
+.nav-pro-b{position:absolute;left:50%;top:calc(100% + 9px);transform:translateX(-50%);display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+  font-family:'Ysabeau',Georgia,serif!important;font-style:italic;font-weight:600;font-size:10px!important;line-height:1;letter-spacing:.06em!important;text-transform:none!important;
+  color:#d8b25c;pointer-events:none;}
+.nav-pro-b::before,.nav-pro-b::after{content:'';width:4px;height:4px;background:currentColor;transform:rotate(45deg);opacity:.9;}
+.nav-links a.nav-pro.active{text-underline-offset:5px;}
+/* menu điện thoại */
+.mn-link.mn-pro b{color:#ff4b3e;}
+.mn-pro-b{position:static;transform:none;margin:.15rem 0 .1rem;font-size:11px!important;}
+@media(max-width:900px){.nav-links a.nav-pro .nav-pro-b{display:none;}}
+.tn .tn-site a.tn-pro{position:relative;color:#ff4b3e!important;}
+.tn .tn-site a.tn-pro.on{border-bottom-color:#ff4b3e;}
+.tn .tn-site a.tn-pro::after{content:'◆ ' attr(data-pro-b) ' ◆';position:absolute;left:50%;top:calc(100% + 3px);transform:translateX(-50%);white-space:nowrap;
+  font-family:'Ysabeau',Georgia,serif;font-style:italic;font-weight:600;font-size:9px;line-height:1;letter-spacing:.06em;color:#d8b25c;pointer-events:none;}
+.tn .tn-site a.tn-pro:not([data-pro-b])::after{content:none;}
