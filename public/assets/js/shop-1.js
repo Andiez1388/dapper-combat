@@ -381,8 +381,24 @@ function v3Render(){
     '<div class="v3-set-item" data-open="'+pair.id+'"><img src="'+IMG[pair.img]+'" alt=""><span>'+pn(pair)+'</span><b>'+fmt(pair.price)+'</b></div></div>'+
     '<div class="v3-set-foot"><span>'+v3T(DC.x("shop.pdp.j32",0,"Tổng"),DC.x("shop.pdp.j32",1,"Total"))+': <b>'+fmt(p.price+pair.price)+'</b></span><button type="button" id="v3SetAdd" data-pair="'+pair.id+'">'+v3T(DC.x("shop.pdp.j33",0,"THÊM CẢ BỘ VÀO GIỎ"),DC.x("shop.pdp.j33",1,"ADD SET TO CART"))+'</button></div>'):"";
   v3Howto(p);
+  v3Contact(p);
   var key=p.id+"|"+lang;
   if(V3.revKey!==key){V3.revKey=key;v3Reviews(p);}
+}
+/* custom qua tin nhắn (Sản phẩm → Nhận custom qua tin nhắn): khung Zalo / Messenger / hotline */
+function v3Contact(p){
+  var box=$("v3Contact");if(!box)return;
+  if(!p.contactCustom){box.hidden=true;box.innerHTML="";box.removeAttribute("data-k");return;}
+  var k=p.id+"|"+lang;if(box.getAttribute("data-k")===k)return;box.setAttribute("data-k",k);
+  var url=function(u){u=String(u||"").trim();return /^https:\/\/[^\s"'<>]+$/.test(u)?u:"";};
+  var zalo=url(DC.cfg("zalo","https://zalo.me/dappercombat")),fb=url(DC.cfg("facebook","https://facebook.com/dappercombat")),ph=String(DC.cfg("phone","")).replace(/[^\d+]/g,"");
+  var note=p.contactNote&&(lang==="en"?(p.contactNote.en||p.contactNote.vi):(p.contactNote.vi||p.contactNote.en));
+  if(!note)note=v3T(DC.x("shop.pdp.cc.p",0,"Mỗi màu chỉ làm số lượng có hạn. Muốn màu riêng, in tên hay thêu logo thì nhắn tụi mình để báo giá và thời gian làm."),DC.x("shop.pdp.cc.p",1,"Each colour is made in limited numbers. For your own colours, name or logo, message us for a quote and lead time."));
+  var btn=function(href,cls,label){return href?'<a class="v3-cc-btn '+cls+'" href="'+DC.esc(href)+'"'+(/^https/.test(href)?' target="_blank" rel="noopener"':'')+'>'+label+'</a>':"";};
+  box.innerHTML='<div class="v3-cc-h">'+v3T(DC.x("shop.pdp.cc.h",0,"Muốn làm màu riêng?"),DC.x("shop.pdp.cc.h",1,"Want your own colours?"))+'</div>'+
+    '<p class="v3-cc-p">'+DC.esc(note)+'</p>'+
+    '<div class="v3-cc-row">'+btn(zalo,"zalo","Zalo")+btn(fb,"fb","Messenger")+btn(ph&&ph.length>=8?"tel:"+ph:"","tel",v3T("Gọi ","Call ")+DC.esc(DC.cfg("phone","")))+'</div>';
+  box.hidden=false;
 }
 /* video hướng dẫn sử dụng (Sản phẩm → Video hướng dẫn): file MP4/WEBM hoặc link YouTube */
 function v3YtId(u){var m=String(u||"").match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i);return m?m[1]:"";}
@@ -534,6 +550,7 @@ function v3lFavTxt(){var n=PRODUCTS.filter(function(p){return wish.has(p.id);}).
 function v3lCard(p){
   var badge="",sale=false,out=DC.soldOut(p);
   if(p.old){badge="-"+Math.round((1-p.price/p.old)*100)+"%";sale=true;}
+  else if(p.badge==="limited")badge=v3T(DC.x("shop.list.lim",0,"GIỚI HẠN"),DC.x("shop.list.lim",1,"LIMITED"));
   else if(V3L_NEW.indexOf(p.id)>-1)badge=v3T(DC.x("shop.list.j6",0,"MỚI"),DC.x("shop.list.j6",1,"NEW"));
   else if(V3L_BEST.indexOf(p.id)>-1)badge=v3T(DC.x("shop.list.j7",0,"BÁN CHẠY"),DC.x("shop.list.j7",1,"BEST SELLER"));
   var w=wish.has(p.id),free=p.sizes.length===1;

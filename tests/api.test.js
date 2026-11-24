@@ -104,6 +104,10 @@ module.exports = async function apiTests(env, t) {
     t.ok(JSON.stringify(r.j.colors[1]) === JSON.stringify(['x', '#141414', 'Xanh lá', 'Green']), 'màu tự đặt tên', r.j.colors);
     r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { colors: [['black', '#111111', '', '', '/assets/uploads/den.jpg'], ['red', '#c8102e', 'Đỏ', 'Red', 'javascript:x'], ['navy', '#18264a']] } });
     t.ok(r.s === 200 && r.j.colors[0][4] === '/assets/uploads/den.jpg' && r.j.colors[0].length === 5 && r.j.colors[1].length === 4 && r.j.colors[2].length === 2, 'ảnh riêng từng màu: nhận link hợp lệ, bỏ link lạ', r.j.colors);
+    r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { contactCustom: true, contactNote: { vi: '<b>Nhắn</b> tụi mình', en: '' }, badge: 'limited' } });
+    t.ok(r.s === 200 && r.j.contactCustom === true && r.j.contactNote.vi.indexOf('<') < 0 && r.j.badge === 'limited', 'custom qua tin nhắn + nhãn giới hạn', r.j);
+    r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { contactCustom: false, contactNote: { vi: '', en: '' } } });
+    t.ok(r.s === 200 && !('contactCustom' in r.j) && !('contactNote' in r.j), 'tắt custom qua tin nhắn', r.j);
     for (const [u, ok] of [['/assets/uploads/hd.mp4', true], ['https://youtu.be/dQw4w9WgXcQ', true], ['https://www.youtube.com/shorts/abc123XYZ', true], ['https://evil.example/x.html', false], ['javascript:alert(1)', false]]) {
       r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { howto: u } });
       t.ok(r.s === 200 && r.j.howto === (ok ? u : ''), 'video hướng dẫn: ' + u + (ok ? ' được nhận' : ' bị bỏ'), r.j.howto);

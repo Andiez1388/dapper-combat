@@ -1940,7 +1940,7 @@
     n.textContent = (lines || []).join(' '); n.hidden = !n.textContent; n.classList.toggle('is-err', !!err);
   }
   var MAX_GALLERY = 12;
-  var BADGES = [['', 'Tự động — hiện “-x%” khi có giá gốc'], ['new', 'Mới'], ['best', 'Bán chạy'], ['none', 'Không nhãn']];
+  var BADGES = [['', 'Tự động — hiện “-x%” khi có giá gốc'], ['new', 'Mới'], ['best', 'Bán chạy'], ['limited', 'Số lượng giới hạn'], ['none', 'Không nhãn']];
   function galItemHtml(url) {
     var src = safeImg(url);
     if (!src) return '';
@@ -2112,7 +2112,13 @@
         '<label class="field__label" for="pf-howto" style="margin-top:.7rem">Hoặc dán link YouTube</label>' +
         '<input type="url" id="pf-howto" name="howto" value="' + esc(p.howto || '') + '" maxlength="300" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off" data-howto-url>' +
         '<div class="set-msg" data-howto-note hidden></div>' +
-        '<small class="field__hint">Hiện thành mục “Hướng dẫn sử dụng” ở trang chi tiết sản phẩm. Nhận file MP4 / WEBM tải lên hoặc link YouTube (kể cả Shorts).</small></div>') +
+        '<small class="field__hint">Hiện thành mục “Hướng dẫn sử dụng” ở trang chi tiết sản phẩm. Nhận file MP4 / WEBM tải lên hoặc link YouTube (kể cả Shorts).</small></div>' +
+        '<div class="pcc"><label class="check"><input type="checkbox" name="contactCustom"' + (p.contactCustom ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Nhận custom qua tin nhắn</span></label>' +
+        '<small class="field__hint">Bật khi sản phẩm không cho khách tự thiết kế trên web (vd hàng da bò số lượng giới hạn): trang chi tiết hiện khung “Muốn làm màu riêng?” với nút Zalo, Messenger và hotline (lấy từ Nội dung website → Liên hệ &amp; MXH).</small>' +
+        '<label class="field__label" for="pf-ccvi" style="margin-top:.6rem">Lời nhắn trong khung · Tiếng Việt (để trống = dùng câu mặc định)</label>' +
+        '<textarea id="pf-ccvi" name="contactNoteVi" rows="2" maxlength="400" placeholder="Mỗi màu da bò chỉ làm số lượng có hạn. Muốn màu riêng, in tên hay thêu logo thì nhắn tụi mình để báo giá và thời gian làm.">' + esc((p.contactNote && p.contactNote.vi) || '') + '</textarea>' +
+        '<label class="field__label" for="pf-ccen">Lời nhắn · English</label>' +
+        '<textarea id="pf-ccen" name="contactNoteEn" rows="2" maxlength="400" placeholder="Each cowhide colour is made in limited numbers. For your own colours, name or logo, message us for a quote and lead time.">' + esc((p.contactNote && p.contactNote.en) || '') + '</textarea></div>') +
       sec('Thông tin bán hàng',
         field('Tên sản phẩm', '<input type="text" name="name" value="' + esc(p.name || '') + '" maxlength="120" required autocomplete="off">') +
         field('Thương hiệu', '<input type="text" name="brand" value="' + esc(p.brand || 'Dapper Combat') + '" maxlength="40" list="brandList" autocomplete="off">' +
@@ -2239,7 +2245,7 @@
       rating: Math.round(rating * 10) / 10, reviews: reviews, img: img,
       images: $$('[data-gal-url]', form).map(function (n) { return n.getAttribute('data-gal-url'); }).filter(function (u) { return !!safeImg(u); }).slice(0, MAX_GALLERY),
       badge: (F(form, 'badge') && F(form, 'badge').value) || '',
-      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), howto: get('howto'), seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
+      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), howto: get('howto'), contactCustom: !!(F(form, 'contactCustom') && F(form, 'contactCustom').checked), contactNote: { vi: get('contactNoteVi'), en: get('contactNoteEn') }, seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
       features: $$('[data-feat]', form).map(function (r) { return { vi: $('[data-feat-vi]', r).value.trim(), en: $('[data-feat-en]', r).value.trim() }; })
         .filter(function (f) { return f.vi; }).slice(0, MAX_FEATS),
       // số tồn kho lúc mở form: không sửa ô này thì server giữ số hiện tại (có thể vừa bị trừ bởi đơn mới)

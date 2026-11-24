@@ -302,7 +302,7 @@ router.productSlug = productSlug;
 router.get('/products', (req, res) => { res.json(publicProducts()); });
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
-const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand'];
+const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand', 'contactCustom', 'contactNote'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
 // chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
 const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
@@ -338,6 +338,10 @@ function cleanProduct(body, base = {}) {
   // video riêng (MP4 / WEBM) thay cho 2 video chung ở trang chi tiết
   p.video = str(p.video, 300);
   if (p.video && !(MEDIA_URL.test(p.video) && (/^https:/.test(p.video) || /\.(mp4|webm)$/i.test(p.video)))) p.video = '';
+  // custom qua tin nhắn (không mở trình tự thiết kế): trang chi tiết hiện khung liên hệ Zalo / Messenger / hotline
+  if (p.contactCustom === true || p.contactCustom === 'true' || p.contactCustom === 1) p.contactCustom = true; else delete p.contactCustom;
+  p.contactNote = { vi: plain(p.contactNote && p.contactNote.vi, 400), en: plain(p.contactNote && p.contactNote.en, 400) };
+  if (!p.contactNote.vi && !p.contactNote.en) delete p.contactNote;
   // video hướng dẫn sử dụng: file MP4 / WEBM tải lên, hoặc link YouTube
   p.howto = str(p.howto, 300);
   if (p.howto && !(MEDIA_URL.test(p.howto) && (/\.(mp4|webm)$/i.test(p.howto) || /^https:\/\/(www\.|m\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(p.howto)))) p.howto = '';
@@ -346,7 +350,7 @@ function cleanProduct(body, base = {}) {
   p.seoDesc = plain(p.seoDesc, 200);
   p.slug = slugify(str(p.slug, 80));
   if (p.slug === 'checkout') p.slug = '';
-  p.badge = ['new', 'best', 'none'].includes(p.badge) ? p.badge : '';
+  p.badge = ['new', 'best', 'limited', 'none'].includes(p.badge) ? p.badge : '';
   p.visible = p.visible !== false;
   // khách tự thiết kế (lib/custom.js): null = bỏ
   if (p.custom === null) delete p.custom;
