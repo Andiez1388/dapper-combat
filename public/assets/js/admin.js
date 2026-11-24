@@ -567,7 +567,7 @@
     if (v === 'dashboard') {
       html = pageHead('Tổng quan', { eyebrow: todayLine(), count: false }) + '<div data-body></div>';
     } else if (v === 'products') {
-      html = pageHead('Sản phẩm', { actions: '<a class="btn btn--primary" href="#/products/new">' + ICON.plus + '<span>Thêm sản phẩm</span></a>' }) +
+      html = pageHead('Sản phẩm', { actions: '<a class="btn btn--line" href="#/arrange" title="Đổi thứ tự, giá, tồn kho, ẩn/hiện và chọn sản phẩm lên Trang chủ trong một bảng">Sắp xếp · giá · tồn kho</a><a class="btn btn--primary" href="#/products/new">' + ICON.plus + '<span>Thêm sản phẩm</span></a>' }) +
         toolbar('Tìm tên hoặc mã sản phẩm…', true) + '<div data-body></div>';
     } else if (v === 'subscribers') {
       html = pageHead('Nhận tin', { eyebrow: 'Bản tin email', actions: '<button class="btn btn--primary" type="button" data-action="export-csv">' + ICON.download + '<span>Xuất CSV</span></button>' }) +

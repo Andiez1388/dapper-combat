@@ -742,3 +742,20 @@ a.code:hover, .cell-title:hover { text-decoration: underline; text-underline-off
 .gal__bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; }
 .file-btn.is-disabled { opacity: .45; pointer-events: none; }
 @media (max-width: 1023.98px) { .gal__ctl .icon-btn { height: 44px; } }
+
+/* ─── Sắp xếp & sửa nhanh sản phẩm (#/arrange) ─── */
+.ar-tips { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; line-height: 1.55; }
+.ar-table td { vertical-align: middle; }
+.ar-table input[type="text"], .ar-table input[type="number"] { width: 118px; min-height: 36px; padding: 0 10px; font-variant-numeric: tabular-nums; }
+.ar-table tr.is-off td { opacity: .55; }
+.ar-move { white-space: nowrap; width: 84px; }
+.ar-move .icon-btn { width: 34px; height: 34px; font-size: 11px; }
+.ar-n { width: 36px; color: rgba(11, 11, 11, .5); font-variant-numeric: tabular-nums; }
+.ar-thumb .thumb { width: 44px; height: 55px; }
+.ar-c { text-align: center; }
+.ar-home { position: relative; display: inline-grid; place-items: center; width: 36px; height: 36px; cursor: pointer; }
+.ar-home input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.ar-home span { font-size: 20px; color: rgba(11, 11, 11, .22); transition: color .15s; }
+.ar-home input:checked + span { color: #e0a100; }
+.ar-home input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 3px; }
+.ar-var { font-size: 13px; white-space: nowrap; }
