@@ -545,7 +545,8 @@ const BLOCK_LABELS = { 'course.hero': 'Đầu trang', 'course.hero.b2': 'Dải s
   'course.ann': 'Dải thông báo trên cùng (khai giảng Foundation)', 'course.sticky': 'Thanh giữ chỗ dính đáy màn hình',
   'services.ann': 'Dải thông báo trên cùng (khảo sát miễn phí · hotline)', 'services.sbar': 'Thanh hotline / Zalo dính đáy màn hình',
   'shop.announce': 'Dải thông báo trên cùng (miễn phí giao hàng · đổi trả)', 'shop.coll': 'Đầu trang danh sách (tên, mô tả danh mục)', 'shop.cats': 'Hàng danh mục + nút Lọc & sắp xếp',
-  'shop.grid': 'Lưới sản phẩm', 'shop.tiles': 'Ô ảnh dẫn tới danh mục (dưới lưới)', 'shop.footer': 'Chân trang' };
+  'shop.grid': 'Lưới sản phẩm', 'shop.tiles': 'Ô ảnh dẫn tới danh mục (dưới lưới)', 'shop.footer': 'Chân trang',
+  'home.shop': 'Sản phẩm nổi bật — Equipment (1 hàng 4 ô)', 'home.fashion': 'Boxing Fashion — dải áo cuộn ngang', 'home.edits': 'Hai ô ảnh lớn Equipment / Fashion (kiểu BOXRAW)' };
 // Shop: khối trang đặt sẵn trong shop.html (chỉ phần danh sách sản phẩm), không tự gắn theo con trực tiếp của <body>
 const NO_LAYOUT = { shop: true };
 

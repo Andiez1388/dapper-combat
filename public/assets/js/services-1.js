@@ -249,7 +249,7 @@ var MNAV={cur:"services",home:"/",shop:"/shop",course:"/khoa-hoc",services:"#",z
     var cr=ul&&ul.querySelector('[data-nav-k="career"]');if(cr)cr.remove();var cp=PAGES.filter(function(p){return p.k==="career";})[0];if(ul)ul.insertAdjacentHTML("beforeend",'<li data-nav-k="career"><a href="'+(cp?cp.url:"/truyen-nghe")+'"></a></li>');
     var links=ul?ul.querySelectorAll(":scope>li>a"):[];
     PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);(a.closest("li")||a).style.display=DC.navOn(p.k)?"":"none";});
-    var ca=ul&&ul.querySelector('[data-nav-k="career"]>a');if(ca&&!ca.textContent){ca.textContent=T("Truyền Nghề","Pro Pathways");ca.parentNode.style.display=DC.navOn("career")?"":"none";}
+    var ca=ul&&ul.querySelector('[data-nav-k="career"]>a');if(ca&&!ca.textContent){ca.textContent=T(DC.x("global.mnav.22",0,"Truyền Nghề"),DC.x("global.mnav.22",1,"Pro Pathways"));ca.parentNode.style.display=DC.navOn("career")?"":"none";}
     var back=document.querySelector(".nav .nav-back");
     if(back&&MNAV.cur==="course"){back.textContent=T(DC.x("global.mnav.14",0,"Đăng ký"),DC.x("global.mnav.14",1,"Sign up"));back.setAttribute("href","#dang-ky");back.removeAttribute("target");back.dataset.reg="found";back.classList.add("mn-navcta");}
     if(panel.classList.contains("on"))render();

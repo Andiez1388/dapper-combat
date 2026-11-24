@@ -160,7 +160,7 @@ function renderDetail(){
   $("dSizes").innerHTML=p.sizes.map(s=>{const o=DC.hasVariants(p)&&DC.vstock(p,s,detailColor)<=0;return `<button class="size-opt${s===detailSize?' sel':''}${o?' oos':''}" data-size="${s}"${o?' aria-disabled="true" title="'+soldTxt()+'"':''}>${s}</button>`;}).join("");
   $("dQty").textContent=detailQty;
   // accordion
-  const sp=SPEC[p.cat]||{mat:{vi:"",en:""},w:""};
+  const sp=SPEC[p.cat]||{mat:{vi:DC.x("shop.pdp.j8",0,""),en:DC.x("shop.pdp.j8",1,"")},w:""};
   $("dAcc").innerHTML=`
     <div class="acc-item open"><button class="acc-head">${t("detail.detailsTitle")}<span class="ic">+</span></button><div class="acc-body"><div class="acc-inner">${pd(p.full)}</div></div></div>
     <div class="acc-item"><button class="acc-head">${t("detail.specsTitle")}<span class="ic">+</span></button><div class="acc-body"><div class="acc-inner"><table class="spec-table">
@@ -398,7 +398,7 @@ function v3Contact(p){
   var btn=function(href,cls,label){return href?'<a class="v3-cc-btn '+cls+'" href="'+DC.esc(href)+'"'+(/^https/.test(href)?' target="_blank" rel="noopener"':'')+'>'+label+'</a>':"";};
   box.innerHTML='<div class="v3-cc-h">'+v3T(DC.x("shop.pdp.cc.h",0,"Muốn làm màu riêng?"),DC.x("shop.pdp.cc.h",1,"Want your own colours?"))+'</div>'+
     '<p class="v3-cc-p">'+DC.esc(note)+'</p>'+
-    '<div class="v3-cc-row">'+btn(zalo,"zalo","Zalo")+btn(fb,"fb","Messenger")+btn(ph&&ph.length>=8?"tel:"+ph:"","tel",v3T("Gọi ","Call ")+DC.esc(DC.cfg("phone","")))+'</div>';
+    '<div class="v3-cc-row">'+btn(zalo,"zalo","Zalo")+btn(fb,"fb","Messenger")+btn(ph&&ph.length>=8?"tel:"+ph:"","tel",v3T(DC.x("shop.other.j7",0,"Gọi "),DC.x("shop.other.j7",1,"Call "))+DC.esc(DC.cfg("phone","")))+'</div>';
   box.hidden=false;
 }
 /* video hướng dẫn sử dụng (Sản phẩm → Video hướng dẫn): file MP4/WEBM hoặc link YouTube */
@@ -1003,7 +1003,7 @@ var MNAV={cur:"shop",home:"/",shop:"/shop",course:"/khoa-hoc",services:"/dich-vu
     var cr=ul&&ul.querySelector('[data-nav-k="career"]');if(cr)cr.remove();var cp=PAGES.filter(function(p){return p.k==="career";})[0];if(ul)ul.insertAdjacentHTML("beforeend",'<li data-nav-k="career"><a href="'+(cp?cp.url:"/truyen-nghe")+'"></a></li>');
     var links=ul?ul.querySelectorAll(":scope>li>a"):[];
     PAGES.forEach(function(p,i){var a=links[i];if(!a)return;a.textContent=T(p.n[0],p.n[1]);a.classList.toggle("active",p.k===MNAV.cur);(a.closest("li")||a).style.display=DC.navOn(p.k)?"":"none";});
-    var ca=ul&&ul.querySelector('[data-nav-k="career"]>a');if(ca&&!ca.textContent){ca.textContent=T("Truyền Nghề","Pro Pathways");ca.parentNode.style.display=DC.navOn("career")?"":"none";}
+    var ca=ul&&ul.querySelector('[data-nav-k="career"]>a');if(ca&&!ca.textContent){ca.textContent=T(DC.x("global.mnav.22",0,"Truyền Nghề"),DC.x("global.mnav.22",1,"Pro Pathways"));ca.parentNode.style.display=DC.navOn("career")?"":"none";}
     var back=document.querySelector(".nav .nav-back");
     if(back&&MNAV.cur==="course"){back.textContent=T(DC.x("global.mnav.14",0,"Đăng ký"),DC.x("global.mnav.14",1,"Sign up"));back.setAttribute("href","#dang-ky");back.removeAttribute("target");back.dataset.reg="found";back.classList.add("mn-navcta");}
     if(panel.classList.contains("on"))render();

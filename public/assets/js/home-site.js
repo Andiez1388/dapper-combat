@@ -221,7 +221,7 @@
     var wrap = document.createElement('div'); wrap.className = 'rail-wrap'; rail.parentNode.insertBefore(wrap, rail); wrap.appendChild(rail);
     ['prev', 'next'].forEach(function (d) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'rail-btn rail-' + d;
-      b.setAttribute('aria-label', d === 'prev' ? T('Xem trước', 'Previous') : T('Xem tiếp', 'Next'));
+      b.setAttribute('aria-label', d === 'prev' ? T(DC.x("home.other.j1",0,'Xem trước'), DC.x("home.other.j1",1,'Previous')) : T(DC.x("home.other.j2",0,'Xem tiếp'), DC.x("home.other.j2",1,'Next')));
       b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (d === 'prev' ? 'M19 12H5M11 6l-6 6 6 6' : 'M5 12h14M13 6l6 6-6 6') + '"/></svg>';
       b.addEventListener('click', function () { rail.scrollBy({ left: (d === 'prev' ? -1 : 1) * rail.clientWidth * 0.8, behavior: 'smooth' }); });
       wrap.appendChild(b);

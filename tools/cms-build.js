@@ -31,7 +31,7 @@ const HTML_SECTIONS = {
     ['.ticker-band', 'ticker', 'Dải chữ chạy trên cùng'], ['nav.nav', 'nav', 'Menu trên cùng'],
     ['.hero', 'hero', 'Đầu trang — video & tiêu đề lớn'], ['.philo', 'philo', 'Triết lý'],
     ['.instructor', 'instructor', 'Huấn luyện viên'], ['.courses', 'courses', 'Khóa học'],
-    ['.vbanner', 'vbanner', 'Băng video'], ['.imgbanner', 'imgbanner', 'Băng ảnh lớn'],
+    ['.vbanner', 'vbanner', 'Băng video'], ['.imgbanner', 'imgbanner', 'Băng ảnh lớn'], ['.edits', 'edits', 'Hai ô ảnh lớn Equipment / Fashion'],
     ['.shop', 'shop', 'Sản phẩm nổi bật'], ['.community', 'community', 'Cộng đồng'],
     ['.reviews', 'reviews', 'Đánh giá của học viên'], ['.cta-banner', 'cta', 'Kêu gọi đăng ký (cuối trang)'],
     ['.locate', 'locate', 'Địa chỉ phòng tập & cửa hàng'], ['footer', 'footer', 'Chân trang'],
