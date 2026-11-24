@@ -596,14 +596,23 @@ function v3RenderColl(){
   var n=v3lList().length,act=v3lActive();
   var title=V3L.fav?v3T(DC.x("shop.list.fav",0,"Yêu thích"),DC.x("shop.list.fav",1,"Favourites")):V3L.cat==="all"?v3T(DC.x("shop.list.j16",0,"Tất cả sản phẩm"),DC.x("shop.list.j16",1,"All products")):t("cat."+V3L.cat);
   var d=V3L_DESC[V3L.cat]||V3L_DESC.all;
-  var cats=["all"].concat(DC.cats().filter(function(c){return !c.hidden;}).map(function(c){return c.id;})).map(function(k){return '<a href="/shop'+(k==="all"?"":"?cat="+encodeURIComponent(k))+'" data-v3cat="'+k+'" class="'+(V3L.cat===k&&!V3L.fav?"on":"")+'">'+t("cat."+k)+'</a>';}).join("")+
+  var cnt=function(k){return PRODUCTS.filter(function(p){return k==="all"||p.cat===k;}).length;};
+  var cats=["all"].concat(DC.cats().filter(function(c){return !c.hidden;}).map(function(c){return c.id;})).map(function(k){return '<a href="/shop'+(k==="all"?"":"?cat="+encodeURIComponent(k))+'" data-v3cat="'+k+'" class="'+(V3L.cat===k&&!V3L.fav?"on":"")+'">'+t("cat."+k)+'<sup>'+cnt(k)+'</sup></a>';}).join("")+
     '<a href="/shop" data-v3fav="1" class="v3-favchip'+(V3L.fav?" on":"")+'" role="button" aria-pressed="'+V3L.fav+'">♥ '+v3lFavTxt()+'</a>';
   c.innerHTML='<div class="v3-coll-crumb"><a href="'+V3L_HOME+'" target="_blank" rel="noopener">'+v3T(DC.x("shop.list.j17",0,"TRANG CHỦ"),DC.x("shop.list.j17",1,"HOME"))+'</a><span>/</span>'+
     (V3L.cat==="all"?'<b>'+v3T(DC.x("shop.list.j18",0,"CỬA HÀNG"),DC.x("shop.list.j18",1,"SHOP"))+'</b>':'<a href="/shop" data-v3cat="all">'+v3T(DC.x("shop.list.j19",0,"CỬA HÀNG"),DC.x("shop.list.j19",1,"SHOP"))+'</a><span>/</span><b>'+t("cat."+V3L.cat)+'</b>')+'</div>'+
-    '<h1 class="v3-coll-h">'+title+'</h1><p class="v3-coll-d">'+v3T(d[0],d[1])+'</p>';
-  var nav=$("v3CollNav");if(nav)nav.innerHTML='<div class="v3-coll-cats">'+cats+'</div>'+
+    '<div class="v3-coll-top"><div class="v3-coll-tl"><span class="v3-coll-k">'+v3lKicker()+'</span>'+
+    '<h1 class="v3-coll-h">'+title+'<sup class="v3-coll-n">'+n+'</sup></h1></div><p class="v3-coll-d">'+v3T(d[0],d[1])+'</p></div>';
+  var nav=$("v3CollNav");if(nav)nav.innerHTML='<div class="v3-coll-row"><div class="v3-coll-cats">'+cats+'</div>'+
     '<div class="v3-coll-bar"><span>'+n+' '+v3T(DC.x("shop.list.j20",0,"SẢN PHẨM"),DC.x("shop.list.j20",1,"PRODUCTS"))+'</span><button type="button" id="v3FilterBtn">'+v3T(DC.x("shop.list.j21",0,"LỌC & SẮP XẾP"),DC.x("shop.list.j21",1,"FILTER & SORT"))+(act?' ('+act+')':'')+
-    (' '+DC.i("shop.icon.js2",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M6 12h12M10 18h4"/></svg>')+'</button></div>');
+    (' '+DC.i("shop.icon.js2",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M6 12h12M10 18h4"/></svg>')+'</button></div></div>');
+}
+/* dòng nhỏ trên tên danh mục (thương hiệu) — sửa ở Chữ trên trang */
+function v3lKicker(){
+  if(V3L.fav)return v3T(DC.x("shop.list.k.fav",0,"Đã lưu"),DC.x("shop.list.k.fav",1,"Saved"));
+  if(V3L.cat==="ao")return v3T(DC.x("shop.list.k.ao",0,"Dapper Dudes"),DC.x("shop.list.k.ao",1,"Dapper Dudes"));
+  if(V3L.cat==="gang")return v3T(DC.x("shop.list.k.gang",0,"Dapper Combat × Dapper Dudes"),DC.x("shop.list.k.gang",1,"Dapper Combat × Dapper Dudes"));
+  return v3T(DC.x("shop.list.k.all",0,"Dapper Combat Store"),DC.x("shop.list.k.all",1,"Dapper Combat Store"));
 }
 function v3RenderFilter(){
   var f=$("v3F");if(!f)return;

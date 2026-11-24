@@ -317,3 +317,8 @@ document.addEventListener('click', function (e) {
 }, true);
 // mở thẳng /shop/<sản phẩm>: bộ ảnh đã dựng trước khi thay hàm trên → dựng lại
 if (V3.galPid) { V3.galPid = null; v3Render(); }
+/* thanh tab danh mục dính ngay dưới menu: lấy đúng chiều cao menu (đổi theo màn hình) */
+(function () {
+  var set = function () { var n = document.querySelector('nav.nav') || document.querySelector('nav'); if (n) document.documentElement.style.setProperty('--shop-nav-h', n.offsetHeight + 'px'); };
+  set(); window.addEventListener('resize', set); window.addEventListener('load', set);
+})();
