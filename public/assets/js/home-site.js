@@ -182,6 +182,12 @@
       var img = card.querySelector('.product-media img'); if (img && p.img) { img.src = p.img; img.alt = pn(p); }
       var link = card.querySelector('.pc-img-link'); if (link) link.setAttribute('href', plink(p));
       var pr = card.querySelector('.product-price'); if (pr) pr.innerHTML = fmt(p.price) + (p.old ? ' <s>' + fmt(p.old) + '</s>' : '');
+      // dòng màu kiểu "ĐEN / 4 MÀU" dưới tên
+      var meta = card.querySelector('.product-meta'), nm = card.querySelector('.product-name');
+      if (!meta && nm) { meta = document.createElement('div'); meta.className = 'product-meta'; nm.insertAdjacentElement('afterend', meta); }
+      if (meta) { var cs = Array.isArray(p.colors) ? p.colors : [], en = DC.lang() === 'en';
+        meta.textContent = cs.length ? (DC.colorName(p, cs[0][0], en) + (cs.length > 1 ? ' / ' + cs.length + (en ? ' COLOURS' : ' MÀU') : '')) : ''; }
+      if (pr) pr.classList.toggle('is-sale', !!p.old);
       var out = DC.soldOut(p);
       // trên ảnh: chỉ 1 nhãn trạng thái (hết hàng / giảm giá / bán chạy / mới); tên danh mục là dòng chữ nhỏ trên tên sản phẩm
       var tags = card.querySelector('.product-tags'); if (tags) { tags.innerHTML = out ? '<span class="product-badge soldout">' + DC.esc(soldTxt()) + '</span>' : homeBadge(p); tags.hidden = !tags.innerHTML; }
@@ -209,6 +215,23 @@
     }
   }
   renderCards();
+  /* dải sản phẩm cuộn ngang (kiểu BOXRAW): nút ← → cuộn đúng 1 khung nhìn */
+  document.querySelectorAll('.product-grid.rail').forEach(function (rail) {
+    if (rail.parentNode.classList.contains('rail-wrap')) return;
+    var wrap = document.createElement('div'); wrap.className = 'rail-wrap'; rail.parentNode.insertBefore(wrap, rail); wrap.appendChild(rail);
+    ['prev', 'next'].forEach(function (d) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'rail-btn rail-' + d;
+      b.setAttribute('aria-label', d === 'prev' ? T('Xem trước', 'Previous') : T('Xem tiếp', 'Next'));
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (d === 'prev' ? 'M19 12H5M11 6l-6 6 6 6' : 'M5 12h14M13 6l6 6-6 6') + '"/></svg>';
+      b.addEventListener('click', function () { rail.scrollBy({ left: (d === 'prev' ? -1 : 1) * rail.clientWidth * 0.8, behavior: 'smooth' }); });
+      wrap.appendChild(b);
+    });
+    var sync = function () {
+      var max = rail.scrollWidth - rail.clientWidth - 2;
+      wrap.classList.toggle('can-prev', rail.scrollLeft > 2); wrap.classList.toggle('can-next', rail.scrollLeft < max);
+    };
+    rail.addEventListener('scroll', sync, { passive: true }); window.addEventListener('resize', sync); setTimeout(sync, 300); sync();
+  });
   var FLOAT = { 'home.float.zalo': ['Chat Zalo', 'Chat on Zalo'], 'home.float.mess': ['Messenger', 'Messenger'] };
   function floatLabels() {
     document.querySelectorAll('[data-float]').forEach(function (a) {
