@@ -11,7 +11,8 @@
   // ═══ Nhãn ══════════════════════════════════════════════════════════════════
   var PROMO_TYPES = [['pct', 'Giảm %'], ['fixed', 'Giảm số tiền'], ['freeship', 'Miễn phí giao hàng']];
   var DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-  var HOME_SLOTS = 6;
+  // các khối sản phẩm ở Trang chủ: [khóa thiết lập, số ô]
+  var HOME_LISTS = { homeProducts: 4, homeFashion: 6 };
   var MAX_PKG = 8, MAX_ROWS = 20;
   var KINDS = [['group', 'Group Training'], ['hssv', 'Học sinh – sinh viên'], ['found', 'Foundation'], ['other', 'Khác']];
   var PROGS = [['', 'Không mở form'], ['gt', 'Form Group Training'], ['hssv', 'Form lớp HSSV'], ['found', 'Form Foundation (BOOK I)'], ['mem', 'Form Membership'], ['pt', 'Form PT 1-1'], ['trial', 'Form học thử miễn phí']];
@@ -158,7 +159,7 @@
   function dropClean() { Object.keys(ST.draft).forEach(function (g) { if (!dirtyCount(g)) delete ST.draft[g]; }); }
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
-    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'checkout', 'pdp'],
+    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'homeFashion', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
     brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'verifyGoogle', 'verifyBing', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'sign', 'customer'],
@@ -278,12 +279,18 @@
       panel('Mã giảm giá', '<div class="promos" data-promos></div><p class="set-err" data-promo-err hidden></p>' +
         '<button class="btn btn--ghost btn--sm" type="button" data-promo-add>' + ICON.plus + '<span>Thêm mã</span></button>',
         '<span class="cms-sec__meta" data-promo-count></span>') +
-      panel('Sản phẩm ở Trang chủ',
-        '<p class="set-note">Trang chủ có 6 ô — chọn ít hơn thì ô thừa sẽ ẩn. Thứ tự dưới đây là thứ tự hiển thị.</p>' +
+      panel('Trang chủ · Sản phẩm nổi bật (Equipment)',
+        '<div data-hp-key="homeProducts"><p class="set-note">1 hàng 4 ô. Thứ tự dưới đây là thứ tự hiển thị. Sản phẩm đã chọn mà bị ẩn, hoặc còn trống ô, thì Trang chủ tự lấy sản phẩm Equipment đang bán theo Thứ tự hiển thị.</p>' +
         '<ol class="hp-list" data-hp></ol>' +
         '<div class="hp-add"><label class="sr" for="hpSelect">Chọn sản phẩm để thêm</label><select id="hpSelect" data-hp-select></select>' +
-        '<button class="btn btn--line" type="button" data-hp-add>' + ICON.plus + '<span>Thêm</span></button></div>',
-        '<span class="cms-sec__meta" data-hp-count></span>') +
+        '<button class="btn btn--line" type="button" data-hp-add>' + ICON.plus + '<span>Thêm</span></button></div>' +
+        '<span class="cms-sec__meta" data-hp-count></span></div>') +
+      panel('Trang chủ · Boxing Fashion (áo)',
+        '<div data-hp-key="homeFashion"><p class="set-note">2 hàng × 3 ô áo. Để trống thì tự lấy các mẫu áo đang bán theo Thứ tự hiển thị.</p>' +
+        '<ol class="hp-list" data-hp></ol>' +
+        '<div class="hp-add"><label class="sr" for="hfSelect">Chọn áo để thêm</label><select id="hfSelect" data-hp-select></select>' +
+        '<button class="btn btn--line" type="button" data-hp-add>' + ICON.plus + '<span>Thêm</span></button></div>' +
+        '<span class="cms-sec__meta" data-hp-count></span></div>') +
       panel('Trang thanh toán', '<div class="ck" data-ck-box></div>') +
       panel('Trang chi tiết sản phẩm', '<p class="set-note">Bật = hiện phần đó trên trang chi tiết của mọi sản phẩm. Tắt bớt để trang gọn hơn.</p>' +
         '<div class="pdp-grid">' + PDP.map(function (p) { return switchField('shop', 'pdp.' + p[0], p[1]); }).join('') + '</div>') +
@@ -370,9 +377,12 @@
     return { err: err, idx: badIdx };
   }
   function productById(id) { return (ST.products || []).filter(function (p) { return p.id === id; })[0]; }
-  function renderHome() {
-    var box = $('[data-hp]'); if (!box) return;
-    var ids = draft('shop').homeProducts || [];
+  function renderHome() { Object.keys(HOME_LISTS).forEach(renderHomeList); }
+  function renderHomeList(key) {
+    var wrap = $('[data-hp-key="' + key + '"]'); if (!wrap) return;
+    var box = $('[data-hp]', wrap), HOME_SLOTS = HOME_LISTS[key], d = draft('shop');
+    if (!Array.isArray(d[key])) d[key] = [];
+    var ids = d[key];
     box.innerHTML = ids.length ? ids.map(function (id, i) {
       var p = productById(id), src = p ? A.safeImg(p.img) : '';
       var meta = p ? [A.catName ? A.catName(p.cat) : (p.cat || ''), money(p.price)].filter(Boolean).join(' · ') : 'Không còn sản phẩm này — nên bỏ ra';
@@ -386,16 +396,16 @@
           '<button class="icon-btn icon-btn--line" type="button" data-hp-move="1" aria-label="Đưa xuống"' + (i === ids.length - 1 ? ' disabled' : '') + '>' + ARROW_DOWN + '</button>' +
           '<button class="icon-btn icon-btn--line" type="button" data-hp-del aria-label="Bỏ khỏi Trang chủ">' + ICON.close + '</button>' +
         '</span></li>';
-    }).join('') : '<li class="mini-state">Chưa chọn sản phẩm nào — mục sản phẩm nổi bật ở Trang chủ sẽ trống.</li>';
-    var sel = $('[data-hp-select]'), full = ids.length >= HOME_SLOTS;
+    }).join('') : '<li class="mini-state">Chưa chọn — Trang chủ tự lấy sản phẩm đang bán theo Thứ tự hiển thị.</li>';
+    var sel = $('[data-hp-select]', wrap), full = ids.length >= HOME_SLOTS;
     if (sel) {
       var rest = (ST.products || []).filter(function (p) { return ids.indexOf(p.id) < 0; });
       sel.innerHTML = '<option value="">' + (full ? '— Đã đủ ' + HOME_SLOTS + ' ô —' : '— Chọn sản phẩm để thêm —') + '</option>' + rest.map(function (p) {
         return '<option value="' + esc(p.id) + '">' + esc(p.name) + (p.visible === false ? ' (đang ẩn)' : '') + '</option>'; }).join('');
       sel.disabled = full || !rest.length;
     }
-    var add = $('[data-hp-add]'); if (add) add.disabled = full;
-    var cnt = $('[data-hp-count]'); if (cnt) cnt.textContent = ids.length + ' / ' + HOME_SLOTS + ' ô';
+    var add = $('[data-hp-add]', wrap); if (add) add.disabled = full;
+    var cnt = $('[data-hp-count]', wrap); if (cnt) cnt.textContent = ids.length + ' / ' + HOME_SLOTS + ' ô';
   }
 
   // ═══ 2. Học phí & lịch tập ═════════════════════════════════════════════════
@@ -1069,16 +1079,18 @@
       return;
     }
     if ((n = t.closest('[data-hp-move], [data-hp-del]'))) {
-      var ids = draft('shop').homeProducts, li = n.closest('[data-hp-id]'), id = li.getAttribute('data-hp-id'), at = ids.indexOf(id);
+      var hk = n.closest('[data-hp-key]').getAttribute('data-hp-key'), ids = draft('shop')[hk], li = n.closest('[data-hp-id]'), id = li.getAttribute('data-hp-id'), at = ids.indexOf(id);
       if (n.hasAttribute('data-hp-del')) ids.splice(at, 1);
       else { var to = at + (+n.getAttribute('data-hp-move')); if (to >= 0 && to < ids.length) { ids.splice(at, 1); ids.splice(to, 0, id); } }
       renderHome(); refreshBar('shop');
-      var again = $('[data-hp-id="' + CSS.escape(id) + '"] [data-hp-move="' + n.getAttribute('data-hp-move') + '"]');
+      var again = $('[data-hp-key="' + hk + '"] [data-hp-id="' + CSS.escape(id) + '"] [data-hp-move="' + n.getAttribute('data-hp-move') + '"]');
       if (again && !again.disabled) again.focus();
       return;
     }
     if ((n = t.closest('[data-hp-add]'))) {
-      var sel = $('[data-hp-select]'), pid = sel && sel.value, arr = draft('shop').homeProducts;
+      var hw = n.closest('[data-hp-key]'), hkey = hw.getAttribute('data-hp-key'), HOME_SLOTS = HOME_LISTS[hkey];
+      if (!Array.isArray(draft('shop')[hkey])) draft('shop')[hkey] = [];
+      var sel = $('[data-hp-select]', hw), pid = sel && sel.value, arr = draft('shop')[hkey];
       if (!pid) { if (sel) sel.focus(); A.toast('Chọn một sản phẩm trong danh sách trước.', 'info'); return; }
       if (arr.length >= HOME_SLOTS || arr.indexOf(pid) >= 0) return;
       arr.push(pid); renderHome(); refreshBar('shop');

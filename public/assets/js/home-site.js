@@ -160,13 +160,20 @@
     return '';
   }
   function renderCards() {
-    var ids = DC.setting('shop.homeProducts', null), cards = document.querySelectorAll('.product-card');
-    // sản phẩm đã chọn mà bị ẩn / đã xóa → bỏ qua; còn trống ô thì lấy thêm sản phẩm đang bán theo Thứ tự hiển thị, để khối luôn đầy
-    var pick = (Array.isArray(ids) ? ids : []).filter(function (id) { return byId(id); });
-    CATALOG.map(function (p, i) { return [p, i]; }).sort(function (a, b) { return ((Number(a[0].pos) || 1e4) - (Number(b[0].pos) || 1e4)) || a[1] - b[1]; })
-      .forEach(function (x) { if (pick.length < cards.length && pick.indexOf(x[0].id) < 0) pick.push(x[0].id); });
-    cards.forEach(function (card, i) {
-      card.dataset.pid = pick[i] || '-';
+    // mỗi khối (Equipment / Boxing Fashion) có danh sách riêng ở Thiết lập → Bán hàng.
+    // Sản phẩm đã chọn mà bị ẩn / đã xóa → bỏ qua; còn trống ô thì lấy thêm sản phẩm đang bán đúng loại, theo Thứ tự hiển thị
+    var byPos = CATALOG.map(function (p, i) { return [p, i]; }).sort(function (a, b) { return ((Number(a[0].pos) || 1e4) - (Number(b[0].pos) || 1e4)) || a[1] - b[1]; }).map(function (x) { return x[0]; });
+    document.querySelectorAll('.product-grid').forEach(function (grid) {
+      var cs = grid.querySelectorAll('.product-card'), key = grid.getAttribute('data-home-list') || 'homeProducts';
+      var only = grid.getAttribute('data-fill-cat'), not = grid.getAttribute('data-fill-notcat');
+      var fits = function (p) { return p && (!only || p.cat === only) && (!not || p.cat !== not); };
+      var ids = DC.setting('shop.' + key, null);
+      var pick = (Array.isArray(ids) ? ids : []).filter(function (id) { return byId(id); });
+      byPos.forEach(function (p) { if (pick.length < cs.length && pick.indexOf(p.id) < 0 && fits(p)) pick.push(p.id); });
+      cs.forEach(function (card, i) { card.dataset.pid = pick[i] || '-'; });
+      var sec = grid.closest('section'); if (sec && key !== 'homeProducts') sec.hidden = !pick.length;
+    });
+    document.querySelectorAll('.product-card').forEach(function (card, i) {
       var p = cardProduct(card);
       card.style.display = p ? '' : 'none';
       if (!p) return;

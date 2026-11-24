@@ -2139,3 +2139,9 @@ footer .dc-biz{max-width:1100px;color:rgba(247,244,240,0.6);opacity:1;}
   .product-card .product-badge{height:20px;font-size:.56rem!important;padding:0 .45rem!important;}
   .product-card .product-cat{font-size:.58rem;letter-spacing:.12em;margin-bottom:.3rem;}
 }
+
+/* ── Trang chủ: Equipment 1 hàng 4 ô + khối Boxing Fashion 3×2 ── */
+.product-grid.pg-4{grid-template-columns:repeat(4,1fr)!important;}
+.shop--fashion{padding-top:clamp(3.5rem,7vw,6rem);}
+.shop--fashion[hidden]{display:none!important;}
+@media(max-width:1024px){.product-grid.pg-4{grid-template-columns:repeat(2,1fr)!important;}}
