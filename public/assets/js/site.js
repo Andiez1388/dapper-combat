@@ -474,6 +474,8 @@
     if (!Array.isArray(list) || !list.length) return [];
     var img = typeof IMG !== 'undefined' ? IMG : null, byUrl = {};
     if (img) Object.keys(img).forEach(function (k) { byUrl[img[k]] = k; });
+    // thứ tự hiển thị (/admin → Sản phẩm → Thứ tự hiển thị): số nhỏ trước, chưa đặt → sau cùng, giữ thứ tự cũ khi bằng nhau
+    list = list.map(function (p, i) { return [p, i]; }).sort(function (a, b) { var x = Number(a[0].pos) || 1e4, y = Number(b[0].pos) || 1e4; return x - y || a[1] - b[1]; }).map(function (x) { return x[0]; });
     return list.map(function (p) {
       p = Object.assign({}, p);
       p.name = plain(p.name); p.nameEn = plain(p.nameEn);

@@ -108,6 +108,10 @@ module.exports = async function apiTests(env, t) {
     t.ok(r.s === 200 && r.j.contactCustom === true && r.j.contactNote.vi.indexOf('<') < 0 && r.j.badge === 'limited', 'custom qua tin nhắn + nhãn giới hạn', r.j);
     r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { contactCustom: false, contactNote: { vi: '', en: '' } } });
     t.ok(r.s === 200 && !('contactCustom' in r.j) && !('contactNote' in r.j), 'tắt custom qua tin nhắn', r.j);
+    r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { pos: '3' } });
+    t.ok(r.s === 200 && r.j.pos === 3, 'thứ tự hiển thị lưu thành số', r.j.pos);
+    r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { pos: '' } });
+    t.ok(r.s === 200 && !('pos' in r.j), 'xóa thứ tự hiển thị', r.j.pos);
     for (const [u, ok] of [['/assets/uploads/hd.mp4', true], ['https://youtu.be/dQw4w9WgXcQ', true], ['https://www.youtube.com/shorts/abc123XYZ', true], ['https://evil.example/x.html', false], ['javascript:alert(1)', false]]) {
       r = await req('/api/products/' + p.id, { method: 'PUT', tok: T, body: { howto: u } });
       t.ok(r.s === 200 && r.j.howto === (ok ? u : ''), 'video hướng dẫn: ' + u + (ok ? ' được nhận' : ' bị bỏ'), r.j.howto);

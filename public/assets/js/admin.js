@@ -1000,7 +1000,7 @@
     ['Ảnh', 'c-thumb', function (p) { return thumb(p.img, ''); }],
     ['Sản phẩm', 'c-name', function (p) {
       return '<a class="cell-title" href="' + esc(idHref('products', p.id)) + '">' + esc(p.name || 'Chưa đặt tên') + '</a>' +
-        '<span class="cell-sub">' + esc(p.id) + (p.visible === false ? ' · <span class="tag tag--muted">Đang ẩn</span>' : '') + '</span>';
+        '<span class="cell-sub">' + (p.pos ? '#' + esc(p.pos) + ' · ' : '') + esc(p.id) + (p.visible === false ? ' · <span class="tag tag--muted">Đang ẩn</span>' : '') + '</span>';
     }],
     ['Danh mục', 'c-cat', function (p) { return or(catName(p.cat)); }],
     ['Giá', 'c-money', function (p) {
@@ -1038,6 +1038,8 @@
       var okF = f === 'all' || (f === 'low' ? isLow(p) : f === 'hidden' ? p.visible === false : p.cat === f);
       return okF && matches(q, [p.name, p.id, catName(p.cat)]);
     });
+    // cùng thứ tự với Shop: Thứ tự hiển thị nhỏ trước, chưa đặt xếp sau
+    rows = rows.map(function (p, i) { return [p, i]; }).sort(function (a, b) { return ((Number(a[0].pos) || 1e4) - (Number(b[0].pos) || 1e4)) || a[1] - b[1]; }).map(function (x) { return x[0]; });
     if (!rows.length) { body.innerHTML = staleHtml('products') + emptyHtml('Không có sản phẩm phù hợp', 'Thử chọn “Tất cả” hoặc đổi từ khóa tìm kiếm.'); return; }
     body.innerHTML = staleHtml('products') + tableHtml('products', PRODUCT_COLS, rows, {
       href: function (p) { return idHref('products', p.id); },
@@ -2135,6 +2137,8 @@
         '</div>' +
         field('Nhãn trên ảnh', '<select name="badge">' + BADGES.map(function (b) { return '<option value="' + b[0] + '"' + ((p.badge || '') === b[0] ? ' selected' : '') + '>' + esc(b[1]) + '</option>'; }).join('') + '</select>',
           'Nhãn ở góc ảnh sản phẩm trên Shop và Trang chủ.') +
+        field('Thứ tự hiển thị', '<input type="number" name="pos" min="1" max="9999" step="1" inputmode="numeric" value="' + esc(p.pos || '') + '" placeholder="Để trống = xếp sau cùng">',
+          'Số nhỏ đứng trước trên Shop và Trang chủ (1, 2, 3…). Muốn 2 sản phẩm đứng cạnh nhau thì đặt 2 số liền nhau.') +
         '<label class="check"><input type="checkbox" name="visible"' + (p.visible !== false ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span>' +
         '<span>Hiển thị trên Shop</span></label>') +
       sec('Biến thể',
@@ -2245,7 +2249,7 @@
       rating: Math.round(rating * 10) / 10, reviews: reviews, img: img,
       images: $$('[data-gal-url]', form).map(function (n) { return n.getAttribute('data-gal-url'); }).filter(function (u) { return !!safeImg(u); }).slice(0, MAX_GALLERY),
       badge: (F(form, 'badge') && F(form, 'badge').value) || '',
-      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), howto: get('howto'), contactCustom: !!(F(form, 'contactCustom') && F(form, 'contactCustom').checked), contactNote: { vi: get('contactNoteVi'), en: get('contactNoteEn') }, seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
+      nameEn: get('nameEn'), brand: get('brand'), video: get('video'), howto: get('howto'), pos: get('pos'), contactCustom: !!(F(form, 'contactCustom') && F(form, 'contactCustom').checked), contactNote: { vi: get('contactNoteVi'), en: get('contactNoteEn') }, seoTitle: get('seoTitle'), seoDesc: get('seoDesc'), slug: slugify(get('slug')),
       features: $$('[data-feat]', form).map(function (r) { return { vi: $('[data-feat-vi]', r).value.trim(), en: $('[data-feat-en]', r).value.trim() }; })
         .filter(function (f) { return f.vi; }).slice(0, MAX_FEATS),
       // số tồn kho lúc mở form: không sửa ô này thì server giữ số hiện tại (có thể vừa bị trừ bởi đơn mới)

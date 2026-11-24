@@ -302,7 +302,7 @@ router.productSlug = productSlug;
 router.get('/products', (req, res) => { res.json(publicProducts()); });
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
-const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand', 'contactCustom', 'contactNote'];
+const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand', 'contactCustom', 'contactNote', 'pos'];
 const MEDIA_URL = /^(\/assets\/(uploads|media)\/[\w.-]+|https:\/\/[^\s"'<>]+)$/;
 // chữ sản phẩm hiện thẳng trên trang (tên, size, màu, mô tả): bỏ < > và đổi " thành ” để không chèn được mã HTML
 const plain = (v, max) => str(v, max).replace(/[<>]/g, '').replace(/"/g, '”');
@@ -338,6 +338,8 @@ function cleanProduct(body, base = {}) {
   // video riêng (MP4 / WEBM) thay cho 2 video chung ở trang chi tiết
   p.video = str(p.video, 300);
   if (p.video && !(MEDIA_URL.test(p.video) && (/^https:/.test(p.video) || /\.(mp4|webm)$/i.test(p.video)))) p.video = '';
+  // thứ tự hiển thị trên Shop / Trang chủ: số nhỏ đứng trước, trống = xếp sau cùng (theo thứ tự tạo)
+  { const n = Number(p.pos); if (p.pos === '' || p.pos == null || !Number.isFinite(n) || n < 1) delete p.pos; else p.pos = Math.min(9999, Math.round(n)); }
   // custom qua tin nhắn (không mở trình tự thiết kế): trang chi tiết hiện khung liên hệ Zalo / Messenger / hotline
   if (p.contactCustom === true || p.contactCustom === 'true' || p.contactCustom === 1) p.contactCustom = true; else delete p.contactCustom;
   p.contactNote = { vi: plain(p.contactNote && p.contactNote.vi, 400), en: plain(p.contactNote && p.contactNote.en, 400) };
