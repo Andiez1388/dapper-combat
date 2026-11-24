@@ -388,6 +388,7 @@ function v3Render(){
 /* custom qua tin nhắn (Sản phẩm → Nhận custom qua tin nhắn): khung Zalo / Messenger / hotline */
 function v3Contact(p){
   var box=$("v3Contact");if(!box)return;
+  var buy=$("dBuy"),row=buy&&buy.parentNode;if(row&&row.nextElementSibling!==box)row.insertAdjacentElement("afterend",box);
   if(!p.contactCustom){box.hidden=true;box.innerHTML="";box.removeAttribute("data-k");return;}
   var k=p.id+"|"+lang;if(box.getAttribute("data-k")===k)return;box.setAttribute("data-k",k);
   var url=function(u){u=String(u||"").trim();return /^https:\/\/[^\s"'<>]+$/.test(u)?u:"";};

@@ -1774,6 +1774,7 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 
 /* ── Custom qua tin nhắn (trang chi tiết) ── */
 .v3-cc[hidden]{display:none;}
+#detailView .v3-cc{order:10;}
 .v3-cc{margin:1rem 0 .4rem;padding:1.1rem 1.2rem 1.2rem;border:1px solid #e5e0d9;background:#faf8f5;}
 .v3-cc-h{font-family:var(--f-body);font-weight:600;font-size:.98rem;color:#141210;}
 .v3-cc-p{margin:.35rem 0 .9rem;font-family:var(--f-body);font-size:.88rem;line-height:1.65;color:#5a524b;}
