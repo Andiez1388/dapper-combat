@@ -44,7 +44,7 @@
   }
   function vatLine(o) { return o.total ? '<p class="vat-note">Đã gồm VAT ' + String(vatPct(o)).replace('.', ',') + '%: <b>' + esc(money(vatOf(o))) + '</b> · tiền chưa VAT ' + esc(money(o.total - vatOf(o))) + '</p>' : ''; }
   var PAY_SHORT = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', cod: 'COD', vnpay: 'VNPay', installment: 'Trả góp', cash: 'Tiền mặt' };
-  var SHIP = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc TP.HCM', pickup: 'Nhận tại phòng tập' };
+  var SHIP = { std: 'Tiêu chuẩn (Viettel Post)', exp: 'Giao ngay TP.HCM (Lalamove)', pickup: 'Nhận tại phòng tập' };
   // nguồn đơn tạo tay (bán qua điện thoại / mạng xã hội / tại chỗ)
   var SOURCE = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
   var SOURCE_TAG = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại quầy', other: 'Đơn tay' }; // nhãn ngắn trong bảng
@@ -1473,7 +1473,7 @@
   function colorLabel(p, key) { var c = ((p && p.colors) || []).filter(function (x) { return x[0] === key; })[0]; return c && c[2] ? c[2] : colorName(key); }
   // phí giao / học phí hiện tại (Thiết lập; tài khoản nhân viên nhận bản rút gọn)
   function setData() { var A = window.DCAdmin; return A && A.settingsStore ? A.settingsStore.data() || {} : {}; }
-  function shopCfg() { var sh = setData().shop || {}; return { fee: sh.shipFee != null ? +sh.shipFee : 30000, free: sh.freeShip != null ? +sh.freeShip : 1000000, exp: sh.expressFee != null ? +sh.expressFee : 35000 }; }
+  function shopCfg() { var sh = setData().shop || {}; return { fee: sh.shipFee != null ? +sh.shipFee : 30000, free: sh.freeShip != null ? +sh.freeShip : 1000000, exp: sh.expressFee != null ? +sh.expressFee : 35000, expFree: !!(sh.now && sh.now.freeOk) }; }
   // số còn trong kho cho một size / màu (sản phẩm chia tồn kho theo biến thể) hoặc cả sản phẩm — cộng lại phần đơn đang sửa đang giữ
   function availOf(p, size, color) {
     if (!p) return Infinity;
@@ -1591,7 +1591,7 @@
     var sub = edSubtotal(), ship = moneyVal(F(form, 'shipping').value), disc = Math.min(sub, moneyVal(F(form, 'discount').value)), total = sub - disc + ship;
     $('[data-ed-totals]', form).innerHTML = totalsHtml({ subtotal: sub, discount: disc, shipping: ship, total: total });
     var cfg = shopCfg(), how = F(form, 'ship').value;
-    var rule = how === 'pickup' ? 0 : (sub >= cfg.free ? 0 : cfg.fee) + (how === 'exp' ? cfg.exp : 0);
+    var rule = how === 'pickup' ? 0 : how === 'exp' ? (cfg.expFree && sub >= cfg.free ? 0 : cfg.exp) : (sub >= cfg.free ? 0 : cfg.fee);
     var sh = $('[data-ed-shiphint]', form);
     if (sh) sh.innerHTML = (how === 'pickup' ? 'Nhận tại phòng tập: 0₫' : 'Theo bảng phí: ' + esc(money(rule))) + (rule !== ship ? ' <button type="button" class="linkbtn" data-ed-shiprule="' + rule + '">Dùng số này</button>' : '');
     var pa = F(form, 'paidAmount');

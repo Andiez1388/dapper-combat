@@ -90,6 +90,7 @@
     Object.keys(base).forEach(function (k) { if (/^hours\./.test(k)) t[k] = base[k]; });
     Object.assign(t, {
       'ship.eta': eta.stdMin === eta.stdMax ? String(eta.stdMin) : eta.stdMin + '–' + eta.stdMax, 'ship.eta.exp': String(eta.exp),
+      'ship.now.from': (sh.now || {}).from || '08:00', 'ship.now.to': (sh.now || {}).to || '18:00', 'ship.now.eta': (sh.now || {}).hMin === (sh.now || {}).hMax ? String((sh.now || {}).hMin) : ((sh.now || {}).hMin || 1) + '–' + ((sh.now || {}).hMax || 3),
       'found.price': num(c.foundPrice), 'found.deposit': num(c.foundDeposit),
       'hssv.month': num(c.hssvMonth), 'hssv.months': String(c.hssvMonths), 'hssv.price': num((c.hssvMonth || 0) * (c.hssvMonths || 0)), 'mem.price': num(c.memMonth),
       'ship.free': num(sh.freeShip), 'ship.fee': num(sh.shipFee), 'ship.express': num(sh.expressFee),
@@ -160,7 +161,7 @@
   function dropClean() { Object.keys(ST.draft).forEach(function (g) { if (!dirtyCount(g)) delete ST.draft[g]; }); }
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
-    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'shipByRegion', 'regionFees', 'vat', 'eta', 'lowStock', 'promos', 'homeProducts', 'homeFashion', 'checkout', 'pdp'],
+    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'shipByRegion', 'regionFees', 'vat', 'eta', 'now', 'lowStock', 'promos', 'homeProducts', 'homeFashion', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
     brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'verifyGoogle', 'verifyBing', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'sign', 'customer'],
@@ -260,14 +261,24 @@
   function shopHtml() {
     var d = draft('shop');
     return '<div class="cms-help"><p>Áp dụng cho Shop, giỏ hàng, trang thanh toán và cách máy chủ tính tiền đơn hàng. Bấm “Lưu” ở thanh dưới cùng để áp dụng.</p></div>' +
-      panel('Phí giao hàng',
+      panel('Giao hàng',
         '<div class="set-grid3">' +
-          moneyField('shop', 'shipFee', 'Phí giao tiêu chuẩn', defHint('shop', 'shipFee', money)) +
-          moneyField('shop', 'freeShip', 'Miễn phí giao cho đơn từ', 'Tạm tính từ mức này được miễn phí giao tiêu chuẩn. ' + defHint('shop', 'freeShip', money)) +
-          moneyField('shop', 'expressFee', 'Phí giao hỏa tốc (cộng thêm)', 'Cộng vào phí tiêu chuẩn khi khách chọn hỏa tốc. ' + defHint('shop', 'expressFee', money)) +
-        '</div>' + switchField('shop', 'expressEnabled', 'Cho chọn giao hỏa tốc TP.HCM') +
-        switchField('shop', 'expressHcmOnly', 'Chỉ nhận giao hỏa tốc khi địa chỉ ở TP.HCM') +
-        '<p class="set-note">Tắt dòng trên nếu bạn giao hỏa tốc cả tỉnh khác — nhớ sửa chữ “Hỏa tốc TP.HCM” trên trang thanh toán ở mục Chữ trên trang.</p>' +
+          moneyField('shop', 'shipFee', 'Phí giao tiêu chuẩn (Viettel Post)', 'Giao toàn quốc. ' + defHint('shop', 'shipFee', money)) +
+          moneyField('shop', 'freeShip', 'Miễn phí giao tiêu chuẩn cho đơn từ', 'Tạm tính từ mức này được miễn phí giao tiêu chuẩn. ' + defHint('shop', 'freeShip', money)) +
+          moneyField('shop', 'expressFee', 'Phí giao ngay (đồng giá nội thành)', 'Một mức cho mọi địa chỉ trong TP.HCM, không cộng phí tiêu chuẩn. ' + defHint('shop', 'expressFee', money)) +
+        '</div>' +
+        '<h4 class="set-sub">Giao ngay nội thành TP.HCM · Lalamove</h4>' +
+        switchField('shop', 'expressEnabled', 'Cho khách chọn giao ngay') +
+        switchField('shop', 'expressHcmOnly', 'Chỉ cho giao ngay khi địa chỉ ở TP.HCM (tỉnh khác tự giao tiêu chuẩn)') +
+        '<div class="set-grid4">' +
+          '<label class="field"><span class="field__label">Nhận đơn giao ngay từ</span><input type="time" data-text data-g="shop" data-k="now.from" value="' + esc(getPath(d, 'now.from') || '08:00') + '"></label>' +
+          '<label class="field"><span class="field__label">đến</span><input type="time" data-text data-g="shop" data-k="now.to" value="' + esc(getPath(d, 'now.to') || '18:00') + '"><small class="field__hint">Ngoài khung giờ này, lựa chọn giao ngay hiện mờ kèm giờ mở lại.</small></label>' +
+          numberField('shop', 'now.hMin', 'Nhận hàng sau xác nhận — nhanh nhất', 0, 48, 'tiếng') +
+          numberField('shop', 'now.hMax', 'Nhận hàng sau xác nhận — chậm nhất', 0, 48, 'tiếng') +
+        '</div>' +
+        switchField('shop', 'now.freeOk', 'Đơn đủ mức miễn phí giao (hoặc dùng mã FREESHIP) thì giao ngay cũng miễn phí') +
+        '<p class="set-note">Trang thanh toán: địa chỉ TP.HCM trong khung giờ → khách chọn được 2 cách (Giao ngay hoặc Viettel Post); ngoài TP.HCM hoặc ngoài giờ → tự chọn Viettel Post. Giờ tính theo giờ Việt Nam. Thời gian nhận hàng giao ngay dùng biến {ship.now.eta} (vd “1–3”), khung giờ dùng {ship.now.from} / {ship.now.to}.</p>' +
+        '<h4 class="set-sub">Phí giao tiêu chuẩn theo khu vực</h4>' +
         switchField('shop', 'shipByRegion', 'Tính phí giao tiêu chuẩn theo khu vực (thay cho một mức cả nước)') +
         '<div class="set-grid4 region-fees">' + ['TP.HCM', 'Miền Nam', 'Miền Trung', 'Miền Bắc'].map(function (n, i) {
           var v = (d.regionFees || [])[i];
@@ -282,11 +293,10 @@
           '<label class="field"><span class="field__label">Ngày đổi thuế suất</span><input type="date" data-text data-g="shop" data-k="vat.nextFrom" value="' + esc(getPath(d, 'vat.nextFrom') || '') + '"><small class="field__hint">VD: 8% đến 31/12/2026, 10% từ 01/01/2027. Để trống = không đổi.</small></label>' +
         '</div>') +
       panel('Thời gian giao hàng & tồn kho',
-        '<p class="set-note">Dùng để tính ngày giao dự kiến ở trang sản phẩm / thanh toán và cho biến {ship.eta} trong chữ (vd “Giao {ship.eta} ngày làm việc”). Chủ nhật không tính.</p>' +
+        '<p class="set-note">Dùng để tính ngày giao dự kiến (Viettel Post) ở trang sản phẩm / thanh toán và cho biến {ship.eta} trong chữ (vd “Giao {ship.eta} ngày làm việc”). Chủ nhật không tính.</p>' +
         '<div class="set-grid3">' +
           numberField('shop', 'eta.stdMin', 'Giao tiêu chuẩn — nhanh nhất', 0, 30, 'ngày') +
           numberField('shop', 'eta.stdMax', 'Giao tiêu chuẩn — chậm nhất', 0, 30, 'ngày') +
-          numberField('shop', 'eta.exp', 'Giao hỏa tốc', 0, 30, 'ngày', '0 = giao trong ngày.') +
           numberField('shop', 'eta.cutoff', 'Đặt trước giờ này được tính từ hôm nay', 0, 24, 'giờ') +
           numberField('shop', 'lowStock', 'Báo “sắp hết hàng” khi còn ≤', 0, 1000, 'cái', 'Trang quản trị cảnh báo, trang sản phẩm hiện “Chỉ còn X”. 0 = tắt.') +
         '</div>') +

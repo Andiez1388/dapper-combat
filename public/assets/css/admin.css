@@ -766,3 +766,5 @@ a.code:hover, .cell-title:hover { text-decoration: underline; text-underline-off
 
 .ck-dep { margin: 18px 0 6px; padding: 14px 16px; border: 1px solid #ecdcb4; background: #fffaf0; }
 .ck-dep .set-grid3 { margin-top: 12px; }
+/* Thiết lập → Bán hàng: tiêu đề nhóm nhỏ trong một khung */
+.set-sub{margin:22px 0 10px;padding-top:16px;border-top:1px solid var(--line,#e7e7e7);font-size:13px;font-weight:600;letter-spacing:.02em}

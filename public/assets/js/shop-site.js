@@ -224,12 +224,12 @@ function dcOkExtras() {
   if (done) {
     if (head) {
       head.classList.add('is-paid');
-      var hp = head.querySelector('p'); if (hp) hp.textContent = d.depositPaid && !d.paid ? T('shop.success.depHead', 'Đã nhận tiền cọc, đơn hàng được xác nhận. Dapper Combat chuẩn bị hàng và báo khi gửi đi.', 'Deposit received, your order is confirmed. We will let you know when it ships.') : T('shop.success.paidHead', 'Đã nhận đủ tiền, đơn hàng được xác nhận. Dapper Combat chuẩn bị hàng và báo khi gửi đi.', 'Payment received, your order is confirmed. We will let you know when it ships.');
+      var hp = head.querySelector('p'); if (hp) hp.textContent = d.depositPaid && !d.paid ? T('shop.success.depHead', 'Dapper đã nhận được tiền cọc và xác nhận đơn hàng của bạn. Chúng tôi sẽ chuẩn bị hàng chu đáo và báo bạn khi gửi đi.', 'We have received your deposit and confirmed your order. We will pack it with care and let you know when it ships.') : T('shop.success.paidHead', 'Dapper đã nhận đủ thanh toán và xác nhận đơn hàng của bạn. Chúng tôi sẽ chuẩn bị hàng chu đáo và báo bạn khi gửi đi.', 'We have received your payment and confirmed your order. We will pack it with care and let you know when it ships.');
     }
-    var st = box.querySelectorAll('.v3ok-track li'); if (st[1]) { st[1].classList.add('done'); var i = st[1].querySelector('i'); if (i) i.textContent = '✓'; var sm = st[1].querySelector('small'); if (sm) sm.textContent = T('shop.success.autoStep', 'Đã xác nhận tự động', 'Confirmed automatically'); }
+    var st = box.querySelectorAll('.v3ok-track li'); if (st[1]) { st[1].classList.add('done'); var i = st[1].querySelector('i'); if (i) i.textContent = '✓'; var sm = st[1].querySelector('small'); if (sm) sm.textContent = T('shop.success.autoStep', 'Dapper đã xác nhận đơn', 'Confirmed by Dapper'); }
     var rest = d.depositPaid && !d.paid ? Math.max(0, d.total - (d.got || d.deposit)) : 0;
     var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
-    var html = '<section class="v3ok-card v3ok-paid"><div class="v3ok-card-h"><span>✓ ' + esc(d.depositPaid && !d.paid ? T('shop.success.depOk', 'Đã nhận tiền cọc — đơn đã xác nhận', 'Deposit received — order confirmed') : T('shop.success.payOk', 'Thanh toán thành công', 'Payment successful')) + '</span><em>' + esc(T('shop.success.auto', 'Tự xác nhận', 'Auto-confirmed')) + '</em></div>' +
+    var html = '<section class="v3ok-card v3ok-paid"><div class="v3ok-card-h"><span>✓ ' + esc(d.depositPaid && !d.paid ? T('shop.success.depOk', 'Đã nhận tiền cọc · Đơn hàng đã được xác nhận', 'Deposit received · Order confirmed') : T('shop.success.payOk', 'Thanh toán thành công', 'Payment successful')) + '</span><em>' + esc(T('shop.success.auto', 'Đã xác nhận', 'Confirmed')) + '</em></div>' +
       '<dl class="v3ok-dl">' +
       row(esc(T('shop.success.code', 'Mã đơn', 'Order no.')), '<b>' + esc(d.id) + '</b>') +
       row(esc(T('shop.success.at', 'Đặt lúc', 'Ordered at')), esc(dcTime(d.at))) +
@@ -238,7 +238,7 @@ function dcOkExtras() {
       (rest ? row(esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')), '<b>' + fmt(rest) + '</b>') : '') +
       row(esc(T('shop.success.total', 'Tổng đơn', 'Order total')), fmt(d.total)) +
       (d.ref ? row(esc(T('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note')), '<code>' + esc(DC.payNoteClean(d.ref)) + '</code>') : '') +
-      '</dl><p class="dc-pay-note">' + esc(d.depositPaid && !d.paid ? T('shop.success.depOkP', 'Dapper Combat đã nhận cọc và xác nhận đơn tự động. Hàng sẽ được chuẩn bị và gửi theo lịch giao; phần còn lại bạn trả cho người giao khi nhận hàng.', 'We received your deposit and confirmed your order automatically. The rest is paid to the courier on delivery.') : T('shop.success.payOkP', 'Dapper Combat đã nhận đủ tiền và xác nhận đơn tự động. Hàng sẽ được chuẩn bị và gửi theo lịch giao.', 'We received your payment and confirmed your order automatically. Your items will be packed and shipped on schedule.')) + '</p></section>';
+      '</dl><p class="dc-pay-note">' + esc(d.depositPaid && !d.paid ? T('shop.success.depOkP', 'Cảm ơn bạn đã đặt cọc. Dapper đang chuẩn bị hàng và sẽ gửi đi theo lịch giao; phần còn lại bạn vui lòng thanh toán khi nhận hàng.', 'Thank you for your deposit. We are preparing your order and will ship it on schedule; the balance is paid on delivery.') : T('shop.success.payOkP', 'Cảm ơn bạn đã thanh toán. Dapper đang chuẩn bị hàng và sẽ gửi đi theo lịch giao.', 'Thank you for your payment. We are preparing your order and will ship it on schedule.')) + '</p></section>';
     if (pay) pay.outerHTML = html; else { var m = box.querySelector('.v3ok-main'); if (m) m.insertAdjacentHTML('afterbegin', html); }
     return;
   }
@@ -249,10 +249,10 @@ function dcOkExtras() {
       '<div class="v3ok-qr"><div class="v3ok-qr-box">' + qr + '</div><div class="v3ok-qr-info"><small>' + esc(T('shop.success.depAmt', 'Số tiền cọc', 'Deposit amount')) + '</small><strong>' + fmt(d.deposit) + '</strong>' +
       '<small>' + esc(T('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note')) + '</small><div class="v3ok-copy"><code>' + esc(DC.payNoteClean(d.ref)) + '</code><button type="button" data-v3copy="' + esc(DC.payNoteClean(d.ref)) + '">' + esc(T('shop.other.j6', 'Sao chép', 'Copy')) + '</button></div>' +
       '<div class="v3ok-deprows"><div><span>' + esc(T('shop.success.total', 'Tổng đơn', 'Order total')) + '</span><b>' + fmt(d.total) + '</b></div><div><span>' + esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')) + '</span><b>' + fmt(rest2) + '</b></div></div>' +
-      '<p>' + esc(T('shop.success.depP', 'Quét mã bằng app ngân hàng, MoMo hoặc ZaloPay và giữ nguyên nội dung chuyển khoản. Tiền cọc về là trang này tự báo xác nhận đơn.', 'Scan with your banking, MoMo or ZaloPay app and keep the transfer note as is. Once the deposit arrives, this page confirms your order automatically.')) + '</p>' +
-      '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Đang chờ tiền về…', 'Waiting for payment…')) + '</p></div></div></section>';
+      '<p>' + esc(T('shop.success.depP', 'Bạn vui lòng quét mã bằng app ngân hàng, MoMo hoặc ZaloPay và giữ nguyên nội dung chuyển khoản giúp Dapper. Khi nhận được cọc, trang này sẽ báo xác nhận đơn đến bạn ngay.', 'Please scan with your banking, MoMo or ZaloPay app and keep the transfer note as is. Once your deposit reaches us, this page will confirm your order right away.')) + '</p>' +
+      '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Dapper đang chờ nhận thanh toán của bạn…', 'Waiting to receive your payment…')) + '</p></div></div></section>';
   } else if (pay && QR_SET.indexOf(d.pay) > -1 && !pay.querySelector('.v3ok-wait')) {
-    var inf = pay.querySelector('.v3ok-qr-info'); if (inf && DC.payOnline().auto) inf.insertAdjacentHTML('beforeend', '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Đang chờ tiền về…', 'Waiting for payment…')) + '</p>');
+    var inf = pay.querySelector('.v3ok-qr-info'); if (inf && DC.payOnline().auto) inf.insertAdjacentHTML('beforeend', '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Dapper đang chờ nhận thanh toán của bạn…', 'Waiting to receive your payment…')) + '</p>');
   }
 }
 var QR_SET = ['bank', 'momo', 'zalopay'];
@@ -274,7 +274,7 @@ var QR_SET = ['bank', 'momo', 'zalopay'];
     box.hidden = !on;
     if (on) box.innerHTML = '<div class="cod-dep-qr">' + qrImg + '</div><div class="cod-dep-txt"><small>' + DC.esc(T('shop.pay.depK', 'Đặt cọc {pct}% để giữ đơn', '{pct}% deposit to hold your order')) + '</small>' +
       '<strong>' + fmt(D) + '</strong><div class="cod-dep-rows"><span>' + DC.esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')) + '</span><b>' + fmt(Math.max(0, tot - D)) + '</b></div>' +
-      '<p>' + DC.esc(T('shop.pay.depP', 'Bấm Đặt hàng, mã QR hiện ngay với đúng số tiền cọc và nội dung chuyển khoản là mã đơn. Tiền cọc về là đơn tự xác nhận.', 'Place your order and a QR code appears with the exact deposit and your order number as the transfer note. The order confirms itself once the deposit arrives.')) + '</p></div>';
+      '<p>' + DC.esc(T('shop.pay.depP', 'Sau khi bạn đặt hàng, mã QR sẽ hiện ra kèm sẵn số tiền cọc và nội dung chuyển khoản. Dapper nhận được cọc sẽ xác nhận đơn và báo đến bạn ngay.', 'Once you place your order, a QR code will appear with the deposit and transfer note filled in. As soon as your deposit reaches us, we will confirm your order and let you know.')) + '</p></div>';
     var tr = document.getElementById('sumDep'), totEl = document.getElementById('sumVat') || document.querySelector('#checkoutView .sum-total');   // dưới dòng "Đã gồm VAT"
     if (on && totEl) {
       if (!tr) { totEl.insertAdjacentHTML('afterend', '<div class="sum-dep" id="sumDep"></div>'); tr = document.getElementById('sumDep'); }

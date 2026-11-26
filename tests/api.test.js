@@ -65,12 +65,19 @@ module.exports = async function apiTests(env, t) {
     const order = (city, ship, extra = {}) => ({ customer: { name: 'Khách Thử', phone: '0901234567', address: '12 Đường Số 1', city }, items: [{ id: p.id, qty: 2, size: p.sizes[0], color: p.colors[0][0] }], pay: 'bank', ship, ...extra });
     r = await req('/api/orders', { method: 'POST', body: { ...order('HCM', 'std'), customer: { name: 'K', phone: '1' }, lang: 'en' } });
     t.ok(r.s === 400 && r.j.error === 'Please enter your name', 'lỗi đặt hàng bằng tiếng Anh', r.j);
+    // giao ngay: ngoài khung giờ nhận đơn (giờ VN) → từ chối; trong khung → phí đồng giá expressFee
+    const vnH = new Date(Date.now() + 7 * 3600e3).getUTCHours(), hh = h => String(h % 24).padStart(2, '0') + ':00';
+    await req('/api/settings', { method: 'PUT', tok: T, body: { shop: { now: { from: hh(vnH + 3), to: hh(vnH + 4) } } } });
+    r = await req('/api/orders', { method: 'POST', body: order('Tp. Hồ Chí Minh', 'exp') });
+    t.ok(r.s === 400 && /Giao ngay nhận đơn từ/.test(r.j.error), 'giao ngay ngoài khung giờ bị từ chối', r.j);
+    await req('/api/settings', { method: 'PUT', tok: T, body: { shop: { now: { from: '00:00', to: '23:59' } } } });
     r = await req('/api/orders', { method: 'POST', body: order('Hà Nội', 'exp') });
-    t.ok(r.s === 400 && /TP\.HCM/.test(r.j.error), 'hỏa tốc ngoài TP.HCM bị từ chối', r.j);
+    t.ok(r.s === 400 && /TP\.HCM/.test(r.j.error), 'giao ngay ngoài TP.HCM bị từ chối', r.j);
     const stockOf = async id => (await req('/api/admin/products', { tok: T })).j.find(x => x.id === id).stock;
     const s0 = await stockOf(p.id);
     r = await req('/api/orders', { method: 'POST', body: order('Tp. Hồ Chí Minh', 'exp', { promo: 'DAPPER10' }) });
     t.ok(r.s === 201 && r.j.discount === Math.round(p.price * 2 * 0.1) && r.j.slip && r.j.slip.k, 'đặt hàng hỏa tốc TP.HCM + mã giảm 10% (server tự tính)', r.j);
+    t.ok(r.j.shipping === 35000, 'giao ngay: phí đồng giá, không cộng phí tiêu chuẩn', r.j.shipping);
     const oid = r.j.id; env.order = r.j;
     t.ok(await stockOf(p.id) === s0 - 2, 'đặt hàng trừ tồn kho');
     const put = st => req('/api/orders/' + oid, { method: 'PUT', tok: T, body: { status: st } });

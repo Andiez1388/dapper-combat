@@ -372,7 +372,7 @@ function v3Render(){
     return '<button type="button" class="v3-ctile v3-csw'+(c[0]===detailColor?' sel':'')+(oos?' oos':'')+'" data-color="'+c[0]+'"'+(oos?' aria-disabled="true"':'')+' title="'+DC.esc(cn(p,c[0]))+'" aria-label="'+DC.esc(cn(p,c[0]))+'" aria-pressed="'+(c[0]===detailColor)+'"><i style="background:'+c[1]+'"></i></button>';
   }).join("");
   $("v3Fit").textContent=v3T(DC.x("shop.pdp.j27",0,"Form chuẩn Dapper Combat. Nếu phân vân giữa 2 size, chọn size lớn hơn để thoải mái khi tập."),DC.x("shop.pdp.j27",1,"True-to-size Dapper Combat fit. Between sizes? Size up for comfort while training."));
-  $("v3Ship").innerHTML='<span class="v3-eta">'+v3T(DC.x("shop.pdp.j28",0,"Giao dự kiến "),DC.x("shop.pdp.j28",1,"Arrives "))+'<b>'+v3pEta()+'</b></span><span>'+v3T(DC.x("shop.pdp.j29",0,"Miễn phí giao hàng cho đơn từ {ship.free}₫"),DC.x("shop.pdp.j29",1,"Free shipping on orders over {ship.free}₫"))+'</span><span>'+v3T(DC.x("shop.pdp.j30",0,"Đổi trả 7 ngày · Hàng chính hãng"),DC.x("shop.pdp.j30",1,"7-day returns · Authentic gear"))+'</span>';
+  $("v3Ship").innerHTML='<span class="v3-eta">'+v3T(DC.x("shop.pdp.j28",0,"Giao dự kiến "),DC.x("shop.pdp.j28",1,"Arrives "))+'<b>'+v3pEta()+'</b></span>'+(DC.setting("shop.expressEnabled",true)?'<span class="v3-now">'+v3T(DC.x("shop.pdp.now",0,"Trong TP.HCM: giao ngay {ship.now.eta} tiếng qua Lalamove ({ship.now.from}–{ship.now.to})"),DC.x("shop.pdp.now",1,"In HCMC: same-day delivery in {ship.now.eta} hours via Lalamove ({ship.now.from}–{ship.now.to})"))+'</span>':'')+'<span>'+v3T(DC.x("shop.pdp.j29",0,"Miễn phí giao hàng cho đơn từ {ship.free}₫"),DC.x("shop.pdp.j29",1,"Free shipping on orders over {ship.free}₫"))+'</span><span>'+v3T(DC.x("shop.pdp.j30",0,"Đổi trả 7 ngày · Hàng chính hãng"),DC.x("shop.pdp.j30",1,"7-day returns · Authentic gear"))+'</span>';
   var fi=document.querySelector("#dAcc .acc-item .acc-inner");
   if(fi&&!fi.querySelector(".v3-feats"))fi.insertAdjacentHTML("beforeend",'<ul class="v3-feats">'+featsOf(p).map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul>');
   /* "Hoàn thiện bộ trang phục": chỉ ghép sản phẩm còn hàng */
@@ -686,10 +686,15 @@ function v3pCutoff(txt){return String(txt).replace(/\b15:00\b/,String(DC.eta().c
 
 /* --- phí ship: cộng phí hỏa tốc nếu chọn (và được phép: mặc định chỉ giao hỏa tốc trong TP.HCM) --- */
 var _v3pShip=shipFinal;
-shipFinal=function(){return _v3pShip()+(V3P.ship==="exp"&&count()>0&&v3pExpOk()?V3P.exp:0);};
+shipFinal=function(){if(V3P.ship==="exp"&&count()>0&&v3pExpSel())return v3pNowFee();return _v3pShip();};
+/* giao ngay: phí đồng giá nội thành; tùy chọn miễn phí khi đơn đủ mức / mã FREESHIP (Thiết lập → Bán hàng) */
+function v3pNowFee(){var w=DC.shipNow();if(w.freeOk&&((promo&&promo.freeship)||subtotal()>=SHIP_FREE))return 0;return V3P.exp;}
 /* hỏa tốc chỉ áp dụng trong TP.HCM (/admin → Thiết lập → Bán hàng); server kiểm tra lại bằng cùng phép thử */
-function v3pExpOk(){if(!DC.setting("shop.expressHcmOnly",true))return true;var c=document.querySelector('#checkoutForm [name="city"]');return DC.isHcm(c?c.value:"");}
-function v3pExpCheck(){if(V3P.ship==="exp"&&!v3pExpOk()){V3P.ship="std";renderSummary();}else v3pShipRender();}
+function v3pExpWhy(){var c=document.querySelector('#checkoutForm [name="city"]'),v=c?c.value.trim():"";if(DC.setting("shop.expressHcmOnly",true)&&v&&!DC.isHcm(v))return "city";if(!DC.nowOpen())return "time";if(DC.setting("shop.expressHcmOnly",true)&&!v)return "nocity";return "";}
+function v3pExpOk(){return v3pExpWhy()==="";}
+/* chưa nhập tỉnh: vẫn cho bấm chọn giao ngay (tính phí giao ngay); nhập tỉnh khác TP.HCM thì tự về Viettel Post */
+function v3pExpSel(){var w=v3pExpWhy();return w===""||w==="nocity";}
+function v3pExpCheck(){if(V3P.ship==="exp"&&!v3pExpSel()){V3P.ship="std";renderSummary();}else v3pShipRender();}
 
 /* --- khối "Phương thức giao hàng" + logo thanh toán + gợi ý tỉnh/thành --- */
 function v3pCheckoutInit(){
@@ -716,7 +721,7 @@ function v3pCheckoutInit(){
   $("placeOrder").addEventListener("click",function(){
     var rc=document.querySelector("#okExtra .ok-recap");if(!rc||!$("success").classList.contains("active"))return;
     var exp=V3P.ship==="exp";
-    rc.insertAdjacentHTML("beforeend",'<div><span>'+v3T(DC.x("shop.checkout.j3",0,"Giao hàng"),DC.x("shop.checkout.j3",1,"Delivery"))+'</span><b>'+(exp?v3T(DC.x("shop.checkout.j4",0,"Hỏa tốc · nhận "),DC.x("shop.checkout.j4",1,"Same-day · "))+v3pToday():v3T(DC.x("shop.checkout.j5",0,"Tiêu chuẩn · "),DC.x("shop.checkout.j5",1,"Standard · "))+v3pEta())+'</b></div>');
+    rc.insertAdjacentHTML("beforeend",'<div><span>'+v3T(DC.x("shop.checkout.j3",0,"Giao hàng"),DC.x("shop.checkout.j3",1,"Delivery"))+'</span><b>'+(exp?v3T(DC.x("shop.ship.now.recap",0,"Giao ngay · trong {ship.now.eta} tiếng sau khi xác nhận"),DC.x("shop.ship.now.recap",1,"Same-day · within {ship.now.eta} hours of confirmation")):v3T(DC.x("shop.ship.std.recap",0,"Viettel Post · dự kiến "),DC.x("shop.ship.std.recap",1,"Viettel Post · arrives "))+v3pEta())+'</b></div>');
   });
   v3pShipRender();
 }
@@ -724,11 +729,20 @@ function v3pShipRender(){
   var box=$("v3ShipOpts");if(!box)return;
   $("v3ShipH").textContent=v3T(DC.x("shop.checkout.j6",0,"Phương thức giao hàng"),DC.x("shop.checkout.j6",1,"Delivery"));
   var std=ship()===0||(promo&&promo.freeship)?v3T(DC.x("shop.checkout.j7",0,"Miễn phí"),DC.x("shop.checkout.j7",1,"Free")):fmt(dcStdFee());
-  var expOk=v3pExpOk();if(!expOk&&V3P.ship==="exp")V3P.ship="std";
-  var o=[{id:"std",n:v3T(DC.x("shop.checkout.j8",0,"Giao tiêu chuẩn"),DC.x("shop.checkout.j8",1,"Standard delivery")),s:v3T(DC.x("shop.checkout.j9",0,"Dự kiến "),DC.x("shop.checkout.j9",1,"Arrives "))+v3pEta(),p:std},
-         {id:"exp",n:v3T(DC.x("shop.checkout.j10",0,"Hỏa tốc nội thành TP.HCM"),DC.x("shop.checkout.j10",1,"Same-day in Ho Chi Minh City")),s:expOk?v3T(DC.x("shop.checkout.j11",0,"Nhận "),DC.x("shop.checkout.j11",1,"Arrives "))+v3pToday()+v3pCutoff(v3T(DC.x("shop.checkout.j12",0," nếu đặt trước 15:00"),DC.x("shop.checkout.j12",1," if ordered before 15:00"))):v3T(DC.x("shop.checkout.exphcm",0,"Hỏa tốc chỉ áp dụng trong TP.HCM"),DC.x("shop.checkout.exphcm",1,"Express is HCMC only")),p:fmt((count()>0?_v3pShip():dcStdFee())+V3P.exp),off:!expOk}];
-  box.innerHTML=o.map(function(x){return '<button type="button" class="v3-sopt'+(V3P.ship===x.id?" sel":"")+(x.off?" off":"")+'" data-ship="'+x.id+'"'+(x.off?' disabled aria-disabled="true"':'')+' aria-pressed="'+(V3P.ship===x.id)+'"><i></i><span><b>'+x.n+'</b><small>'+x.s+'</small></span><em>'+x.p+'</em></button>';}).join("");
+  var why=v3pExpWhy(),expOk=why==="";
+  /* ngoài TP.HCM / ngoài giờ: tự về Viettel Post; vừa nhập địa chỉ TP.HCM trong giờ thì giữ lựa chọn khách đã bấm */
+  if(!v3pExpSel()&&V3P.ship==="exp")V3P.ship="std";
+  var nowFee=v3pNowFee(),w=DC.shipNow();
+  var sub=expOk?v3T(DC.x("shop.ship.now.s",0,"Nhận hàng trong {ship.now.eta} tiếng sau khi Dapper xác nhận đơn"),DC.x("shop.ship.now.s",1,"Arrives within {ship.now.eta} hours of order confirmation"))
+    :why==="time"?v3T(DC.x("shop.ship.now.closed",0,"Dapper nhận đơn giao ngay từ {ship.now.from} đến {ship.now.to} mỗi ngày, hẹn bạn trong khung giờ này nhé"),DC.x("shop.ship.now.closed",1,"Same-day orders are taken from {ship.now.from} to {ship.now.to} daily"))
+    :why==="city"?v3T(DC.x("shop.ship.now.city",0,"Chỉ áp dụng cho địa chỉ trong TP.HCM"),DC.x("shop.ship.now.city",1,"Available for Ho Chi Minh City addresses only"))
+    :v3T(DC.x("shop.ship.now.hint",0,"Dành cho địa chỉ trong TP.HCM · nhận trong {ship.now.eta} tiếng sau khi xác nhận"),DC.x("shop.ship.now.hint",1,"For Ho Chi Minh City addresses · arrives within {ship.now.eta} hours of confirmation"));
+  var o=[{id:"std",n:v3T(DC.x("shop.ship.std.n",0,"Giao tiêu chuẩn · Viettel Post"),DC.x("shop.ship.std.n",1,"Standard · Viettel Post")),s:v3T(DC.x("shop.ship.std.s",0,"{ship.eta} ngày làm việc · dự kiến "),DC.x("shop.ship.std.s",1,"{ship.eta} business days · arrives "))+v3pEta(),p:std}];
+  if(DC.setting("shop.expressEnabled",true))o.push({id:"exp",n:v3T(DC.x("shop.ship.now.n",0,"Giao ngay nội thành · Lalamove"),DC.x("shop.ship.now.n",1,"Same-day in HCMC · Lalamove")),s:sub,p:nowFee===0?v3T(DC.x("shop.checkout.j7",0,"Miễn phí"),DC.x("shop.checkout.j7",1,"Free")):fmt(nowFee),off:!expOk&&why!=="nocity",tag:expOk?v3T(DC.x("shop.ship.now.tag",0,"Nhanh nhất"),DC.x("shop.ship.now.tag",1,"Fastest")):""});
+  box.innerHTML=o.map(function(x){return '<button type="button" class="v3-sopt'+(V3P.ship===x.id?" sel":"")+(x.off?" off":"")+'" data-ship="'+x.id+'"'+(x.off?' disabled aria-disabled="true"':'')+' aria-pressed="'+(V3P.ship===x.id)+'"><i></i><span><b>'+x.n+(x.tag?'<u class="v3-sopt-tag">'+x.tag+'</u>':'')+'</b><small>'+x.s+'</small></span><em>'+x.p+'</em></button>';}).join("");
 }
+/* qua giờ đóng / mở giao ngay khi khách đang ở trang thanh toán: vẽ lại mỗi phút */
+setInterval(function(){if($("v3ShipOpts")&&document.visibilityState!=="hidden"){var was=V3P.ship;v3pShipRender();if(was!==V3P.ship)renderSummary();}},60000);
 function v3pValidate(){
   var form=$("checkoutForm"),bad=[];
   function chk(name,ok,msg){var i=form.querySelector('[name="'+name+'"]');if(!i)return;var f=i.closest(".field");var old=f.querySelector(".v3-err");if(old)old.remove();f.classList.toggle("err",!ok);if(!ok){f.insertAdjacentHTML("beforeend",'<small class="v3-err">'+msg+'</small>');bad.push(i);}}
@@ -895,7 +909,7 @@ function v3okSnap(){
 function v3okRender(){
   var o=V3OK.d,box=$("v3Ok");if(!o||!box)return;
   var first=o.name.split(" ").slice(-1)[0];
-  var shipTxt=o.ship==="exp"?v3T(DC.x("shop.success.j1",0,"Hỏa tốc · nhận "),DC.x("shop.success.j1",1,"Same-day · arrives "))+v3pToday():v3T(DC.x("shop.success.j2",0,"Tiêu chuẩn · "),DC.x("shop.success.j2",1,"Standard · "))+v3pEta();
+  var shipTxt=o.ship==="exp"?v3T(DC.x("shop.ship.now.recap",0,"Giao ngay · trong {ship.now.eta} tiếng sau khi xác nhận"),DC.x("shop.ship.now.recap",1,"Same-day · within {ship.now.eta} hours of confirmation")):v3T(DC.x("shop.ship.std.recap",0,"Viettel Post · dự kiến "),DC.x("shop.ship.std.recap",1,"Viettel Post · arrives "))+v3pEta();
   var h='<div class="v3ok-in">';
   h+='<div class="v3ok-head"><div class="v3ok-badge">✓</div><div class="v3ok-eyebrow">'+v3T(DC.x("shop.success.j3",0,"Đơn hàng "),DC.x("shop.success.j3",1,"Order "))+v3okEsc(o.id)+'</div>'+
      '<h2>'+(first?v3T(DC.x("shop.success.j4",0,"Cảm ơn, "),DC.x("shop.success.j4",1,"Thank you, "))+v3okEsc(first)+"!":v3T(DC.x("shop.success.j5",0,"Cảm ơn bạn!"),DC.x("shop.success.j5",1,"Thank you!")))+'</h2>'+
@@ -903,7 +917,7 @@ function v3okRender(){
   /* các bước tiếp theo (không phải trạng thái đơn theo thời gian thực — không ghi ngày dự kiến) */
   var steps=[[v3T(DC.x("shop.success.j7",0,"Đã đặt hàng"),DC.x("shop.success.j7",1,"Ordered")),v3T(DC.x("shop.success.j8",0,"Vừa xong"),DC.x("shop.success.j8",1,"Just now"))],
     [v3T(DC.x("shop.success.j9",0,"Xác nhận"),DC.x("shop.success.j9",1,"Confirmation")),v3T(DC.x("shop.success.j10",0,"Shop gọi hoặc nhắn Zalo"),DC.x("shop.success.j10",1,"We call or message on Zalo"))],
-    [v3T(DC.x("shop.success.j11",0,"Giao hàng"),DC.x("shop.success.j11",1,"Delivery")),o.ship==="exp"?v3T(DC.x("shop.success.step.exp",0,"Hỏa tốc trong TP.HCM"),DC.x("shop.success.step.exp",1,"Same-day in HCMC")):v3T(DC.x("shop.success.step.std",0,"{ship.eta} ngày làm việc"),DC.x("shop.success.step.std",1,"{ship.eta} business days"))],
+    [v3T(DC.x("shop.success.j11",0,"Giao hàng"),DC.x("shop.success.j11",1,"Delivery")),o.ship==="exp"?v3T(DC.x("shop.ship.now.step",0,"Lalamove giao trong {ship.now.eta} tiếng"),DC.x("shop.ship.now.step",1,"Lalamove delivers within {ship.now.eta} hours")):v3T(DC.x("shop.ship.std.step",0,"Viettel Post · {ship.eta} ngày làm việc"),DC.x("shop.ship.std.step",1,"Viettel Post · {ship.eta} business days"))],
     [v3T(DC.x("shop.success.j12",0,"Nhận hàng"),DC.x("shop.success.j12",1,"Receive your order")),""]];
   h+='<h3 class="v3ok-next">'+v3T(DC.x("shop.success.next",0,"Các bước tiếp theo"),DC.x("shop.success.next",1,"What happens next"))+'</h3>';
   h+='<ol class="v3ok-track">'+steps.map(function(s,i){return '<li class="'+(i===0?"done":"")+'"><i>'+(i===0?"✓":i+1)+'</i><b>'+s[0]+'</b>'+(s[1]?'<small>'+s[1]+'</small>':'')+'</li>';}).join("")+'</ol>';

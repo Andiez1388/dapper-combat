@@ -134,6 +134,9 @@
       if (k === 'found.start') { var d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(DC.setting('course.foundStart', ''))); return d ? d[3] + '.' + d[2] + '.' + d[1] : ''; }
       if (k === 'ship.eta') { var e = DC.eta(); return e.stdMin === e.stdMax ? String(e.stdMin) : e.stdMin + '–' + e.stdMax; }
       if (k === 'ship.eta.exp') return String(DC.eta().exp);
+      if (k === 'ship.now.from') return DC.shipNow().from;
+      if (k === 'ship.now.to') return DC.shipNow().to;
+      if (k === 'ship.now.eta') { var w = DC.shipNow(); return w.hMin === w.hMax ? String(w.hMin) : w.hMin + '–' + w.hMax; }
       if (k === 'hours.open') return DC.cfg('hoursOpen', '06:00');
       if (k === 'hours.close') return DC.cfg('hoursClose', '21:30');
       if (k === 'hours.days') return (HOURS_DAYS[DC.cfg('hoursDays', '1-6')] || HOURS_DAYS['1-6'])[en ? 1 : 0];
@@ -141,6 +144,16 @@
       var n = DC.fee(k);
       return n == null ? '' : Math.round(n).toLocaleString(en ? 'en-US' : 'vi-VN');
     });
+  };
+  /* giao ngay nội thành (Lalamove): khung giờ nhận đơn theo giờ Việt Nam — cùng phép thử với server (lib/settings.js nowOpen) */
+  DC.shipNow = function () {
+    var n = DC.setting('shop.now', null) || {};
+    return { from: n.from || '08:00', to: n.to || '18:00', hMin: n.hMin != null ? +n.hMin : 1, hMax: n.hMax != null ? +n.hMax : 3, freeOk: !!n.freeOk };
+  };
+  DC.nowOpen = function () {
+    var w = DC.shipNow(), m = function (v) { var p = String(v).split(':'); return (+p[0]) * 60 + (+p[1] || 0); };
+    var d = new Date(Date.now() + 7 * 3600e3), cur = d.getUTCHours() * 60 + d.getUTCMinutes(), a = m(w.from), b = m(w.to);
+    return a <= b ? cur >= a && cur < b : cur >= a || cur < b;
   };
   // giao hỏa tốc chỉ trong TP.HCM: cùng phép thử với server
   DC.isHcm = function (c) { return /ho\s*chi\s*minh|hcm|sai\s*gon/i.test(String(c || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd')); };

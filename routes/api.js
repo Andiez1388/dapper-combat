@@ -578,7 +578,7 @@ router.post('/pages/preview', adminOnly, (req, res) => pageErr(res, () => {
 function shopRules() {
   const sh = settings.all().shop;
   return { freeShip: sh.freeShip, fee: sh.shipFee, express: sh.expressFee, expressOn: sh.expressEnabled, expressHcmOnly: sh.expressHcmOnly !== false,
-    byRegion: !!sh.shipByRegion, regionFees: sh.regionFees || [] };
+    byRegion: !!sh.shipByRegion, regionFees: sh.regionFees || [], now: { ...settings.DEFAULTS.shop.now, ...(sh.now || {}) } };
 }
 // phí giao tiêu chuẩn: theo khu vực của tỉnh nhận hàng (nếu bật), tỉnh lạ → mức cao nhất; tắt → một mức cho cả nước
 function stdFee(R, city) {
@@ -714,11 +714,15 @@ function priceOrder(body, req) {
   if (pc.error) return { error: pc.error, code: 422, promoError: true };
   const promo = pc.promo || null;
   const discount = !promo ? 0 : promo.pct ? Math.round(subtotal * promo.pct) : promo.fix ? Math.min(promo.fix, subtotal) : 0;
-  if (body.ship === 'exp' && R.expressOn && R.expressHcmOnly && !isHcm(body.customer && body.customer.city))
-    return { error: L('Giao hỏa tốc chỉ áp dụng trong TP.HCM — vui lòng chọn giao tiêu chuẩn', 'Express delivery is only available in Ho Chi Minh City — please choose standard delivery') };
+  // giao ngay (Lalamove): chỉ TP.HCM (nếu bật) và chỉ trong khung giờ nhận đơn; phí đồng giá — không cộng phí tiêu chuẩn
+  const city = body.customer && body.customer.city;
+  if (body.ship === 'exp' && R.expressOn && R.expressHcmOnly && !isHcm(city))
+    return { error: L('Giao ngay chỉ áp dụng trong TP.HCM — bạn vui lòng chọn giao tiêu chuẩn', 'Same-day delivery is only available in Ho Chi Minh City — please choose standard delivery') };
+  if (body.ship === 'exp' && R.expressOn && !settings.nowOpen(R.now, Date.now(), 15))
+    return { error: L(`Giao ngay nhận đơn từ ${R.now.from} đến ${R.now.to} — bạn vui lòng chọn giao tiêu chuẩn`, `Same-day delivery takes orders from ${R.now.from} to ${R.now.to} — please choose standard delivery`) };
   const ship = body.ship === 'exp' && R.expressOn ? 'exp' : 'std';
-  const base = promo && promo.freeship ? 0 : (subtotal >= R.freeShip ? 0 : stdFee(R, body.customer && body.customer.city));
-  const shipping = base + (ship === 'exp' ? R.express : 0);
+  const free = !!(promo && promo.freeship) || subtotal >= R.freeShip;
+  const shipping = ship === 'exp' ? (R.now.freeOk && free ? 0 : R.express) : (free ? 0 : stdFee(R, city));
   return { items, subtotal, discount, shipping, ship, promo: promo ? promoCode : '', total: Math.max(0, subtotal - discount) + shipping };
 }
 
@@ -1302,7 +1306,7 @@ adminCollection('subscribers', 'subscribers.json', null);
 /* ─── Sửa đơn / tạo đơn thủ công (nhân viên) ─────────────────────────────────── */
 const SOURCES = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
 const SHIPS = ['std', 'exp', 'pickup'];
-const SHIP_VI = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc', pickup: 'Nhận tại phòng tập' };
+const SHIP_VI = { std: 'Tiêu chuẩn', exp: 'Giao ngay', pickup: 'Nhận tại phòng tập' };
 const PAY_VI = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', cod: 'Thanh toán khi nhận hàng (COD)', vnpay: 'Thẻ (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
 const vnd = n => moneyVi(n) + '₫';
 // khách do nhân viên nhập: bắt buộc tên + SĐT (khách mua tại phòng tập không cần địa chỉ)
