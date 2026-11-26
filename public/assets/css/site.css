@@ -249,3 +249,43 @@ button[disabled]{cursor:progress;opacity:0.75;}
   font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:7.5px;line-height:1;letter-spacing:.24em;text-transform:uppercase;color:#d4af62;
   background:linear-gradient(90deg,rgba(212,175,98,0),#d4af62 18%,transparent 18%,transparent 82%,#d4af62 82%,rgba(212,175,98,0)) center/100% 1px no-repeat;}
 .tn .tn-site a.tn-pro:not([data-pro-b])::after{content:none;}
+/* Bộ chọn địa chỉ 2 hệ (trang thanh toán) */
+.dc-addr-tabs{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.9rem}
+.dc-addr-tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;text-align:left;padding:.75rem .9rem;border:1.5px solid var(--line-2,#d9d9d9);border-radius:var(--r-sm,8px);background:var(--surface,#fff);color:var(--ink,#111);cursor:pointer;font:inherit;transition:border-color .2s,background .2s}
+.dc-addr-tabs button b{font-size:.92rem;font-weight:700}.dc-addr-tabs button small{font-size:.74rem;color:var(--muted,#777);line-height:1.35}
+.dc-addr-tabs button[aria-checked="true"]{border-color:var(--accent,#d6312b);background:var(--accent-soft,rgba(214,49,43,.08));box-shadow:0 0 0 1px var(--accent,#d6312b) inset}
+.dc-addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.dc-addr-grid.three{grid-template-columns:1fr 1fr 1fr}
+.dc-addr-grid[hidden]{display:none}
+.dc-addr-grid label{display:flex;flex-direction:column;gap:.42rem;font-size:.76rem;font-weight:600;letter-spacing:.03em;color:var(--muted,#777);margin:0}
+.dc-addr-grid select{width:100%;background:var(--surface-2,#fafafa);border:1px solid var(--line-2,#d9d9d9);border-radius:var(--r-sm,8px);padding:.82rem .95rem;font-size:.95rem;color:var(--ink,#111);font-family:inherit;letter-spacing:0;font-weight:400}
+.dc-addr-grid select:focus{outline:none;border-color:var(--accent,#d6312b);box-shadow:0 0 0 3px var(--accent-soft,rgba(214,49,43,.12))}
+.dc-addr-grid select:disabled{opacity:.55}
+.dc-addr-grid select.dc-bad{border-color:var(--accent,#d6312b);box-shadow:0 0 0 3px var(--accent-soft,rgba(214,49,43,.12))}
+.dc-addr-out{margin-top:.7rem;padding:.6rem .8rem;border-radius:var(--r-sm,8px);background:#eaf7ef;color:#17603d;font-size:.84rem}
+.dc-addr-out.bad{background:#fdecec;color:#8a1c1c}
+@media(max-width:860px){.dc-addr-tabs,.dc-addr-grid,.dc-addr-grid.three{grid-template-columns:1fr}}
+.dc-addr-grid select{-webkit-appearance:none;appearance:none;padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .85rem center;text-overflow:ellipsis}
+.dc-addr-tabs button{border-radius:var(--r-sm,0)}
+/* Ô chuyển khoản dưới cách thanh toán */
+.dc-bankbox{margin-top:.8rem;padding:.9rem;border:1px solid var(--line-2,#ddd);border-radius:var(--r-sm,8px);background:var(--surface-2,#fafafa)}
+.dc-bankbox[hidden]{display:none}
+.dc-bankbox__in{display:flex;gap:.8rem;align-items:stretch}
+.dc-bankbox__qr{margin:0;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.5rem;background:#fff;border:1px solid var(--line-2,#ddd);border-radius:var(--r-sm,8px)}
+.dc-bankbox__qr img{width:132px;height:132px;object-fit:contain}.dc-bankbox__qr figcaption{font-size:.7rem;color:var(--muted,#777)}
+.dc-bankbox__rows{flex:1;display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.dc-bankbox__rows span{display:flex;flex-direction:column;gap:.15rem;padding:.55rem .7rem;background:#fff;border:1px solid var(--line-2,#ddd);border-radius:var(--r-sm,8px)}
+.dc-bankbox__rows small{font-size:.7rem;color:var(--muted,#777);letter-spacing:.03em}.dc-bankbox__rows b{font-size:.9rem;overflow-wrap:anywhere}
+.dc-bankbox__hint{margin:.7rem 0 0;font-size:.8rem;color:#17603d;line-height:1.5}
+.dc-qr-static-note{font-size:.78rem;margin:.5rem 0 0;color:#6b5200;background:#fff6d6;padding:.4rem .6rem;border-radius:6px;text-align:center}
+@media(max-width:560px){.dc-bankbox__in{flex-direction:column}.dc-bankbox__qr{align-self:center}}
+/* VAT + hóa đơn ở trang thanh toán */
+.sum-vat{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted,#777);margin:-.9rem 0 1.25rem;letter-spacing:.03em}
+.sum-vat[hidden]{display:none}
+.dc-inv{margin-top:1rem;padding:.9rem 1rem;border:1px dashed var(--line-2,#d9d9d9);border-radius:var(--r-sm,8px)}
+.dc-inv__want{display:flex;gap:.7rem;align-items:flex-start;cursor:pointer;margin:0}
+.dc-inv__want input{margin-top:.25rem;accent-color:var(--accent,#d6312b);width:16px;height:16px}
+.dc-inv__want span{display:flex;flex-direction:column;gap:.15rem}.dc-inv__want b{font-size:.9rem}.dc-inv__want small{font-size:.75rem;color:var(--muted,#777)}
+.dc-inv__body{margin-top:.9rem}
+.dc-inv__type{display:inline-flex;border:1px solid var(--line-2,#d9d9d9);border-radius:var(--r-sm,8px);overflow:hidden;margin-bottom:.9rem}
+.dc-inv__type button{padding:.5rem 1.1rem;background:transparent;border:0;font:inherit;font-size:.82rem;cursor:pointer;color:var(--ink,#111)}
+.dc-inv__type button[aria-pressed="true"]{background:var(--ink,#111);color:#fff}

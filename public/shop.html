@@ -173,6 +173,7 @@
             <label class="pay-opt sel"><input type="radio" name="pay" value="bank" checked><span><span data-cms="shop.pay.bank" class="po-name" data-i18n="pay.bank">Chuyển khoản ngân hàng</span><br><span data-cms="shop.pay.bankSub" class="po-sub" data-i18n="pay.bankSub">Nhận thông tin CK sau khi đặt</span></span></label>
             <label class="pay-opt"><input type="radio" name="pay" value="momo"><span><span data-cms="shop.pay.momo" class="po-name" data-i18n="pay.momo">Ví MoMo</span><br><span data-cms="shop.pay.momoSub" class="po-sub" data-i18n="pay.momoSub">Quét mã QR bằng app MoMo sau khi đặt</span></span></label>
             <label class="pay-opt"><input type="radio" name="pay" value="zalopay"><span><span data-cms="shop.pay.zalopay" class="po-name" data-i18n="pay.zalopay">ZaloPay</span><br><span data-cms="shop.pay.zalopaySub" class="po-sub" data-i18n="pay.zalopaySub">Quét mã QR bằng app ZaloPay sau khi đặt</span></span></label>
+            <label class="pay-opt" data-pay-opt="cod"><input type="radio" name="pay" value="cod"><span><span data-cms="shop.pay.cod" class="po-name" data-i18n="pay.cod">Thanh toán khi nhận hàng (COD)</span><br><span data-cms="shop.pay.codSub" class="po-sub" data-i18n="pay.codSub">Kiểm tra hàng rồi trả tiền cho người giao</span></span></label>
             <label class="pay-opt" data-pay-opt="vnpay" style="display:none!important"><input type="radio" name="pay" value="vnpay" disabled><span><span data-cms="shop.pay.vnpay" class="po-name" data-i18n="pay.vnpay">Thẻ ATM / Visa / Mastercard (VNPay)</span><br><span data-cms="shop.pay.vnpaySub" class="po-sub" data-i18n="pay.vnpaySub">Chuyển sang cổng VNPay để thanh toán an toàn</span></span></label>
             <label class="pay-opt" data-pay-opt="installment" style="display:none!important"><input type="radio" name="pay" value="installment" disabled><span><span data-cms="shop.pay.installment" class="po-name" data-i18n="pay.installment">Trả góp qua thẻ tín dụng (VNPay)</span><br><span data-cms="shop.pay.installmentSub" class="po-sub" data-i18n="pay.installmentSub">Chọn ngân hàng và kỳ hạn 3–12 tháng sau khi đặt</span></span></label>
           </div>
@@ -196,7 +197,7 @@
         <button data-cms="shop.checkout.placeOrder" class="btn-primary full" id="placeOrder" type="button" data-i18n="checkout.placeOrder">Đặt hàng</button>
         <p class="secure-note"><svg data-cms-icon="shop.checkout.ic4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span data-cms="shop.checkout.secure" data-i18n="checkout.secure">Thanh toán an toàn &amp; bảo mật</span></p>
         <p data-cms="shop.checkout.freeship" class="freeship-note" data-i18n="checkout.freeship">Miễn phí vận chuyển cho đơn từ {ship.free}₫</p>
-        <div data-cms-list="shop.checkout.badges" class="pay-badges"><span data-cms-item="1" data-cms="shop.checkout.10" data-pay="bank">VIETQR</span><span data-cms-item="2" data-cms="shop.checkout.7" data-pay="momo">MOMO</span><span data-cms-item="3" data-cms="shop.checkout.12" data-pay="zalopay">ZALOPAY</span><span data-cms-item="4" data-cms="shop.checkout.11" data-pay="vnpay" style="display:none">VISA · MASTERCARD · ATM</span><span data-cms-item="5" data-cms="shop.checkout.13" data-pay="installment" data-i18n="checkout.ispBadge" style="display:none">TRẢ GÓP</span></div>
+        <div data-cms-list="shop.checkout.badges" class="pay-badges"><span data-cms-item="1" data-cms="shop.checkout.10" data-pay="bank">VIETQR</span><span data-cms-item="2" data-cms="shop.checkout.7" data-pay="momo">MOMO</span><span data-cms-item="3" data-cms="shop.checkout.12" data-pay="zalopay">ZALOPAY</span><span data-cms-item="6" data-cms="shop.checkout.14" data-pay="cod">COD</span><span data-cms-item="4" data-cms="shop.checkout.11" data-pay="vnpay" style="display:none">VISA · MASTERCARD · ATM</span><span data-cms-item="5" data-cms="shop.checkout.13" data-pay="installment" data-i18n="checkout.ispBadge" style="display:none">TRẢ GÓP</span></div>
       </aside>
     </div>
   </div>
@@ -271,6 +272,7 @@
 <script src="/assets/js/shop-1.js"></script>
 <script src="/assets/js/custom3d.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script src="/assets/js/dc-address.js"></script>
 <script src="/assets/js/shop-site.js"></script>
 </body>
 </html>

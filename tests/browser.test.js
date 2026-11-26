@@ -64,11 +64,15 @@ module.exports = async function browserTests(env, t, browser) {
     const filled = await page.eval(`(() => {
       const f = document.getElementById('checkoutForm'); if (!f) return 'không thấy form';
       const set = (n, v) => { const el = f.elements[n]; if (!el) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
-      set('name', 'Khách Trình Duyệt'); set('phone', '0912345678'); set('email', 'khach@example.com'); set('address', '45 Lê Lợi, Bến Nghé'); set('city', 'TP. Hồ Chí Minh'); set('ward', 'Bến Nghé');
+      set('name', 'Khách Trình Duyệt'); set('phone', '0912345678'); set('email', 'khach@example.com'); set('address', '45 Lê Lợi');
+      // địa chỉ CŨ: TP.HCM → Quận 1 → Phường Bến Nghé (máy chủ đổi sang Phường Sài Gòn)
+      DCADDR.set({ type: 'old', pold: '79', dold: '760', wold: '26740' });
       const bank = f.querySelector('input[name=pay][value=bank]'); if (bank) bank.click();
       return 'ok';
     })()`);
     t.ok(filled === 'ok', 'điền form thanh toán', filled);
+    const conv = await page.until(`(document.querySelector('.dc-addr-out') || {}).textContent.includes('Sài Gòn') && document.querySelector('#checkoutForm [name=city]').value`, 8000);
+    t.ok(conv === 'TP. Hồ Chí Minh', 'địa chỉ cũ (Phường Bến Nghé, Quận 1) → hiện địa chỉ mới Phường Sài Gòn, TP. Hồ Chí Minh', conv);
     await page.eval(`(() => { document.getElementById('promoInput').value = 'DAPPER10'; document.getElementById('promoApply').click(); return 1; })()`);
     const promo = await page.until(`(document.getElementById('promoMsg').textContent.includes('DAPPER10')) && document.getElementById('promoMsg').textContent`);
     t.ok(promo, 'áp dụng mã DAPPER10 (server kiểm tra)', promo);
@@ -197,22 +201,27 @@ module.exports = async function browserTests(env, t, browser) {
         await page.eval(`localStorage.setItem('dc_lang','vi'); localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(cheap.id + '::' + cheap.sizes[0] + '::' + cheap.colors[0][0])}: 1})); 1`);
         await page.goto(B + '/shop/checkout', { wait: 1200 });
         const st = await page.eval(`({ opts: ${shown}, sub: document.querySelector('#payOpts [data-pay-opt="installment"] .po-sub').textContent })`);
-        t.ok(st.opts.join() === 'bank,momo,zalopay,installment:off' && /1\.000\.000/.test(st.sub), 'đơn nhỏ: trả góp hiện nhưng khóa, ghi mức tối thiểu; không còn COD', st);
+        t.ok(st.opts.join() === 'bank,momo,zalopay,cod,installment:off' && /1\.000\.000/.test(st.sub), 'đơn nhỏ: trả góp hiện nhưng khóa, ghi mức tối thiểu; có COD', st);
       }
       await page.eval(`localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(big.id + '::' + big.sizes[0] + '::' + big.colors[0][0])}: ${qty}})); 1`);
       await page.goto(B + '/shop/checkout', { wait: 1200 });
       const opts = await page.eval(shown);
-      t.ok(opts.join() === 'bank,momo,zalopay,installment', 'trang thanh toán: chuyển khoản, MoMo, ZaloPay, trả góp (thẻ ẩn khi chưa bật VNPay)', opts);
+      t.ok(opts.join() === 'bank,momo,zalopay,cod,installment', 'trang thanh toán: chuyển khoản, MoMo, ZaloPay, COD, trả góp (thẻ ẩn khi chưa bật VNPay)', opts);
       await page.eval(`(() => {
         const f = document.getElementById('checkoutForm');
         const set = (n, v) => { const el = f.elements[n]; if (!el) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
-        set('name', 'Nguyễn Trả Góp'); set('phone', '0912345679'); set('email', ''); set('address', '45 Lê Lợi'); set('city', 'TP. Hồ Chí Minh');
+        set('name', 'Nguyễn Trả Góp'); set('phone', '0912345679'); set('email', ''); set('address', '45 Lê Lợi');
+        DCADDR.set({ type: 'new', pnew: '79', wnew: '26740' });
         f.querySelector('input[name=pay][value=installment]').click();
+        return 1;
+      })()`);
+      await page.until(`DCADDR.state().wnew === '26740' && document.querySelector('#checkoutForm [name=city]').value`, 8000);
+      await page.eval(`(() => {
         document.querySelectorAll('[data-dc-consent]').forEach(b => { if (!b.checked) b.click(); }); 
         document.getElementById('placeOrder').click(); return 1;
       })()`);
       const banks = await page.until(`document.querySelectorAll('#dcIsp [data-isp-bank]').length`, 10000);
-      t.ok(banks === 2, 'đặt hàng chọn trả góp → tự mở bảng chọn ngân hàng', await page.eval(`(document.getElementById('dcIsp') || document.body).innerText.slice(0, 300)`));
+      t.ok(banks === 2, 'đặt hàng chọn trả góp → tự mở bảng chọn ngân hàng', await page.eval(`document.getElementById('dcIsp') ? document.getElementById('dcIsp').innerText.slice(0, 300) : 'lỗi trên form: ' + [...document.querySelectorAll('#checkoutForm .v3-err, #dcOrderErr')].map(e => e.textContent).join(' | ') + ' · city=' + document.querySelector('#checkoutForm [name=city]').value + ' · view=' + location.pathname`));
       await page.eval(`document.querySelector('#dcIsp [data-isp-bank="VIETCOMBANK"]').click(); 1`);
       await page.eval(`document.querySelector('#dcIsp [data-isp-scheme="VISA"]').click(); 1`);
       await page.eval(`document.querySelector('#dcIsp [data-isp-term="6"]').click(); 1`);

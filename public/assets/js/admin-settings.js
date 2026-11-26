@@ -19,6 +19,7 @@
   var OPTS = { found: [['A', 'Lớp A'], ['B', 'Lớp B']], gt: [['am', 'Sáng'], ['pm', 'Tối']], trial: [['am', 'Sáng'], ['pm', 'Tối']] };
   // bank / momo / zalopay: khách quét cùng mã VietQR (SePay tự xác nhận); vnpay / installment: chỉ hiện khi đã cài ở Thanh toán online
   var PAYS = [['bank', 'Chuyển khoản ngân hàng (quét mã VietQR)'], ['momo', 'Ví MoMo (quét mã VietQR bằng app MoMo)'], ['zalopay', 'ZaloPay (quét mã VietQR bằng app ZaloPay)'],
+    ['cod', 'Thanh toán khi nhận hàng (COD) — khách trả tiền cho người giao'],
     ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chỉ hiện khi đã bật VNPay ở Thanh toán online'],
     ['installment', 'Trả góp bằng thẻ tín dụng (VNPay) — chỉ hiện khi đã bật trả góp ở Thanh toán online']];
   var QR_PAYS = ['bank', 'momo', 'zalopay'];
@@ -159,7 +160,7 @@
   function dropClean() { Object.keys(ST.draft).forEach(function (g) { if (!dirtyCount(g)) delete ST.draft[g]; }); }
   function draft(g) { if (!ST.draft[g] && ST.data) initDraft(g); return ST.draft[g]; }
   var KEYS = {
-    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'eta', 'lowStock', 'promos', 'homeProducts', 'homeFashion', 'checkout', 'pdp'],
+    shop: ['shipFee', 'freeShip', 'expressFee', 'expressEnabled', 'expressHcmOnly', 'shipByRegion', 'regionFees', 'vat', 'eta', 'lowStock', 'promos', 'homeProducts', 'homeFashion', 'checkout', 'pdp'],
     course: ['foundPrice', 'foundDeposit', 'foundStart', 'gtPackages', 'hssvMonth', 'hssvMonths', 'memMonth', 'scheduleRows', 'careerPriceCoach', 'careerPriceFighter', 'careerStart', 'careerCohort', 'careerDeposit', 'careerSeats', 'careerAgeCoachMin', 'careerAgeCoachMax', 'careerAgeFighterMin', 'careerAgeFighterMax'],
     brand: ['private', 'logo', 'favicon', 'mapQuery', 'fbPixel', 'verifyGoogle', 'verifyBing', 'nav'],
     notify: ['siteUrl', 'telegramToken', 'telegramChat', 'smtpHost', 'smtpPort', 'smtpSecure', 'smtpUser', 'smtpPass', 'mailFrom', 'notifyEmail', 'templates', 'sign', 'customer'],
@@ -266,7 +267,20 @@
           moneyField('shop', 'expressFee', 'Phí giao hỏa tốc (cộng thêm)', 'Cộng vào phí tiêu chuẩn khi khách chọn hỏa tốc. ' + defHint('shop', 'expressFee', money)) +
         '</div>' + switchField('shop', 'expressEnabled', 'Cho chọn giao hỏa tốc TP.HCM') +
         switchField('shop', 'expressHcmOnly', 'Chỉ nhận giao hỏa tốc khi địa chỉ ở TP.HCM') +
-        '<p class="set-note">Tắt dòng trên nếu bạn giao hỏa tốc cả tỉnh khác — nhớ sửa chữ “Hỏa tốc TP.HCM” trên trang thanh toán ở mục Chữ trên trang.</p>') +
+        '<p class="set-note">Tắt dòng trên nếu bạn giao hỏa tốc cả tỉnh khác — nhớ sửa chữ “Hỏa tốc TP.HCM” trên trang thanh toán ở mục Chữ trên trang.</p>' +
+        switchField('shop', 'shipByRegion', 'Tính phí giao tiêu chuẩn theo khu vực (thay cho một mức cả nước)') +
+        '<div class="set-grid4 region-fees">' + ['TP.HCM', 'Miền Nam', 'Miền Trung', 'Miền Bắc'].map(function (n, i) {
+          var v = (d.regionFees || [])[i];
+          return '<label class="field set-money"><span class="field__label">' + esc(n) + '</span><span class="set-affix"><input type="text" inputmode="numeric" autocomplete="off" data-money data-g="shop" data-k="regionFees.' + i + '" value="' + esc(num(v)) + '"><em>₫</em></span></label>';
+        }).join('') + '</div>' +
+        '<p class="set-note">Khu vực theo tỉnh khách chọn ở trang thanh toán (34 tỉnh mới; khách chọn địa chỉ cũ thì tự đổi sang tỉnh mới). Miền Nam: Đồng Nai, Tây Ninh, Vĩnh Long, Đồng Tháp, An Giang, Cần Thơ, Cà Mau · Miền Trung: Lâm Đồng → Thanh Hóa · Miền Bắc: Ninh Bình trở ra. Ngưỡng “Miễn phí giao cho đơn từ” và mã FREESHIP vẫn áp dụng.</p>') +
+      panel('Thuế VAT',
+        '<p class="set-note">Giá trên web <b>đã gồm VAT</b>. Đơn hàng tự tách tiền VAT trong tổng (hiện “Đã gồm VAT” ở trang thanh toán, phiếu, trang quản trị và file Excel cho kế toán). Khách tick “Xuất hóa đơn VAT” thì đơn có thêm thông tin xuất hóa đơn.</p>' +
+        '<div class="set-grid3">' +
+          numberField('shop', 'vat.rate', 'Thuế suất hiện tại', 0, 20, '%') +
+          numberField('shop', 'vat.nextRate', 'Thuế suất từ ngày đổi', 0, 20, '%') +
+          '<label class="field"><span class="field__label">Ngày đổi thuế suất</span><input type="date" data-text data-g="shop" data-k="vat.nextFrom" value="' + esc(getPath(d, 'vat.nextFrom') || '') + '"><small class="field__hint">VD: 8% đến 31/12/2026, 10% từ 01/01/2027. Để trống = không đổi.</small></label>' +
+        '</div>') +
       panel('Thời gian giao hàng & tồn kho',
         '<p class="set-note">Dùng để tính ngày giao dự kiến ở trang sản phẩm / thanh toán và cho biến {ship.eta} trong chữ (vd “Giao {ship.eta} ngày làm việc”). Chủ nhật không tính.</p>' +
         '<div class="set-grid3">' +
@@ -317,12 +331,20 @@
       }).join('') + '</div>' +
       '<p class="set-note" id="ckPayNote">' + (onN === 1 ? '<strong>Chỉ còn một cách thanh toán nên không tắt được</strong> — bật cách khác trước. ' : 'Phải còn ít nhất một cách thanh toán. ') +
         'Số tài khoản nhận tiền (mã VietQR — app ngân hàng, MoMo, ZaloPay đều quét được) sửa ở <a href="#/cms-payment">Nội dung website → Thanh toán</a>; thẻ và trả góp cài ở <a href="#/set-payments">Thanh toán online</a>.</p>' +
+      '<div class="ck-qr"><div class="ck-qr__img">' + (ck.qrImage ? '<img src="' + esc(ck.qrImage) + '" alt="Mã QR công ty">' : '<span>Chưa có ảnh</span>') + '</div><div class="ck-qr__body">' +
+        '<p class="field__label">Ảnh mã QR của công ty</p>' +
+        '<p class="set-note">Lấy ở app ngân hàng (mục “Mã QR của tôi” / “Nhận tiền”). Ảnh hiện trong ô “Chuyển khoản ngân hàng” ở trang thanh toán, cạnh ngân hàng, số tài khoản, chủ tài khoản.</p>' +
+        '<div class="set-actions"><label class="btn btn--line file-btn">' + ICON.upload + '<span data-ck-qrlabel>' + (ck.qrImage ? 'Đổi ảnh' : 'Tải ảnh QR') + '</span><input class="sr" type="file" accept="image/png,image/webp,image/jpeg" data-ck-qrfile></label>' +
+        (ck.qrImage ? '<button class="btn btn--quiet" type="button" data-ck-qrdel>Xóa ảnh</button>' : '') + '</div>' +
+        sel('qrMode', 'Sau khi đặt hàng, khách quét', [['auto', 'Mã VietQR tự tạo — có sẵn số tiền và nội dung (khuyên dùng)'], ['image', 'Ảnh QR công ty tải lên — khách tự nhập số tiền, nội dung']], 'Ảnh QR tải lên không chứa số tiền, mã đơn: khách phải tự gõ, SePay khó tự khớp đơn.') +
+        '<div class="set-msg" data-ck-qrnote hidden></div></div></div>' +
       '<div class="set-grid3">' +
         sel('email', 'Ô Email', FIELD_MODES, 'Có email mới gửi được email xác nhận cho khách.') +
-        sel('ward', 'Ô Phường / xã', FIELD_MODES) +
         sel('note', 'Ô Ghi chú', FIELD_MODES.filter(function (m) { return m[0] !== 'required'; })) +
       '</div>' +
-      '<p class="set-note">Bắt buộc = khách phải điền mới đặt được hàng · Ẩn = không hiện ô đó.</p>';
+      '<p class="set-note">Bắt buộc = khách phải điền mới đặt được hàng · Ẩn = không hiện ô đó. Địa chỉ: khách chọn <b>Địa chỉ mới</b> (Tỉnh → Phường, xã) hoặc <b>Địa chỉ cũ</b> (Tỉnh → Quận, huyện → Phường, xã); địa chỉ cũ tự đổi sang địa chỉ mới, đơn ghi cả hai.</p>';
+    var del = $('[data-ck-qrdel]', box);
+    if (del) del.onclick = function () { draft('shop').checkout.qrImage = ''; renderCheckout(); refreshBar('shop'); };
     if (focusSel) { var f = $(focusSel, box); if (f && !f.disabled) f.focus(); }
   }
   function renderPromos() {
@@ -1153,6 +1175,17 @@
       pay[key] = t.checked;
       if (!pay.bank && !pay.momo && !pay.zalopay) pay[key] = true; // không cho tắt cách quét mã cuối cùng
       renderCheckout('[data-ck-pay="' + key + '"]'); refreshBar('shop');
+    } else if (g === 'shop' && t.matches('[data-ck-qrfile]')) {
+      var qf = t.files && t.files[0], ql = $('[data-ck-qrlabel]'), qn = $('[data-ck-qrnote]');
+      t.value = '';
+      if (qf) {
+        if (ql) ql.textContent = 'Đang tải…';
+        uploadRaw(qf).then(function (r) {
+          var u = A.safeImg(r.url); if (!u) throw { message: 'Máy chủ trả về đường dẫn không hợp lệ.' };
+          draft('shop').checkout.qrImage = u; renderCheckout(); refreshBar('shop');
+          var n2 = $('[data-ck-qrnote]'); if (n2) { n2.innerHTML = '<p>Đã tải lên — bấm “Lưu” để áp dụng lên website.</p>'; n2.hidden = false; }
+        }, function (er) { if (ql) ql.textContent = 'Tải ảnh QR'; if (qn) { qn.innerHTML = '<p>' + esc((er && er.message) || 'Tải lên thất bại.') + '</p>'; qn.hidden = false; qn.classList.add('is-err'); } });
+      }
     } else if (g === 'shop' && t.matches('[data-ck]')) {
       draft('shop').checkout[t.getAttribute('data-ck')] = t.value; refreshBar('shop');
     } else if (g === 'course' && (row = t.closest('[data-pk]')) && t.matches('[data-pkf]')) {

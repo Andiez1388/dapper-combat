@@ -205,6 +205,14 @@ Lưu ở `data/settings.json`.
   - **Mẫu tin** cho đơn hàng, đăng ký khóa học, yêu cầu tư vấn: tiêu đề và nội dung với biến `{code}`, `{name}`, `{total}`, `{items}`…; dòng có biến trống tự bỏ; xem trước và gửi thử.
   - **Email xác nhận cho khách** (đơn hàng, đăng ký khóa học): tắt sẵn; khi bật, gửi tới email khách nhập (cần cài SMTP). Biến `{slip}` = link phiếu xác nhận (cần điền địa chỉ website).
 
+## Trang thanh toán (giống ErgoChair)
+
+- **Địa chỉ 2 hệ**: khách chọn *Địa chỉ mới* (34 tỉnh → phường / xã, từ 1/7/2025) hoặc *Địa chỉ cũ* (63 tỉnh → quận / huyện → phường / xã). Địa chỉ cũ được máy chủ đổi sang phường + tỉnh mới (`lib/address.js`, `GET /api/address`); đơn ghi tỉnh / phường mới và giữ chữ khách chọn ở `customer.addrOld` (hiện trong đơn, phiếu, email, file Excel; tìm đơn theo cả hai). Dữ liệu: `lib/vn/` + `public/assets/vn/` — thư viện vietnamadminunits (MIT).
+- **Thanh toán khi nhận hàng (COD)**: bật / tắt ở Thiết lập → Bán hàng → Trang thanh toán. Đơn COD chuyển “Hoàn tất” → tự ghi đã nhận tiền.
+- **Ảnh mã QR công ty**: tải ở Thiết lập → Bán hàng → Trang thanh toán; hiện trong ô “Chuyển khoản” (kèm ngân hàng, số tài khoản, chủ tài khoản). Chọn sau khi đặt hàng khách quét *mã VietQR tự tạo* (có sẵn số tiền + nội dung, khuyên dùng) hay *ảnh QR tải lên*.
+- **Phí giao theo khu vực** (tùy chọn): TP.HCM / miền Nam / miền Trung / miền Bắc theo tỉnh nhận hàng; ngưỡng miễn phí và mã FREESHIP vẫn áp dụng.
+- **VAT**: giá niêm yết đã gồm VAT; đơn ghi thuế suất + tiền VAT tách ra (8% → 10% từ ngày đổi, sửa ở Thiết lập → Bán hàng → Thuế VAT). Khách tick “Xuất hóa đơn VAT” (cá nhân / công ty + MST) → đơn có mục hóa đơn; kế toán ghi “Đã xuất” + số hóa đơn trong đơn, file Excel có đủ cột (tiền chưa VAT, VAT, MST…). Danh sách đơn gắn nhãn **HĐ VAT** cho đơn chưa xuất.
+
 ## Xác nhận cho khách (phiếu + email)
 
 - Mỗi đơn hàng / đăng ký khóa học có **phiếu xác nhận** riêng: `/phieu/<mã>?k=<khóa>` (khóa ngẫu nhiên, không đoán được). Khách mở được trên web, in / lưu PDF, hoặc **tải ảnh PNG** (có mã VietQR nếu thanh toán chuyển khoản).

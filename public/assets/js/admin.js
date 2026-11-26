@@ -31,8 +31,12 @@
   };
   var TONE = { 'new': 'new', done: 'done', enrolled: 'done', won: 'done', cancelled: 'off', lost: 'off' };
   // bank / momo / zalopay: khách quét mã VietQR; vnpay: thẻ; installment: trả góp VNPay; cash: tiền mặt (chỉ đơn nhân viên tạo)
-  var PAY = { bank: 'Chuyển khoản', momo: 'MoMo (quét mã QR)', zalopay: 'ZaloPay (quét mã QR)', vnpay: 'Thẻ / ATM (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
-  var PAY_SHORT = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', vnpay: 'VNPay', installment: 'Trả góp', cash: 'Tiền mặt' };
+  var PAY = { bank: 'Chuyển khoản', momo: 'MoMo (quét mã QR)', zalopay: 'ZaloPay (quét mã QR)', cod: 'Thanh toán khi nhận hàng (COD)', vnpay: 'Thẻ / ATM (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
+  // VAT: giá đã gồm VAT → tiền VAT tách từ tổng đơn theo thuế suất lúc đặt (đơn cũ chưa ghi → 8%)
+  function vatPct(o) { return o.vatRate != null ? Number(o.vatRate) : 8; }
+  function vatOf(o) { var r = vatPct(o); return Math.round((Number(o.total) || 0) * r / (100 + r)); }
+  function vatLine(o) { return o.total ? '<p class="vat-note">Đã gồm VAT ' + String(vatPct(o)).replace('.', ',') + '%: <b>' + esc(money(vatOf(o))) + '</b> · tiền chưa VAT ' + esc(money(o.total - vatOf(o))) + '</p>' : ''; }
+  var PAY_SHORT = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', cod: 'COD', vnpay: 'VNPay', installment: 'Trả góp', cash: 'Tiền mặt' };
   var SHIP = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc TP.HCM', pickup: 'Nhận tại phòng tập' };
   // nguồn đơn tạo tay (bán qua điện thoại / mạng xã hội / tại chỗ)
   var SOURCE = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
@@ -757,7 +761,7 @@
       name: function (o) { return cust(o).name; },
       phone: function (o) { return cust(o).phone; },
       email: function (o) { return cust(o).email; },
-      search: function (o) { var c = cust(o); return [o.code, c.name, c.phone, c.email]; },
+      search: function (o) { var c = cust(o); return [o.code, c.name, c.phone, c.email, c.ward, c.city, c.addrOld, c.address, o.invoice ? o.invoice.tax : '', o.invoice ? o.invoice.name : '', o.invoice ? o.invoice.number : '']; },
       meta: function (o) { return money(o.total); },
       cols: [
         ['Mã', 'c-code', function (o) { return codeLink('orders', o) + (o.source ? ' <span class="src-tag" title="Đơn tạo tay · ' + esc(label(SOURCE, o.source)) + '">' + esc(label(SOURCE_TAG, o.source)) + '</span>' : ''); }],
@@ -765,7 +769,7 @@
         ['Khách', 'c-name', function (o) { return or(cust(o).name); }],
         ['SĐT', 'c-phone', function (o) { return or(cust(o).phone); }],
         ['Số món', 'c-num', function (o) { return esc(qtyOf(o)); }],
-        ['Tổng', 'c-money', function (o) { return '<strong>' + esc(money(o.total)) + '</strong>' + payTag('orders', o); }],
+        ['Tổng', 'c-money', function (o) { return '<strong>' + esc(money(o.total)) + '</strong>' + payTag('orders', o) + (o.invoice && (o.invoice.status || 'pending') === 'pending' && o.status !== 'cancelled' ? '<span class="tag tag--inv" title="Khách cần hóa đơn VAT — chưa xuất">HĐ VAT</span>' : ''); }],
         ['Thanh toán', 'c-pay', function (o) { return or(label(PAY_SHORT, o.pay)); }],
         ['Xác nhận', 'c-conf', confCell],
         ['Trạng thái', 'c-status', function (o) { return badge('orders', o.status); }],
@@ -774,9 +778,16 @@
         var c = cust(o);
         var addr = [c.address, c.ward, c.city].filter(Boolean).join(', ');
         return sec('Khách hàng', kv([
-          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Địa chỉ', addr], ['Đồng ý chính sách bảo mật', o.consentAt ? fmtDate(o.consentAt) : ''],
+          ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Địa chỉ', addr], ['Khách chọn theo địa chỉ cũ', c.addrOld || ''], ['Đồng ý chính sách bảo mật', o.consentAt ? fmtDate(o.consentAt) : ''],
         ]) + (c.note ? quote('Ghi chú của khách', c.note) : '')) +
-          sec('Sản phẩm · ' + qtyOf(o) + ' món', itemsHtml(o.items) + totalsHtml(o)) +
+          sec('Sản phẩm · ' + qtyOf(o) + ' món', itemsHtml(o.items) + totalsHtml(o) + vatLine(o)) +
+          (o.invoice ? sec('Yêu cầu xuất hóa đơn VAT', kv([
+            ['Loại', o.invoice.type === 'company' ? 'Công ty' : 'Cá nhân'], ['Tên trên hóa đơn', o.invoice.name], ['Mã số thuế', o.invoice.tax],
+            ['Địa chỉ', o.invoice.addr], ['Email nhận hóa đơn', o.invoice.email],
+            ['Tiền chưa VAT', money(o.total - vatOf(o))], ['Tiền VAT (' + vatPct(o) + '%)', money(vatOf(o))],
+            ['Trạng thái', ({ pending: 'Chưa xuất', issued: 'Đã xuất' + (o.invoice.issuedAt ? ' · ' + fmtDate(o.invoice.issuedAt) : ''), void: 'Không xuất / đã hủy' })[o.invoice.status || 'pending']],
+            ['Số hóa đơn', o.invoice.number],
+          ])) : '') +
           sec('Thanh toán & giao hàng', kv([
             ['Thanh toán', label(PAY, o.pay) || '—'], ['Đã nhận tiền', paidText('orders', o)], ['Giao hàng', label(SHIP, o.ship) || '—'],
             ['Đơn vị vận chuyển', o.carrier], ['Mã vận đơn', o.trackingCode],
@@ -1119,15 +1130,18 @@
   }
   var CSV = {
     orders: { file: 'don-hang',
-      head: ['Mã đơn', 'Ngày đặt', 'Trạng thái', 'Khách hàng', 'Số điện thoại', 'Email', 'Địa chỉ', 'Phường / xã', 'Tỉnh / thành', 'Sản phẩm', 'Số món',
-        'Tạm tính', 'Giảm giá', 'Mã giảm giá', 'Phí giao', 'Tổng cộng', 'Thanh toán', 'Giao hàng', 'Đã nhận tiền', 'Số tiền đã nhận', 'Ngày nhận tiền', 'Ghi chú nhận tiền',
-        'Đơn vị vận chuyển', 'Mã vận đơn', 'Nguồn đơn', 'Ghi chú của khách', 'Ghi chú nội bộ'],
+      head: ['Mã đơn', 'Ngày đặt', 'Trạng thái', 'Khách hàng', 'Số điện thoại', 'Email', 'Địa chỉ', 'Phường / xã', 'Tỉnh / thành', 'Địa chỉ cũ khách chọn', 'Sản phẩm', 'Số món',
+        'Tạm tính', 'Giảm giá', 'Mã giảm giá', 'Phí giao', 'Tổng cộng', 'Thuế suất VAT (%)', 'Tiền VAT', 'Tiền chưa VAT', 'Thanh toán', 'Giao hàng', 'Đã nhận tiền', 'Số tiền đã nhận', 'Ngày nhận tiền', 'Ghi chú nhận tiền',
+        'Đơn vị vận chuyển', 'Mã vận đơn', 'Nguồn đơn', 'Ghi chú của khách', 'Ghi chú nội bộ',
+        'Xuất hóa đơn', 'Loại hóa đơn', 'Tên trên hóa đơn', 'Mã số thuế', 'Địa chỉ hóa đơn', 'Email nhận hóa đơn', 'Trạng thái hóa đơn', 'Số hóa đơn'],
       row: function (o) {
         var c = cust(o);
-        return [o.code || o.id, fmtDate(o.createdAt), statusLabel('orders', o.status), c.name, csvPhone(c.phone), c.email, c.address, c.ward, c.city, itemsText(o.items), qtyOf(o),
-          Number(o.subtotal) || 0, Number(o.discount) || 0, o.promo || '', Number(o.shipping) || 0, Number(o.total) || 0, label(PAY_SHORT, o.pay), label(SHIP, o.ship),
+        return [o.code || o.id, fmtDate(o.createdAt), statusLabel('orders', o.status), c.name, csvPhone(c.phone), c.email, c.address, c.ward, c.city, c.addrOld || '', itemsText(o.items), qtyOf(o),
+          Number(o.subtotal) || 0, Number(o.discount) || 0, o.promo || '', Number(o.shipping) || 0, Number(o.total) || 0, vatPct(o), vatOf(o), (Number(o.total) || 0) - vatOf(o), label(PAY_SHORT, o.pay), label(SHIP, o.ship),
           o.paid ? 'Đã nhận' : 'Chưa', o.paid ? Number(o.paidAmount) || 0 : '', o.paid ? fmtDate(o.paidAt) : '', o.paidNote || '',
-          o.carrier || '', o.trackingCode || '', o.source ? label(SOURCE, o.source) : 'Website', c.note, o.adminNote];
+          o.carrier || '', o.trackingCode || '', o.source ? label(SOURCE, o.source) : 'Website', c.note, o.adminNote].concat(o.invoice
+          ? ['Có', o.invoice.type === 'company' ? 'Công ty' : 'Cá nhân', o.invoice.name, o.invoice.tax, o.invoice.addr, o.invoice.email, ({ pending: 'Chưa xuất', issued: 'Đã xuất', void: 'Không xuất' })[o.invoice.status || 'pending'], o.invoice.number || '']
+          : ['Không', '', '', '', '', '', '', '']);
       } },
     registrations: { file: 'dang-ky-khoa-hoc',
       head: ['Mã đăng ký', 'Ngày đăng ký', 'Trạng thái', 'Học viên', 'Số điện thoại', 'Email', 'Chương trình', 'Chi tiết', 'Gói', 'Lớp / ca', 'Ngày muốn bắt đầu',
@@ -1262,6 +1276,10 @@
         fld('Đơn vị vận chuyển', '<input type="text" name="carrier" list="carrierList" maxlength="60" value="' + esc(item.carrier || '') + '" placeholder="VD: GHN, GHTK…" autocomplete="off">') +
         fld('Mã vận đơn', '<input type="text" name="trackingCode" maxlength="60" value="' + esc(item.trackingCode || '') + '" placeholder="Mã để khách tra cứu" autocomplete="off" spellcheck="false">') +
         '</div><datalist id="carrierList">' + CARRIERS.map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>' : '') +
+      (kind === 'orders' && item.invoice ? '<div class="grid2">' +
+        fld('Hóa đơn VAT', '<select name="invStatus">' + [['pending', 'Chưa xuất'], ['issued', 'Đã xuất'], ['void', 'Không xuất / đã hủy']].map(function (s) {
+          return '<option value="' + s[0] + '"' + (s[0] === (item.invoice.status || 'pending') ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>') +
+        fld('Số hóa đơn', '<input type="text" name="invNumber" maxlength="40" value="' + esc(item.invoice.number || '') + '" placeholder="VD: 00001234" autocomplete="off" spellcheck="false">') + '</div>' : '') +
       '<label class="field"><span class="field__label">Ghi chú nội bộ</span><textarea name="adminNote" rows="4" maxlength="1000" placeholder="Chỉ nhân viên thấy — VD: đã gọi xác nhận, hẹn giao chiều thứ Sáu…">' +
       esc(item.adminNote || '') + '</textarea></label>' +
       (kind === 'orders' ? '<p class="field__hint">Chuyển sang “Đã hủy” sẽ hoàn số lượng trong đơn về tồn kho. Đơn vị vận chuyển và mã vận đơn hiện trên phiếu xác nhận của khách.</p>' : '') +
@@ -1378,6 +1396,10 @@
       var ca = F(form, 'carrier').value.trim(), tc = F(form, 'trackingCode').value.trim();
       if (ca !== (item.carrier || '')) body.carrier = ca;
       if (tc !== (item.trackingCode || '')) body.trackingCode = tc;
+      if (item.invoice && F(form, 'invStatus')) {
+        var ist = F(form, 'invStatus').value, inum = F(form, 'invNumber').value.trim();
+        if (ist !== (item.invoice.status || 'pending') || inum !== (item.invoice.number || '')) body.invoice = { status: ist, number: inum };
+      }
     }
     if (!Object.keys(body).length) { toast('Không có thay đổi nào để lưu'); return; }
     var pre = Promise.resolve(true);

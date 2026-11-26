@@ -19,6 +19,7 @@ const translate = require('../lib/translate');
 // thư mục dữ liệu / ảnh tải lên: đổi được bằng DC_DATA_DIR, DC_UPLOAD_DIR (lib/paths.js); dữ liệu gốc luôn ở data/seed của repo
 const { DATA_DIR, SEED_DIR, UPLOAD_DIR } = require('../lib/paths');
 const custom = require('../lib/custom');   // sản phẩm tự thiết kế (Boxing Equipment)
+const address = require('../lib/address'); // địa chỉ 2 hệ: mới (34 tỉnh) / cũ (63 tỉnh)
 const SEED_PRODUCTS = path.join(SEED_DIR, 'products.json');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -300,6 +301,12 @@ router.slugify = slugify;
 router.productSlug = productSlug;
 
 router.get('/products', (req, res) => { res.json(publicProducts()); });
+// đổi địa chỉ cũ → mới (bộ chọn địa chỉ ở trang thanh toán): GET /address?type=old&old=<mã phường cũ> | ?type=new&ward=<mã phường mới>
+router.get('/address', (req, res) => {
+  const r = address.resolve(req.query.type === 'old' ? 'old' : 'new', req.query.ward, req.query.old);
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.json(r ? { ok: true, ward: r.ward, province: r.province, wardCode: r.wardCode, oldText: r.oldText, newText: r.newText } : { ok: false });
+});
 router.get('/admin/products', staffOk, (req, res) => { res.json(products()); });
 
 const PRODUCT_FIELDS = ['name', 'nameEn', 'cat', 'price', 'old', 'img', 'images', 'video', 'howto', 'badge', 'rating', 'reviews', 'stock', 'sizes', 'colors', 'features', 'desc', 'full', 'seoTitle', 'seoDesc', 'slug', 'visible', 'custom', 'brand', 'contactCustom', 'contactNote', 'pos'];
@@ -570,11 +577,18 @@ router.post('/pages/preview', adminOnly, (req, res) => pageErr(res, () => {
 // Giá, phí giao và mã giảm giá tính lại ở server (trùng logic trang Shop) — không tin số tiền gửi từ trình duyệt.
 function shopRules() {
   const sh = settings.all().shop;
-  return { freeShip: sh.freeShip, fee: sh.shipFee, express: sh.expressFee, expressOn: sh.expressEnabled, expressHcmOnly: sh.expressHcmOnly !== false };
+  return { freeShip: sh.freeShip, fee: sh.shipFee, express: sh.expressFee, expressOn: sh.expressEnabled, expressHcmOnly: sh.expressHcmOnly !== false,
+    byRegion: !!sh.shipByRegion, regionFees: sh.regionFees || [] };
+}
+// phí giao tiêu chuẩn: theo khu vực của tỉnh nhận hàng (nếu bật), tỉnh lạ → mức cao nhất; tắt → một mức cho cả nước
+function stdFee(R, city) {
+  if (!R.byRegion) return R.fee;
+  const r = address.region(city), fees = R.regionFees.length === 4 ? R.regionFees : [R.fee, R.fee, R.fee, R.fee];
+  return r === null ? Math.max(...fees) : fees[r];
 }
 // cách thanh toán trên web: bank / momo / zalopay = quét cùng mã VietQR (SePay tự xác nhận); vnpay = thẻ; installment = trả góp (VNPay)
 // đơn nhân viên tạo thêm: cash = tiền mặt (mua tại phòng tập / nhận hàng trả tiền mặt)
-const PAY = ['bank', 'momo', 'zalopay', 'vnpay', 'installment'];
+const PAY = ['bank', 'momo', 'zalopay', 'cod', 'vnpay', 'installment'];
 const QR_PAY = ['bank', 'momo', 'zalopay'];
 const STAFF_PAY = PAY.concat('cash');
 const ORDER_STATUS = ['new', 'confirmed', 'shipping', 'done', 'cancelled'];
@@ -703,7 +717,7 @@ function priceOrder(body, req) {
   if (body.ship === 'exp' && R.expressOn && R.expressHcmOnly && !isHcm(body.customer && body.customer.city))
     return { error: L('Giao hỏa tốc chỉ áp dụng trong TP.HCM — vui lòng chọn giao tiêu chuẩn', 'Express delivery is only available in Ho Chi Minh City — please choose standard delivery') };
   const ship = body.ship === 'exp' && R.expressOn ? 'exp' : 'std';
-  const base = promo && promo.freeship ? 0 : (subtotal >= R.freeShip ? 0 : R.fee);
+  const base = promo && promo.freeship ? 0 : (subtotal >= R.freeShip ? 0 : stdFee(R, body.customer && body.customer.city));
   const shipping = base + (ship === 'exp' ? R.express : 0);
   return { items, subtotal, discount, shipping, ship, promo: promo ? promoCode : '', total: Math.max(0, subtotal - discount) + shipping };
 }
@@ -716,6 +730,10 @@ router.post('/orders', limit('order', 10), async (req, res) => {
     address: str(c.address, 200), ward: str(c.ward, 80), city: str(c.city, 80), note: str(c.note, 500),
   };
   const bad = (vi, en) => res.status(400).json({ error: msg(req, vi, en) });
+  // bộ chọn địa chỉ (mới / cũ) gửi mã phường → máy chủ tự điền phường + tỉnh mới, giữ chữ địa chỉ cũ khách chọn
+  const ad = address.applyToCustomer(customer, c);
+  if (!ad.ok) return bad('Địa chỉ chưa đúng, vui lòng chọn lại tỉnh / phường', 'Address not recognised, please pick your province / ward again');
+  if (ad.used && b.customer && typeof b.customer === 'object') b.customer.city = customer.city;   // hỏa tốc TP.HCM xét theo tỉnh mới
   if (customer.name.length < 2) return bad('Vui lòng nhập họ tên', 'Please enter your name');
   if (!phoneOk(customer.phone)) return bad('Số điện thoại chưa đúng', 'Please enter a valid phone number');
   if (customer.email && !EMAIL_RE.test(customer.email)) return bad('Email chưa đúng định dạng', 'Please enter a valid email');
@@ -737,9 +755,24 @@ router.post('/orders', limit('order', 10), async (req, res) => {
     return bad(`Trả góp áp dụng cho đơn từ ${moneyVi(online.installmentMin)}đ — vui lòng chọn cách khác`, `Installments are available for orders from ${moneyEn(online.installmentMin)}đ — please choose another method`);
 
   const orders = read('orders.json', []);
+  // yêu cầu xuất hóa đơn VAT (tùy chọn): cá nhân / công ty (công ty bắt buộc MST 10 hoặc 13 số)
+  let invoice = null;
+  if (b.invoice && typeof b.invoice === 'object' && b.invoice.want) {
+    const iv = b.invoice, type = iv.type === 'company' ? 'company' : 'personal';
+    invoice = { type, name: str(iv.name, 160) || customer.name, tax: str(iv.tax, 20).replace(/[^\d-]/g, ''), addr: str(iv.addr, 250), email: str(iv.email, 120) || customer.email, status: 'pending', number: '' };
+    if (type === 'company') {
+      if (invoice.name.length < 3) return bad('Nhập tên công ty để xuất hóa đơn', 'Please enter the company name for the invoice');
+      if (!/^\d{10}(-?\d{3})?$/.test(invoice.tax)) return bad('Mã số thuế gồm 10 hoặc 13 chữ số', 'Tax code must have 10 or 13 digits');
+      if (invoice.addr.length < 5) return bad('Nhập địa chỉ công ty (theo đăng ký thuế)', 'Please enter the company address');
+    }
+    if (invoice.email && !EMAIL_RE.test(invoice.email)) return bad('Email nhận hóa đơn chưa đúng', 'Invoice email is not valid');
+    if (!invoice.email) return bad('Nhập email để nhận hóa đơn điện tử', 'Please enter an email to receive the e-invoice');
+  }
+  // giá đã gồm VAT → tách tiền VAT trong tổng (tiền hàng sau giảm + phí giao)
+  const vatRate = settings.vatRate(), vat = Math.round(priced.total * vatRate / (100 + vatRate));
   const order = {
     id: genId('ord'), code: makeCode('#DC-', 6, orders), createdAt: Date.now(), status: 'new',
-    customer, pay: b.pay, lang: b.lang === 'en' ? 'en' : 'vi',
+    customer, pay: b.pay, lang: b.lang === 'en' ? 'en' : 'vi', vatRate, vat, ...(invoice ? { invoice } : {}),
     // khách tick ô đồng ý Chính sách bảo mật (Luật Bảo vệ dữ liệu cá nhân) → lưu thời điểm làm bằng chứng
     ...(b.consent === true ? { consentAt: Date.now() } : {}),
     ...priced, adminNote: '', history: [{ at: Date.now(), status: 'new' }], confirm: newConfirm(), stockReturned: false,
@@ -842,7 +875,8 @@ router.get('/slip/:code', limit('slip', 60), (req, res) => {
   const base = { type, code: x.code, createdAt: x.createdAt, lang: x.lang, status: x.status, pay: pay ? { ...pay, qr: true } : null, paid: !!x.paid,
     online: onlineFor(type, x), payments: (x.payments || []).map(p => ({ provider: p.provider, amount: p.amount, at: p.at })) };
   if (type === 'order') return res.json({ ...base, customer: x.customer, items: x.items, subtotal: x.subtotal, discount: x.discount, shipping: x.shipping, total: x.total, payMethod: x.pay, ship: x.ship, promo: x.promo || '',
-    carrier: x.carrier || '', trackingCode: x.trackingCode || '' });
+    carrier: x.carrier || '', trackingCode: x.trackingCode || '', vatRate: x.vatRate != null ? x.vatRate : 8,
+    invoice: x.invoice ? { type: x.invoice.type, name: x.invoice.name, tax: x.invoice.tax, email: x.invoice.email, status: x.invoice.status } : null });
   res.json({ ...base, customer: { name: x.name, phone: x.phone, email: x.email, note: x.note }, program: x.programName || x.program, detail: x.detail, total: x.total, due: x.due, payName: x.payName, date: x.date });
 });
 // ảnh VietQR qua server (img.vietqr.io không cho trình duyệt vẽ lại vào ảnh phiếu)
@@ -1211,12 +1245,18 @@ function adminCollection(name, file, statuses) {
     }
     // tự ghi đã nhận tiền: đơn tiền mặt chuyển sang Hoàn tất; đăng ký chuyển sang "Đã thanh toán"
     if (moved && b.paid === undefined && !o.paid) {
-      if (name === 'orders' && o.status === 'done' && o.pay === 'cash') markPaid('orders', o, by, null, 'Tự ghi: đơn tiền mặt hoàn tất');
+      if (name === 'orders' && o.status === 'done' && (o.pay === 'cash' || o.pay === 'cod')) markPaid('orders', o, by, null, o.pay === 'cod' ? 'Tự ghi: đơn COD hoàn tất (đã thu khi giao)' : 'Tự ghi: đơn tiền mặt hoàn tất');
       if (name === 'registrations' && o.status === 'paid' && dueOf('registrations', o) > 0) markPaid('registrations', o, by, null, 'Tự ghi: chuyển sang “Đã thanh toán”');
     }
     if (name === 'orders') {
       if (b.carrier !== undefined) o.carrier = str(b.carrier, 60);
       if (b.trackingCode !== undefined) o.trackingCode = str(b.trackingCode, 60);
+      // hóa đơn VAT: kế toán ghi đã xuất + số hóa đơn
+      if (b.invoice && typeof b.invoice === 'object' && o.invoice) {
+        if (['pending', 'issued', 'void'].includes(b.invoice.status)) o.invoice.status = b.invoice.status;
+        if (b.invoice.number !== undefined) o.invoice.number = str(b.invoice.number, 40);
+        if (o.invoice.status === 'issued' && !o.invoice.issuedAt) { o.invoice.issuedAt = Date.now(); o.invoice.issuedBy = by; }
+      }
     }
     if (b.adminNote !== undefined) o.adminNote = str(b.adminNote, 1000);
     if (name !== 'subscribers') { o.updatedAt = Date.now(); o.updatedBy = by; }
@@ -1245,13 +1285,15 @@ adminCollection('subscribers', 'subscribers.json', null);
 const SOURCES = { phone: 'Điện thoại', facebook: 'Facebook', zalo: 'Zalo', walkin: 'Tại phòng tập', other: 'Khác' };
 const SHIPS = ['std', 'exp', 'pickup'];
 const SHIP_VI = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc', pickup: 'Nhận tại phòng tập' };
-const PAY_VI = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', vnpay: 'Thẻ (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
+const PAY_VI = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', cod: 'Thanh toán khi nhận hàng (COD)', vnpay: 'Thẻ (VNPay)', installment: 'Trả góp (VNPay)', cash: 'Tiền mặt' };
 const vnd = n => moneyVi(n) + '₫';
 // khách do nhân viên nhập: bắt buộc tên + SĐT (khách mua tại phòng tập không cần địa chỉ)
 function staffCustomer(c, base = {}) {
   c = c && typeof c === 'object' ? c : {};
   const pick = (k, max) => (c[k] !== undefined ? str(c[k], max) : str(base[k], max));
   const out = { name: pick('name', 80), phone: pick('phone', 20), email: pick('email', 120), address: pick('address', 200), ward: pick('ward', 80), city: pick('city', 80), note: pick('note', 500) };
+  // địa chỉ cũ khách chọn: giữ nếu nhân viên không đổi phường / tỉnh
+  for (const k of ['addrOld', 'wardCode', 'addrType']) if (base[k] && out.ward === base.ward && out.city === base.city) out[k] = base[k];
   if (out.name.length < 2) return { error: 'Nhập họ tên khách (ít nhất 2 ký tự).' };
   if (!phoneOk(out.phone)) return { error: 'Số điện thoại chưa đúng (10 số, bắt đầu bằng 0 hoặc +84).' };
   if (out.email && !EMAIL_RE.test(out.email)) return { error: 'Email chưa đúng định dạng.' };
@@ -1360,7 +1402,7 @@ router.post('/admin/orders', staffOk, async (req, res) => {
   const order = {
     id: genId('ord'), code: makeCode('#DC-', 6, orders), createdAt: now, status, customer: cu.customer,
     pay: STAFF_PAY.includes(b.pay) ? b.pay : 'cash', ship: SHIPS.includes(b.ship) ? b.ship : 'std', lang: 'vi',
-    items: it.items, ...staffTotals(it.items, b), promo: '', source, createdBy: by,
+    items: it.items, ...staffTotals(it.items, b), promo: '', source, createdBy: by, vatRate: settings.vatRate(now),
     carrier: str(b.carrier, 60), trackingCode: str(b.trackingCode, 60), adminNote: str(b.adminNote, 1000),
     history: [{ at: now, status, by, note: 'Tạo đơn thủ công · ' + SOURCES[source] }], confirm: newConfirm(), stockReturned: false,
   };

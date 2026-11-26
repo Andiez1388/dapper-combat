@@ -53,9 +53,9 @@
     if (d.customer.email) m.info.push([L('email', 'Email', 'Email', lang), d.customer.email]);
     if (o) {
       var addr = [d.customer.address, d.customer.ward, d.customer.city].filter(Boolean).join(', ');
-      if (addr && d.ship !== 'pickup') m.info.push([L('address', 'Giao đến', 'Deliver to', lang), addr]);
+      if (addr && d.ship !== 'pickup') m.info.push([L('address', 'Giao đến', 'Deliver to', lang), addr + (d.customer.addrOld ? ' (' + L('addrOld', 'địa chỉ cũ', 'old address', lang) + ': ' + d.customer.addrOld + ')' : '')]);
       m.info.push([L('delivery', 'Giao hàng', 'Delivery', lang), d.ship === 'pickup' ? L('ship.pickup', 'Nhận tại phòng tập', 'Pick up at the gym', lang) : d.ship === 'exp' ? L('ship.exp', 'Hỏa tốc nội thành TP.HCM', 'Same-day in HCMC', lang) : L('ship.std', 'Giao tiêu chuẩn ({ship.eta} ngày)', 'Standard delivery ({ship.eta} days)', lang)]);
-      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang), zalopay: L('pay.zalopay', 'ZaloPay', 'ZaloPay', lang),
+      m.info.push([L('payment', 'Thanh toán', 'Payment', lang), { bank: L('pay.bank', 'Chuyển khoản ngân hàng', 'Bank transfer', lang), momo: L('pay.momo', 'Ví MoMo', 'MoMo e-wallet', lang), zalopay: L('pay.zalopay', 'ZaloPay', 'ZaloPay', lang), cod: L('pay.cod', 'Thanh toán khi nhận hàng (COD)', 'Cash on delivery (COD)', lang),
         vnpay: L('pay.vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay)', 'ATM / Visa / Mastercard card (VNPay)', lang), installment: L('pay.installment', 'Trả góp thẻ tín dụng (VNPay)', 'Credit card installments (VNPay)', lang),
         cash: L('pay.cash', 'Tiền mặt', 'Cash', lang) }[d.payMethod] || d.payMethod]);
       if (d.carrier) m.info.push([L('carrier', 'Đơn vị vận chuyển', 'Carrier', lang), d.carrier]);
@@ -66,6 +66,8 @@
       if (d.discount) m.totals.push([L('discount', 'Giảm giá', 'Discount', lang) + (d.promo ? ' (' + d.promo + ')' : ''), '−' + money(d.discount, lang)]);
       m.totals.push([L('shipping', 'Phí giao hàng', 'Shipping', lang), d.shipping ? money(d.shipping, lang) : L('free', 'Miễn phí', 'Free', lang)]);
       m.totals.push([L('total', 'Tổng cộng', 'Total', lang), money(d.total, lang), true]);
+      if (d.total && d.vatRate) m.totals.push([L('vat', 'Đã gồm VAT', 'Incl. VAT', lang) + ' ' + String(d.vatRate).replace('.', lang === 'en' ? '.' : ',') + '%', money(Math.round(d.total * d.vatRate / (100 + d.vatRate)), lang)]);
+      if (d.invoice) m.info.push([L('invoice', 'Hóa đơn VAT', 'VAT invoice', lang), (d.invoice.type === 'company' ? d.invoice.name + (d.invoice.tax ? ' · MST ' + d.invoice.tax : '') : d.invoice.name) + (d.invoice.email ? ' · ' + d.invoice.email : '')]);
     } else {
       m.info.push([L('program', 'Chương trình', 'Program', lang), d.program + (d.detail ? ' — ' + d.detail : '')]);
       if (d.date) m.info.push([L('start', 'Ngày muốn bắt đầu', 'Preferred start date', lang), d.date.split('-').reverse().join('/')]);

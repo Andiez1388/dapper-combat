@@ -265,8 +265,14 @@
       DC.tx('global.qr.wait.d', 'Dapper Combat sẽ gửi số tài khoản và mã QR khi gọi xác nhận. Vui lòng chưa chuyển khoản trước khi được xác nhận.',
         'Dapper Combat will send the account number and QR code when we call to confirm. Please do not transfer before confirmation.') + '</span></div>';
   };
+  // ảnh mã QR công ty (/admin → Thiết lập → Bán hàng → Trang thanh toán): dùng khi chọn "khách quét ảnh QR", hoặc khi chưa nhập số tài khoản
+  DC.payQrImage = function () { var ck = DC.setting('shop.checkout', null) || {}; return ck.qrImage || ''; };
   DC.payQr = function (ref, amount) {
-    var p = DC.pay();
+    var p = DC.pay(), ck = DC.setting('shop.checkout', null) || {}, img = ck.qrImage || '';
+    if (img && (ck.qrMode === 'image' || !p)) {
+      return '<img class="dc-vietqr dc-qr-static" src="' + DC.esc(img) + '" alt="' + DC.esc(DC.tx('global.qr.company', 'Mã QR công ty', 'Company QR code')) + '" width="200" height="200">' +
+        '<p class="dc-qr-static-note">' + DC.tx('global.qr.static', 'Sau khi quét, nhập đúng số tiền và nội dung chuyển khoản bên cạnh.', 'After scanning, enter the exact amount and transfer note shown here.') + '</p>';
+    }
     if (!p) return null;
     var note = String(ref || '').replace(/[^A-Za-z0-9]/g, '');
     var url = 'https://img.vietqr.io/image/' + encodeURIComponent(p.bin) + '-' + encodeURIComponent(p.acc) + '-compact2.png?amount=' + (Math.round(amount) || 0) +

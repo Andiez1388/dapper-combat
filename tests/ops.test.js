@@ -34,7 +34,27 @@ module.exports = async function opsTests(env, t) {
     const st = (await req('/api/stats')).j;
     t.ok(st.money && st.money.collected >= r.j.total, 'Tổng quan: "Đã thu" có tiền của đơn vừa nhận', st.money);
     r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'cod', ship: 'std' });
-    t.ok(r.s === 400, 'đã bỏ COD: đặt hàng trên web chọn COD → báo chọn cách thanh toán khác', r.j);
+    t.ok(r.s === 201, 'đặt hàng trên web chọn COD (thanh toán khi nhận hàng) → nhận đơn', r.j);
+    const codId = r.j.id;
+    r = await req('/api/orders/' + codId, { method: 'PUT', body: { status: 'done' } });
+    t.ok(r.s === 200 && r.j.paid === true && r.j.paidAmount === r.j.total, 'đơn COD chuyển Hoàn tất → tự ghi đã nhận tiền', r.j);
+    // địa chỉ 2 hệ: chọn địa chỉ cũ → máy chủ đổi sang phường / tỉnh mới, giữ chữ cũ
+    r = await pub('/api/orders', { customer: { ...cust, city: 'gõ bậy', ward: 'gõ bậy', addrType: 'old', oldWard: '26740' }, items: [line(1)], pay: 'bank', ship: 'std' });
+    const ao = r.j.id && (await req('/api/orders')).j.find(o => o.id === r.j.id);
+    t.ok(r.s === 201 && ao && ao.customer.city === 'TP. Hồ Chí Minh' && ao.customer.ward === 'Phường Sài Gòn' && /Bến Nghé, Quận 1/.test(ao.customer.addrOld), 'địa chỉ cũ (Bến Nghé, Q.1) → đơn ghi Phường Sài Gòn, TP. Hồ Chí Minh + địa chỉ cũ', ao && ao.customer);
+    t.ok(ao && ao.vatRate > 0 && ao.vat === Math.round(ao.total * ao.vatRate / (100 + ao.vatRate)), 'đơn ghi thuế suất + tiền VAT tách từ tổng (giá đã gồm VAT)', ao && [ao.total, ao.vatRate, ao.vat]);
+    r = await pub('/api/orders', { customer: { ...cust, addrType: 'old', oldWard: '99999999' }, items: [line(1)], pay: 'bank', ship: 'std' });
+    t.ok(r.s === 400, 'mã phường lạ → báo chọn lại địa chỉ', r.j);
+    r = await fetch(B + '/api/address?type=old&old=26740').then(x => x.json());
+    t.ok(r.ok && r.newText === 'Phường Sài Gòn, TP. Hồ Chí Minh', '/api/address đổi địa chỉ cũ → mới', r);
+    // xuất hóa đơn VAT: công ty bắt buộc MST 10 / 13 số
+    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'bank', ship: 'std', invoice: { want: true, type: 'company', name: 'Công ty ABC', tax: '123', addr: '1 Lê Lợi, TP.HCM', email: 'kt@abc.vn' } });
+    t.ok(r.s === 400 && /mã số thuế/i.test(r.j.error), 'hóa đơn công ty: MST sai → báo lỗi', r.j);
+    r = await pub('/api/orders', { customer: cust, items: [line(1)], pay: 'bank', ship: 'std', invoice: { want: true, type: 'company', name: 'Công ty ABC', tax: '0312345678', addr: '1 Lê Lợi, TP.HCM', email: 'kt@abc.vn' } });
+    const inv = r.j.id;
+    t.ok(r.s === 201, 'hóa đơn công ty đủ thông tin → nhận đơn', r.j);
+    r = await req('/api/orders/' + inv, { method: 'PUT', body: { invoice: { status: 'issued', number: '00001234' } } });
+    t.ok(r.s === 200 && r.j.invoice.status === 'issued' && r.j.invoice.number === '00001234' && r.j.invoice.issuedAt, 'kế toán ghi đã xuất hóa đơn + số hóa đơn', r.j.invoice);
     r = await req('/api/admin/orders', { method: 'POST', body: { customer: cust, items: [line(1)], pay: 'cash', ship: 'pickup', source: 'walkin', status: 'confirmed' } });
     const cash = r.j.id;
     t.ok(r.s === 201 && r.j.pay === 'cash' && !r.j.paid, 'đơn tay trả tiền mặt: chưa ghi đã nhận tiền khi mới xác nhận', r.j);

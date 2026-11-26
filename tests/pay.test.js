@@ -42,7 +42,7 @@ module.exports = async function payTests(env, t) {
     t.ok(/"payOnline":\{"vnpay":true,"installment":true,"installmentMin":1000000,"auto":true\}/.test(pub) && ![VNP_SECRET, SEPAY, ISP.secretKey, ISP.password, ISP.clientSecret].some(s => pub.includes(s)),
       'trang web biết cổng nào đang bật (thẻ, trả góp + mức tối thiểu), không lộ khóa');
     r = await req('/api/settings', { method: 'PUT', admin: true, body: { shop: { checkout: { pay: { bank: false, momo: false, zalopay: false, cod: true } } } } });
-    t.ok(r.j.shop.checkout.pay.bank === true && r.j.shop.checkout.pay.cod === undefined, 'tắt hết cách quét mã → tự giữ chuyển khoản; không còn COD', r.j.shop.checkout.pay);
+    t.ok(r.j.shop.checkout.pay.bank === true && r.j.shop.checkout.pay.cod === true, 'tắt hết cách quét mã → tự giữ chuyển khoản; COD vẫn bật', r.j.shop.checkout.pay);
     await req('/api/settings', { method: 'PUT', admin: true, body: { shop: { checkout: { pay: { bank: true, momo: true, zalopay: true } } } } });
     // tài khoản nhận tiền (mã VietQR)
     await req('/api/cms', { method: 'PUT', admin: true, body: { payment: { bankBin: '970436', bankAccount: '0123456789', bankHolder: 'DAPPER COMBAT' } } });

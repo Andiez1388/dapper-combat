@@ -1819,3 +1819,4 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
   .v3-collnav .v3-coll-bar{justify-content:space-between;border-top:1px solid #e9e6e2;min-height:46px;}
   .v3-collnav .v3-coll-cats a{padding:.95rem .9rem!important;}
 }
+.pl-cod{color:#17603d;font-size:0.84rem;font-weight:800;letter-spacing:.04em}
