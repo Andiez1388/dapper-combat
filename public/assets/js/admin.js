@@ -35,6 +35,13 @@
   // VAT: giá đã gồm VAT → tiền VAT tách từ tổng đơn theo thuế suất lúc đặt (đơn cũ chưa ghi → 8%)
   function vatPct(o) { return o.vatRate != null ? Number(o.vatRate) : 8; }
   function vatOf(o) { var r = vatPct(o); return Math.round((Number(o.total) || 0) * r / (100 + r)); }
+  // COD có đặt cọc: số tiền cọc + đã nhận chưa + còn thu khi giao
+  function depositLine(o) {
+    if (!o.deposit) return '';
+    var rest = Math.max(0, (o.total || 0) - (o.payments || []).reduce(function (s, p) { return s + (Number(p.amount) || 0); }, 0));
+    return '<p class="vat-note dep-note">' + (o.depositPaid ? '✓ <b>Đã nhận cọc</b> ' : '⏳ <b>Chờ cọc</b> ') + esc(money(o.deposit)) + (o.depositPct ? ' (' + esc(o.depositPct) + '%)' : '') +
+      (o.depositPaid && !o.paid ? ' · còn thu khi giao: <b>' + esc(money(rest)) + '</b>' : '') + '</p>';
+  }
   function vatLine(o) { return o.total ? '<p class="vat-note">Đã gồm VAT ' + String(vatPct(o)).replace('.', ',') + '%: <b>' + esc(money(vatOf(o))) + '</b> · tiền chưa VAT ' + esc(money(o.total - vatOf(o))) + '</p>' : ''; }
   var PAY_SHORT = { bank: 'Chuyển khoản', momo: 'MoMo', zalopay: 'ZaloPay', cod: 'COD', vnpay: 'VNPay', installment: 'Trả góp', cash: 'Tiền mặt' };
   var SHIP = { std: 'Tiêu chuẩn', exp: 'Hỏa tốc TP.HCM', pickup: 'Nhận tại phòng tập' };
@@ -780,7 +787,7 @@
         return sec('Khách hàng', kv([
           ['Họ tên', c.name], ['Điện thoại', c.phone], ['Email', c.email], ['Địa chỉ', addr], ['Khách chọn theo địa chỉ cũ', c.addrOld || ''], ['Đồng ý chính sách bảo mật', o.consentAt ? fmtDate(o.consentAt) : ''],
         ]) + (c.note ? quote('Ghi chú của khách', c.note) : '')) +
-          sec('Sản phẩm · ' + qtyOf(o) + ' món', itemsHtml(o.items) + totalsHtml(o) + vatLine(o)) +
+          sec('Sản phẩm · ' + qtyOf(o) + ' món', itemsHtml(o.items) + totalsHtml(o) + vatLine(o) + depositLine(o)) +
           (o.invoice ? sec('Yêu cầu xuất hóa đơn VAT', kv([
             ['Loại', o.invoice.type === 'company' ? 'Công ty' : 'Cá nhân'], ['Tên trên hóa đơn', o.invoice.name], ['Mã số thuế', o.invoice.tax],
             ['Địa chỉ', o.invoice.addr], ['Email nhận hóa đơn', o.invoice.email],

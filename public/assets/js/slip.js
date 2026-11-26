@@ -385,7 +385,7 @@
       if (document.hidden) return;                       // tạm dừng khi ẩn trang — hiện lại thì chạy tiếp
       S.load(ref, false).then(function (d) {
         if (w.done) return;
-        if (d.paid) { w.done = true; w.data = d; if (w.onPaid) w.onPaid(d); return; }
+        if (d.paid || (d.deposit && d.depositPaid)) { w.done = true; w.data = d; if (w.onPaid) w.onPaid(d); return; }   // COD: nhận đủ cọc cũng là xong
         w.t = setTimeout(tick, every);
       }, function () { if (!w.done) w.t = setTimeout(tick, every); });
     };
@@ -401,7 +401,7 @@
     opt = opt || {};
     if (!ref || !ref.k) return;
     S.load(ref, false).then(function (d) {
-      if (d.paid) { if (opt.onPaid) opt.onPaid(d); return; }
+      if (d.paid || (d.deposit && d.depositPaid)) { if (opt.onPaid) opt.onPaid(d); return; }
       if (box && opt.buttons !== false) box.innerHTML = S.payBtns(ref, d.online, lang);
       if (opt.poll) S.watch(ref, 5000, 15 * 60 * 1000, function (x) { if (opt.onPaid) opt.onPaid(x); }, opt.alive);
     }, function () {});

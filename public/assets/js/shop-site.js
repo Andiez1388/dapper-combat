@@ -182,7 +182,11 @@ var _dcQr = dcQr;
 dcQr = function (ref, amount) { return DC.payQr(ref, amount) || DC.payPending(); };  // _dcQr (mã QR vẽ mẫu) không dùng nữa
 var _dcOkRender = v3okRender;
 v3okRender = function () {
+  // nội dung chuyển khoản theo mẫu ở /admin (server trả về khi đặt hàng) + tiền cọc COD + giờ đặt
+  var L0 = window.DC_LAST_ORDER, d0 = window.V3OK && V3OK.d;
+  if (d0 && L0 && !d0.syncd) { d0.syncd = true; if (L0.payNote) d0.ref = L0.payNote; if (L0.deposit) { d0.deposit = L0.deposit; d0.depositPct = L0.depositPct; } d0.at = L0.createdAt || Date.now(); }
   _dcOkRender.apply(this, arguments);
+  dcOkExtras();
   var info = document.querySelector('#v3Ok .v3ok-qr-info');
   if (info && DC.pay() && window.V3OK && V3OK.d) info.insertAdjacentHTML('beforeend', DC.payLines(V3OK.d.ref, true));
   // phiếu xác nhận cho khách: tải ảnh / xem & in (lượt tải hiện ở /admin)
@@ -191,14 +195,98 @@ v3okRender = function () {
   // thanh toán online (thẻ / trả góp) / chuyển khoản tự xác nhận (cả khi quét mã bằng MoMo / ZaloPay)
   var d = window.V3OK && V3OK.d, po = DC.payOnline();
   if (!d || !last || !last.slip || !DC.slip) return;
-  if (d.paid) { var q = document.querySelector('#v3Ok .v3ok-qr'); if (q) q.outerHTML = '<p class="dc-paid-ok">' + DC.esc(DC.tx('global.slip.received', '✓ Đã nhận tiền — cảm ơn bạn!', '✓ Payment received — thank you!')) + '</p>'; return; }
-  var onPaid = function () { if (window.V3OK && V3OK.d === d) { d.paid = true; v3okRender(); } };
+  if (d.paid || d.depositPaid) return;   // đã nhận tiền / nhận cọc → khung "Thanh toán thành công" (dcOkExtras)
+  var onPaid = function (x) {
+    if (!(window.V3OK && V3OK.d === d)) return;
+    x = x || {};
+    d.paid = !!x.paid; d.depositPaid = !!x.depositPaid;
+    d.paidAt = x.paidAt || x.depositPaidAt || Date.now();
+    d.got = (x.payments || []).reduce(function (s, p) { return s + (Number(p.amount) || 0); }, 0) || x.paidAmount || (d.depositPaid && !d.paid ? d.deposit : d.total);
+    v3okRender();
+  };
   var alive = function () { var sc = document.getElementById('success'); return !!(sc && sc.classList.contains('active') && window.V3OK && V3OK.d === d); };
   if (d.pay === 'vnpay' || d.pay === 'installment') DC.slip.live(document.getElementById('dcOkPay'), last.slip, DC.lang(), { onPaid: onPaid, poll: po.auto, alive: alive });
-  else if (po.auto) DC.slip.live(null, last.slip, DC.lang(), { buttons: false, poll: true, onPaid: onPaid, alive: alive });
+  else if (po.auto && (d.pay !== 'cod' || d.deposit)) DC.slip.live(null, last.slip, DC.lang(), { buttons: false, poll: true, onPaid: onPaid, alive: alive });
   // trả góp: mở luôn bảng chọn ngân hàng / kỳ hạn (1 lần — đóng rồi thì bấm nút trong khung để mở lại)
   if (d.pay === 'installment' && last.installment && !d.ispShown) { d.ispShown = true; DC.slip.isp(last.slip, DC.lang()); }
 };
+
+/* ── màn đặt hàng thành công: giờ đặt, khung cọc COD (mã QR đúng số tiền cọc), khung "Thanh toán thành công" khi tiền về ── */
+function dcTime(ts) { var d = new Date(ts || Date.now()), p = function (n) { return (n < 10 ? '0' : '') + n; }; return p(d.getHours()) + ':' + p(d.getMinutes()) + ' · ' + p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+function dcOkExtras() {
+  var d = window.V3OK && V3OK.d, box = document.getElementById('v3Ok');
+  if (!d || !box) return;
+  var T = function (k, vi, en) { return DC.tx(k, vi, en); }, esc = DC.esc;
+  var head = box.querySelector('.v3ok-head');
+  if (head && !head.querySelector('.v3ok-time')) head.insertAdjacentHTML('beforeend', '<div class="v3ok-time">' + esc(T('shop.success.at', 'Đặt lúc', 'Ordered at')) + ' ' + esc(dcTime(d.at)) + '</div>');
+  var pay = box.querySelector('.v3ok-pay');
+  var done = d.paid || d.depositPaid;
+  if (done) {
+    if (head) {
+      head.classList.add('is-paid');
+      var hp = head.querySelector('p'); if (hp) hp.textContent = d.depositPaid && !d.paid ? T('shop.success.depHead', 'Đã nhận tiền cọc, đơn hàng được xác nhận. Dapper Combat chuẩn bị hàng và báo khi gửi đi.', 'Deposit received, your order is confirmed. We will let you know when it ships.') : T('shop.success.paidHead', 'Đã nhận đủ tiền, đơn hàng được xác nhận. Dapper Combat chuẩn bị hàng và báo khi gửi đi.', 'Payment received, your order is confirmed. We will let you know when it ships.');
+    }
+    var st = box.querySelectorAll('.v3ok-track li'); if (st[1]) { st[1].classList.add('done'); var i = st[1].querySelector('i'); if (i) i.textContent = '✓'; var sm = st[1].querySelector('small'); if (sm) sm.textContent = T('shop.success.autoStep', 'Đã xác nhận tự động', 'Confirmed automatically'); }
+    var rest = d.depositPaid && !d.paid ? Math.max(0, d.total - (d.got || d.deposit)) : 0;
+    var row = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
+    var html = '<section class="v3ok-card v3ok-paid"><div class="v3ok-card-h"><span>✓ ' + esc(d.depositPaid && !d.paid ? T('shop.success.depOk', 'Đã nhận tiền cọc — đơn đã xác nhận', 'Deposit received — order confirmed') : T('shop.success.payOk', 'Thanh toán thành công', 'Payment successful')) + '</span><em>' + esc(T('shop.success.auto', 'Tự xác nhận', 'Auto-confirmed')) + '</em></div>' +
+      '<dl class="v3ok-dl">' +
+      row(esc(T('shop.success.code', 'Mã đơn', 'Order no.')), '<b>' + esc(d.id) + '</b>') +
+      row(esc(T('shop.success.at', 'Đặt lúc', 'Ordered at')), esc(dcTime(d.at))) +
+      row(esc(T('shop.success.paidAt', 'Thanh toán lúc', 'Paid at')), esc(dcTime(d.paidAt))) +
+      row(esc(d.depositPaid && !d.paid ? T('shop.success.depGot', 'Đã cọc', 'Deposit paid') : T('shop.success.got', 'Đã thanh toán', 'Amount paid')), '<b>' + fmt(d.got || (d.depositPaid && !d.paid ? d.deposit : d.total)) + '</b>') +
+      (rest ? row(esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')), '<b>' + fmt(rest) + '</b>') : '') +
+      row(esc(T('shop.success.total', 'Tổng đơn', 'Order total')), fmt(d.total)) +
+      (d.ref ? row(esc(T('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note')), '<code>' + esc(DC.payNoteClean(d.ref)) + '</code>') : '') +
+      '</dl><p class="dc-pay-note">' + esc(d.depositPaid && !d.paid ? T('shop.success.depOkP', 'Dapper Combat đã nhận cọc và xác nhận đơn tự động. Hàng sẽ được chuẩn bị và gửi theo lịch giao; phần còn lại bạn trả cho người giao khi nhận hàng.', 'We received your deposit and confirmed your order automatically. The rest is paid to the courier on delivery.') : T('shop.success.payOkP', 'Dapper Combat đã nhận đủ tiền và xác nhận đơn tự động. Hàng sẽ được chuẩn bị và gửi theo lịch giao.', 'We received your payment and confirmed your order automatically. Your items will be packed and shipped on schedule.')) + '</p></section>';
+    if (pay) pay.outerHTML = html; else { var m = box.querySelector('.v3ok-main'); if (m) m.insertAdjacentHTML('afterbegin', html); }
+    return;
+  }
+  // COD có cọc: thay khung COD bằng mã QR đúng số tiền cọc + nội dung chuyển khoản
+  if (d.pay === 'cod' && d.deposit && pay) {
+    var qr = dcQr(d.ref, d.deposit), rest2 = Math.max(0, d.total - d.deposit);
+    pay.outerHTML = '<section class="v3ok-card v3ok-pay v3ok-dep"><div class="v3ok-card-h"><span>' + esc(T('shop.success.depH', 'Bước tiếp theo · đặt cọc {pct}%', 'Next step · {pct}% deposit').replace('{pct}', d.depositPct || '')) + '</span><em>COD</em></div>' +
+      '<div class="v3ok-qr"><div class="v3ok-qr-box">' + qr + '</div><div class="v3ok-qr-info"><small>' + esc(T('shop.success.depAmt', 'Số tiền cọc', 'Deposit amount')) + '</small><strong>' + fmt(d.deposit) + '</strong>' +
+      '<small>' + esc(T('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note')) + '</small><div class="v3ok-copy"><code>' + esc(DC.payNoteClean(d.ref)) + '</code><button type="button" data-v3copy="' + esc(DC.payNoteClean(d.ref)) + '">' + esc(T('shop.other.j6', 'Sao chép', 'Copy')) + '</button></div>' +
+      (DC.pay() ? DC.payLines(d.ref, true) : '') +
+      '<div class="v3ok-deprows"><div><span>' + esc(T('shop.success.total', 'Tổng đơn', 'Order total')) + '</span><b>' + fmt(d.total) + '</b></div><div><span>' + esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')) + '</span><b>' + fmt(rest2) + '</b></div></div>' +
+      '<p>' + esc(T('shop.success.depP', 'Quét mã bằng app ngân hàng, MoMo hoặc ZaloPay và giữ nguyên nội dung chuyển khoản. Tiền cọc về là trang này tự báo xác nhận đơn.', 'Scan with your banking, MoMo or ZaloPay app and keep the transfer note as is. Once the deposit arrives, this page confirms your order automatically.')) + '</p>' +
+      '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Đang chờ tiền về…', 'Waiting for payment…')) + '</p></div></div></section>';
+  } else if (pay && QR_SET.indexOf(d.pay) > -1 && !pay.querySelector('.v3ok-wait')) {
+    var inf = pay.querySelector('.v3ok-qr-info'); if (inf && DC.payOnline().auto) inf.insertAdjacentHTML('beforeend', '<p class="v3ok-wait"><i></i>' + esc(T('shop.success.waiting', 'Đang chờ tiền về…', 'Waiting for payment…')) + '</p>');
+  }
+}
+var QR_SET = ['bank', 'momo', 'zalopay'];
+
+/* ── trang thanh toán: COD có đặt cọc (/admin → Thiết lập → Bán hàng → Trang thanh toán) — số tiền cọc nhảy theo tổng đơn ── */
+(function () {
+  var ck = DC.setting('shop.checkout', null) || {}, dep = ck.codDeposit || {};
+  if (!dep.on) return;
+  var PCT = Number(dep.pct) || 20, codOpt = document.querySelector('#payOpts [data-pay-opt="cod"]');
+  if (!codOpt) return;
+  var depOf = function (tot) { return tot > 0 ? Math.min(tot, Math.ceil(tot * PCT / 100 / 1000) * 1000) : 0; };
+  codOpt.insertAdjacentHTML('afterend', '<div class="cod-dep" id="codDep" hidden></div>');
+  var qrImg = ck.qrImage ? '<img src="' + DC.esc(ck.qrImage) + '" alt="' + DC.esc(DC.tx('global.qr.company', 'Mã QR công ty', 'Company QR code')) + '">' :
+    '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 6h14v14H6zM28 6h14v14H28zM6 28h14v14H6zM11 11h4v4h-4zM33 11h4v4h-4zM11 33h4v4h-4zM28 28h5v5h-5zM37 28h5v5h-5zM28 37h5v5h-5zM37 37h5v5h-5zM32.5 32.5h5v5h-5z"/></svg>';
+  var paint = function () {
+    var on = !!(codOpt.querySelector('input') || {}).checked, box = document.getElementById('codDep');
+    var tot = Math.max(0, subtotal() - discountAmt()) + shipFinal(), D = depOf(tot), T = function (k, vi, en) { return DC.tx(k, vi, en).replace('{pct}', PCT); };
+    var sub = codOpt.querySelector('.po-sub'); if (sub) sub.textContent = T('shop.pay.codDepSub', 'Cọc {pct}% trước, còn lại trả khi nhận hàng', 'Pay a {pct}% deposit now, the rest on delivery');
+    box.hidden = !on;
+    if (on) box.innerHTML = '<div class="cod-dep-qr">' + qrImg + '</div><div class="cod-dep-txt"><small>' + DC.esc(T('shop.pay.depK', 'Đặt cọc {pct}% để giữ đơn', '{pct}% deposit to hold your order')) + '</small>' +
+      '<strong>' + fmt(D) + '</strong><div class="cod-dep-rows"><span>' + DC.esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')) + '</span><b>' + fmt(Math.max(0, tot - D)) + '</b></div>' +
+      '<p>' + DC.esc(T('shop.pay.depP', 'Bấm Đặt hàng, mã QR hiện ngay với đúng số tiền cọc và nội dung chuyển khoản là mã đơn. Tiền cọc về là đơn tự xác nhận.', 'Place your order and a QR code appears with the exact deposit and your order number as the transfer note. The order confirms itself once the deposit arrives.')) + '</p></div>';
+    var tr = document.getElementById('sumDep'), totEl = document.getElementById('sumVat') || document.querySelector('#checkoutView .sum-total');   // dưới dòng "Đã gồm VAT"
+    if (on && totEl) {
+      if (!tr) { totEl.insertAdjacentHTML('afterend', '<div class="sum-dep" id="sumDep"></div>'); tr = document.getElementById('sumDep'); }
+      tr.innerHTML = '<div><span>' + DC.esc(T('shop.sum.dep', 'Đặt cọc {pct}% (chuyển khoản)', '{pct}% deposit (bank transfer)')) + '</span><b>' + fmt(D) + '</b></div><div><span>' + DC.esc(T('shop.success.rest', 'Còn lại trả khi nhận hàng', 'Due on delivery')) + '</span><span>' + fmt(Math.max(0, tot - D)) + '</span></div>';
+    } else if (tr) tr.remove();
+  };
+  var _rs2 = renderSummary; renderSummary = function () { _rs2.apply(this, arguments); paint(); };
+  var _al2 = applyLang; applyLang = function () { _al2.apply(this, arguments); paint(); };
+  document.getElementById('payOpts').addEventListener('change', paint);
+  paint();
+})();
 
 /* giao hỏa tốc tắt trong /admin → Thiết lập → Bán hàng: bỏ lựa chọn này ở trang thanh toán */
 if (!DC.setting('shop.expressEnabled', true)) {

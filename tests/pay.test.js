@@ -88,6 +88,26 @@ module.exports = async function payTests(env, t) {
     t.ok(r.j.paid === true && r.j.pay === null && r.j.online.length === 0 && r.j.payments.length === 2, 'phiếu xác nhận: đã thanh toán, ẩn mã QR, không còn nút thanh toán', r.j);
   });
 
+  await t.run('COD có đặt cọc', async () => {
+    let r = await req('/api/settings', { method: 'PUT', admin: true, body: { shop: { checkout: { codDeposit: { on: true, pct: 20 }, depositNote: 'coc {code}!', payNote: 'khong co ma' } } } });
+    t.ok(r.j.shop.checkout.codDeposit.on === true && r.j.shop.checkout.codDeposit.pct === 20 && r.j.shop.checkout.depositNote === 'coc {code}' && r.j.shop.checkout.payNote === '{code}',
+      'cài cọc 20%; nội dung chuyển khoản bỏ ký tự lạ, thiếu {code} → về mặc định', r.j.shop.checkout);
+    r = await order('cod');
+    const o = await getOrder(r.j.id), code = o.code.replace(/[^A-Z0-9]/gi, ''), dep = Math.ceil(o.total * 0.2 / 1000) * 1000;
+    t.ok(r.s === 201 && o.deposit === dep && r.j.deposit === dep && r.j.payNote === 'coc ' + code, 'đặt COD → cọc 20% tổng đơn (làm tròn lên nghìn), nội dung theo mẫu', { deposit: o.deposit, total: o.total, note: r.j.payNote });
+    let sl = await slipOf(o);
+    t.ok(sl.j.pay && sl.j.pay.amount === dep && sl.j.pay.note === 'coc ' + code && sl.j.deposit === dep && sl.j.depositPaid === false, 'phiếu: mã QR đòi đúng tiền cọc + nội dung cọc', sl.j.pay);
+    const hook = body => req('/api/pay/sepay/webhook', { method: 'POST', headers: { Authorization: 'Apikey ' + SEPAY }, body });
+    await hook({ id: 9301, transferType: 'in', transferAmount: dep, content: 'MBVCB COC ' + code });
+    const o2 = await getOrder(o.id);
+    sl = await slipOf(o);
+    t.ok(o2.depositPaid === true && !o2.paid && sl.j.depositPaid === true && sl.j.pay === null && o2.history.some(h => /Đã nhận cọc/.test(h.note || '')),
+      'SePay báo tiền cọc về → "đã nhận cọc", đơn chưa tính trả xong, phiếu ẩn mã QR', { depositPaid: o2.depositPaid, paid: o2.paid });
+    await req('/api/settings', { method: 'PUT', admin: true, body: { shop: { checkout: { codDeposit: { on: false } } } } });
+    r = await order('cod');
+    t.ok(!(await getOrder(r.j.id)).deposit && !r.j.deposit, 'tắt cọc → COD không đòi cọc');
+  });
+
   await t.run('VNPay thẻ', async () => {
     let r = await order('vnpay', { lang: 'en' });
     t.ok(r.s === 201 && /^https:\/\/sandbox\.vnpayment\.vn\/paymentv2\/vpcpay\.html\?/.test(r.j.payUrl || ''), 'đặt hàng chọn thẻ (VNPay) → nhận link sang VNPay', r.j);

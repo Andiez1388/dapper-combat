@@ -777,13 +777,19 @@ router.post('/orders', limit('order', 10), async (req, res) => {
     ...(b.consent === true ? { consentAt: Date.now() } : {}),
     ...priced, adminNote: '', history: [{ at: Date.now(), status: 'new' }], confirm: newConfirm(), stockReturned: false,
   };
+  // COD có đặt cọc (Thiết lập → Bán hàng → Trang thanh toán): khách chuyển trước deposit, còn lại trả khi nhận hàng
+  if (order.pay === 'cod') {
+    const dep = settings.codDepositOf(order.total);
+    if (dep > 0) { order.deposit = dep; order.depositPct = settings.all().shop.checkout.codDeposit.pct; }
+  }
   // trừ tồn kho (theo size / màu nếu sản phẩm chia tồn kho theo biến thể) + đếm lượt dùng mã giảm giá
   applyNeed(needOf(order.items), -1);
   promoCount(order, +1);
   orders.unshift(order);
   writeFile('orders.json', orders);
   notify.order(order, r => setConfirm('orders.json', order.id, { email: r }));
-  const out = { id: order.id, code: order.code, total: order.total, subtotal: order.subtotal, discount: order.discount, shipping: order.shipping, slip: slipRef(order) };
+  const out = { id: order.id, code: order.code, total: order.total, subtotal: order.subtotal, discount: order.discount, shipping: order.shipping, slip: slipRef(order),
+    createdAt: order.createdAt, payNote: settings.payNoteFor(order.code, !!order.deposit), ...(order.deposit ? { deposit: order.deposit, depositPct: order.depositPct } : {}) };
   // thẻ: trả link để trang chuyển khách sang VNPay (lỗi thì khách thanh toán lại từ phiếu xác nhận)
   // trả góp: trang mở bảng chọn ngân hàng / kỳ hạn (GET /pay/installment/options) rồi mới sang VNPay
   if (order.pay === 'vnpay') {
@@ -860,10 +866,11 @@ function bySlip(code, k) {
 function payInfo(type, x) {
   const p = cms.data().payment || {};
   if (x.paid) return null; // đã nhận tiền → không cần mã QR chuyển khoản
-  const amount = type === 'order' && !QR_PAY.includes(x.pay) ? 0 : owed(type, x);
+  const amount = type === 'order' && !QR_PAY.includes(x.pay) && !depositDue(x) ? 0 : owed(type, x);
   if (!amount || !p.bankBin || !p.bankAccount) return null;
   // wallet: khách chọn MoMo / ZaloPay → phiếu hướng dẫn quét mã bằng app ví (vẫn chuyển vào tài khoản ngân hàng)
-  return { bank: (BANKS.find(b => b[0] === p.bankBin) || [])[1] || '', bin: p.bankBin, acc: p.bankAccount, holder: p.bankHolder || '', amount, note: String(x.code).replace(/[^A-Za-z0-9]/g, ''),
+  return { bank: (BANKS.find(b => b[0] === p.bankBin) || [])[1] || '', bin: p.bankBin, acc: p.bankAccount, holder: p.bankHolder || '', amount,
+    note: type === 'order' ? settings.payNoteFor(x.code, depositDue(x)) : String(x.code).replace(/[^A-Za-z0-9]/g, ''), ...(depositDue(x) ? { deposit: true } : {}),
     ...(type === 'order' && (x.pay === 'momo' || x.pay === 'zalopay') ? { wallet: x.pay } : {}) };
 }
 router.get('/slip/:code', limit('slip', 60), (req, res) => {
@@ -873,7 +880,9 @@ router.get('/slip/:code', limit('slip', 60), (req, res) => {
   if (req.query.view) setConfirm(f.file, x.id, { slip: { views: (x.confirm.slip.views || 0) + 1, viewedAt: Date.now() } });
   const pay = payInfo(type, x);
   const base = { type, code: x.code, createdAt: x.createdAt, lang: x.lang, status: x.status, pay: pay ? { ...pay, qr: true } : null, paid: !!x.paid,
-    online: onlineFor(type, x), payments: (x.payments || []).map(p => ({ provider: p.provider, amount: p.amount, at: p.at })) };
+    online: onlineFor(type, x), payments: (x.payments || []).map(p => ({ provider: p.provider, amount: p.amount, at: p.at })),
+    paidAt: x.paidAt || null, paidAmount: x.paid ? x.paidAmount || null : null,
+    ...(x.deposit ? { deposit: x.deposit, depositPct: x.depositPct || null, depositPaid: !!x.depositPaid, depositPaidAt: x.depositPaidAt || null } : {}) };
   if (type === 'order') return res.json({ ...base, customer: x.customer, items: x.items, subtotal: x.subtotal, discount: x.discount, shipping: x.shipping, total: x.total, payMethod: x.pay, ship: x.ship, promo: x.promo || '',
     carrier: x.carrier || '', trackingCode: x.trackingCode || '', vatRate: x.vatRate != null ? x.vatRate : 8,
     invoice: x.invoice ? { type: x.invoice.type, name: x.invoice.name, tax: x.invoice.tax, email: x.invoice.email, status: x.invoice.status } : null });
@@ -930,8 +939,12 @@ const refCode = ref => { const s = String(ref || ''), i = s.indexOf('T'); return
 const newRef = code => code + 'T' + Date.now();
 // còn phải trả bao nhiêu (0 = đã trả / đã hủy / không cần trả trước): trừ các khoản cổng / SePay đã báo về (khách chuyển thiếu → chỉ đòi phần còn lại)
 // đăng ký chỉ tính số cần trả trước (due) — chọn "tư vấn trước" / "trả tại phòng tập" thì không đòi trả online
+// COD có cọc: đang chờ tiền cọc (chưa nhận đủ, đơn chưa thanh toán xong)
+const depositDue = x => !!(x && x.pay === 'cod' && x.deposit > 0 && !x.depositPaid && !x.paid && x.status !== 'cancelled');
 const owed = (type, x) => {
   if (x.paid || x.status === 'cancelled') return 0;
+  // COD: trả online chỉ phần cọc; nhận cọc rồi thì phần còn lại thu khi giao
+  if (type === 'order' && x.pay === 'cod') return depositDue(x) ? Math.max(0, x.deposit - (x.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0)) : 0;
   const due = type === 'order' ? Number(x.total) || 0 : Number(x.due) || 0;
   return Math.max(0, due - (x.payments || []).reduce((s, p) => s + (Number(p.amount) || 0), 0));
 };
@@ -979,7 +992,12 @@ function confirmPay({ provider, ref, code, amount, txn }) {
     x.history = (x.history || []).concat({ at: Date.now(), by: 'Tự động · ' + NAME[provider], note: 'Nhận thêm ' + vnd(amount) + ' sau khi đơn đã thanh toán — kiểm tra hoàn tiền nếu khách trả 2 lần' });
   } else {
     const got = x.payments.reduce((s, p) => s + (Number(p.amount) || 0), 0), due = dueOf(kind, x);
-    if (got >= due) { markPaid(kind, x, 'Tự động · ' + NAME[provider], got, NAME[provider] + (txn ? ' · mã GD ' + txn : '')); result = 'paid'; }
+    if (kind === 'orders' && depositDue(x) && got >= x.deposit && got < due) {
+      // COD: đã nhận đủ tiền cọc → giữ đơn ở trạng thái chưa thanh toán xong (còn thu khi giao)
+      x.depositPaid = true; x.depositPaidAt = Date.now();
+      x.history = (x.history || []).concat({ at: Date.now(), by: 'Tự động · ' + NAME[provider], note: 'Đã nhận cọc ' + vnd(got) + ' — còn thu khi giao ' + vnd(due - got) + (txn ? ' · mã GD ' + txn : '') });
+      result = 'deposit';
+    } else if (got >= due) { markPaid(kind, x, 'Tự động · ' + NAME[provider], got, NAME[provider] + (txn ? ' · mã GD ' + txn : '')); result = 'paid'; }
     else { x.history = (x.history || []).concat({ at: Date.now(), by: 'Tự động · ' + NAME[provider], note: 'Nhận ' + vnd(amount) + ' — còn thiếu ' + vnd(due - got) }); result = 'partial'; }
   }
   writeFile(f.file, list);

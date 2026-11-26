@@ -1827,3 +1827,31 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 .pay-opt.is-soon .pay-logo{opacity:.45;filter:grayscale(1);}
 .pay-opt .po-soon{display:inline-block;margin-left:.55rem;padding:.18rem .5rem;border:1px solid #d4af62;color:#9a7a2e;background:#fbf6ea;vertical-align:2px;
   font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;opacity:1!important;}
+
+/* ═══ COD đặt cọc (trang thanh toán) + xác nhận thanh toán (màn đặt hàng thành công) ═══ */
+.cod-dep{display:grid;grid-template-columns:96px minmax(0,1fr);gap:1.1rem;align-items:center;margin:-.2rem 0 .7rem;padding:1rem 1.1rem;border:1px solid #e9d9b4;border-top:0;background:linear-gradient(180deg,#fffaf0,#fff);}
+.cod-dep[hidden]{display:none;}
+.cod-dep-qr{width:96px;height:96px;display:grid;place-items:center;background:#fff;border:1px solid #eee5d3;padding:6px;}
+.cod-dep-qr img{width:100%;height:100%;object-fit:contain;}
+.cod-dep-qr svg{width:58px;height:58px;fill:#1b1b1b;opacity:.85;}
+.cod-dep-txt small{display:block;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:#9a7a2e;}
+.cod-dep-txt strong{display:block;margin:.15rem 0 .35rem;font-family:var(--f-head);font-weight:600;font-size:1.65rem;line-height:1.1;color:#0b0b0b;}
+.cod-dep-rows{display:flex;justify-content:space-between;gap:1rem;font-family:'Inter',system-ui,sans-serif;font-size:.8rem;color:#6a645e;}
+.cod-dep-rows b{color:#0b0b0b;font-weight:600;}
+.cod-dep-txt p{margin:.5rem 0 0;font-family:'Inter',system-ui,sans-serif;font-size:.78rem;line-height:1.6;color:#6a645e;}
+.sum-dep{margin-top:.6rem;padding:.75rem .9rem;background:#fbf6ea;border:1px solid #efe2c4;}
+.sum-dep>div{display:flex;justify-content:space-between;gap:1rem;font-family:'Inter',system-ui,sans-serif;font-size:.82rem;line-height:1.9;color:#5f5953;}
+.sum-dep>div b{color:#9a6a12;font-weight:700;}
+@media(max-width:560px){.cod-dep{grid-template-columns:72px minmax(0,1fr);}.cod-dep-qr{width:72px;height:72px;}}
+
+.v3ok-time{margin-top:.6rem;font-family:'Inter',system-ui,sans-serif;font-size:.78rem;letter-spacing:.04em;color:var(--muted,#888);}
+.v3ok-head.is-paid .v3ok-badge{background:#17703c!important;color:#fff!important;box-shadow:0 0 0 10px rgba(23,112,60,.12)!important;}
+.v3ok-deprows{margin:.2rem 0 .8rem;padding:.6rem .8rem;background:#faf8f5;border:1px solid #eee;}
+.v3ok-deprows>div{display:flex;justify-content:space-between;gap:1rem;font-family:'Inter',system-ui,sans-serif;font-size:.82rem;line-height:1.85;}
+.v3ok-wait{display:flex;align-items:center;gap:.55rem;margin-top:.6rem!important;font-family:'Inter',system-ui,sans-serif;font-size:.78rem!important;color:#7a746e!important;}
+.v3ok-wait i{width:9px;height:9px;border-radius:50%;background:#e0a100;box-shadow:0 0 0 0 rgba(224,161,0,.5);animation:v3wait 1.6s infinite;}
+@keyframes v3wait{0%{box-shadow:0 0 0 0 rgba(224,161,0,.5)}70%{box-shadow:0 0 0 9px rgba(224,161,0,0)}100%{box-shadow:0 0 0 0 rgba(224,161,0,0)}}
+.v3ok-paid{border-top:3px solid #17703c;background:linear-gradient(180deg,#f2faf4,#fff 60%);}
+.v3ok-paid .v3ok-card-h span{color:#17703c;font-weight:700;}
+.v3ok-paid .v3ok-card-h em{background:#17703c;color:#fff;}
+.v3ok-paid code{font-family:var(--f-mono);font-size:.82rem;padding:.1rem .35rem;background:#fff;border:1px solid #e3e3e3;}

@@ -276,18 +276,20 @@
         '<p class="dc-qr-static-note">' + DC.tx('global.qr.static', 'Sau khi quét, nhập đúng số tiền và nội dung chuyển khoản bên cạnh.', 'After scanning, enter the exact amount and transfer note shown here.') + '</p>';
     }
     if (!p) return null;
-    var note = String(ref || '').replace(/[^A-Za-z0-9]/g, '');
+    var note = DC.payNoteClean(ref);
     var url = 'https://img.vietqr.io/image/' + encodeURIComponent(p.bin) + '-' + encodeURIComponent(p.acc) + '-compact2.png?amount=' + (Math.round(amount) || 0) +
       '&addInfo=' + encodeURIComponent(note) + '&accountName=' + encodeURIComponent(p.holder);
     return '<img class="dc-vietqr" src="' + url + '" alt="VietQR ' + DC.esc(p.bank) + '" width="200" height="200">';
   };
+  // nội dung chuyển khoản: chữ không dấu, số, khoảng trắng (mẫu ở Thiết lập → Bán hàng → Trang thanh toán, vd "DC871627 COC")
+  DC.payNoteClean = function (ref) { return String(ref || '').replace(/[^A-Za-z0-9 ]/g, '').replace(/\s+/g, ' ').trim(); };
   // thông tin chuyển khoản dạng chữ (khi khách không quét được mã)
   DC.payLines = function (ref, noNote) {
     var p = DC.pay();
     if (!p) return '';
     var row = function (k, v) { return '<div><span>' + k + '</span><b>' + DC.esc(v) + '</b></div>'; };
     return '<div class="dc-paylines">' + row(DC.tx('global.slip.bank', 'Ngân hàng', 'Bank'), p.bank) + row(DC.tx('global.slip.acc', 'Số tài khoản', 'Account no.'), p.acc) +
-      (p.holder ? row(DC.tx('global.slip.holder', 'Chủ tài khoản', 'Account name'), p.holder) : '') + (noNote ? '' : row(DC.tx('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note'), String(ref || '').replace(/[^A-Za-z0-9]/g, ''))) + '</div>';
+      (p.holder ? row(DC.tx('global.slip.holder', 'Chủ tài khoản', 'Account name'), p.holder) : '') + (noNote ? '' : row(DC.tx('global.slip.note', 'Nội dung chuyển khoản', 'Transfer note'), DC.payNoteClean(ref))) + '</div>';
   };
   document.addEventListener('DOMContentLoaded', function () { if (DC.pay()) document.documentElement.classList.add('dc-pay-real'); });
 

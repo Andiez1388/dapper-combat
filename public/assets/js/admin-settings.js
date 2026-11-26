@@ -338,6 +338,24 @@
         (ck.qrImage ? '<button class="btn btn--quiet" type="button" data-ck-qrdel>Xóa ảnh</button>' : '') + '</div>' +
         sel('qrMode', 'Sau khi đặt hàng, khách quét', [['auto', 'Mã VietQR tự tạo — có sẵn số tiền và nội dung (khuyên dùng)'], ['image', 'Ảnh QR công ty tải lên — khách tự nhập số tiền, nội dung']], 'Ảnh QR tải lên không chứa số tiền, mã đơn: khách phải tự gõ, SePay khó tự khớp đơn.') +
         '<div class="set-msg" data-ck-qrnote hidden></div></div></div>' +
+      // COD có đặt cọc + mẫu nội dung chuyển khoản
+      (function () {
+        var dep = ck.codDeposit || { on: false, pct: 20 }, ex = 'DC871627';
+        var prev = function (tpl) { return String(tpl || '{code}').replace(/\{code\}/g, ex); };
+        return '<div class="ck-dep"><p class="field__label">Thanh toán khi nhận hàng (COD) có đặt cọc</p>' +
+          '<label class="check set-switch"><input type="checkbox" data-ck-dep="on"' + (dep.on ? ' checked' : '') + '><span class="switch__ui" aria-hidden="true"></span><span>Bắt khách đặt cọc khi chọn COD</span></label>' +
+          '<div class="set-grid3">' +
+            '<label class="field"><span class="field__label">Tiền cọc (% tổng đơn)</span><input type="number" min="1" max="100" step="1" inputmode="numeric" data-ck-dep="pct" value="' + esc(dep.pct || 20) + '"' + (dep.on ? '' : ' disabled') + '>' +
+              '<small class="field__hint">Làm tròn lên nghìn. Vd đơn 2.580.000₫, cọc 20% = 516.000₫.</small></label>' +
+            '<label class="field"><span class="field__label">Nội dung chuyển khoản · trả đủ</span><input type="text" maxlength="30" data-ck="payNote" value="' + esc(ck.payNote || '{code}') + '" autocomplete="off">' +
+              '<small class="field__hint">Vd: <b>' + esc(prev(ck.payNote)) + '</b></small></label>' +
+            '<label class="field"><span class="field__label">Nội dung chuyển khoản · tiền cọc</span><input type="text" maxlength="30" data-ck="depositNote" value="' + esc(ck.depositNote || '{code} COC') + '" autocomplete="off">' +
+              '<small class="field__hint">Vd: <b>' + esc(prev(ck.depositNote || '{code} COC')) + '</b></small></label>' +
+          '</div>' +
+          '<p class="set-note"><b>{code}</b> = mã đơn viết liền (vd ' + ex + '), bắt buộc phải có để web tự nhận ra tiền của đơn nào. Chỉ dùng chữ không dấu, số và khoảng trắng. ' +
+            'Khi bật cọc, ô COD ở trang thanh toán hiện số tiền cọc theo tổng đơn; đặt hàng xong khách thấy mã VietQR đúng số tiền cọc và nội dung trên. ' +
+            'Tiền về (đã bật chuyển khoản tự xác nhận ở <a href="#/set-payments">Thanh toán online</a>) thì đơn tự ghi “Đã nhận cọc”, trang của khách tự báo xác nhận; phần còn lại thu khi giao.</p></div>';
+      })() +
       '<div class="set-grid3">' +
         sel('email', 'Ô Email', FIELD_MODES, 'Có email mới gửi được email xác nhận cho khách.') +
         sel('note', 'Ô Ghi chú', FIELD_MODES.filter(function (m) { return m[0] !== 'required'; })) +
@@ -1186,8 +1204,15 @@
           var n2 = $('[data-ck-qrnote]'); if (n2) { n2.innerHTML = '<p>Đã tải lên — bấm “Lưu” để áp dụng lên website.</p>'; n2.hidden = false; }
         }, function (er) { if (ql) ql.textContent = 'Tải ảnh QR'; if (qn) { qn.innerHTML = '<p>' + esc((er && er.message) || 'Tải lên thất bại.') + '</p>'; qn.hidden = false; qn.classList.add('is-err'); } });
       }
+    } else if (g === 'shop' && t.matches('[data-ck-dep]')) {
+      var ckd = draft('shop').checkout, dk = t.getAttribute('data-ck-dep');
+      ckd.codDeposit = Object.assign({ on: false, pct: 20 }, ckd.codDeposit || {});
+      if (dk === 'on') { ckd.codDeposit.on = t.checked; renderCheckout('[data-ck-dep="on"]'); }
+      else ckd.codDeposit.pct = Math.max(1, Math.min(100, Math.round(Number(t.value) || 20)));
+      refreshBar('shop');
     } else if (g === 'shop' && t.matches('[data-ck]')) {
       draft('shop').checkout[t.getAttribute('data-ck')] = t.value; refreshBar('shop');
+      if (/Note$/.test(t.getAttribute('data-ck'))) { var hint = t.parentNode.querySelector('.field__hint b'); if (hint) hint.textContent = String(t.value || '{code}').replace(/\{code\}/g, 'DC871627'); }
     } else if (g === 'course' && (row = t.closest('[data-pk]')) && t.matches('[data-pkf]')) {
       var list = draft('course').gtPackages; i = +row.getAttribute('data-pk');
       if (t.getAttribute('data-pkf') === 'best') {
