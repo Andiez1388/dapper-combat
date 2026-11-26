@@ -17,11 +17,11 @@
   var KINDS = [['group', 'Group Training'], ['hssv', 'Học sinh – sinh viên'], ['found', 'Foundation'], ['other', 'Khác']];
   var PROGS = [['', 'Không mở form'], ['gt', 'Form Group Training'], ['hssv', 'Form lớp HSSV'], ['found', 'Form Foundation (BOOK I)'], ['mem', 'Form Membership'], ['pt', 'Form PT 1-1'], ['trial', 'Form học thử miễn phí']];
   var OPTS = { found: [['A', 'Lớp A'], ['B', 'Lớp B']], gt: [['am', 'Sáng'], ['pm', 'Tối']], trial: [['am', 'Sáng'], ['pm', 'Tối']] };
-  // bank / momo / zalopay: khách quét cùng mã VietQR (SePay tự xác nhận); vnpay / installment: chỉ hiện khi đã cài ở Thanh toán online
+  // bank / momo / zalopay: khách quét cùng mã VietQR (SePay tự xác nhận); vnpay / installment: bật mà chưa cài mã ở Thanh toán online → trang thanh toán hiện mờ “Sắp có”
   var PAYS = [['bank', 'Chuyển khoản ngân hàng (quét mã VietQR)'], ['momo', 'Ví MoMo (quét mã VietQR bằng app MoMo)'], ['zalopay', 'ZaloPay (quét mã VietQR bằng app ZaloPay)'],
     ['cod', 'Thanh toán khi nhận hàng (COD) — khách trả tiền cho người giao'],
-    ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chỉ hiện khi đã bật VNPay ở Thanh toán online'],
-    ['installment', 'Trả góp bằng thẻ tín dụng (VNPay) — chỉ hiện khi đã bật trả góp ở Thanh toán online']];
+    ['vnpay', 'Thẻ ATM / Visa / Mastercard (VNPay) — chưa cài VNPay ở Thanh toán online thì hiện mờ “Sắp có”'],
+    ['installment', 'Trả góp bằng thẻ tín dụng (VNPay) — chưa cài trả góp ở Thanh toán online thì hiện mờ “Sắp có”']];
   var QR_PAYS = ['bank', 'momo', 'zalopay'];
   var FIELD_MODES = [['optional', 'Không bắt buộc'], ['required', 'Bắt buộc'], ['hidden', 'Ẩn']];
   var PDP = [['videos', 'Video trong bộ ảnh'], ['trust', 'Dòng cam kết (giao toàn quốc, đổi trả…)'], ['pay', 'Logo phương thức thanh toán'], ['fit', 'Gợi ý chọn size'],

@@ -201,12 +201,12 @@ module.exports = async function browserTests(env, t, browser) {
         await page.eval(`localStorage.setItem('dc_lang','vi'); localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(cheap.id + '::' + cheap.sizes[0] + '::' + cheap.colors[0][0])}: 1})); 1`);
         await page.goto(B + '/shop/checkout', { wait: 1200 });
         const st = await page.eval(`({ opts: ${shown}, sub: document.querySelector('#payOpts [data-pay-opt="installment"] .po-sub').textContent })`);
-        t.ok(st.opts.join() === 'bank,momo,zalopay,cod,installment:off' && /1\.000\.000/.test(st.sub), 'đơn nhỏ: trả góp hiện nhưng khóa, ghi mức tối thiểu; có COD', st);
+        t.ok(st.opts.join() === 'bank,momo,zalopay,cod,vnpay:off,installment:off' && /1\.000\.000/.test(st.sub), 'đơn nhỏ: trả góp hiện nhưng khóa, ghi mức tối thiểu; có COD; thẻ hiện mờ “Sắp có”', st);
       }
       await page.eval(`localStorage.setItem('dc_cart', JSON.stringify({${JSON.stringify(big.id + '::' + big.sizes[0] + '::' + big.colors[0][0])}: ${qty}})); 1`);
       await page.goto(B + '/shop/checkout', { wait: 1200 });
       const opts = await page.eval(shown);
-      t.ok(opts.join() === 'bank,momo,zalopay,cod,installment', 'trang thanh toán: chuyển khoản, MoMo, ZaloPay, COD, trả góp (thẻ ẩn khi chưa bật VNPay)', opts);
+      t.ok(opts.join() === 'bank,momo,zalopay,cod,vnpay:off,installment', 'trang thanh toán: chuyển khoản, MoMo, ZaloPay, COD, trả góp (thẻ hiện mờ “Sắp có”, chưa chọn được khi chưa cài VNPay)', opts);
       await page.eval(`(() => {
         const f = document.getElementById('checkoutForm');
         const set = (n, v) => { const el = f.elements[n]; if (!el) return; el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };

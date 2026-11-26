@@ -1820,3 +1820,10 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
   .v3-collnav .v3-coll-cats a{padding:.95rem .9rem!important;}
 }
 .pl-cod{color:#17603d;font-size:0.84rem;font-weight:800;letter-spacing:.04em}
+
+/* ── Thanh toán: thẻ / trả góp VNPay bật nhưng chưa cài mã → hiện mờ "Sắp có" ── */
+.pay-opt.is-soon{cursor:not-allowed;background:#fafaf9;}
+.pay-opt.is-soon .po-name,.pay-opt.is-soon .po-sub,.pay-opt.is-soon input{opacity:.5;}
+.pay-opt.is-soon .pay-logo{opacity:.45;filter:grayscale(1);}
+.pay-opt .po-soon{display:inline-block;margin-left:.55rem;padding:.18rem .5rem;border:1px solid #d4af62;color:#9a7a2e;background:#fbf6ea;vertical-align:2px;
+  font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;opacity:1!important;}

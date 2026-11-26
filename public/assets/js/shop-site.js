@@ -223,12 +223,24 @@ if (!DC.setting('shop.expressEnabled', true)) {
    trả góp chỉ chọn được khi tổng đơn từ mức tối thiểu (dòng mô tả ghi rõ mức) */
 (function () {
   var po = DC.payOnline(), ckp = (DC.setting('shop.checkout', null) || {}).pay || {};
-  var on = { vnpay: po.vnpay && ckp.vnpay !== false, installment: po.installment && ckp.installment !== false };
+  // hiện = công tắc ở Thiết lập → Bán hàng → Trang thanh toán đang bật; chọn được = đã cài mã ở Thanh toán online.
+  // Bật mà chưa cài mã → hiện mờ "Sắp có" (xem được giao diện, khách chưa chọn được)
+  var show = { vnpay: ckp.vnpay !== false, installment: ckp.installment !== false };
+  var on = { vnpay: po.vnpay && show.vnpay, installment: po.installment && show.installment };
   Object.keys(on).forEach(function (k) {
     var opt = document.querySelector('#payOpts [data-pay-opt="' + k + '"]'), i = opt && opt.querySelector('input');
-    if (opt) { if (on[k]) opt.style.removeProperty('display'); else opt.style.setProperty('display', 'none', 'important'); }
+    if (opt) {
+      if (show[k]) opt.style.removeProperty('display'); else opt.style.setProperty('display', 'none', 'important');
+      var soon = show[k] && !on[k];
+      opt.classList.toggle('is-soon', soon);
+      var tag = opt.querySelector('.po-soon');
+      if (soon && !tag) { var nm = opt.querySelector('.po-name'); if (nm) nm.insertAdjacentHTML('afterend', '<span class="po-soon">' + DC.esc(DC.tx('shop.pay.soon', 'Sắp có', 'Coming soon')) + '</span>'); }
+      if (!soon && tag) tag.remove();
+      if (soon) opt.title = DC.tx('shop.pay.soonTip', 'Đang kết nối cổng VNPAY — sắp dùng được', 'VNPAY gateway is being connected — available soon');
+      else opt.removeAttribute('title');
+    }
     if (i) { i.disabled = !on[k]; if (!on[k]) i.checked = false; }
-    document.querySelectorAll('.pay-methods [data-pay="' + k + '"], .pay-badges [data-pay="' + k + '"]').forEach(function (el) { if (on[k]) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important'); });
+    document.querySelectorAll('.pay-methods [data-pay="' + k + '"], .pay-badges [data-pay="' + k + '"]').forEach(function (el) { if (show[k]) el.style.removeProperty('display'); else el.style.setProperty('display', 'none', 'important'); });
   });
   if (!on.installment || !po.installmentMin) return;
   var opt = document.querySelector('#payOpts [data-pay-opt="installment"]'), inp = opt && opt.querySelector('input'), sub = opt && opt.querySelector('.po-sub');
