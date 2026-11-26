@@ -12470,8 +12470,8 @@
    "locate": true,
    "order": 32132,
    "key": "shop.pdp.j1",
-   "vi": "Miễn phí giao hàng cho đơn từ {ship.free}đ  ·  Đổi trả trong 7 ngày",
-   "en": "Free shipping on orders over {ship.free}đ  ·  7-day returns"
+   "vi": "Miễn phí giao hàng cho đơn từ {ship.free}₫  ·  Đổi trả trong 7 ngày",
+   "en": "Free shipping on orders over {ship.free}₫  ·  7-day returns"
   },
   {
    "key": "home.imgbanner.1",
@@ -13822,8 +13822,8 @@
    "locate": true,
    "order": 38635,
    "key": "shop.pdp.j29",
-   "vi": "Miễn phí giao hàng cho đơn từ {ship.free}đ",
-   "en": "Free shipping on orders over {ship.free}đ"
+   "vi": "Miễn phí giao hàng cho đơn từ {ship.free}₫",
+   "en": "Free shipping on orders over {ship.free}₫"
   },
   {
    "key": "course.faq.a3",

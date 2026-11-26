@@ -120,6 +120,8 @@
   DC.tok = function (text, en) {
     if (typeof text !== 'string' || text.indexOf('{') < 0) return text;
     var sched = null;
+    // "{ship.free}đ" → "{ship.free}₫" (chữ in hoa biến đ thành Đ, trông như số 0: "1.000.0000") — giống lib/settings.js
+    text = text.replace(/(\{(?:found|gt|hssv|mem|ship)\.[A-Za-z0-9.-]+\})đ/g, '$1₫');
     return text.replace(/\{((?:found|gt|hssv|mem|ship|promo|hours|sched|biz)\.[A-Za-z0-9.-]+)\}/g, function (m, k) {
       if (k.indexOf('biz.') === 0) {
         var gym = [DC.cfg('addr1', ''), DC.cfg('addr2', '')].filter(Boolean).join(', ');

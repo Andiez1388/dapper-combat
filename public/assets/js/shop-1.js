@@ -297,7 +297,7 @@ document.querySelector(".lang-switch").addEventListener("click",e=>{const b=e.ta
 var V3={galN:8,revN:5,revSort:false,revQ:"",galPid:null,revKey:null,pid:null};
 function v3T(vi,en){return lang==="vi"?vi:en;}
 function v3Static(){
-  var a=$("v3Announce");if(a)a.textContent=v3T(DC.x("shop.pdp.j1",0,"Miễn phí giao hàng cho đơn từ {ship.free}đ  ·  Đổi trả trong 7 ngày"),DC.x("shop.pdp.j1",1,"Free shipping on orders over {ship.free}đ  ·  7-day returns"));
+  var a=$("v3Announce");if(a)a.textContent=v3T(DC.x("shop.pdp.j1",0,"Miễn phí giao hàng cho đơn từ {ship.free}₫  ·  Đổi trả trong 7 ngày"),DC.x("shop.pdp.j1",1,"Free shipping on orders over {ship.free}₫  ·  7-day returns"));
   var m=$("v3More");if(m)m.textContent=v3T(DC.x("shop.pdp.j2",0,"Xem thêm hình ảnh"),DC.x("shop.pdp.j2",1,"Load more images"));
   var n=$("v3News");
   if(n&&!n.dataset.done){
@@ -372,7 +372,7 @@ function v3Render(){
     return '<button type="button" class="v3-ctile v3-csw'+(c[0]===detailColor?' sel':'')+(oos?' oos':'')+'" data-color="'+c[0]+'"'+(oos?' aria-disabled="true"':'')+' title="'+DC.esc(cn(p,c[0]))+'" aria-label="'+DC.esc(cn(p,c[0]))+'" aria-pressed="'+(c[0]===detailColor)+'"><i style="background:'+c[1]+'"></i></button>';
   }).join("");
   $("v3Fit").textContent=v3T(DC.x("shop.pdp.j27",0,"Form chuẩn Dapper Combat. Nếu phân vân giữa 2 size, chọn size lớn hơn để thoải mái khi tập."),DC.x("shop.pdp.j27",1,"True-to-size Dapper Combat fit. Between sizes? Size up for comfort while training."));
-  $("v3Ship").innerHTML='<span class="v3-eta">'+v3T(DC.x("shop.pdp.j28",0,"Giao dự kiến "),DC.x("shop.pdp.j28",1,"Arrives "))+'<b>'+v3pEta()+'</b></span><span>'+v3T(DC.x("shop.pdp.j29",0,"Miễn phí giao hàng cho đơn từ {ship.free}đ"),DC.x("shop.pdp.j29",1,"Free shipping on orders over {ship.free}đ"))+'</span><span>'+v3T(DC.x("shop.pdp.j30",0,"Đổi trả 7 ngày · Hàng chính hãng"),DC.x("shop.pdp.j30",1,"7-day returns · Authentic gear"))+'</span>';
+  $("v3Ship").innerHTML='<span class="v3-eta">'+v3T(DC.x("shop.pdp.j28",0,"Giao dự kiến "),DC.x("shop.pdp.j28",1,"Arrives "))+'<b>'+v3pEta()+'</b></span><span>'+v3T(DC.x("shop.pdp.j29",0,"Miễn phí giao hàng cho đơn từ {ship.free}₫"),DC.x("shop.pdp.j29",1,"Free shipping on orders over {ship.free}₫"))+'</span><span>'+v3T(DC.x("shop.pdp.j30",0,"Đổi trả 7 ngày · Hàng chính hãng"),DC.x("shop.pdp.j30",1,"7-day returns · Authentic gear"))+'</span>';
   var fi=document.querySelector("#dAcc .acc-item .acc-inner");
   if(fi&&!fi.querySelector(".v3-feats"))fi.insertAdjacentHTML("beforeend",'<ul class="v3-feats">'+featsOf(p).map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul>');
   /* "Hoàn thiện bộ trang phục": chỉ ghép sản phẩm còn hàng */
