@@ -1869,3 +1869,20 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 .v3-hv-frame.is-yt{aspect-ratio:16/9;}
 .v3-hv-frame.is-yt.is-short{aspect-ratio:9/16;max-height:88vh;margin:0 auto;width:auto;height:88vh;max-width:100%;}
 .v3-hv-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+/* trang sản phẩm: phương thức thanh toán dạng ô icon đều nhau, thẳng hàng (kiểu Shopify) */
+#detailView .pay-methods.pm-icons{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 1.4rem;padding:0;border:0;background:none;}
+.pm-icons .pay-label[hidden]{display:none!important;}
+.pm-icons .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+.pm-icons .pm{position:relative;flex:0 0 auto;width:52px;height:32px;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d9d9d9;border-radius:4px;box-sizing:border-box;overflow:hidden;cursor:default;}
+.pm-icons .pm b{font-family:Arial,Helvetica,sans-serif;font-weight:800;line-height:1;white-space:nowrap;letter-spacing:0;}
+.pm-icons .pm-qr{color:#15181c;}
+.pm-icons .pm-qr svg{width:18px;height:18px;}
+.pm-icons .pm-momo{background:#a50064;border-color:#a50064;}
+.pm-icons .pm-momo b{color:#fff;font-size:11px;}
+.pm-icons .pm-zalo b{color:#0068ff;font-size:10px;}
+.pm-icons .pm-cod b{color:#15181c;font-size:11px;letter-spacing:.04em;}
+.pm-icons .pm-visa b{color:#1a1f71;font-size:13px;font-style:italic;letter-spacing:-.01em;}
+.pm-icons .pm-mc b{color:#222;font-size:8.5px;font-weight:700;}
+.pm-icons .pm-atm b{color:#005baa;font-size:11px;letter-spacing:.04em;}
+.pm-icons .pm-isp b{color:#0b3b66;font-size:9px;text-transform:uppercase;letter-spacing:.02em;}
+@media(max-width:480px){#detailView .pay-methods.pm-icons{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}.pm-icons .pm{width:auto;height:36px;}}

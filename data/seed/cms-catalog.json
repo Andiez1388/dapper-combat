@@ -4603,7 +4603,7 @@
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 8625,
+   "order": 8670,
    "label": "Nhãn nhỏ trên tiêu đề 2"
   },
   {
@@ -4705,19 +4705,6 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.detail.payBank",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "label",
-   "vi": "Chuyển khoản",
-   "en": "Bank transfer",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 8979,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn"
-  },
-  {
    "page": "services",
    "section": "services.fit",
    "type": "subtitle",
@@ -4760,19 +4747,6 @@
    "itemLabel": "Mô tả"
   },
   {
-   "key": "shop.pdp.2",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "label",
-   "vi": "MoMo",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 9069,
-   "label": "Chữ ngắn / nhãn 2"
-  },
-  {
    "key": "course.fd.pr6",
    "page": "course",
    "section": "course.fdetail",
@@ -4787,17 +4761,17 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.pdp.zalo",
+   "key": "shop.detail.payBank",
    "page": "shop",
    "section": "shop.pdp",
    "type": "label",
-   "vi": "ZaloPay",
-   "en": null,
+   "vi": "Chuyển khoản",
+   "en": "Bank transfer",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 9149,
-   "label": "Logo thanh toán — ZaloPay"
+   "order": 9156,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
    "page": "services",
@@ -4826,6 +4800,19 @@
    "en": "Any space <em>can become a ring.</em>"
   },
   {
+   "key": "shop.pdp.5",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "<b data-cms=\"shop.pdp.2\">MoMo</b>",
+   "en": null,
+   "html": true,
+   "src": "html",
+   "locate": true,
+   "order": 9257,
+   "label": "Chữ ngắn / nhãn 11"
+  },
+  {
    "key": "course.fd.sched",
    "page": "course",
    "section": "course.fdetail",
@@ -4840,17 +4827,30 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.pdp.isp",
+   "key": "shop.pdp.6",
    "page": "shop",
    "section": "shop.pdp",
    "type": "label",
-   "vi": "Trả góp",
-   "en": "Installments",
-   "html": false,
+   "vi": "<b data-cms=\"shop.pdp.zalo\">ZaloPay</b>",
+   "en": null,
+   "html": true,
    "src": "html",
    "locate": true,
-   "order": 9418,
-   "label": "Logo thanh toán — trả góp (VNPay)"
+   "order": 9351,
+   "label": "Chữ ngắn / nhãn 12"
+  },
+  {
+   "key": "shop.pdp.7",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "<b>COD</b>",
+   "en": null,
+   "html": true,
+   "src": "html",
+   "locate": true,
+   "order": 9457,
+   "label": "Chữ ngắn / nhãn 13"
   },
   {
    "key": "course.fd.sc1",
@@ -4865,6 +4865,19 @@
    "order": 9480,
    "label": "Thẻ 2 · Mục danh sách 1",
    "itemLabel": "Dòng"
+  },
+  {
+   "key": "shop.pdp.8",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "<b data-cms=\"shop.pdp.1\">VISA</b>",
+   "en": null,
+   "html": true,
+   "src": "html",
+   "locate": true,
+   "order": 9552,
+   "label": "Chữ ngắn / nhãn 14"
   },
   {
    "page": "services",
@@ -4924,17 +4937,17 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.seo.faq",
+   "key": "shop.pdp.9",
    "page": "shop",
    "section": "shop.pdp",
-   "type": "subtitle",
-   "vi": "Câu hỏi thường gặp",
-   "en": "FAQ",
-   "html": false,
+   "type": "label",
+   "vi": "<b data-cms=\"shop.pdp.3\">Mastercard</b>",
+   "en": null,
+   "html": true,
    "src": "html",
    "locate": true,
-   "order": 9632,
-   "label": "Tiêu đề nhỏ 1"
+   "order": 9647,
+   "label": "Chữ ngắn / nhãn 15"
   },
   {
    "page": "services",
@@ -4993,6 +5006,19 @@
    "vi": "tường gương 4m",
    "en": "4m mirror wall",
    "itemLabel": "Dòng"
+  },
+  {
+   "key": "shop.pdp.10",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "<b data-cms=\"shop.pdp.4\">ATM</b>",
+   "en": null,
+   "html": true,
+   "src": "html",
+   "locate": true,
+   "order": 9752,
+   "label": "Chữ ngắn / nhãn 16"
   },
   {
    "page": "services",
@@ -5067,20 +5093,6 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.seo.q1",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "question",
-   "vi": "Sản phẩm có bảo hành không?",
-   "en": "Is there a warranty?",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 9844,
-   "label": "Thẻ 1 · Câu hỏi",
-   "itemLabel": "Câu hỏi"
-  },
-  {
    "page": "services",
    "section": "services.packages",
    "type": "stat",
@@ -5110,6 +5122,19 @@
    "itemLabel": "Dòng"
   },
   {
+   "key": "shop.pdp.isp",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "Trả góp",
+   "en": "Installments",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 9922,
+   "label": "Logo thanh toán — trả góp (VNPay)"
+  },
+  {
    "key": "course.fdetail.4",
    "page": "course",
    "section": "course.fdetail",
@@ -5136,20 +5161,6 @@
    "vi": "CLB / phòng tập chuyên Boxing",
    "en": "A dedicated Boxing club",
    "itemLabel": "Phù hợp cho"
-  },
-  {
-   "key": "shop.seo.a1",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "label",
-   "vi": "Có — bảo hành chính hãng theo chính sách Dapper Combat, đổi trả trong 7 ngày.",
-   "en": "Yes — official Dapper Combat warranty with free returns within 7 days.",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 9982,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn",
-   "itemLabel": "Chữ"
   },
   {
    "page": "services",
@@ -5193,6 +5204,19 @@
    "order": 10034,
    "label": "Thẻ 3 · Mục danh sách 2",
    "itemLabel": "Dòng"
+  },
+  {
+   "key": "shop.seo.faq",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "subtitle",
+   "vi": "Câu hỏi thường gặp",
+   "en": "FAQ",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 10069,
+   "label": "Tiêu đề nhỏ 1"
   },
   {
    "page": "services",
@@ -5296,20 +5320,6 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.seo.q2",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "question",
-   "vi": "Làm sao chọn đúng size và màu?",
-   "en": "How do I pick the right size and color?",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 10207,
-   "label": "Thẻ 2 · Câu hỏi",
-   "itemLabel": "Câu hỏi"
-  },
-  {
    "key": "course.fd.done",
    "page": "course",
    "section": "course.fdetail",
@@ -5353,6 +5363,20 @@
    "itemLabel": "Dòng"
   },
   {
+   "key": "shop.seo.q1",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "question",
+   "vi": "Sản phẩm có bảo hành không?",
+   "en": "Is there a warranty?",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 10281,
+   "label": "Thẻ 1 · Câu hỏi",
+   "itemLabel": "Câu hỏi"
+  },
+  {
    "page": "services",
    "section": "services.packages",
    "type": "stat",
@@ -5382,20 +5406,6 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.seo.a2",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "text",
-   "vi": "Tham khảo bảng size và chọn màu ở phần trên; cần tư vấn thêm hãy nhắn Zalo/Facebook Dapper Combat.",
-   "en": "Check the size chart and color options above; for help, message Dapper Combat on Zalo/Facebook.",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 10348,
-   "label": "Thẻ 2 · Đoạn văn",
-   "itemLabel": "Mô tả"
-  },
-  {
    "key": "course.fdetail.7",
    "page": "course",
    "section": "course.fdetail",
@@ -5408,6 +5418,20 @@
    "order": 10378,
    "label": "Thẻ 4 · Mục danh sách 1",
    "itemLabel": "Dòng"
+  },
+  {
+   "key": "shop.seo.a1",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "label",
+   "vi": "Có — bảo hành chính hãng theo chính sách Dapper Combat, đổi trả trong 7 ngày.",
+   "en": "Yes — official Dapper Combat warranty with free returns within 7 days.",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 10419,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn",
+   "itemLabel": "Chữ"
   },
   {
    "page": "services",
@@ -5509,6 +5533,20 @@
    "itemLabel": "Dòng"
   },
   {
+   "key": "shop.seo.q2",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "question",
+   "vi": "Làm sao chọn đúng size và màu?",
+   "en": "How do I pick the right size and color?",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 10644,
+   "label": "Thẻ 2 · Câu hỏi",
+   "itemLabel": "Câu hỏi"
+  },
+  {
    "page": "services",
    "section": "services.packages",
    "type": "stat",
@@ -5567,19 +5605,6 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.detail.articleTitle",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "subtitle",
-   "vi": "Về sản phẩm",
-   "en": "About this product",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 10759,
-   "label": "Tiêu đề nhỏ 2"
-  },
-  {
    "page": "services",
    "section": "services.packages",
    "type": "stat",
@@ -5607,6 +5632,20 @@
    "vi": "âm thanh, ánh sáng sân khấu",
    "en": "stage-grade sound & lighting",
    "itemLabel": "Dòng"
+  },
+  {
+   "key": "shop.seo.a2",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "text",
+   "vi": "Tham khảo bảng size và chọn màu ở phần trên; cần tư vấn thêm hãy nhắn Zalo/Facebook Dapper Combat.",
+   "en": "Check the size chart and color options above; for help, message Dapper Combat on Zalo/Facebook.",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 10785,
+   "label": "Thẻ 2 · Đoạn văn",
+   "itemLabel": "Mô tả"
   },
   {
    "page": "services",
@@ -5692,20 +5731,6 @@
    "en": "Pick a size, <em>we build the list.</em>"
   },
   {
-   "key": "shop.detail.reviewsTitle",
-   "page": "shop",
-   "section": "shop.pdp",
-   "type": "subtitle",
-   "vi": "Khách hàng đánh giá",
-   "en": "Customer reviews",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 11048,
-   "label": "Tiêu đề nhỏ 3",
-   "hidden": true
-  },
-  {
    "page": "services",
    "section": "services.packages",
    "type": "text",
@@ -5717,6 +5742,19 @@
    "key": "services.packages.j24",
    "vi": "Ba cấu hình mẫu theo diện tích. Danh mục cuối cùng sẽ được điều chỉnh sau khảo sát để khớp mặt bằng và ngân sách của bạn.",
    "en": "Three sample setups by floor area. The final list is tailored after the survey to fit your space and budget."
+  },
+  {
+   "key": "shop.detail.articleTitle",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "subtitle",
+   "vi": "Về sản phẩm",
+   "en": "About this product",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 11196,
+   "label": "Tiêu đề nhỏ 2"
   },
   {
    "key": "course.fd.classes",
@@ -5747,17 +5785,18 @@
    "itemLabel": "Chú thích dưới số"
   },
   {
-   "key": "shop.detail.related",
+   "key": "shop.detail.reviewsTitle",
    "page": "shop",
    "section": "shop.pdp",
    "type": "subtitle",
-   "vi": "Khách hàng cũng mua",
-   "en": "Customers also bought",
+   "vi": "Khách hàng đánh giá",
+   "en": "Customer reviews",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 11463,
-   "label": "Tiêu đề nhỏ 4"
+   "order": 11485,
+   "label": "Tiêu đề nhỏ 3",
+   "hidden": true
   },
   {
    "page": "services",
@@ -5825,6 +5864,19 @@
    "label": "Nút / liên kết 1"
   },
   {
+   "key": "shop.detail.related",
+   "page": "shop",
+   "section": "shop.pdp",
+   "type": "subtitle",
+   "vi": "Khách hàng cũng mua",
+   "en": "Customers also bought",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 11900,
+   "label": "Tiêu đề nhỏ 4"
+  },
+  {
    "key": "home.edits.s1",
    "page": "home",
    "section": "home.edits",
@@ -5890,19 +5942,6 @@
    "en": "Call "
   },
   {
-   "key": "shop.checkout.continue",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "button",
-   "vi": "← Tiếp tục mua sắm",
-   "en": "← Continue shopping",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 12053,
-   "label": "Nút / liên kết 1"
-  },
-  {
    "page": "services",
    "section": "services.packages",
    "type": "button",
@@ -5929,19 +5968,6 @@
    "en": "* Quotes are sent after the survey and depend on build items and equipment brands."
   },
   {
-   "key": "shop.checkout.title",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "title",
-   "vi": "Thanh toán",
-   "en": "Checkout",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 12191,
-   "label": "Tiêu đề"
-  },
-  {
    "key": "home.edits.t2",
    "page": "home",
    "section": "home.edits",
@@ -5953,19 +5979,6 @@
    "locate": true,
    "order": 12309,
    "label": "Thẻ 2 · Tiêu đề nhỏ"
-  },
-  {
-   "key": "shop.step.cart",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Giỏ hàng",
-   "en": "Cart",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 12367,
-   "label": "Chữ ngắn / nhãn 1"
   },
   {
    "key": "home.edits.s2",
@@ -6050,17 +6063,17 @@
    "label": "Thẻ 2 · Chữ ngắn / nhãn 2"
   },
   {
-   "key": "shop.step.info",
+   "key": "shop.checkout.continue",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "label",
-   "vi": "Thông tin",
-   "en": "Details",
+   "type": "button",
+   "vi": "← Tiếp tục mua sắm",
+   "en": "← Continue shopping",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 12528,
-   "label": "Chữ ngắn / nhãn 2"
+   "order": 12490,
+   "label": "Nút / liên kết 1"
   },
   {
    "page": "services",
@@ -6119,17 +6132,17 @@
    "itemLabel": "Chú thích dưới số"
   },
   {
-   "key": "shop.step.done",
+   "key": "shop.checkout.title",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "label",
-   "vi": "Hoàn tất",
-   "en": "Done",
+   "type": "title",
+   "vi": "Thanh toán",
+   "en": "Checkout",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 12686,
-   "label": "Chữ ngắn / nhãn 3"
+   "order": 12628,
+   "label": "Tiêu đề"
   },
   {
    "page": "services",
@@ -6172,6 +6185,19 @@
    "order": 12758,
    "label": "Thẻ 3 · Số liệu",
    "itemLabel": "Số liệu"
+  },
+  {
+   "key": "shop.step.cart",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Giỏ hàng",
+   "en": "Cart",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 12804,
+   "label": "Chữ ngắn / nhãn 1"
   },
   {
    "key": "course.st.courses",
@@ -6284,6 +6310,19 @@
    "label": "Tiêu đề 2"
   },
   {
+   "key": "shop.step.info",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Thông tin",
+   "en": "Details",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 12965,
+   "label": "Chữ ngắn / nhãn 2"
+  },
+  {
    "key": "course.st.belt",
    "page": "course",
    "section": "course.hero",
@@ -6337,6 +6376,19 @@
    "vi": "Tường gương, ốp tường chống va, sơn & trần.",
    "en": "Mirror walls, impact wall panels, paint and ceilings.",
    "itemLabel": "Mô tả"
+  },
+  {
+   "key": "shop.step.done",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Hoàn tất",
+   "en": "Done",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 13123,
+   "label": "Chữ ngắn / nhãn 3"
   },
   {
    "page": "services",
@@ -6488,20 +6540,6 @@
    "en": "Everything <em>a gym needs.</em>"
   },
   {
-   "key": "shop.checkout.secure",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Thanh toán an toàn & bảo mật",
-   "en": "Secure & encrypted checkout",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 13787,
-   "label": "Thẻ 3 · Chữ ngắn / nhãn",
-   "itemLabel": "Chữ"
-  },
-  {
    "key": "course.ap.p1",
    "page": "course",
    "section": "course.approach",
@@ -6557,19 +6595,6 @@
    "itemLabel": "Diện tích"
   },
   {
-   "key": "shop.checkout.shipInfo",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Thông tin giao hàng",
-   "en": "Shipping information",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 14058,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn"
-  },
-  {
    "key": "course.ap.p2",
    "page": "course",
    "section": "course.approach",
@@ -6584,17 +6609,18 @@
    "itemLabel": "Mô tả"
   },
   {
-   "key": "shop.f.name",
+   "key": "shop.checkout.secure",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "Họ và tên *",
-   "en": "Full name *",
+   "type": "label",
+   "vi": "Thanh toán an toàn & bảo mật",
+   "en": "Secure & encrypted checkout",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 14189,
-   "label": "Thẻ 1 · Tiêu đề nhỏ"
+   "order": 14224,
+   "label": "Thẻ 3 · Chữ ngắn / nhãn",
+   "itemLabel": "Chữ"
   },
   {
    "page": "services",
@@ -6608,19 +6634,6 @@
    "key": "services.catalog.j20",
    "vi": "Xem tại Shop →",
    "en": "See in the Shop →"
-  },
-  {
-   "key": "shop.f.phone",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Số điện thoại *",
-   "en": "Phone number *",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 14357,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn"
   },
   {
    "page": "services",
@@ -6665,17 +6678,17 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.f.email",
+   "key": "shop.checkout.shipInfo",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "Email",
-   "en": "Email",
+   "vi": "Thông tin giao hàng",
+   "en": "Shipping information",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 14498,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn"
+   "order": 14495,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn"
   },
   {
    "key": "course.story.eyebrow",
@@ -6691,6 +6704,19 @@
    "label": "Nhãn nhỏ trên tiêu đề"
   },
   {
+   "key": "shop.f.name",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "Họ và tên *",
+   "en": "Full name *",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 14626,
+   "label": "Thẻ 1 · Tiêu đề nhỏ"
+  },
+  {
    "page": "services",
    "section": "services.process",
    "type": "item",
@@ -6703,19 +6729,6 @@
    "vi": "Thiết kế & dự toán",
    "en": "Design & budget",
    "itemLabel": "Dòng"
-  },
-  {
-   "key": "shop.f.address",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Địa chỉ *",
-   "en": "Address *",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 14648,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
    "key": "course.story.h",
@@ -6772,16 +6785,16 @@
    "label": "Đoạn văn 1"
   },
   {
-   "key": "shop.f.ward",
+   "key": "shop.f.phone",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "Phường / Xã",
-   "en": "Ward",
+   "vi": "Số điện thoại *",
+   "en": "Phone number *",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 14823,
+   "order": 14794,
    "label": "Thẻ 1 · Chữ ngắn / nhãn"
   },
   {
@@ -6827,16 +6840,16 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.f.city",
+   "key": "shop.f.email",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "Tỉnh / Thành phố *",
-   "en": "City / Province *",
+   "vi": "Email",
+   "en": "Email",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 14948,
+   "order": 14935,
    "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
@@ -6867,6 +6880,19 @@
    "itemLabel": "Dòng"
   },
   {
+   "key": "shop.f.address",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Địa chỉ *",
+   "en": "Address *",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 15085,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn"
+  },
+  {
    "page": "services",
    "section": "services.process",
    "type": "item",
@@ -6879,19 +6905,6 @@
    "vi": "2–4 tuần",
    "en": "2–4 weeks",
    "itemLabel": "Dòng"
-  },
-  {
-   "key": "shop.f.note",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Ghi chú",
-   "en": "Note",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 15104,
-   "label": "Thẻ 3 · Đoạn văn"
   },
   {
    "page": "services",
@@ -6949,6 +6962,19 @@
    "label": "Đoạn văn 2"
   },
   {
+   "key": "shop.f.ward",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Phường / Xã",
+   "en": "Ward",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 15260,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn"
+  },
+  {
    "page": "services",
    "section": "services.process",
    "type": "item",
@@ -6961,19 +6987,6 @@
    "vi": "Bàn giao & đồng hành",
    "en": "Handover & support",
    "itemLabel": "Dòng"
-  },
-  {
-   "key": "shop.checkout.payMethod",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Phương thức thanh toán",
-   "en": "Payment method",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 15306,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
    "key": "course.story.p2",
@@ -7017,17 +7030,30 @@
    "itemLabel": "Dòng"
   },
   {
-   "key": "shop.pay.bank",
+   "key": "shop.f.city",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "Chuyển khoản ngân hàng",
-   "en": "Bank transfer",
+   "type": "label",
+   "vi": "Tỉnh / Thành phố *",
+   "en": "City / Province *",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 15556,
-   "label": "Thẻ 1 · Tiêu đề nhỏ"
+   "order": 15385,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn"
+  },
+  {
+   "key": "shop.f.note",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "text",
+   "vi": "Ghi chú",
+   "en": "Note",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 15541,
+   "label": "Thẻ 3 · Đoạn văn"
   },
   {
    "page": "services",
@@ -7056,19 +7082,6 @@
    "en": "Five steps <em>to opening day.</em>"
   },
   {
-   "key": "shop.pay.bankSub",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Nhận thông tin CK sau khi đặt",
-   "en": "Transfer details sent after order",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 15657,
-   "label": "Thẻ 1 · Đoạn văn"
-  },
-  {
    "key": "course.story.p3",
    "page": "course",
    "section": "course.story",
@@ -7080,6 +7093,19 @@
    "locate": true,
    "order": 15703,
    "label": "Đoạn văn 4"
+  },
+  {
+   "key": "shop.checkout.payMethod",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Phương thức thanh toán",
+   "en": "Payment method",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 15743,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
    "page": "services",
@@ -7095,19 +7121,6 @@
    "en": "On average <b>3–6 weeks</b> from survey to opening day."
   },
   {
-   "key": "shop.pay.momo",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "Ví MoMo",
-   "en": "MoMo e-wallet",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 15867,
-   "label": "Thẻ 2 · Tiêu đề nhỏ"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -7119,19 +7132,6 @@
    "key": "course.drawer.j1",
    "vi": "BOOK I — Foundation",
    "en": "BOOK I — Foundation"
-  },
-  {
-   "key": "shop.pay.momoSub",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Quét mã QR bằng app MoMo sau khi đặt",
-   "en": "Scan the QR with MoMo after ordering",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 15953,
-   "label": "Thẻ 2 · Đoạn văn"
   },
   {
    "page": "course",
@@ -7160,6 +7160,19 @@
    "en": ""
   },
   {
+   "key": "shop.pay.bank",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "Chuyển khoản ngân hàng",
+   "en": "Bank transfer",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 15993,
+   "label": "Thẻ 1 · Tiêu đề nhỏ"
+  },
+  {
    "page": "services",
    "section": "services.gallery",
    "type": "subtitle",
@@ -7185,6 +7198,19 @@
    "locate": true,
    "order": 16085,
    "label": "Nhãn nhỏ trên tiêu đề"
+  },
+  {
+   "key": "shop.pay.bankSub",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "text",
+   "vi": "Nhận thông tin CK sau khi đặt",
+   "en": "Transfer details sent after order",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 16094,
+   "label": "Thẻ 1 · Đoạn văn"
   },
   {
    "page": "course",
@@ -7238,19 +7264,6 @@
    "key": "course.drawer.j5",
    "vi": "{sched.found.A.days} — {sched.found.A}",
    "en": "{sched.found.A.days} — {sched.found.A}"
-  },
-  {
-   "key": "shop.pay.zalopay",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "ZaloPay",
-   "en": "ZaloPay",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 16173,
-   "label": "Cách thanh toán — ZaloPay: tên"
   },
   {
    "page": "services",
@@ -7320,19 +7333,6 @@
    "en": "{sched.found.B.days} — {sched.found.B}"
   },
   {
-   "key": "shop.pay.zalopaySub",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Quét mã QR bằng app ZaloPay sau khi đặt",
-   "en": "Scan the QR with ZaloPay after ordering",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 16265,
-   "label": "Cách thanh toán — ZaloPay: dòng mô tả"
-  },
-  {
    "page": "services",
    "section": "services.gallery",
    "type": "subtitle",
@@ -7345,6 +7345,19 @@
    "vi": "Không gian tối giản",
    "en": "Minimal training floor",
    "itemLabel": "Tiêu đề"
+  },
+  {
+   "key": "shop.pay.momo",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "Ví MoMo",
+   "en": "MoMo e-wallet",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 16304,
+   "label": "Thẻ 2 · Tiêu đề nhỏ"
   },
   {
    "page": "course",
@@ -7371,6 +7384,19 @@
    "key": "course.drawer.j9",
    "vi": "Tập cùng HLV · chọn gói theo thời gian",
    "en": "Train with a coach · pick a time plan"
+  },
+  {
+   "key": "shop.pay.momoSub",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "text",
+   "vi": "Quét mã QR bằng app MoMo sau khi đặt",
+   "en": "Scan the QR with MoMo after ordering",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 16390,
+   "label": "Thẻ 2 · Đoạn văn"
   },
   {
    "page": "services",
@@ -7438,6 +7464,32 @@
    "order": 16556,
    "label": "Thẻ 1 · Đoạn văn",
    "itemLabel": "Mô tả"
+  },
+  {
+   "key": "shop.pay.zalopay",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "ZaloPay",
+   "en": "ZaloPay",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 16610,
+   "label": "Cách thanh toán — ZaloPay: tên"
+  },
+  {
+   "key": "shop.pay.zalopaySub",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "text",
+   "vi": "Quét mã QR bằng app ZaloPay sau khi đặt",
+   "en": "Scan the QR with ZaloPay after ordering",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 16702,
+   "label": "Cách thanh toán — ZaloPay: dòng mô tả"
   },
   {
    "page": "course",
@@ -7572,19 +7624,6 @@
    "en": "{sched.gt.pm} · {sched.gt.pm.days}"
   },
   {
-   "key": "shop.pay.vnpay",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "Thẻ ATM / Visa / Mastercard (VNPay)",
-   "en": "ATM / Visa / Mastercard card (VNPay)",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 16898,
-   "label": "Cách thanh toán — thẻ (VNPay): tên (chỉ hiện khi cổng VNPay bật)"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -7622,19 +7661,6 @@
    "key": "services.cta.j1",
    "vi": "Bắt đầu từ một cuộc gọi",
    "en": "It starts with a call"
-  },
-  {
-   "key": "shop.pay.vnpaySub",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Chuyển sang cổng VNPay để thanh toán an toàn",
-   "en": "You'll be taken to VNPay to pay securely",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 17014,
-   "label": "Cách thanh toán — thẻ (VNPay): dòng mô tả"
   },
   {
    "key": "course.why.h3",
@@ -7743,17 +7769,17 @@
    "en": "PT 1-on-1"
   },
   {
-   "key": "shop.pay.installment",
+   "key": "shop.pay.vnpay",
    "page": "shop",
    "section": "shop.checkout",
    "type": "subtitle",
-   "vi": "Trả góp qua thẻ tín dụng (VNPay)",
-   "en": "Credit card installments (VNPay)",
+   "vi": "Thẻ ATM / Visa / Mastercard (VNPay)",
+   "en": "ATM / Visa / Mastercard card (VNPay)",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 17315,
-   "label": "Cách thanh toán — trả góp (VNPay): tên (chỉ hiện khi đã bật trả góp)"
+   "order": 17335,
+   "label": "Cách thanh toán — thẻ (VNPay): tên (chỉ hiện khi cổng VNPay bật)"
   },
   {
    "page": "course",
@@ -7783,17 +7809,17 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.pay.installmentSub",
+   "key": "shop.pay.vnpaySub",
    "page": "shop",
    "section": "shop.checkout",
    "type": "text",
-   "vi": "Chọn ngân hàng và kỳ hạn 3–12 tháng sau khi đặt",
-   "en": "Choose your bank and a 3–12 month term after ordering",
+   "vi": "Chuyển sang cổng VNPay để thanh toán an toàn",
+   "en": "You'll be taken to VNPay to pay securely",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 17440,
-   "label": "Cách thanh toán — trả góp (VNPay): dòng mô tả"
+   "order": 17451,
+   "label": "Cách thanh toán — thẻ (VNPay): dòng mô tả"
   },
   {
    "key": "course.why.p4",
@@ -7875,19 +7901,6 @@
    "en": "Morning"
   },
   {
-   "key": "shop.checkout.order",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "subtitle",
-   "vi": "Đơn hàng",
-   "en": "Your order",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 17681,
-   "label": "Tiêu đề nhỏ"
-  },
-  {
    "page": "services",
    "section": "services.cta",
    "type": "label",
@@ -7912,6 +7925,19 @@
    "key": "course.drawer.j31",
    "vi": "Tối",
    "en": "Evening"
+  },
+  {
+   "key": "shop.pay.installment",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "Trả góp qua thẻ tín dụng (VNPay)",
+   "en": "Credit card installments (VNPay)",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 17752,
+   "label": "Cách thanh toán — trả góp (VNPay): tên (chỉ hiện khi đã bật trả góp)"
   },
   {
    "page": "services",
@@ -7942,6 +7968,19 @@
    "itemLabel": "Mô tả"
   },
   {
+   "key": "shop.pay.installmentSub",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "text",
+   "vi": "Chọn ngân hàng và kỳ hạn 3–12 tháng sau khi đặt",
+   "en": "Choose your bank and a 3–12 month term after ordering",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 17877,
+   "label": "Cách thanh toán — trả góp (VNPay): dòng mô tả"
+  },
+  {
    "key": "course.cv.eyebrow",
    "page": "course",
    "section": "course.cvideo",
@@ -7968,19 +8007,6 @@
    "label": "Tiêu đề"
   },
   {
-   "key": "shop.promo.apply",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "button",
-   "vi": "Áp dụng",
-   "en": "Apply",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18055,
-   "label": "Nút / liên kết 2"
-  },
-  {
    "page": "services",
    "section": "services.why",
    "type": "subtitle",
@@ -7993,6 +8019,19 @@
    "vi": "Một đầu mối",
    "en": "One point of contact",
    "itemLabel": "Tiêu đề"
+  },
+  {
+   "key": "shop.checkout.order",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "subtitle",
+   "vi": "Đơn hàng",
+   "en": "Your order",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 18118,
+   "label": "Tiêu đề nhỏ"
   },
   {
    "key": "course.cv.sub",
@@ -8062,19 +8101,6 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.sum.subtotal",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Tạm tính",
-   "en": "Subtotal",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18366,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn 1"
-  },
-  {
    "page": "services",
    "section": "services.why",
    "type": "text",
@@ -8102,19 +8128,6 @@
    "en": "Pay in full by transfer"
   },
   {
-   "key": "shop.checkout.1",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "1.290.000₫",
-   "en": "1,290,000₫",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18441,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn 2"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -8126,6 +8139,19 @@
    "key": "course.drawer.j35",
    "vi": "Quét QR ngân hàng / MoMo",
    "en": "Bank or MoMo QR"
+  },
+  {
+   "key": "shop.promo.apply",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "button",
+   "vi": "Áp dụng",
+   "en": "Apply",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 18492,
+   "label": "Nút / liên kết 2"
   },
   {
    "key": "course.pr.eyebrow",
@@ -8152,20 +8178,6 @@
    "key": "course.drawer.j36",
    "vi": "Thanh toán tại phòng tập",
    "en": "Pay at the gym"
-  },
-  {
-   "key": "shop.sum.discount",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Giảm giá",
-   "en": "Discount",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18568,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn 1",
-   "hidden": true
   },
   {
    "page": "course",
@@ -8195,20 +8207,6 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.checkout.2",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "0₫",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18643,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn 2",
-   "hidden": true
-  },
-  {
    "key": "course.pr.h",
    "page": "course",
    "section": "course.programs",
@@ -8236,43 +8234,30 @@
    "itemLabel": "Mô tả"
   },
   {
-   "key": "shop.sum.shipping",
+   "key": "shop.sum.subtotal",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "Phí vận chuyển",
-   "en": "Shipping",
+   "vi": "Tạm tính",
+   "en": "Subtotal",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 18751,
-   "label": "Thẻ 3 · Chữ ngắn / nhãn 1"
+   "order": 18803,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn 1"
   },
   {
-   "key": "shop.checkout.3",
+   "key": "shop.checkout.1",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "Miễn phí",
-   "en": "Free",
+   "vi": "1.290.000₫",
+   "en": "1,290,000₫",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 18832,
-   "label": "Thẻ 3 · Chữ ngắn / nhãn 2"
-  },
-  {
-   "key": "shop.sum.total",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "Tổng cộng",
-   "en": "Total",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 18925,
-   "label": "Chữ ngắn / nhãn 5"
+   "order": 18878,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn 2"
   },
   {
    "page": "services",
@@ -8288,17 +8273,18 @@
    "en": "Why Dapper Combat"
   },
   {
-   "key": "shop.checkout.4",
+   "key": "shop.sum.discount",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "stat",
-   "vi": "1.290.000₫",
-   "en": "1,290,000₫",
+   "type": "label",
+   "vi": "Giảm giá",
+   "en": "Discount",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 19007,
-   "label": "Số liệu"
+   "order": 19005,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn 1",
+   "hidden": true
   },
   {
    "page": "services",
@@ -8328,17 +8314,18 @@
    "itemLabel": "Nhãn nhỏ"
   },
   {
-   "key": "shop.checkout.placeOrder",
+   "key": "shop.checkout.2",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "button",
-   "vi": "Đặt hàng · 1.290.000₫",
-   "en": "Place order · 1,290,000₫",
+   "type": "label",
+   "vi": "0₫",
+   "en": null,
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 19090,
-   "label": "Nút / liên kết 3"
+   "order": 19080,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn 2",
+   "hidden": true
   },
   {
    "key": "course.programs.1",
@@ -8355,6 +8342,19 @@
    "itemLabel": "Tiêu đề"
   },
   {
+   "key": "shop.sum.shipping",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Phí vận chuyển",
+   "en": "Shipping",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 19188,
+   "label": "Thẻ 3 · Chữ ngắn / nhãn 1"
+  },
+  {
    "key": "course.prg.d1",
    "page": "course",
    "section": "course.programs",
@@ -8367,6 +8367,19 @@
    "order": 19233,
    "label": "Thẻ 1 · Đoạn văn 1",
    "itemLabel": "Mô tả"
+  },
+  {
+   "key": "shop.checkout.3",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Miễn phí",
+   "en": "Free",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 19269,
+   "label": "Thẻ 3 · Chữ ngắn / nhãn 2"
   },
   {
    "page": "services",
@@ -8397,6 +8410,32 @@
    "itemLabel": "Câu trả lời"
   },
   {
+   "key": "shop.sum.total",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "Tổng cộng",
+   "en": "Total",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 19362,
+   "label": "Chữ ngắn / nhãn 5"
+  },
+  {
+   "key": "shop.checkout.4",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "stat",
+   "vi": "1.290.000₫",
+   "en": "1,290,000₫",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 19444,
+   "label": "Số liệu"
+  },
+  {
    "key": "course.prg.m1",
    "page": "course",
    "section": "course.programs",
@@ -8409,6 +8448,19 @@
    "order": 19454,
    "label": "Thẻ 1 · Chữ ngắn / nhãn 2",
    "itemLabel": "Thông tin phụ"
+  },
+  {
+   "key": "shop.checkout.placeOrder",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "button",
+   "vi": "Đặt hàng · 1.290.000₫",
+   "en": "Place order · 1,290,000₫",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 19527,
+   "label": "Nút / liên kết 3"
   },
   {
    "key": "course.prg.p1",
@@ -8439,19 +8491,6 @@
    "itemLabel": "Câu hỏi"
   },
   {
-   "key": "shop.checkout.freeship",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "text",
-   "vi": "Miễn phí vận chuyển cho đơn từ {ship.free}₫",
-   "en": "Free shipping on orders from {ship.free}₫",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 19611,
-   "label": "Đoạn văn 1"
-  },
-  {
    "page": "services",
    "section": "services.faq",
    "type": "answer",
@@ -8464,20 +8503,6 @@
    "vi": "Thường 3–6 tuần tính từ ngày chốt thiết kế, tùy quy mô và các hạng mục cần gia công.",
    "en": "Usually 3–6 weeks from design sign-off, depending on size and fabricated items.",
    "itemLabel": "Câu trả lời"
-  },
-  {
-   "key": "shop.checkout.10",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "VIETQR",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 19817,
-   "label": "Chữ phương thức thanh toán — chuyển khoản (VietQR)",
-   "itemLabel": "Nhãn góc ảnh"
   },
   {
    "page": "services",
@@ -8508,20 +8533,6 @@
    "itemLabel": "Câu trả lời"
   },
   {
-   "key": "shop.checkout.7",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "MOMO",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 19898,
-   "label": "Chữ ngắn / nhãn 8",
-   "itemLabel": "Nhãn góc ảnh"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "subtitle",
@@ -8549,20 +8560,6 @@
    "itemLabel": "Nhãn nhỏ"
   },
   {
-   "key": "shop.checkout.12",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "ZALOPAY",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 19976,
-   "label": "Chữ phương thức thanh toán — ZaloPay",
-   "itemLabel": "Nhãn góc ảnh"
-  },
-  {
    "key": "home.vbanner.1",
    "page": "home",
    "section": "home.vbanner",
@@ -8576,18 +8573,17 @@
    "label": "Nhãn nhỏ trên tiêu đề 1"
   },
   {
-   "key": "shop.checkout.14",
+   "key": "shop.checkout.freeship",
    "page": "shop",
    "section": "shop.checkout",
-   "type": "label",
-   "vi": "COD",
-   "en": null,
+   "type": "text",
+   "vi": "Miễn phí vận chuyển cho đơn từ {ship.free}₫",
+   "en": "Free shipping on orders from {ship.free}₫",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 20061,
-   "label": "Chữ ngắn / nhãn 11",
-   "itemLabel": "Nhãn góc ảnh"
+   "order": 20048,
+   "label": "Đoạn văn 1"
   },
   {
    "key": "course.programs.2",
@@ -8657,20 +8653,6 @@
    "en": "2 · Details"
   },
   {
-   "key": "shop.checkout.11",
-   "page": "shop",
-   "section": "shop.checkout",
-   "type": "label",
-   "vi": "VISA · MASTERCARD · ATM",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 20138,
-   "label": "Chữ phương thức thanh toán — thẻ (VNPay)",
-   "itemLabel": "Nhãn góc ảnh"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "item",
@@ -8725,17 +8707,31 @@
    "itemLabel": "Câu trả lời"
   },
   {
-   "key": "shop.checkout.13",
+   "key": "shop.checkout.10",
    "page": "shop",
    "section": "shop.checkout",
    "type": "label",
-   "vi": "TRẢ GÓP",
-   "en": "INSTALLMENTS",
+   "vi": "VIETQR",
+   "en": null,
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 20258,
-   "label": "Chữ phương thức thanh toán — trả góp (VNPay)",
+   "order": 20254,
+   "label": "Chữ phương thức thanh toán — chuyển khoản (VietQR)",
+   "itemLabel": "Nhãn góc ảnh"
+  },
+  {
+   "key": "shop.checkout.7",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "MOMO",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 20335,
+   "label": "Chữ ngắn / nhãn 8",
    "itemLabel": "Nhãn góc ảnh"
   },
   {
@@ -8765,6 +8761,20 @@
    "vi": "Có nhận làm ngoài TP.HCM không?",
    "en": "Do you work outside Ho Chi Minh City?",
    "itemLabel": "Câu hỏi"
+  },
+  {
+   "key": "shop.checkout.12",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "ZALOPAY",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 20413,
+   "label": "Chữ phương thức thanh toán — ZaloPay",
+   "itemLabel": "Nhãn góc ảnh"
   },
   {
    "page": "course",
@@ -8808,6 +8818,20 @@
    "itemLabel": "Câu trả lời"
   },
   {
+   "key": "shop.checkout.14",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "COD",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 20498,
+   "label": "Chữ ngắn / nhãn 11",
+   "itemLabel": "Nhãn góc ảnh"
+  },
+  {
    "key": "home.philo.1",
    "page": "home",
    "section": "home.philo",
@@ -8832,6 +8856,20 @@
    "key": "course.drawer.j43",
    "vi": "từ ",
    "en": "from "
+  },
+  {
+   "key": "shop.checkout.11",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "VISA · MASTERCARD · ATM",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 20575,
+   "label": "Chữ phương thức thanh toán — thẻ (VNPay)",
+   "itemLabel": "Nhãn góc ảnh"
   },
   {
    "key": "home.philo.2",
@@ -8860,19 +8898,6 @@
    "en": "/mo"
   },
   {
-   "key": "shop.cart.title",
-   "page": "shop",
-   "section": "shop.cart",
-   "type": "title",
-   "vi": "Giỏ hàng",
-   "en": "Cart",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 20613,
-   "label": "Tiêu đề"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -8897,6 +8922,20 @@
    "key": "course.drawer.j46",
    "vi": "Miễn phí",
    "en": "Free"
+  },
+  {
+   "key": "shop.checkout.13",
+   "page": "shop",
+   "section": "shop.checkout",
+   "type": "label",
+   "vi": "TRẢ GÓP",
+   "en": "INSTALLMENTS",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 20695,
+   "label": "Chữ phương thức thanh toán — trả góp (VNPay)",
+   "itemLabel": "Nhãn góc ảnh"
   },
   {
    "page": "services",
@@ -8968,19 +9007,6 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.cart.1",
-   "page": "shop",
-   "section": "shop.cart",
-   "type": "label",
-   "vi": "1.290.000₫",
-   "en": "1,290,000₫",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 20982,
-   "label": "Thẻ 1 · Chữ ngắn / nhãn"
-  },
-  {
    "key": "home.philo.4",
    "page": "home",
    "section": "home.philo",
@@ -8993,6 +9019,19 @@
    "order": 21005,
    "label": "Đoạn văn 1",
    "itemLabel": "Mô tả"
+  },
+  {
+   "key": "shop.cart.title",
+   "page": "shop",
+   "section": "shop.cart",
+   "type": "title",
+   "vi": "Giỏ hàng",
+   "en": "Cart",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 21050,
+   "label": "Tiêu đề"
   },
   {
    "key": "course.prg.d3",
@@ -9048,19 +9087,6 @@
    "en": "Common <em>questions.</em>"
   },
   {
-   "key": "shop.cart.2",
-   "page": "shop",
-   "section": "shop.cart",
-   "type": "label",
-   "vi": "Miễn phí",
-   "en": "Free",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 21147,
-   "label": "Thẻ 2 · Chữ ngắn / nhãn"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -9085,19 +9111,6 @@
    "key": "services.faq.j15",
    "vi": "Chưa thấy câu trả lời? Nhắn Zalo, HLV phụ trách dự án sẽ trả lời trực tiếp.",
    "en": "Can't find your answer? Message us on Zalo and the project lead will reply directly."
-  },
-  {
-   "key": "shop.cart.totalShort",
-   "page": "shop",
-   "section": "shop.cart",
-   "type": "label",
-   "vi": "Tổng",
-   "en": "Total",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 21234,
-   "label": "Chữ ngắn / nhãn 1"
   },
   {
    "key": "home.philo.5",
@@ -9128,19 +9141,6 @@
    "itemLabel": "Thông tin phụ"
   },
   {
-   "key": "shop.cart.3",
-   "page": "shop",
-   "section": "shop.cart",
-   "type": "stat",
-   "vi": "1.290.000₫",
-   "en": "1,290,000₫",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 21323,
-   "label": "Số liệu"
-  },
-  {
    "key": "course.programs.5",
    "page": "course",
    "section": "course.programs",
@@ -9168,17 +9168,17 @@
    "en": "Phone *"
   },
   {
-   "key": "shop.cart.checkout",
+   "key": "shop.cart.1",
    "page": "shop",
    "section": "shop.cart",
-   "type": "button",
-   "vi": "Thanh toán",
-   "en": "Checkout",
+   "type": "label",
+   "vi": "1.290.000₫",
+   "en": "1,290,000₫",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 21399,
-   "label": "Nút / liên kết"
+   "order": 21419,
+   "label": "Thẻ 1 · Chữ ngắn / nhãn"
   },
   {
    "page": "services",
@@ -9192,6 +9192,19 @@
    "key": "services.faq.j16",
    "vi": "Nhắn Zalo →",
    "en": "Message on Zalo →"
+  },
+  {
+   "key": "shop.cart.2",
+   "page": "shop",
+   "section": "shop.cart",
+   "type": "label",
+   "vi": "Miễn phí",
+   "en": "Free",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 21584,
+   "label": "Thẻ 2 · Chữ ngắn / nhãn"
   },
   {
    "key": "home.philo.6",
@@ -9208,30 +9221,17 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.ok.title",
+   "key": "shop.cart.totalShort",
    "page": "shop",
-   "section": "shop.success",
-   "type": "title",
-   "vi": "Đặt hàng thành công!",
-   "en": "Order placed!",
+   "section": "shop.cart",
+   "type": "label",
+   "vi": "Tổng",
+   "en": "Total",
    "html": false,
    "src": "html",
-   "locate": false,
-   "order": 21662,
-   "label": "Tiêu đề 1"
-  },
-  {
-   "key": "shop.ok.msg",
-   "page": "shop",
-   "section": "shop.success",
-   "type": "text",
-   "vi": "Cảm ơn bạn đã mua sắm tại Dapper Combat. Chúng tôi sẽ liên hệ xác nhận đơn sớm nhất.",
-   "en": "Thank you for shopping at Dapper Combat. We will contact you shortly to confirm your order.",
-   "html": false,
-   "src": "html",
-   "locate": false,
-   "order": 21740,
-   "label": "Đoạn văn 1"
+   "locate": true,
+   "order": 21671,
+   "label": "Chữ ngắn / nhãn 1"
   },
   {
    "key": "course.prg.l4",
@@ -9246,6 +9246,19 @@
    "order": 21758,
    "label": "Thẻ 4 · Chữ ngắn / nhãn 1",
    "itemLabel": "Nhãn nhỏ"
+  },
+  {
+   "key": "shop.cart.3",
+   "page": "shop",
+   "section": "shop.cart",
+   "type": "stat",
+   "vi": "1.290.000₫",
+   "en": "1,290,000₫",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 21760,
+   "label": "Số liệu"
   },
   {
    "key": "home.philo.7",
@@ -9275,6 +9288,19 @@
    "en": "Preferred date"
   },
   {
+   "key": "shop.cart.checkout",
+   "page": "shop",
+   "section": "shop.cart",
+   "type": "button",
+   "vi": "Thanh toán",
+   "en": "Checkout",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 21836,
+   "label": "Nút / liên kết"
+  },
+  {
    "key": "course.programs.6",
    "page": "course",
    "section": "course.programs",
@@ -9302,19 +9328,6 @@
    "en": "Preferred start date"
   },
   {
-   "key": "shop.success.1",
-   "page": "shop",
-   "section": "shop.success",
-   "type": "label",
-   "vi": "#DC-000000",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": false,
-   "order": 21876,
-   "label": "Chữ ngắn / nhãn 1"
-  },
-  {
    "key": "course.prg.d4",
    "page": "course",
    "section": "course.programs",
@@ -9327,19 +9340,6 @@
    "order": 21939,
    "label": "Thẻ 4 · Đoạn văn",
    "itemLabel": "Mô tả"
-  },
-  {
-   "key": "shop.ok.continue",
-   "page": "shop",
-   "section": "shop.success",
-   "type": "button",
-   "vi": "Tiếp tục mua sắm",
-   "en": "Continue shopping",
-   "html": false,
-   "src": "html",
-   "locate": false,
-   "order": 21995,
-   "label": "Nút / liên kết 1"
   },
   {
    "key": "home.philo.8",
@@ -9367,6 +9367,19 @@
    "key": "course.drawer.j52",
    "vi": "Ghi chú cho HLV",
    "en": "Note for the coach"
+  },
+  {
+   "key": "shop.ok.title",
+   "page": "shop",
+   "section": "shop.success",
+   "type": "title",
+   "vi": "Đặt hàng thành công!",
+   "en": "Order placed!",
+   "html": false,
+   "src": "html",
+   "locate": false,
+   "order": 22099,
+   "label": "Tiêu đề 1"
   },
   {
    "page": "services",
@@ -9422,6 +9435,19 @@
    "en": "Tell us <em>about your space.</em>"
   },
   {
+   "key": "shop.ok.msg",
+   "page": "shop",
+   "section": "shop.success",
+   "type": "text",
+   "vi": "Cảm ơn bạn đã mua sắm tại Dapper Combat. Chúng tôi sẽ liên hệ xác nhận đơn sớm nhất.",
+   "en": "Thank you for shopping at Dapper Combat. We will contact you shortly to confirm your order.",
+   "html": false,
+   "src": "html",
+   "locate": false,
+   "order": 22177,
+   "label": "Đoạn văn 1"
+  },
+  {
    "key": "home.philo.9",
    "page": "home",
    "section": "home.philo",
@@ -9463,16 +9489,16 @@
    "en": "Call the hotline or share a few details — we'll call back within 24 hours to book a survey (free within HCMC)."
   },
   {
-   "key": "shop.footer.1",
+   "key": "shop.success.1",
    "page": "shop",
-   "section": "shop.footer",
+   "section": "shop.success",
    "type": "label",
-   "vi": "DAPPER COMBAT",
+   "vi": "#DC-000000",
    "en": null,
    "html": false,
    "src": "html",
-   "locate": true,
-   "order": 22286,
+   "locate": false,
+   "order": 22313,
    "label": "Chữ ngắn / nhãn 1"
   },
   {
@@ -9489,17 +9515,17 @@
    "en": "Payment"
   },
   {
-   "key": "shop.footer.tag",
+   "key": "shop.ok.continue",
    "page": "shop",
-   "section": "shop.footer",
-   "type": "eyebrow",
-   "vi": "Trang bị thi đấu và trang phục tập luyện Dapper Combat — giao hàng toàn quốc.",
-   "en": "Fight gear and training apparel by Dapper Combat — delivered nationwide.",
+   "section": "shop.success",
+   "type": "button",
+   "vi": "Tiếp tục mua sắm",
+   "en": "Continue shopping",
    "html": false,
    "src": "html",
-   "locate": true,
-   "order": 22363,
-   "label": "Câu giới thiệu dưới tên thương hiệu"
+   "locate": false,
+   "order": 22432,
+   "label": "Nút / liên kết 1"
   },
   {
    "key": "course.prg.l5",
@@ -9514,20 +9540,6 @@
    "order": 22606,
    "label": "Thẻ 5 · Chữ ngắn / nhãn 1",
    "itemLabel": "Nhãn nhỏ"
-  },
-  {
-   "key": "shop.footer.h1",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "subtitle",
-   "vi": "SHOP",
-   "en": "SHOP",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 22641,
-   "label": "Tiêu đề cột liên kết",
-   "itemLabel": "Tiêu đề"
   },
   {
    "page": "course",
@@ -9557,6 +9569,19 @@
    "itemLabel": "Tiêu đề"
   },
   {
+   "key": "shop.footer.1",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "label",
+   "vi": "DAPPER COMBAT",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 22723,
+   "label": "Chữ ngắn / nhãn 1"
+  },
+  {
    "key": "home.instructor.1",
    "page": "home",
    "section": "home.instructor",
@@ -9570,18 +9595,17 @@
    "label": "Chữ ngắn / nhãn 1"
   },
   {
-   "key": "shop.footer.l1",
+   "key": "shop.footer.tag",
    "page": "shop",
    "section": "shop.footer",
-   "type": "button",
-   "vi": "Tất cả sản phẩm",
-   "en": "All products",
+   "type": "eyebrow",
+   "vi": "Trang bị thi đấu và trang phục tập luyện Dapper Combat — giao hàng toàn quốc.",
+   "en": "Fight gear and training apparel by Dapper Combat — delivered nationwide.",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 22778,
-   "label": "Liên kết — Tất cả sản phẩm",
-   "itemLabel": "Chữ trên link"
+   "order": 22800,
+   "label": "Câu giới thiệu dưới tên thương hiệu"
   },
   {
    "key": "course.prg.d5",
@@ -9622,20 +9646,6 @@
    "locate": true,
    "order": 22866,
    "label": "Nhãn nhỏ trên tiêu đề 1"
-  },
-  {
-   "key": "shop.footer.l2",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Găng tay",
-   "en": "Gloves",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 22929,
-   "label": "Liên kết — Găng tay",
-   "itemLabel": "Chữ trên link"
   },
   {
    "page": "course",
@@ -9730,18 +9740,18 @@
    "label": "Chữ ngắn / nhãn 2"
   },
   {
-   "key": "shop.footer.l3",
+   "key": "shop.footer.h1",
    "page": "shop",
    "section": "shop.footer",
-   "type": "button",
-   "vi": "Áo & Hoodie",
-   "en": "Apparel",
+   "type": "subtitle",
+   "vi": "SHOP",
+   "en": "SHOP",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 23076,
-   "label": "Liên kết — Áo & Hoodie",
-   "itemLabel": "Chữ trên link"
+   "order": 23078,
+   "label": "Tiêu đề cột liên kết",
+   "itemLabel": "Tiêu đề"
   },
   {
    "key": "course.prg.p5",
@@ -9823,6 +9833,20 @@
    "label": "Đoạn văn"
   },
   {
+   "key": "shop.footer.l1",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Tất cả sản phẩm",
+   "en": "All products",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 23215,
+   "label": "Liên kết — Tất cả sản phẩm",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -9836,20 +9860,6 @@
    "en": "Booking code"
   },
   {
-   "key": "shop.footer.l4",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Phụ kiện",
-   "en": "Accessories",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 23229,
-   "label": "Liên kết — Phụ kiện",
-   "itemLabel": "Chữ trên link"
-  },
-  {
    "page": "course",
    "section": "course.drawer",
    "type": "label",
@@ -9861,6 +9871,20 @@
    "key": "course.drawer.j59",
    "vi": "Chương trình",
    "en": "Program"
+  },
+  {
+   "key": "shop.footer.l2",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Găng tay",
+   "en": "Gloves",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 23366,
+   "label": "Liên kết — Găng tay",
+   "itemLabel": "Chữ trên link"
   },
   {
    "page": "services",
@@ -9887,20 +9911,6 @@
    "key": "course.drawer.j60",
    "vi": "Chi tiết",
    "en": "Details"
-  },
-  {
-   "key": "shop.footer.h2",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "subtitle",
-   "vi": "DAPPER COMBAT",
-   "en": "DAPPER COMBAT",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 23430,
-   "label": "Tiêu đề cột liên kết",
-   "itemLabel": "Tiêu đề"
   },
   {
    "key": "course.gal.eyebrow",
@@ -9942,6 +9952,20 @@
    "en": "Tuition"
   },
   {
+   "key": "shop.footer.l3",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Áo & Hoodie",
+   "en": "Apparel",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 23513,
+   "label": "Liên kết — Áo & Hoodie",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "key": "home.instructor.6",
    "page": "home",
    "section": "home.instructor",
@@ -9967,20 +9991,6 @@
    "locate": true,
    "order": 23572,
    "label": "Tiêu đề"
-  },
-  {
-   "key": "shop.footer.l5",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Trang chủ",
-   "en": "Home",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 23585,
-   "label": "Liên kết — Trang chủ",
-   "itemLabel": "Chữ trên link"
   },
   {
    "page": "services",
@@ -10023,6 +10033,20 @@
    "itemLabel": "Nhãn nhỏ"
   },
   {
+   "key": "shop.footer.l4",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Phụ kiện",
+   "en": "Accessories",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 23666,
+   "label": "Liên kết — Phụ kiện",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "page": "services",
    "section": "services.contact",
    "type": "label",
@@ -10034,20 +10058,6 @@
    "key": "services.contact.j10",
    "vi": "Gửi bản vẽ bố trí & dự toán",
    "en": "Send layout drawings and budget"
-  },
-  {
-   "key": "shop.footer.l6",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Khóa học Boxing",
-   "en": "Boxing classes",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 23718,
-   "label": "Liên kết — Khóa học Boxing",
-   "itemLabel": "Chữ trên link"
   },
   {
    "key": "home.instructor.8",
@@ -10104,18 +10114,18 @@
    "en": "Send photos of your space on Zalo"
   },
   {
-   "key": "shop.footer.l7",
+   "key": "shop.footer.h2",
    "page": "shop",
    "section": "shop.footer",
-   "type": "button",
-   "vi": "Dịch vụ Setup",
-   "en": "Gym Setup",
+   "type": "subtitle",
+   "vi": "DAPPER COMBAT",
+   "en": "DAPPER COMBAT",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 23875,
-   "label": "Liên kết — Dịch vụ Setup",
-   "itemLabel": "Chữ trên link"
+   "order": 23867,
+   "label": "Tiêu đề cột liên kết",
+   "itemLabel": "Tiêu đề"
   },
   {
    "page": "services",
@@ -10144,17 +10154,17 @@
    "en": "Demo QR — to be replaced with the gym's real VietQR."
   },
   {
-   "key": "shop.footer.l8",
+   "key": "shop.footer.l5",
    "page": "shop",
    "section": "shop.footer",
    "type": "button",
-   "vi": "Liên hệ",
-   "en": "Contact",
+   "vi": "Trang chủ",
+   "en": "Home",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 24030,
-   "label": "Liên kết — Liên hệ",
+   "order": 24022,
+   "label": "Liên kết — Trang chủ",
    "itemLabel": "Chữ trên link"
   },
   {
@@ -10199,6 +10209,20 @@
    "en": "Free consultation request"
   },
   {
+   "key": "shop.footer.l6",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Khóa học Boxing",
+   "en": "Boxing classes",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 24155,
+   "label": "Liên kết — Khóa học Boxing",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "page": "services",
    "section": "services.contact",
    "type": "text",
@@ -10223,20 +10247,6 @@
    "key": "course.drawer.j65",
    "vi": "Nhắn Zalo để xác nhận nhanh",
    "en": "Message us on Zalo"
-  },
-  {
-   "key": "shop.footer.h3",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "subtitle",
-   "vi": "CHÍNH SÁCH",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 24237,
-   "label": "Thẻ 3 · Tiêu đề nhỏ",
-   "itemLabel": "Tiêu đề"
   },
   {
    "key": "home.instructor.12",
@@ -10266,6 +10276,20 @@
    "en": "Type of space *"
   },
   {
+   "key": "shop.footer.l7",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Dịch vụ Setup",
+   "en": "Gym Setup",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 24312,
+   "label": "Liên kết — Dịch vụ Setup",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "key": "home.instructor.13",
    "page": "home",
    "section": "home.instructor",
@@ -10292,20 +10316,6 @@
    "vi": "Phòng gym",
    "en": "Gym",
    "itemLabel": "Tiêu đề"
-  },
-  {
-   "key": "shop.footer.p1",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Đổi trả & bảo hành",
-   "en": "Returns & warranty",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 24384,
-   "label": "Chính sách — Đổi trả & bảo hành",
-   "itemLabel": "Chữ trên link"
   },
   {
    "page": "services",
@@ -10363,6 +10373,20 @@
    "itemLabel": "Số liệu"
   },
   {
+   "key": "shop.footer.l8",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Liên hệ",
+   "en": "Contact",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 24467,
+   "label": "Liên kết — Liên hệ",
+   "itemLabel": "Chữ trên link"
+  },
+  {
    "page": "services",
    "section": "services.contact",
    "type": "subtitle",
@@ -10418,20 +10442,6 @@
    "itemLabel": "Tiêu đề"
   },
   {
-   "key": "shop.footer.p2",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Giao hàng & thanh toán",
-   "en": "Shipping & payment",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 24572,
-   "label": "Chính sách — Giao hàng & thanh toán",
-   "itemLabel": "Chữ trên link"
-  },
-  {
    "page": "services",
    "section": "services.contact",
    "type": "label",
@@ -10483,6 +10493,20 @@
    "order": 24649,
    "label": "Thẻ 4 · Số liệu",
    "itemLabel": "Số liệu"
+  },
+  {
+   "key": "shop.footer.h3",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "subtitle",
+   "vi": "CHÍNH SÁCH",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 24674,
+   "label": "Thẻ 3 · Tiêu đề nhỏ",
+   "itemLabel": "Tiêu đề"
   },
   {
    "page": "course",
@@ -10538,17 +10562,17 @@
    "en": "Services you need"
   },
   {
-   "key": "shop.footer.p3",
+   "key": "shop.footer.p1",
    "page": "shop",
    "section": "shop.footer",
    "type": "button",
-   "vi": "Chính sách bảo mật",
-   "en": "Privacy policy",
+   "vi": "Đổi trả & bảo hành",
+   "en": "Returns & warranty",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 24777,
-   "label": "Chính sách — Chính sách bảo mật",
+   "order": 24821,
+   "label": "Chính sách — Đổi trả & bảo hành",
    "itemLabel": "Chữ trên link"
   },
   {
@@ -10620,20 +10644,6 @@
    "en": "{hssv.month}đ/month × {hssv.months} months"
   },
   {
-   "key": "shop.footer.p4",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "button",
-   "vi": "Điều khoản sử dụng",
-   "en": "Terms of use",
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 24953,
-   "label": "Chính sách — Điều khoản sử dụng",
-   "itemLabel": "Chữ trên link"
-  },
-  {
    "key": "course.hssv.name",
    "page": "course",
    "section": "course.pricing",
@@ -10646,6 +10656,20 @@
    "order": 24958,
    "label": "Thẻ 1 · Tiêu đề nhỏ",
    "itemLabel": "Tiêu đề"
+  },
+  {
+   "key": "shop.footer.p2",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Giao hàng & thanh toán",
+   "en": "Shipping & payment",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 25009,
+   "label": "Chính sách — Giao hàng & thanh toán",
+   "itemLabel": "Chữ trên link"
   },
   {
    "page": "services",
@@ -10767,17 +10791,18 @@
    "itemLabel": "Giá"
   },
   {
-   "key": "shop.footer.copy",
+   "key": "shop.footer.p3",
    "page": "shop",
    "section": "shop.footer",
-   "type": "label",
-   "vi": "© 2026 DAPPER COMBAT. Bảo lưu mọi quyền.",
-   "en": "© 2026 DAPPER COMBAT. All rights reserved.",
+   "type": "button",
+   "vi": "Chính sách bảo mật",
+   "en": "Privacy policy",
    "html": false,
    "src": "html",
    "locate": true,
-   "order": 25207,
-   "label": "Chữ ngắn / nhãn 2"
+   "order": 25214,
+   "label": "Chính sách — Chính sách bảo mật",
+   "itemLabel": "Chữ trên link"
   },
   {
    "page": "course",
@@ -10846,19 +10871,6 @@
    "en": "Full tuition"
   },
   {
-   "key": "shop.footer.2",
-   "page": "shop",
-   "section": "shop.footer",
-   "type": "label",
-   "vi": "FIGHT LIFESTYLE",
-   "en": null,
-   "html": false,
-   "src": "html",
-   "locate": true,
-   "order": 25337,
-   "label": "Chữ ngắn / nhãn 3"
-  },
-  {
    "page": "services",
    "section": "services.contact",
    "type": "label",
@@ -10870,6 +10882,20 @@
    "key": "services.contact.j28",
    "vi": "Tỉnh / thành phố",
    "en": "City / province"
+  },
+  {
+   "key": "shop.footer.p4",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "button",
+   "vi": "Điều khoản sử dụng",
+   "en": "Terms of use",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 25390,
+   "label": "Chính sách — Điều khoản sử dụng",
+   "itemLabel": "Chữ trên link"
   },
   {
    "page": "course",
@@ -10952,6 +10978,19 @@
    "itemLabel": "Dòng"
   },
   {
+   "key": "shop.footer.copy",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "label",
+   "vi": "© 2026 DAPPER COMBAT. Bảo lưu mọi quyền.",
+   "en": "© 2026 DAPPER COMBAT. All rights reserved.",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 25644,
+   "label": "Chữ ngắn / nhãn 2"
+  },
+  {
    "page": "services",
    "section": "services.contact",
    "type": "subtitle",
@@ -11006,6 +11045,19 @@
    "vi": "100–300 triệu",
    "en": "100–300M VND",
    "itemLabel": "Tiêu đề"
+  },
+  {
+   "key": "shop.footer.2",
+   "page": "shop",
+   "section": "shop.footer",
+   "type": "label",
+   "vi": "FIGHT LIFESTYLE",
+   "en": null,
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "order": 25774,
+   "label": "Chữ ngắn / nhãn 3"
   },
   {
    "page": "services",
@@ -16778,14 +16830,14 @@
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 2",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 54552,
    "key": "shop.pdp.now",
    "vi": "Trong TP.HCM: giao ngay {ship.now.eta} tiếng qua Lalamove ({ship.now.from}–{ship.now.to})",
-   "en": "In HCMC: same-day delivery in {ship.now.eta} hours via Lalamove ({ship.now.from}–{ship.now.to})",
-   "label": "Chữ ngắn / nhãn 2"
+   "en": "In HCMC: same-day delivery in {ship.now.eta} hours via Lalamove ({ship.now.from}–{ship.now.to})"
   },
   {
    "key": "home.locate.8",
@@ -17180,32 +17232,6 @@
    "key": "shop.pdp.howto.k",
    "vi": "Hướng dẫn sử dụng",
    "en": "How to use"
-  },
-  {
-   "page": "shop",
-   "section": "shop.other",
-   "type": "label",
-   "label": "Chữ ngắn / nhãn 4",
-   "html": false,
-   "src": "js",
-   "locate": false,
-   "order": 58222,
-   "key": "shop.pdp.howto.h",
-   "vi": "Dùng đúng ngay từ lần đầu",
-   "en": "Get it right from day one"
-  },
-  {
-   "page": "shop",
-   "section": "shop.other",
-   "type": "text",
-   "label": "Đoạn văn 3",
-   "html": false,
-   "src": "js",
-   "locate": false,
-   "order": 58356,
-   "key": "shop.pdp.howto.p",
-   "vi": "Xem video trước khi dùng để gắn đúng, dùng bền. Chỗ nào chưa rõ thì nhắn Dapper Combat qua Zalo hoặc Facebook, tụi mình chỉ thêm.",
-   "en": "Watch this before your first session so it fits right and lasts. Anything unclear, message Dapper Combat on Zalo or Facebook and we will help."
   },
   {
    "key": "home.locate.14",
@@ -18396,235 +18422,235 @@
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 12",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 85823,
    "key": "shop.list.k.fav",
    "vi": "Đã lưu",
-   "en": "Saved",
-   "label": "Chữ ngắn / nhãn 12"
+   "en": "Saved"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 13",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 85925,
    "key": "shop.list.k.ao",
    "vi": "Dapper Dudes",
-   "en": "Dapper Dudes",
-   "label": "Chữ ngắn / nhãn 13"
+   "en": "Dapper Dudes"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 14",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 86040,
    "key": "shop.list.k.gang",
    "vi": "Dapper Combat × Dapper Dudes",
-   "en": "Dapper Combat × Dapper Dudes",
-   "label": "Chữ ngắn / nhãn 14"
+   "en": "Dapper Combat × Dapper Dudes"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 15",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 86171,
    "key": "shop.list.k.all",
    "vi": "Dapper Combat Store",
-   "en": "Dapper Combat Store",
-   "label": "Chữ ngắn / nhãn 15"
+   "en": "Dapper Combat Store"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 16",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 97686,
    "key": "shop.ship.now.recap",
    "vi": "Giao ngay · trong {ship.now.eta} tiếng sau khi xác nhận",
-   "en": "Same-day · within {ship.now.eta} hours of confirmation",
-   "label": "Chữ ngắn / nhãn 16"
+   "en": "Same-day · within {ship.now.eta} hours of confirmation"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 17",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 97866,
    "key": "shop.ship.std.recap",
    "vi": "Viettel Post · dự kiến ",
-   "en": "Viettel Post · arrives ",
-   "label": "Chữ ngắn / nhãn 17"
+   "en": "Viettel Post · arrives "
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 18",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 98630,
    "key": "shop.ship.now.s",
    "vi": "Nhận hàng trong {ship.now.eta} tiếng sau khi Dapper xác nhận đơn",
-   "en": "Arrives within {ship.now.eta} hours of order confirmation",
-   "label": "Chữ ngắn / nhãn 18"
+   "en": "Arrives within {ship.now.eta} hours of order confirmation"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "text",
+   "label": "Đoạn văn 4",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 98832,
    "key": "shop.ship.now.closed",
-   "vi": "Giao ngay nhận đơn từ {ship.now.from} đến {ship.now.to} mỗi ngày — hẹn bạn trong khung giờ này nhé",
-   "en": "Same-day orders are taken from {ship.now.from} to {ship.now.to} daily",
-   "label": "Đoạn văn 4"
+   "vi": "Dapper nhận đơn giao ngay từ {ship.now.from} đến {ship.now.to} mỗi ngày, hẹn bạn trong khung giờ này nhé",
+   "en": "Same-day orders are taken from {ship.now.from} to {ship.now.to} daily"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 19",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 99090,
    "key": "shop.ship.now.city",
    "vi": "Chỉ áp dụng cho địa chỉ trong TP.HCM",
-   "en": "Available for Ho Chi Minh City addresses only",
-   "label": "Chữ ngắn / nhãn 19"
+   "en": "Available for Ho Chi Minh City addresses only"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 20",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 99245,
    "key": "shop.ship.now.hint",
    "vi": "Dành cho địa chỉ trong TP.HCM · nhận trong {ship.now.eta} tiếng sau khi xác nhận",
-   "en": "For Ho Chi Minh City addresses · arrives within {ship.now.eta} hours of confirmation",
-   "label": "Chữ ngắn / nhãn 20"
+   "en": "For Ho Chi Minh City addresses · arrives within {ship.now.eta} hours of confirmation"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 21",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 99500,
    "key": "shop.ship.std.n",
    "vi": "Giao tiêu chuẩn · Viettel Post",
-   "en": "Standard · Viettel Post",
-   "label": "Chữ ngắn / nhãn 21"
+   "en": "Standard · Viettel Post"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 22",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 99618,
    "key": "shop.ship.std.s",
    "vi": "{ship.eta} ngày làm việc · dự kiến ",
-   "en": "{ship.eta} business days · arrives ",
-   "label": "Chữ ngắn / nhãn 22"
+   "en": "{ship.eta} business days · arrives "
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 23",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 99832,
    "key": "shop.ship.now.n",
    "vi": "Giao ngay nội thành · Lalamove",
-   "en": "Same-day in HCMC · Lalamove",
-   "label": "Chữ ngắn / nhãn 23"
+   "en": "Same-day in HCMC · Lalamove"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 24",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 100097,
    "key": "shop.ship.now.tag",
    "vi": "Nhanh nhất",
-   "en": "Fastest",
-   "label": "Chữ ngắn / nhãn 24"
+   "en": "Fastest"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 25",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 117566,
    "key": "shop.ship.now.step",
    "vi": "Lalamove giao trong {ship.now.eta} tiếng",
-   "en": "Lalamove delivers within {ship.now.eta} hours",
-   "label": "Chữ ngắn / nhãn 25"
+   "en": "Lalamove delivers within {ship.now.eta} hours"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 26",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 117720,
    "key": "shop.ship.std.step",
    "vi": "Viettel Post · {ship.eta} ngày làm việc",
-   "en": "Viettel Post · {ship.eta} business days",
-   "label": "Chữ ngắn / nhãn 26"
+   "en": "Viettel Post · {ship.eta} business days"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "label",
+   "label": "Chữ ngắn / nhãn 27",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 120165,
    "key": "shop.success.codAmt",
    "vi": "Số tiền trả khi nhận hàng",
-   "en": "Amount to pay on delivery",
-   "label": "Chữ ngắn / nhãn 27"
+   "en": "Amount to pay on delivery"
   },
   {
    "page": "shop",
    "section": "shop.other",
    "type": "text",
+   "label": "Đoạn văn 5",
+   "html": false,
    "src": "js",
    "locate": false,
-   "html": false,
    "order": 120364,
    "key": "shop.success.cod",
    "vi": "Bạn kiểm tra hàng rồi trả tiền mặt cho người giao. Dapper Combat sẽ gọi hoặc nhắn Zalo để xác nhận đơn trước khi gửi.",
-   "en": "Check your order, then pay the courier in cash. Dapper Combat will call or message you on Zalo to confirm before shipping.",
-   "label": "Đoạn văn 5"
+   "en": "Check your order, then pay the courier in cash. Dapper Combat will call or message you on Zalo to confirm before shipping."
   },
   {
    "page": "shop",
@@ -31350,6 +31376,18 @@
    "vi": "Áp dụng cho đơn từ {min}"
   },
   {
+   "page": "shop",
+   "html": false,
+   "src": "html",
+   "locate": true,
+   "en": null,
+   "key": "shop.pdp.zalo",
+   "section": "shop.pdp",
+   "type": "label",
+   "label": "Logo thanh toán — ZaloPay",
+   "vi": "ZaloPay"
+  },
+  {
    "page": "global",
    "html": false,
    "src": "js",
@@ -40931,7 +40969,7 @@
    "page": "shop",
    "section": "shop.pdp",
    "label": "Icon cạnh “Chuyển khoản”",
-   "svg": "<svg class=\"pl-ic bank\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 10l9-5 9 5\"/><path d=\"M5 10v8m14-8v8M9 10v8m6-8v8\"/><path d=\"M3 20h18\"/></svg>",
+   "svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/><path d=\"M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3\"/></svg>",
    "src": "html",
    "count": 1
   },
@@ -42455,7 +42493,7 @@
  "palette": [
   {
    "hex": "#FFFFFF",
-   "n": 622,
+   "n": 625,
    "pages": [
     "home",
     "course",
@@ -42577,7 +42615,7 @@
   },
   {
    "hex": "#0068FF",
-   "n": 9,
+   "n": 10,
    "pages": [
     "home",
     "shop"
@@ -42602,6 +42640,15 @@
     "course",
     "shop",
     "services"
+   ],
+   "group": "neutral"
+  },
+  {
+   "hex": "#15181C",
+   "n": 9,
+   "pages": [
+    "shop",
+    "global"
    ],
    "group": "neutral"
   },
@@ -42717,15 +42764,6 @@
    "group": "neutral"
   },
   {
-   "hex": "#15181C",
-   "n": 7,
-   "pages": [
-    "shop",
-    "global"
-   ],
-   "group": "neutral"
-  },
-  {
    "hex": "#F4F4F4",
    "n": 6,
    "pages": [
@@ -42772,6 +42810,15 @@
    "group": "neutral"
   },
   {
+   "hex": "#005BAA",
+   "n": 5,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "other"
+  },
+  {
    "hex": "#E9E6E2",
    "n": 5,
    "pages": [
@@ -42786,6 +42833,15 @@
     "shop"
    ],
    "group": "warm"
+  },
+  {
+   "hex": "#D9D9D9",
+   "n": 5,
+   "pages": [
+    "shop",
+    "global"
+   ],
+   "group": "neutral"
   },
   {
    "hex": "#7A7A7A",
@@ -42842,7 +42898,15 @@
    "group": "neutral"
   },
   {
-   "hex": "#005BAA",
+   "hex": "#A50064",
+   "n": 4,
+   "pages": [
+    "shop"
+   ],
+   "group": "warm"
+  },
+  {
+   "hex": "#0B3B66",
    "n": 4,
    "pages": [
     "shop",
@@ -42867,14 +42931,6 @@
    "group": "warm"
   },
   {
-   "hex": "#D9D9D9",
-   "n": 4,
-   "pages": [
-    "global"
-   ],
-   "group": "neutral"
-  },
-  {
    "hex": "#5AA9E6",
    "n": 3,
    "pages": [
@@ -42891,6 +42947,15 @@
    "group": "warm"
   },
   {
+   "hex": "#222222",
+   "n": 3,
+   "pages": [
+    "course",
+    "shop"
+   ],
+   "group": "neutral"
+  },
+  {
    "hex": "#F6F6F6",
    "n": 3,
    "pages": [
@@ -42901,11 +42966,10 @@
    "group": "neutral"
   },
   {
-   "hex": "#0B3B66",
+   "hex": "#1A1F71",
    "n": 3,
    "pages": [
-    "shop",
-    "global"
+    "shop"
    ],
    "group": "other"
   },
@@ -42941,6 +43005,14 @@
     "global"
    ],
    "group": "other"
+  },
+  {
+   "hex": "#C8102E",
+   "n": 3,
+   "pages": [
+    "shop"
+   ],
+   "group": "warm"
   },
   {
    "hex": "#444444",
@@ -43035,14 +43107,6 @@
    "group": "other"
   },
   {
-   "hex": "#222222",
-   "n": 2,
-   "pages": [
-    "course"
-   ],
-   "group": "neutral"
-  },
-  {
    "hex": "#B5B5B5",
    "n": 2,
    "pages": [
@@ -43050,22 +43114,6 @@
     "services"
    ],
    "group": "neutral"
-  },
-  {
-   "hex": "#A50064",
-   "n": 2,
-   "pages": [
-    "shop"
-   ],
-   "group": "warm"
-  },
-  {
-   "hex": "#1A1F71",
-   "n": 2,
-   "pages": [
-    "shop"
-   ],
-   "group": "other"
   },
   {
    "hex": "#EB001B",
@@ -43509,14 +43557,6 @@
     "shop"
    ],
    "group": "neutral"
-  },
-  {
-   "hex": "#C8102E",
-   "n": 1,
-   "pages": [
-    "shop"
-   ],
-   "group": "warm"
   },
   {
    "hex": "#7A1F19",
