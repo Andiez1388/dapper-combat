@@ -1859,3 +1859,13 @@ body.cx-on .v3-stock,body.cx-on .v3-ship{display:none!important;}
 .v3-sopt-tag{display:inline-block;margin-left:8px;padding:2px 6px;font-family:var(--f-mono);font-size:0.56rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:#fff;background:var(--red,#c8102e);vertical-align:2px;}
 .v3-sopt small{text-transform:none;letter-spacing:0.01em;font-size:0.7rem;line-height:1.45;}
 .v3-ship .v3-now{color:var(--ink);}
+/* video hướng dẫn sử dụng: ngay dưới bộ ảnh, tràn hết chiều ngang cột ảnh */
+#detailView .v3-hv[hidden]{display:none;}
+#detailView .v3-hv{margin-top:3px;background:#0b0b0b;}
+.v3-hv-k{display:flex;align-items:center;gap:.6rem;padding:14px 18px;font-family:var(--f-mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;}
+.v3-hv-k::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--red,#c8102e);box-shadow:0 0 0 4px rgba(200,16,46,.25);}
+.v3-hv-frame{position:relative;width:100%;background:#0b0b0b;}
+.v3-hv-frame video{display:block;width:100%;height:auto;max-height:88vh;object-fit:contain;background:#0b0b0b;}
+.v3-hv-frame.is-yt{aspect-ratio:16/9;}
+.v3-hv-frame.is-yt.is-short{aspect-ratio:9/16;max-height:88vh;margin:0 auto;width:auto;height:88vh;max-width:100%;}
+.v3-hv-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}

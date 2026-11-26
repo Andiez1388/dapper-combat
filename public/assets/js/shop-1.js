@@ -372,6 +372,8 @@ function v3Render(){
     return '<button type="button" class="v3-ctile v3-csw'+(c[0]===detailColor?' sel':'')+(oos?' oos':'')+'" data-color="'+c[0]+'"'+(oos?' aria-disabled="true"':'')+' title="'+DC.esc(cn(p,c[0]))+'" aria-label="'+DC.esc(cn(p,c[0]))+'" aria-pressed="'+(c[0]===detailColor)+'"><i style="background:'+c[1]+'"></i></button>';
   }).join("");
   $("v3Fit").textContent=v3T(DC.x("shop.pdp.j27",0,"Form chuẩn Dapper Combat. Nếu phân vân giữa 2 size, chọn size lớn hơn để thoải mái khi tập."),DC.x("shop.pdp.j27",1,"True-to-size Dapper Combat fit. Between sizes? Size up for comfort while training."));
+  /* chỉ 1 size (vd Lace N Loop): không cần chọn size, hướng dẫn size, gợi ý chọn size */
+  var one=p.sizes.length<=1,sr=document.querySelector("#detailView .opt-size");if(sr)sr.style.display=one?"none":"";$("v3Fit").style.display=one?"none":"";
   $("v3Ship").innerHTML='<span class="v3-eta">'+v3T(DC.x("shop.pdp.j28",0,"Giao dự kiến "),DC.x("shop.pdp.j28",1,"Arrives "))+'<b>'+v3pEta()+'</b></span>'+(DC.setting("shop.expressEnabled",true)?'<span class="v3-now">'+v3T(DC.x("shop.pdp.now",0,"Trong TP.HCM: giao ngay {ship.now.eta} tiếng qua Lalamove ({ship.now.from}–{ship.now.to})"),DC.x("shop.pdp.now",1,"In HCMC: same-day delivery in {ship.now.eta} hours via Lalamove ({ship.now.from}–{ship.now.to})"))+'</span>':'')+'<span>'+v3T(DC.x("shop.pdp.j29",0,"Miễn phí giao hàng cho đơn từ {ship.free}₫"),DC.x("shop.pdp.j29",1,"Free shipping on orders over {ship.free}₫"))+'</span><span>'+v3T(DC.x("shop.pdp.j30",0,"Đổi trả 7 ngày · Hàng chính hãng"),DC.x("shop.pdp.j30",1,"7-day returns · Authentic gear"))+'</span>';
   var fi=document.querySelector("#dAcc .acc-item .acc-inner");
   if(fi&&!fi.querySelector(".v3-feats"))fi.insertAdjacentHTML("beforeend",'<ul class="v3-feats">'+featsOf(p).map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul>');
@@ -406,16 +408,18 @@ function v3Contact(p){
 /* video hướng dẫn sử dụng (Sản phẩm → Video hướng dẫn): file MP4/WEBM hoặc link YouTube */
 function v3YtId(u){var m=String(u||"").match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i);return m?m[1]:"";}
 function v3Howto(p){
-  var box=$("v3Howto");if(!box)return;
+  /* video hướng dẫn nằm ngay dưới bộ ảnh, tràn hết chiều ngang cột ảnh (máy tính) / màn hình (điện thoại) */
+  var old=$("v3Howto");if(old){old.hidden=true;old.innerHTML="";}
+  var box=$("v3HowtoG"),more=$("v3More");
+  if(!box&&more){more.insertAdjacentHTML("afterend",'<div class="v3-hv" id="v3HowtoG" hidden></div>');box=$("v3HowtoG");}
+  if(!box)return;
   var u=p.howto||"",y=v3YtId(u),k=p.id+"|"+lang+"|"+u;
   if(box.getAttribute("data-k")===k)return;box.setAttribute("data-k",k);
   if(!u||(!y&&!/^\/assets\/(uploads|media)\/[\w.-]+\.(mp4|webm)$|^https:\/\/[^\s"'<>]+\.(mp4|webm)$/i.test(u))){box.hidden=true;box.innerHTML="";return;}
   var short=/\/shorts\//i.test(u);
-  var player=y?'<div class="v3-howto-frame'+(short?' is-short':'')+'"><iframe src="https://www.youtube-nocookie.com/embed/'+y+'?rel=0&modestbranding=1&playsinline=1" title="'+DC.esc(pn(p))+'" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'
-    :'<div class="v3-howto-frame"><video src="'+DC.esc(u)+'" controls playsinline preload="metadata"></video></div>';
-  box.innerHTML='<div class="v3-howto-in"><div class="v3-howto-copy"><span class="v3-howto-k">'+v3T(DC.x("shop.pdp.howto.k",0,"Hướng dẫn sử dụng"),DC.x("shop.pdp.howto.k",1,"How to use"))+'</span>'+
-    '<h3>'+v3T(DC.x("shop.pdp.howto.h",0,"Dùng đúng ngay từ lần đầu"),DC.x("shop.pdp.howto.h",1,"Get it right from day one"))+'</h3>'+
-    '<p>'+v3T(DC.x("shop.pdp.howto.p",0,"Xem video trước khi dùng để gắn đúng, dùng bền. Chỗ nào chưa rõ thì nhắn Dapper Combat qua Zalo hoặc Facebook, tụi mình chỉ thêm."),DC.x("shop.pdp.howto.p",1,"Watch this before your first session so it fits right and lasts. Anything unclear, message Dapper Combat on Zalo or Facebook and we will help."))+'</p></div>'+player+'</div>';
+  var player=y?'<div class="v3-hv-frame is-yt'+(short?' is-short':'')+'"><iframe src="https://www.youtube-nocookie.com/embed/'+y+'?rel=0&modestbranding=1&playsinline=1" title="'+DC.esc(pn(p))+'" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'
+    :'<div class="v3-hv-frame"><video src="'+DC.esc(u)+'#t=0.1" controls playsinline preload="metadata"></video></div>';
+  box.innerHTML='<div class="v3-hv-k">'+v3T(DC.x("shop.pdp.howto.k",0,"Hướng dẫn sử dụng"),DC.x("shop.pdp.howto.k",1,"How to use"))+'</div>'+player;
   box.hidden=false;
 }
 (function(){
